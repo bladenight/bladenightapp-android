@@ -1,14 +1,15 @@
 package de.greencity.bladenightapp.android.network;
 
 
-import com.google.gson.Gson;
-
 import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
+
+import com.google.gson.Gson;
+
 import de.greencity.bladenightapp.android.Actions;
 import de.greencity.bladenightapp.network.BladenightUrl;
 import de.greencity.bladenightapp.network.messages.EventMessage;

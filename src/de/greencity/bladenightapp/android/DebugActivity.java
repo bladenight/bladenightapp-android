@@ -10,7 +10,6 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import de.greencity.bladenightapp.android.network.NetworkService;
 import de.greencity.bladenightapp.android.network.NetworkServiceClient;
 
 public class DebugActivity extends Activity {
@@ -103,7 +102,6 @@ public class DebugActivity extends Activity {
 			} }, new IntentFilter(Actions.GOT_ACTIVE_EVENT));
 	}
 
-	private final String TAG = "DebugActivity";
 	Button btnConnect;
 	Button btnFindServer;
 	Button btnGetActiveEvent;
