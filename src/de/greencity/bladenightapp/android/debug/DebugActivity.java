@@ -105,7 +105,6 @@ public class DebugActivity extends Activity {
 			} }, new IntentFilter(Actions.GOT_ACTIVE_EVENT));
 	}
 
-	private final String TAG = "DebugActivity";
 	Button btnConnect;
 	Button btnFindServer;
 	Button btnGetActiveEvent;
