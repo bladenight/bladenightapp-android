@@ -6,5 +6,15 @@
     <string name="title_activity_main">MainActivity</string>
     <string name="title_activity_echo_client">EchoClientActivity</string>
     <string name="title_activity_debug">DebugActivity</string>
+    <string name="title_selection">Events</string>
+    <string name="title_options">Options</string>
+    <string name="title_statistics">Statistics</string>
+    <string name="title_social">Social</string>
+    <string name="title_action">Action</string>
+    <string name="button_action">Participate</string>
+    <string name="button_statistics">Statistics</string>
+    <string name="button_social">Manage Friends</string>
+    <string name="button_options">Options</string>
+    
 
 </resources>

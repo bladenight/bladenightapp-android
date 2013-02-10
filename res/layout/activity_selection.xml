@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <RelativeLayout android:id="@+id/RelativeLayout01"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="4dp"    
+        android:layout_weight="1"  >
+              
+      
+    
+    <LinearLayout
+        android:id="@+id/group_top"
+        android:background="@drawable/border_orange"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingTop="3dp"
+        android:orientation="vertical">
+        
+        <TextView
+            android:id="@+id/date"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:gravity="center_horizontal"
+            android:textColor="@color/bn_white"
+            android:textSize="25dip"
+            android:paddingTop="10dip"
+            android:textStyle="bold" />
+        
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal"
+            android:layout_weight="2" >
+
+            <TextView
+	            android:id="@+id/course"
+	            android:layout_width="wrap_content"
+	            android:layout_height="match_parent"
+	            android:gravity="center_vertical"
+	            android:paddingLeft="10dip"
+	            android:textColor="@color/bn_white"
+	            android:textSize="20dip"
+	            android:text="Süd - lang"
+	            android:textStyle="bold" />
+            
+            <TextView
+	            android:id="@+id/length"
+	            android:layout_width="wrap_content"
+	            android:layout_height="match_parent"
+	            android:gravity="center_vertical"
+	            android:paddingLeft="10dip"
+	            android:textColor="@color/bn_white"
+	            android:textSize="20dip"
+	            android:text="17.5km"
+	            android:textStyle="bold"  />
+            
+            <ImageView
+	            android:id="@+id/status"
+	            android:paddingLeft="10dip"
+	            android:gravity="center_vertical"
+	            android:layout_width="wrap_content"
+	            android:layout_height="match_parent"/>
+            
+        </LinearLayout>
+        
+        <ImageView
+            android:id="@+id/course_image"
+            android:gravity="center_horizontal"
+            android:layout_weight="1.5"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingBottom="10dp"/>
+        
+    </LinearLayout>
+    </RelativeLayout>
+    
+    <LinearLayout
+        android:id="@+id/group_low"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_weight="1"  >
+
+        <LinearLayout
+	        android:id="@+id/group_navigate"
+	        android:layout_width="match_parent"
+	        android:layout_height="match_parent"
+	        android:orientation="horizontal"
+	        android:layout_weight="1"  >   
+	        
+	        <Button
+	            android:id="@+id/last"
+	            android:layout_weight="1"
+	            android:layout_width="match_parent"
+	            android:layout_height="match_parent"
+	            android:text="Last" 
+	            android:onClick="onClick"/>
+	
+	        <Button
+	            android:id="@+id/go_in"
+	            android:layout_weight="1"
+	            android:layout_height="match_parent"
+	            android:layout_width="match_parent"
+	            android:text="@string/button_action" 
+	            android:onClick="onClick"/>    
+	            
+	        <Button
+	            android:id="@+id/next"
+	            android:layout_weight="1"
+	            android:layout_height="match_parent"
+	            android:layout_width="match_parent"
+	            android:text="Next" 
+	            android:onClick="onClick"/>    
+    	</LinearLayout>
+    	
+        <LinearLayout
+	        android:id="@+id/group_options"
+	        android:layout_width="match_parent"
+	        android:layout_height="match_parent"
+	        android:orientation="horizontal"
+	        android:layout_weight="1"  >   
+	        
+		    <Button
+	            android:id="@+id/social"
+	            android:layout_weight="1"
+	            android:layout_width="match_parent"
+	            android:layout_height="match_parent"
+	            android:text="@string/button_social" 
+	            android:onClick="onClick"/>
+	
+	        <Button
+	            android:id="@+id/options"
+	            android:layout_weight="1"
+	            android:layout_height="match_parent"
+	            android:layout_width="match_parent"
+	            android:text="@string/button_options" 
+	            android:onClick="onClick"/>  
+    	</LinearLayout>
+        
+       
+        
+    </LinearLayout>
+
+    
+
+</LinearLayout> 

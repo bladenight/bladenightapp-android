@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/RelativeLayout01"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"  >
+              
+      
+    
+    <LinearLayout
+        android:id="@+id/group_top"
+        android:background="@drawable/border_orange"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingTop="3dp"
+        android:orientation="vertical">
+        
+        <TextView
+            android:id="@+id/date"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:gravity="center_horizontal"
+            android:textColor="@color/bn_white"
+            android:textSize="25dip"
+            android:paddingTop="10dip"
+            android:textStyle="bold" />
+        
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal"
+            android:layout_weight="2" >
+
+            <TextView
+                android:id="@+id/course"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:paddingLeft="10dip"
+                android:textColor="@color/bn_white"
+                android:textSize="20dip"
+                android:text="Süd - lang"
+                android:textStyle="bold" />
+            
+            <TextView
+                android:id="@+id/length"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:paddingLeft="10dip"
+                android:textColor="@color/bn_white"
+                android:textSize="20dip"
+                android:text="17.5km"
+                android:textStyle="bold"  />
+            
+            <ImageView
+                android:id="@+id/status"
+                android:paddingLeft="10dip"
+                android:gravity="center_vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"/>
+            
+        </LinearLayout>
+        
+        <ImageView
+            android:id="@+id/course_image"
+            android:gravity="center_horizontal"
+            android:layout_weight="1.5"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingBottom="10dp"/>
+        
+    </LinearLayout>
+    </RelativeLayout>
