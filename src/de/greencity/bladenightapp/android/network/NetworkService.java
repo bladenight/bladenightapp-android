@@ -8,7 +8,6 @@ import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 import com.google.gson.Gson;
-import de.greencity.bladenightapp.android.Actions;
 import de.greencity.bladenightapp.network.BladenightUrl;
 import de.greencity.bladenightapp.network.messages.EventMessage;
 import de.tavendo.autobahn.Wamp;
