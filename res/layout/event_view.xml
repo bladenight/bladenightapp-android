@@ -8,11 +8,14 @@
     
     <LinearLayout
         android:id="@+id/group_top"
+        android:tag="empty"
         android:background="@drawable/border_orange"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingTop="3dp"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:weightSum="5.25"
+        android:onClick="onClick">
         
         <TextView
             android:id="@+id/date"
@@ -66,10 +69,19 @@
         <ImageView
             android:id="@+id/course_image"
             android:gravity="center_horizontal"
-            android:layout_weight="1.5"
+            android:layout_weight="1.25"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:paddingBottom="10dp"/>
+        
+     <!--     <Button
+                android:id="@+id/go_in"
+                android:layout_weight="1.75"
+                android:layout_height="match_parent"
+                android:layout_width="wrap_content"
+                android:text="@string/button_action" 
+                android:padding="20dp"
+                android:onClick="onClick"/>    -->
         
     </LinearLayout>
     </RelativeLayout>
