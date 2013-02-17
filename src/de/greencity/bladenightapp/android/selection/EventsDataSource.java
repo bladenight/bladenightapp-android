@@ -2,9 +2,7 @@ package de.greencity.bladenightapp.android.selection;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 
 import android.content.ContentValues;
 import android.content.Context;

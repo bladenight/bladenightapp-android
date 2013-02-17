@@ -16,6 +16,8 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
@@ -113,10 +115,8 @@ public class SelectionActivity extends FragmentActivity {
     datasource.close();
     super.onPause();
   }
+ 
   
-  private boolean isUpcoming(){
-	  return true;
-  }
   
   
   
@@ -136,7 +136,9 @@ public class SelectionActivity extends FragmentActivity {
 
       @Override
       public Fragment getItem(int position) {
-          Fragment fragment = new EventFragment(allEvents.get(position));
+    	  boolean hasRight = position < getCount()-1;
+    	  boolean hasLeft = position > 0;
+          Fragment fragment = new EventFragment(allEvents.get(position), hasLeft, hasRight);
           return fragment;      
       }
       

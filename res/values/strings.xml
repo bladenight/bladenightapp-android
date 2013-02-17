@@ -2,6 +2,7 @@
 
     <string name="app_name">Blade Night</string>
     <string name="hello_world">Hello world!</string>
+    <string name="impressum">Impressum</string>
     <string name="menu_settings">Settings</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="title_activity_echo_client">EchoClientActivity</string>
@@ -15,6 +16,9 @@
     <string name="button_statistics">Statistics</string>
     <string name="button_social">Manage Friends</string>
     <string name="button_options">Options</string>
+    <string name="arrow_left">&lt;</string>
+    <string name="arrow_right">&gt;</string>
+    <string name="arrow_no"></string>
     
 
 </resources>

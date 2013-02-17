@@ -10,7 +10,6 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -18,15 +17,19 @@ import android.widget.TextView;
 public class EventFragment extends Fragment {
 	private Event event;
 	private View view;
+	private boolean hasRight;
+	private boolean hasLeft;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
     
-    public EventFragment(Event event){
+    public EventFragment(Event event, boolean hasLeft, boolean hasRight){
     	super();
     	this.event = event;
+    	this.hasLeft = hasLeft;
+    	this.hasRight = hasRight;
     }
  
     @Override
@@ -49,54 +52,30 @@ public class EventFragment extends Fragment {
   	  textViewCourse.setText(event.getCourse());
   	  TextView textViewDate = (TextView)view.findViewById(R.id.date);
   	  textViewDate.setText(event.getDateFormatted());
-  	  TextView textViewLength = (TextView)view.findViewById(R.id.length);
-  	  textViewLength.setText(event.getLength());
+  	  TextView textViewLeft = (TextView)view.findViewById(R.id.arrow_left);
+  	  textViewLeft.setText(hasLeft ? R.string.arrow_left : R.string.arrow_no);
+  	  TextView textViewRight = (TextView)view.findViewById(R.id.arrow_right);
+  	  textViewRight.setText(hasRight ? R.string.arrow_right : R.string.arrow_no);
+  	  
+//  	  TextView textViewLength = (TextView)view.findViewById(R.id.length);
+//  	  textViewLength.setText(event.getLength());
   	  
   	  updateStatus();
   	  updateSchedule(); 
-  	  updateCourseImage();
   	  
     }
     
-    private void updateCourseImage(){
-  	  ImageView imageViewCourse = (ImageView)view.findViewById(R.id.course_image);
-  	  if(event.getCourse().equals("Nord - kurz")){
-  		  imageViewCourse.setImageResource(R.drawable.bn_nord_kurz);
-  	  }
-  	  else if(event.getCourse().equals("Nord - kurz")){
-  		  imageViewCourse.setImageResource(R.drawable.bn_nord_kurz);
-  	  }
-  	  else if(event.getCourse().equals("Nord - lang")){
-  		  imageViewCourse.setImageResource(R.drawable.bn_nord_lang);
-  	  }
-  	  else if(event.getCourse().equals("West - kurz")){
-  		  imageViewCourse.setImageResource(R.drawable.bn_west_kurz);
-  	  }
-  	  else if(event.getCourse().equals("West - lang")){
-  		  imageViewCourse.setImageResource(R.drawable.bn_west_lang);
-  	  }
-  	  else if(event.getCourse().equals("Ost - kurz")){
-  		  imageViewCourse.setImageResource(R.drawable.bn_ost_kurz);
-  	  }
-  	  else if(event.getCourse().equals("Ost - lang")){
-  		  imageViewCourse.setImageResource(R.drawable.bn_ost_lang);
-  	  }
-  	  else {
-  		  throw new Error("This course is not valid.");
-  	  }
-    
-    }
     
     private void updateStatus(){
   	  ImageView imageViewStatus = (ImageView)view.findViewById(R.id.status);
   	  if(event.getStatus().equals("confirmed")){
-  		  imageViewStatus.setImageResource(R.drawable.ic_status_confirmed);
+  		  imageViewStatus.setImageResource(R.drawable.icon_ok);
   	  }
   	  else if(event.getStatus().equals("pending")){
-  		  imageViewStatus.setImageResource(R.drawable.ic_status_pending);
+  		  imageViewStatus.setImageResource(R.drawable.icon_pending);
   	  }
   	  else if(event.getStatus().equals("cancelled")){
-  		  imageViewStatus.setImageResource(R.drawable.ic_status_cancelled);
+  		  imageViewStatus.setImageResource(R.drawable.icon_no);
   	  }
   	  else{
   		  throw new Error("This status is not valid");
@@ -104,7 +83,7 @@ public class EventFragment extends Fragment {
     }
 
     private void updateSchedule(){
-  	  LinearLayout topgroup = (LinearLayout) view.findViewById(R.id.group_top);
+    	LinearLayout topgroup = (LinearLayout) view.findViewById(R.id.group_top);
   	  if(isUpcoming()){
   		  topgroup.setBackgroundResource(R.drawable.border_green);
   		  topgroup.setTag("upcoming");

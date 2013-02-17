@@ -4,84 +4,85 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"  >
               
-      
-    
     <LinearLayout
         android:id="@+id/group_top"
-        android:tag="empty"
-        android:background="@drawable/border_orange"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingTop="3dp"
+        android:background="@drawable/border_orange"
+        android:gravity="center_horizontal"
+        android:onClick="onClick"
         android:orientation="vertical"
-        android:weightSum="5.25"
-        android:onClick="onClick">
+        android:tag="empty" >
         
         <TextView
             android:id="@+id/date"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="2"
-            android:gravity="center_horizontal"
-            android:textColor="@color/bn_white"
+            android:layout_weight="2.5"
+            android:gravity="center"
             android:textSize="25dip"
-            android:paddingTop="10dip"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:text="@string/hello_world" />
         
-        <LinearLayout
+        <TextView
+            android:id="@+id/course"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="center_horizontal"
-            android:orientation="horizontal"
+            android:layout_weight="2.5"
+            android:gravity="center"
+            android:textSize="25dip"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:text="@string/hello_world" />
+        
+        
+        
+        
+        
+        <RelativeLayout 
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" 
             android:layout_weight="2" >
-
-            <TextView
-                android:id="@+id/course"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:paddingLeft="10dip"
-                android:textColor="@color/bn_white"
-                android:textSize="20dip"
-                android:text="Süd - lang"
-                android:textStyle="bold" />
             
             <TextView
-                android:id="@+id/length"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:paddingLeft="10dip"
-                android:textColor="@color/bn_white"
-                android:textSize="20dip"
-                android:text="17.5km"
-                android:textStyle="bold"  />
+	            android:id="@+id/arrow_left"
+	            android:layout_width="80dp"
+	            android:layout_height="80dp"
+	            android:gravity="center"
+	            android:layout_centerVertical="true"
+	            android:textSize="75dip"
+	            android:textStyle="bold"
+	            android:textColor="@color/bn_green2"
+	            android:text="@string/arrow_left" />
             
             <ImageView
-                android:id="@+id/status"
-                android:paddingLeft="10dip"
-                android:gravity="center_vertical"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"/>
+	            android:id="@+id/status"
+	            android:layout_width="80dp"
+	            android:layout_height="80dp"
+	            android:layout_centerInParent="true"
+	            android:gravity="center_vertical"
+	            android:paddingTop="10dip" />
             
-        </LinearLayout>
+            <TextView
+                android:id="@+id/arrow_right"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:gravity="center"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:textSize="75dip"
+                android:textStyle="bold"
+                android:textColor="@color/bn_green2"
+                android:text="@string/arrow_right" />
         
-        <ImageView
-            android:id="@+id/course_image"
-            android:gravity="center_horizontal"
-            android:layout_weight="1.25"
+        </RelativeLayout>
+        
+        <RelativeLayout 
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingBottom="10dp"/>
-        
-     <!--     <Button
-                android:id="@+id/go_in"
-                android:layout_weight="1.75"
-                android:layout_height="match_parent"
-                android:layout_width="wrap_content"
-                android:text="@string/button_action" 
-                android:padding="20dp"
-                android:onClick="onClick"/>    -->
+            android:layout_height="match_parent" 
+            android:layout_weight="2" >
+        </RelativeLayout>
         
     </LinearLayout>
-    </RelativeLayout>
+</RelativeLayout>
