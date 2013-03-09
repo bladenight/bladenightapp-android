@@ -20,7 +20,7 @@ public class ServerFinder {
 		if ( "google_sdk".equals( Build.PRODUCT ) || "sdk".equals( Build.PRODUCT ) )
 			// Assume we are running in the emulator, and the server runs on the development host
 			scanner.addHost("10.0.2.2");
-		
+
 		String wifiSubnet = getWifiSubnetAsString();
 		if ( wifiSubnet != null )
 			scanner.addSubnet(wifiSubnet);
@@ -39,7 +39,7 @@ public class ServerFinder {
 
 	protected String getWifiSubnetAsString() {
 		int ip = getWifiIp();
-		
+
 		if ( ip == 0)
 			return null;
 

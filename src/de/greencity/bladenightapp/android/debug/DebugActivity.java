@@ -12,7 +12,6 @@ import android.widget.Button;
 import android.widget.TextView;
 import de.greencity.bladenightapp.android.R;
 import de.greencity.bladenightapp.android.network.Actions;
-import de.greencity.bladenightapp.android.network.NetworkService;
 import de.greencity.bladenightapp.android.network.NetworkServiceClient;
 
 public class DebugActivity extends Activity {
