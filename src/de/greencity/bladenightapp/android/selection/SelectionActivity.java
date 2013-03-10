@@ -3,8 +3,11 @@ package de.greencity.bladenightapp.android.selection;
 
 import java.util.LinkedList;
 
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -73,6 +76,7 @@ public class SelectionActivity extends FragmentActivity {
 		Log.i(TAG, "onStart");
 		super.onStart();
 
+		registerReceivers();
 
 		serviceConnection = new ServiceConnection() {
 			@Override
@@ -89,12 +93,33 @@ public class SelectionActivity extends FragmentActivity {
 		bindService(new Intent(this, NewNetworkService.class), serviceConnection,  BIND_AUTO_CREATE);
 	}	
 
+	private void registerReceivers() {
+		{
+			Log.i(TAG, "Registering " + Actions.GOT_ALL_EVENTS);
+			IntentFilter filter = new IntentFilter();
+			filter.addAction(Actions.GOT_ALL_EVENTS);
+			registerReceiver(gotAllEventsReceiver, filter);
+		}
+		{
+			Log.i(TAG, "Registering " + Actions.CONNECTED);
+			IntentFilter filter = new IntentFilter();
+			filter.addAction(Actions.CONNECTED);
+			registerReceiver(connectedReceiver, filter);
+		}
+	}
+
+	
 	@Override
 	protected void onStop() {
 		Log.i(TAG, "onStop");
 		super.onStop();
 
+		unregisterReceivers();
 		unbindService(serviceConnection);
+	}
+
+	private void unregisterReceivers() {
+		unregisterReceiver(gotAllEventsReceiver);
 	}
 
 
@@ -151,9 +176,26 @@ public class SelectionActivity extends FragmentActivity {
 		super.onPause();
 	}
 
+	private final BroadcastReceiver gotAllEventsReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			Log.d(TAG,"getAllEventsReceiver.onReceive");
+			String json = (String) intent.getExtras().get("json");
+			if ( json == null ) {
+				Log.e(TAG,"Failed to get json");
+				return;
+			}
+			Log.d(TAG, json);
+		}
+	};
 
-
-
+	private final BroadcastReceiver connectedReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			Log.d(TAG,"getAllEventsReceiver.onReceive");
+			sendBroadcast(new Intent(Actions.GET_ALL_EVENTS));
+		}
+	};
 
 	public static class MyAdapter extends FragmentPagerAdapter {
 		final private String TAG = "SelectionActivity.MyAdapter"; 

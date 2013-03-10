@@ -1,9 +1,14 @@
 package de.greencity.bladenightapp.android.network;
 
+import com.google.gson.Gson;
+
+import de.greencity.bladenightapp.network.BladenightUrl;
+import de.greencity.bladenightapp.network.messages.EventsListMessage;
 import de.tavendo.autobahn.Wamp;
 import de.tavendo.autobahn.WampConnection;
 import de.tavendo.autobahn.WampOptions;
 import de.tavendo.autobahn.WebSocketOptions;
+import de.tavendo.autobahn.Wamp.CallHandler;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -16,6 +21,7 @@ import android.util.Log;
 public class NewNetworkService extends Service {
 	private final String TAG = "NewNetworkService";
 	private WampConnection wampConnection;
+	private boolean isConnected = false;
 
 	@Override
 	public void onCreate() {
@@ -86,6 +92,7 @@ public class NewNetworkService extends Service {
 			public void onOpen() {
 				Log.d(TAG, "Status: Connected to " + uri);
 				sendBroadcast(new Intent(Actions.CONNECTED));
+				isConnected = true;
 			}
 
 			@Override
@@ -93,6 +100,7 @@ public class NewNetworkService extends Service {
 				Log.d(TAG, "Connection lost to " + uri);
 				Log.d(TAG, "Reason:" + reason);
 				sendBroadcast(new Intent(Actions.DISCONNECTED));
+				isConnected = false;
 			}
 
 		};
@@ -115,6 +123,36 @@ public class NewNetworkService extends Service {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			Log.d(TAG,"getAllEventsReceiver.onReceive");
+
+			if ( ! isConnected ) {
+				Log.w(TAG, "getAllEventsReceiver: Not connected");
+				return;
+			}
+
+			wampConnection.call(BladenightUrl.GET_ALL_EVENTS.getText(), EventsListMessage.class, new CallHandler() {
+				@Override
+				public void onError(String arg0, String arg1) {
+					Log.e(TAG, arg0 + " " + arg1);
+				}
+
+				@Override
+				public void onResult(Object object) {
+					EventsListMessage msg = (EventsListMessage) object;
+					if ( msg == null ) {
+						Log.e(TAG, "getAllEvents: Failed to cast");
+						return;
+					}
+					// Toast.makeText(NetworkService.this, msg.toString(), Toast.LENGTH_LONG).show();
+					// Log.d(TAG, "Got message " + msg.toString());
+					Intent intent = new Intent(Actions.GOT_ALL_EVENTS);
+					intent.putExtra("json", new Gson().toJson(object));
+					NewNetworkService.this.sendBroadcast(intent);
+				}
+			});
+
+			//			Intent intent = new Intent(Actions.GOT_ALL_EVENTS);
+			//			intent.putExtra("json", new Gson().toJson(object));
+			//			NetworkService.this.sendBroadcast(intent);
 		}
 	};
 
