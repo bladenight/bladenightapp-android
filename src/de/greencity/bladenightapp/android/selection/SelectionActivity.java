@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import de.greencity.bladenightapp.android.R;
 import de.greencity.bladenightapp.android.action.ActionActivity;
+import de.greencity.bladenightapp.android.network.NetworkServiceClient;
 import de.greencity.bladenightapp.android.options.OptionsActivity;
 import de.greencity.bladenightapp.android.social.SocialActivity;
 import de.greencity.bladenightapp.android.statistics.StatisticsActivity;
@@ -24,6 +25,7 @@ public class SelectionActivity extends FragmentActivity {
 	private EventsDataSource datasource;
 	private MyAdapter mAdapter;
 	private ViewPager mPager;
+	final NetworkServiceClient networkServiceClient = new NetworkServiceClient(this);
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -57,7 +59,18 @@ public class SelectionActivity extends FragmentActivity {
 
 	}
 
+	@Override
+	protected void onStart() {
+		super.onStart();
+		networkServiceClient.bindToService();
+		networkServiceClient.getAllEvents();
+	}	
 
+	@Override
+	protected void onStop() {
+		super.onStop();
+		networkServiceClient.unbindFromService();
+	}
 
 
 	// Will be called via the onClick attribute

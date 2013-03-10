@@ -10,7 +10,7 @@ public class NetworkServiceClient {
 
 	public void bindToService() {
 		Intent intent = new Intent(context, NetworkService.class);
-		serviceConnection = new NetworkServiceConnection();
+		serviceConnection = new NetworkServiceClientConnection();
 		context.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
 	}
 	
@@ -26,12 +26,12 @@ public class NetworkServiceClient {
 		sendSimpleIntent(Actions.DISCONNECT);
 	}
 	
-	public void findServer() {
-		sendSimpleIntent(Actions.FIND_SERVER);
-	}
-
 	public void getActiveEvent() {
 		sendSimpleIntent(Actions.GET_ACTIVE_EVENT);
+	}
+
+	public void getAllEvents() {
+		sendSimpleIntent(Actions.GET_ALL_EVENTS);
 	}
 
 	private void sendSimpleIntent(String action) {
@@ -41,5 +41,5 @@ public class NetworkServiceClient {
 	}
 
 	private Context context;
-	NetworkServiceConnection serviceConnection;
+	private NetworkServiceClientConnection serviceConnection;
 }

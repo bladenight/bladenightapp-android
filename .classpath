@@ -3,7 +3,7 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
-	<classpathentry exported="true" kind="lib" path="libs/autobahn-0.5.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/autobahn-0.5.1.jar" sourcepath="/Volumes/DD500/ocroquette/Downloads/Git/AutobahnAndroid/Autobahn/src"/>
 	<classpathentry exported="true" kind="lib" path="libs/jackson-core-asl-1.9.7.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jackson-mapper-asl-1.9.7.jar"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/bladenightapp-common"/>
