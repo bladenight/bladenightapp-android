@@ -17,6 +17,8 @@
         
         <service android:name=".network.NetworkService"
             android:exported="false" />
+        <service android:name=".network.NewNetworkService"
+            android:exported="false" />
         
         <activity
             android:name=".selection.SelectionActivity"

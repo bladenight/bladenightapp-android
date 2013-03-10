@@ -3,10 +3,11 @@ package de.greencity.bladenightapp.android.selection;
 
 import java.util.LinkedList;
 
-import com.google.gson.Gson;
-
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -20,25 +21,21 @@ import android.widget.TextView;
 import de.greencity.bladenightapp.android.R;
 import de.greencity.bladenightapp.android.action.ActionActivity;
 import de.greencity.bladenightapp.android.network.Actions;
-import de.greencity.bladenightapp.android.network.MyWampConnection;
-import de.greencity.bladenightapp.android.network.NetworkService;
+import de.greencity.bladenightapp.android.network.NewNetworkService;
 import de.greencity.bladenightapp.android.options.OptionsActivity;
 import de.greencity.bladenightapp.android.social.SocialActivity;
 import de.greencity.bladenightapp.android.statistics.StatisticsActivity;
-import de.greencity.bladenightapp.network.BladenightUrl;
-import de.greencity.bladenightapp.network.messages.EventsListMessage;
-import de.tavendo.autobahn.Wamp;
-import de.tavendo.autobahn.WampConnection;
-import de.tavendo.autobahn.Wamp.CallHandler;
 
 public class SelectionActivity extends FragmentActivity {
 	private EventsDataSource datasource;
 	private MyAdapter mAdapter;
 	private ViewPager mPager;
 	final private String TAG = "SelectionActivity"; 
+	private ServiceConnection serviceConnection;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+		Log.i(TAG, "onCreate");
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
 		setContentView(R.layout.activity_selection);
@@ -73,43 +70,31 @@ public class SelectionActivity extends FragmentActivity {
 
 	@Override
 	protected void onStart() {
+		Log.i(TAG, "onStart");
 		super.onStart();
-		final String uri = "ws://192.168.178.30:8081";
-		Log.d(TAG, "Status: Connecting to " + uri);
-		final WampConnection wampConnection = new WampConnection();
-		Wamp.ConnectionHandler handler  = new Wamp.ConnectionHandler() {
-			@Override
-			public void onOpen() {
-				Log.d(TAG, "Status: Connected to " + uri);
-				wampConnection.call(BladenightUrl.GET_ALL_EVENTS.getText(), EventsListMessage.class, new CallHandler() {
-					@Override
-					public void onError(String arg0, String arg1) {
-						Log.e(TAG, arg0 + " " + arg1);
-					}
 
-					@Override
-					public void onResult(Object object) {
-						Log.d(TAG, object.toString());
-						EventsListMessage msg = (EventsListMessage) object;
-						if ( msg == null ) {
-							Log.e(TAG, "getAllEvents: Failed to cast");
-							return;
-						}
-					}
-				});
+
+		serviceConnection = new ServiceConnection() {
+			@Override
+			public void onServiceConnected(ComponentName name, IBinder service) {
+				Log.i(TAG+".ServiceConnection", "onServiceConnected");
+				sendBroadcast(new Intent(Actions.GET_ALL_EVENTS));
+			}
+			@Override
+			public void onServiceDisconnected(ComponentName name) {
+				Log.i(TAG+".ServiceConnection", "onServiceDisconnected");
 			}
 
-			@Override
-			public void onClose(int code, String reason) {
-				Log.d(TAG, "Status: Connection closed: " + reason);
-			}
 		};
-		wampConnection.connect(uri, handler);
+		bindService(new Intent(this, NewNetworkService.class), serviceConnection,  BIND_AUTO_CREATE);
 	}	
 
 	@Override
 	protected void onStop() {
+		Log.i(TAG, "onStop");
 		super.onStop();
+
+		unbindService(serviceConnection);
 	}
 
 
@@ -182,19 +167,19 @@ public class SelectionActivity extends FragmentActivity {
 
 		@Override
 		public int getCount() {
-			Log.d(TAG, "getCount");
+			// Log.d(TAG, "getCount");
 			return allEvents.size();
 		}
 
 		@Override
 		public int getItemPosition(Object object) {
-			Log.d(TAG, "getItemPosition");
+			// Log.d(TAG, "getItemPosition");
 			return POSITION_NONE;
 		}
 
 		@Override
 		public Fragment getItem(int position) {
-			Log.d(TAG, "getItem("+position+")");
+			// Log.d(TAG, "getItem("+position+")");
 			boolean hasRight = position < getCount()-1;
 			boolean hasLeft = position > 0;
 			Fragment fragment = new EventFragment(allEvents.get(position), hasLeft, hasRight);
