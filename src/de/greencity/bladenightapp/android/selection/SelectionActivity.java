@@ -1,7 +1,9 @@
 
 package de.greencity.bladenightapp.android.selection;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -21,6 +23,9 @@ import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.google.gson.Gson;
+
 import de.greencity.bladenightapp.android.R;
 import de.greencity.bladenightapp.android.action.ActionActivity;
 import de.greencity.bladenightapp.android.network.Actions;
@@ -28,13 +33,18 @@ import de.greencity.bladenightapp.android.network.NewNetworkService;
 import de.greencity.bladenightapp.android.options.OptionsActivity;
 import de.greencity.bladenightapp.android.social.SocialActivity;
 import de.greencity.bladenightapp.android.statistics.StatisticsActivity;
+import de.greencity.bladenightapp.events.EventsList;
+import de.greencity.bladenightapp.network.messages.EventsListMessage;
 
 public class SelectionActivity extends FragmentActivity {
 	private EventsDataSource datasource;
 	private MyAdapter mAdapter;
 	private ViewPager mPager;
-	final private String TAG = "SelectionActivity"; 
+	private final String TAG = "SelectionActivity"; 
 	private ServiceConnection serviceConnection;
+	private final List<BroadcastReceiver> registeredBroadcasterReceivers = new ArrayList<BroadcastReceiver>();
+	private final LinkedList<Event> allEvents = new LinkedList<Event>();
+
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -51,19 +61,19 @@ public class SelectionActivity extends FragmentActivity {
 		datasource = new EventsDataSource(this);
 		datasource.open();
 
-		LinkedList<Event> allEvents = datasource.getAllEvents();
-
-		//workaround, should be refreshed with data on server
-		if(allEvents.size()==0){
-			datasource.createEvent("Nord - lang", "15.06.2012", "confirmed", "17.6 km");
-			datasource.createEvent("Ost - kurz", "22.06.2012", "cancelled", "11.3 km");
-			datasource.createEvent("West - kurz", "11.06.2013", "confirmed", "12.4 km");
-			datasource.createEvent("West - lang", "18.06.2013", "pending", "17.4 km");
-			datasource.createEvent("West - kurz", "27.06.2013", "pending", "12.4 km");
-			allEvents = datasource.getAllEvents();
-		}
-
-		allEvents = new LinkedList<Event>();
+//		allEvents = datasource.getAllEvents();
+//
+//		//workaround, should be refreshed with data on server
+//		if(allEvents.size()==0){
+//			datasource.createEvent("Nord - lang", "15.06.2012", "confirmed", "17.6 km");
+//			datasource.createEvent("Ost - kurz", "22.06.2012", "cancelled", "11.3 km");
+//			datasource.createEvent("West - kurz", "11.06.2013", "confirmed", "12.4 km");
+//			datasource.createEvent("West - lang", "18.06.2013", "pending", "17.4 km");
+//			datasource.createEvent("West - kurz", "27.06.2013", "pending", "12.4 km");
+//			allEvents = datasource.getAllEvents();
+//		}
+//
+//		allEvents = new LinkedList<Event>();
 
 		mAdapter = new MyAdapter(getSupportFragmentManager(),allEvents);
 		mPager = (ViewPager) findViewById(R.id.pager);
@@ -94,18 +104,16 @@ public class SelectionActivity extends FragmentActivity {
 	}	
 
 	private void registerReceivers() {
-		{
-			Log.i(TAG, "Registering " + Actions.GOT_ALL_EVENTS);
-			IntentFilter filter = new IntentFilter();
-			filter.addAction(Actions.GOT_ALL_EVENTS);
-			registerReceiver(gotAllEventsReceiver, filter);
-		}
-		{
-			Log.i(TAG, "Registering " + Actions.CONNECTED);
-			IntentFilter filter = new IntentFilter();
-			filter.addAction(Actions.CONNECTED);
-			registerReceiver(connectedReceiver, filter);
-		}
+		registerReceiver(Actions.GOT_ALL_EVENTS, gotAllEventsReceiver);
+		registerReceiver(Actions.CONNECTED, connectedReceiver);
+	}
+	
+	private void registerReceiver(String action, BroadcastReceiver receiver) {
+		Log.i(TAG, "Registering " + action);
+		IntentFilter filter = new IntentFilter();
+		filter.addAction(action);
+		registerReceiver(receiver, filter);
+		registeredBroadcasterReceivers.add(receiver);
 	}
 
 	
@@ -119,9 +127,23 @@ public class SelectionActivity extends FragmentActivity {
 	}
 
 	private void unregisterReceivers() {
-		unregisterReceiver(gotAllEventsReceiver);
+		while ( registeredBroadcasterReceivers.size() > 0 ) {
+			unregisterReceiver(registeredBroadcasterReceivers.get(0));
+			registeredBroadcasterReceivers.remove(0);
+		}
 	}
 
+	@Override
+	protected void onResume() {
+		datasource.open();
+		super.onResume();
+	}
+
+	@Override
+	protected void onPause() {
+		datasource.close();
+		super.onPause();
+	}
 
 	// Will be called via the onClick attribute
 	// of the buttons in main.xml
@@ -164,17 +186,6 @@ public class SelectionActivity extends FragmentActivity {
 		startActivity(intent);
 	}
 
-	@Override
-	protected void onResume() {
-		datasource.open();
-		super.onResume();
-	}
-
-	@Override
-	protected void onPause() {
-		datasource.close();
-		super.onPause();
-	}
 
 	private final BroadcastReceiver gotAllEventsReceiver = new BroadcastReceiver() {
 		@Override
@@ -186,6 +197,22 @@ public class SelectionActivity extends FragmentActivity {
 				return;
 			}
 			Log.d(TAG, json);
+			EventsListMessage message = new Gson().fromJson(json, EventsListMessage.class);
+			if ( message == null ) {
+				Log.e(TAG,"Failed to parse json");
+				return;
+			}
+			EventsList list = message.convertToEventsList();
+			allEvents.clear();
+			for ( de.greencity.bladenightapp.events.Event event : list) {
+				Event appEvent = new Event();
+				appEvent.setCourse(event.getRouteName());
+				appEvent.setDate(event.getStartDate());
+				appEvent.setLength("2 km");
+				appEvent.setStatus("confirmed");
+				allEvents.add(appEvent);
+			}
+			mAdapter.notifyDataSetChanged();
 		}
 	};
 
@@ -196,8 +223,9 @@ public class SelectionActivity extends FragmentActivity {
 			sendBroadcast(new Intent(Actions.GET_ALL_EVENTS));
 		}
 	};
-
+	
 	public static class MyAdapter extends FragmentPagerAdapter {
+		@SuppressWarnings("unused")
 		final private String TAG = "SelectionActivity.MyAdapter"; 
 
 		public LinkedList<Event> allEvents;

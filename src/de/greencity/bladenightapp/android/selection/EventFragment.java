@@ -2,9 +2,6 @@ package de.greencity.bladenightapp.android.selection;
 
 
 
-import java.util.Date;
-
-import de.greencity.bladenightapp.android.R;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -13,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import de.greencity.bladenightapp.android.R;
 
 public class EventFragment extends Fragment {
 	private Event event;
@@ -95,7 +93,6 @@ public class EventFragment extends Fragment {
 	}
 
 	private boolean isUpcoming(){
-		Date now = new Date();
-		return event.getDate().after(now);
+		return event.getDate().isAfterNow();
 	}
 }

@@ -1,12 +1,15 @@
 package de.greencity.bladenightapp.android.selection;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
+
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 public class Event {
 	private long id;
 	private String course;
-	private Date date;
+	private DateTime date;
 	private String status;
 	private String length;
 
@@ -27,15 +30,16 @@ public class Event {
 		this.course = course;
 	}
 
-	public Date getDate() {
+	public DateTime getDate() {
 		return date;
 	}
 
 	public String getDateFormatted(){
-		return new SimpleDateFormat("dd.MM.yyyy").format(date);
+		DateTimeFormatter fmt = DateTimeFormat.forPattern("dd.MM.yyyy");
+		return fmt.print(date);
 	}
 
-	public void setDate(Date date) {
+	public void setDate(DateTime date) {
 		this.date = date;
 	}
 

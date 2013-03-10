@@ -1,8 +1,8 @@
 package de.greencity.bladenightapp.android.selection;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.LinkedList;
+
+import org.joda.time.DateTime;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -76,11 +76,8 @@ public class EventsDataSource {
 		Event event = new Event();
 		event.setId(cursor.getLong(0));
 		event.setCourse(cursor.getString(1));
-		try {
-			event.setDate(new SimpleDateFormat("dd.MM.yyyy").parse(cursor.getString(2)));
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
+		// event.setDate(new SimpleDateFormat("dd.MM.yyyy").parse(cursor.getString(2)));
+		event.setDate(new DateTime());
 		event.setStatus(cursor.getString(3));
 		event.setLength(cursor.getString(4));
 		return event;

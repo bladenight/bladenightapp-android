@@ -1,14 +1,5 @@
 package de.greencity.bladenightapp.android.network;
 
-import com.google.gson.Gson;
-
-import de.greencity.bladenightapp.network.BladenightUrl;
-import de.greencity.bladenightapp.network.messages.EventsListMessage;
-import de.tavendo.autobahn.Wamp;
-import de.tavendo.autobahn.WampConnection;
-import de.tavendo.autobahn.WampOptions;
-import de.tavendo.autobahn.WebSocketOptions;
-import de.tavendo.autobahn.Wamp.CallHandler;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -17,6 +8,15 @@ import android.content.IntentFilter;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
+
+import com.google.gson.Gson;
+
+import de.greencity.bladenightapp.network.BladenightUrl;
+import de.greencity.bladenightapp.network.messages.EventsListMessage;
+import de.tavendo.autobahn.Wamp;
+import de.tavendo.autobahn.Wamp.CallHandler;
+import de.tavendo.autobahn.WampConnection;
+import de.tavendo.autobahn.WampOptions;
 
 public class NewNetworkService extends Service {
 	private final String TAG = "NewNetworkService";
@@ -43,13 +43,6 @@ public class NewNetworkService extends Service {
 	public void onRebind(Intent intent) {
 		Log.i(TAG, "onRebind");
 		super.onRebind(intent);
-	}
-
-
-	@Override
-	public void onStart(Intent intent, int startId) {
-		Log.i(TAG, "onCreate");
-		super.onStart(intent, startId);
 	}
 
 
