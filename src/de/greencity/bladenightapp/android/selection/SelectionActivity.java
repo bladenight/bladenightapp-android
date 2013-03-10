@@ -3,6 +3,8 @@ package de.greencity.bladenightapp.android.selection;
 
 import java.util.LinkedList;
 
+import com.google.gson.Gson;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -10,22 +12,30 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
 import de.greencity.bladenightapp.android.R;
 import de.greencity.bladenightapp.android.action.ActionActivity;
-import de.greencity.bladenightapp.android.network.NetworkServiceClient;
+import de.greencity.bladenightapp.android.network.Actions;
+import de.greencity.bladenightapp.android.network.MyWampConnection;
+import de.greencity.bladenightapp.android.network.NetworkService;
 import de.greencity.bladenightapp.android.options.OptionsActivity;
 import de.greencity.bladenightapp.android.social.SocialActivity;
 import de.greencity.bladenightapp.android.statistics.StatisticsActivity;
+import de.greencity.bladenightapp.network.BladenightUrl;
+import de.greencity.bladenightapp.network.messages.EventsListMessage;
+import de.tavendo.autobahn.Wamp;
+import de.tavendo.autobahn.WampConnection;
+import de.tavendo.autobahn.Wamp.CallHandler;
 
 public class SelectionActivity extends FragmentActivity {
 	private EventsDataSource datasource;
 	private MyAdapter mAdapter;
 	private ViewPager mPager;
-	final NetworkServiceClient networkServiceClient = new NetworkServiceClient(this);
+	final private String TAG = "SelectionActivity"; 
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -53,6 +63,8 @@ public class SelectionActivity extends FragmentActivity {
 			allEvents = datasource.getAllEvents();
 		}
 
+		allEvents = new LinkedList<Event>();
+
 		mAdapter = new MyAdapter(getSupportFragmentManager(),allEvents);
 		mPager = (ViewPager) findViewById(R.id.pager);
 		mPager.setAdapter(mAdapter);
@@ -62,14 +74,42 @@ public class SelectionActivity extends FragmentActivity {
 	@Override
 	protected void onStart() {
 		super.onStart();
-		networkServiceClient.bindToService();
-		networkServiceClient.getAllEvents();
+		final String uri = "ws://192.168.178.30:8081";
+		Log.d(TAG, "Status: Connecting to " + uri);
+		final WampConnection wampConnection = new WampConnection();
+		Wamp.ConnectionHandler handler  = new Wamp.ConnectionHandler() {
+			@Override
+			public void onOpen() {
+				Log.d(TAG, "Status: Connected to " + uri);
+				wampConnection.call(BladenightUrl.GET_ALL_EVENTS.getText(), EventsListMessage.class, new CallHandler() {
+					@Override
+					public void onError(String arg0, String arg1) {
+						Log.e(TAG, arg0 + " " + arg1);
+					}
+
+					@Override
+					public void onResult(Object object) {
+						Log.d(TAG, object.toString());
+						EventsListMessage msg = (EventsListMessage) object;
+						if ( msg == null ) {
+							Log.e(TAG, "getAllEvents: Failed to cast");
+							return;
+						}
+					}
+				});
+			}
+
+			@Override
+			public void onClose(int code, String reason) {
+				Log.d(TAG, "Status: Connection closed: " + reason);
+			}
+		};
+		wampConnection.connect(uri, handler);
 	}	
 
 	@Override
 	protected void onStop() {
 		super.onStop();
-		networkServiceClient.unbindFromService();
 	}
 
 
@@ -131,6 +171,7 @@ public class SelectionActivity extends FragmentActivity {
 
 
 	public static class MyAdapter extends FragmentPagerAdapter {
+		final private String TAG = "SelectionActivity.MyAdapter"; 
 
 		public LinkedList<Event> allEvents;
 
@@ -141,11 +182,19 @@ public class SelectionActivity extends FragmentActivity {
 
 		@Override
 		public int getCount() {
+			Log.d(TAG, "getCount");
 			return allEvents.size();
 		}
 
 		@Override
+		public int getItemPosition(Object object) {
+			Log.d(TAG, "getItemPosition");
+			return POSITION_NONE;
+		}
+
+		@Override
 		public Fragment getItem(int position) {
+			Log.d(TAG, "getItem("+position+")");
 			boolean hasRight = position < getCount()-1;
 			boolean hasLeft = position > 0;
 			Fragment fragment = new EventFragment(allEvents.get(position), hasLeft, hasRight);

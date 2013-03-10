@@ -2,11 +2,14 @@ package de.greencity.bladenightapp.android.network;
 
 
 import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Binder;
 import android.os.IBinder;
+import android.os.RemoteException;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 
@@ -31,34 +34,63 @@ public class NetworkService extends Service {
 
 	@Override
 	public void onCreate() {
+		Log.d(TAG,"onCreate");
 		super.onCreate();
 	}
 
 	@Override
-	public void onDestroy() {
-		Log.d(TAG,"onDestroy");
-		if ( wampConnection.isConnected() )
-			wampConnection.disconnect();
-		super.onDestroy();
+	public IBinder onBind(Intent intent) {
+		Log.d(TAG,"onBind");
+		registerReceivers();
+
+		return new IAdditionService.Stub() {
+			/**
+			 * Implementation of the add() method
+			 */
+			public int add(int value1, int value2) throws RemoteException {
+				Log.d(TAG, String.format("AdditionService.add(%d, %d)",value1, value2));
+				return value1 + value2;
+			}
+
+		};
 	}
 
 	@Override
-	public int onStartCommand(Intent intent, int flags, int startId) {
-		Log.d(TAG,"onStartCommand " + intent.getAction());
-		if ( Actions.CONNECT.equals(intent.getAction()) ) {
-			ensureConnection();
-		}
-		else if ( Actions.DISCONNECT.equals(intent.getAction()) ) {
-			wampConnection.disconnect();
-		}
-		else {
-			if ( ! ensureConnection() ) {
-				Log.e(TAG, "onStartCommand: No connection available");
-			}
-			handleCommandIntent(intent);
-		}
-		return START_STICKY;
+	public boolean onUnbind(Intent intent) {
+		Log.d(TAG,"unBind");
+		unregisterReceivers();
+		return super.onUnbind(intent);
 	}
+
+
+	@Override
+	public void onDestroy() {
+		Log.d(TAG,"onDestroy");
+		super.onDestroy();
+	}
+
+	private void registerReceivers() {
+		IntentFilter filter2 = new IntentFilter();
+		filter2.addAction(Actions.GET_ALL_EVENTS);
+		registerReceiver(getAllEventsReceiver, filter2);
+	}
+
+	private void unregisterReceivers() {
+		unregisterReceiver(getAllEventsReceiver);
+	}
+
+
+	private final BroadcastReceiver getAllEventsReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			Log.d(TAG,"getAllEventsReceiver.onReceive");
+			String mAction = intent.getAction();
+			Log.d(this.toString(), " got " + mAction.toString());
+			NetworkService.this.ensureConnection();
+			getAllEvents();
+		}
+	};
+
 
 	private void handleCommandIntent(Intent intent) {
 		Log.d(TAG, "handleCommandIntent: action=" + intent.getAction());
@@ -144,12 +176,6 @@ public class NetworkService extends Service {
 				NetworkService.this.sendBroadcast(intent);
 			}
 		}, 1);
-	}
-
-	@Override
-	public IBinder onBind(Intent intent) {
-		Log.d(TAG,"onBind");
-		return binder;
 	}
 
 	private void tryToConnect() {
