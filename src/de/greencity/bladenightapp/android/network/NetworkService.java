@@ -18,11 +18,12 @@ import de.tavendo.autobahn.Wamp.CallHandler;
 import de.tavendo.autobahn.WampConnection;
 import de.tavendo.autobahn.WampOptions;
 
-public class NewNetworkService extends Service {
+public class NetworkService extends Service {
 	private final String TAG = "NewNetworkService";
 	private WampConnection wampConnection;
 	private boolean isConnected = false;
-
+	private String server;
+	
 	@Override
 	public void onCreate() {
 		Log.i(TAG, "onCreate");
@@ -76,8 +77,27 @@ public class NewNetworkService extends Service {
 		unregisterReceiver(getAllEventsReceiver);
 	}
 
+	private void findServer() {
+		if ( server != null)
+			return;
+
+		Log.i(TAG, "Looking for server...");
+
+		int port = 8081;
+		ServerFinder serverFinder = new ServerFinder(this, port);
+		try {
+			server = serverFinder.findServer();
+		} catch (InterruptedException e) {
+			Log.w(TAG, e);
+			return;
+		}
+		Log.i(TAG, "Server="+server);
+	}
+	
 	void connect() {
-		final String uri = "ws://192.168.178.30:8081";
+		findServer();
+		
+		final String uri = "ws://" + server + ":8081";
 		Log.i(TAG, "Connecting to: " + uri);
 
 		Wamp.ConnectionHandler handler  = new Wamp.ConnectionHandler() {
@@ -108,6 +128,7 @@ public class NewNetworkService extends Service {
 
 		// Our own options:
 		wampOptions.setReconnectInterval(5000);
+		wampOptions.setSocketConnectTimeout(60*60*1000);
 
 		wampConnection.connect(uri, handler, wampOptions);
 	}
@@ -139,7 +160,7 @@ public class NewNetworkService extends Service {
 					// Log.d(TAG, "Got message " + msg.toString());
 					Intent intent = new Intent(Actions.GOT_ALL_EVENTS);
 					intent.putExtra("json", new Gson().toJson(object));
-					NewNetworkService.this.sendBroadcast(intent);
+					NetworkService.this.sendBroadcast(intent);
 				}
 			});
 

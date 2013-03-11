@@ -28,7 +28,7 @@ import com.google.gson.Gson;
 import de.greencity.bladenightapp.android.R;
 import de.greencity.bladenightapp.android.action.ActionActivity;
 import de.greencity.bladenightapp.android.network.Actions;
-import de.greencity.bladenightapp.android.network.NewNetworkService;
+import de.greencity.bladenightapp.android.network.NetworkService;
 import de.greencity.bladenightapp.android.options.OptionsActivity;
 import de.greencity.bladenightapp.android.social.SocialActivity;
 import de.greencity.bladenightapp.android.statistics.StatisticsActivity;
@@ -78,7 +78,7 @@ public class SelectionActivity extends FragmentActivity {
 			}
 
 		};
-		bindService(new Intent(this, NewNetworkService.class), serviceConnection,  BIND_AUTO_CREATE);
+		bindService(new Intent(this, NetworkService.class), serviceConnection,  BIND_AUTO_CREATE);
 	}	
 
 	private void registerReceivers() {
