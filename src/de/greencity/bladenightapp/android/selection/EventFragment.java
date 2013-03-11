@@ -2,6 +2,10 @@ package de.greencity.bladenightapp.android.selection;
 
 
 
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -11,23 +15,28 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import de.greencity.bladenightapp.android.R;
+import de.greencity.bladenightapp.network.messages.EventMessage;
 
 public class EventFragment extends Fragment {
-	private Event event;
+	private EventMessage event;
+	private DateTime startDateTime;
 	private View view;
 	private boolean hasRight;
 	private boolean hasLeft;
+	private DateTimeFormatter fromDateFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm");
+	private DateTimeFormatter toDateFormat = DateTimeFormat.forPattern("dd.MM, HH:mm");
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 	}
 
-	public EventFragment(Event event, boolean hasLeft, boolean hasRight){
+	public EventFragment(EventMessage event, boolean hasLeft, boolean hasRight){
 		super();
 		this.event = event;
 		this.hasLeft = hasLeft;
 		this.hasRight = hasRight;
+		this.startDateTime = fromDateFormat.parseDateTime(event.getStartDate()); 
 	}
 
 	@Override
@@ -47,35 +56,32 @@ public class EventFragment extends Fragment {
 	private void updateEvent(){
 
 		TextView textViewCourse = (TextView)view.findViewById(R.id.course);
-		textViewCourse.setText(event.getCourse());
+		textViewCourse.setText(event.getRouteName());
 		TextView textViewDate = (TextView)view.findViewById(R.id.date);
-		textViewDate.setText(event.getDateFormatted());
+		textViewDate.setText(toDateFormat.print(startDateTime));
 		TextView textViewLeft = (TextView)view.findViewById(R.id.arrow_left);
 		textViewLeft.setText(hasLeft ? R.string.arrow_left : R.string.arrow_no);
 		TextView textViewRight = (TextView)view.findViewById(R.id.arrow_right);
 		textViewRight.setText(hasRight ? R.string.arrow_right : R.string.arrow_no);
 
-		//  	  TextView textViewLength = (TextView)view.findViewById(R.id.length);
-		//  	  textViewLength.setText(event.getLength());
-
 		updateStatus();
 		updateSchedule(); 
-
 	}
 
 
 	private void updateStatus(){
 		ImageView imageViewStatus = (ImageView)view.findViewById(R.id.status);
-		if(event.getStatus().equals("confirmed")){
-			imageViewStatus.setImageResource(R.drawable.icon_ok);
-		}
-		else if(event.getStatus().equals("pending")){
-			imageViewStatus.setImageResource(R.drawable.icon_pending);
-		}
-		else if(event.getStatus().equals("cancelled")){
+		switch (event.getStatus()) {
+		case CANCELLED:
 			imageViewStatus.setImageResource(R.drawable.icon_no);
-		}
-		else{
+			break;
+		case CONFIRMED:
+			imageViewStatus.setImageResource(R.drawable.icon_ok);
+			break;
+		case PENDING:
+			imageViewStatus.setImageResource(R.drawable.icon_pending);
+			break;
+		default:
 			throw new Error("This status is not valid");
 		}
 	}
@@ -93,6 +99,6 @@ public class EventFragment extends Fragment {
 	}
 
 	private boolean isUpcoming(){
-		return event.getDate().isAfterNow();
+		return startDateTime.isAfterNow();
 	}
 }

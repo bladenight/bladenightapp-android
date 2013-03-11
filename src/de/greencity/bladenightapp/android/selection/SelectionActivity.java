@@ -2,7 +2,6 @@
 package de.greencity.bladenightapp.android.selection;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import android.content.BroadcastReceiver;
@@ -33,17 +32,14 @@ import de.greencity.bladenightapp.android.network.NewNetworkService;
 import de.greencity.bladenightapp.android.options.OptionsActivity;
 import de.greencity.bladenightapp.android.social.SocialActivity;
 import de.greencity.bladenightapp.android.statistics.StatisticsActivity;
-import de.greencity.bladenightapp.events.EventsList;
 import de.greencity.bladenightapp.network.messages.EventsListMessage;
 
 public class SelectionActivity extends FragmentActivity {
-	private EventsDataSource datasource;
 	private MyAdapter mAdapter;
 	private ViewPager mPager;
 	private final String TAG = "SelectionActivity"; 
 	private ServiceConnection serviceConnection;
 	private final List<BroadcastReceiver> registeredBroadcasterReceivers = new ArrayList<BroadcastReceiver>();
-	private final LinkedList<Event> allEvents = new LinkedList<Event>();
 
 
 	@Override
@@ -58,27 +54,9 @@ public class SelectionActivity extends FragmentActivity {
 		TextView titletext = (TextView)findViewById(R.id.title);
 		titletext.setText(R.string.title_selection);
 
-		datasource = new EventsDataSource(this);
-		datasource.open();
-
-//		allEvents = datasource.getAllEvents();
-//
-//		//workaround, should be refreshed with data on server
-//		if(allEvents.size()==0){
-//			datasource.createEvent("Nord - lang", "15.06.2012", "confirmed", "17.6 km");
-//			datasource.createEvent("Ost - kurz", "22.06.2012", "cancelled", "11.3 km");
-//			datasource.createEvent("West - kurz", "11.06.2013", "confirmed", "12.4 km");
-//			datasource.createEvent("West - lang", "18.06.2013", "pending", "17.4 km");
-//			datasource.createEvent("West - kurz", "27.06.2013", "pending", "12.4 km");
-//			allEvents = datasource.getAllEvents();
-//		}
-//
-//		allEvents = new LinkedList<Event>();
-
-		mAdapter = new MyAdapter(getSupportFragmentManager(),allEvents);
+		// mAdapter = new MyAdapter(getSupportFragmentManager(), );
 		mPager = (ViewPager) findViewById(R.id.pager);
-		mPager.setAdapter(mAdapter);
-
+		// mPager.setAdapter(mAdapter);
 	}
 
 	@Override
@@ -135,13 +113,11 @@ public class SelectionActivity extends FragmentActivity {
 
 	@Override
 	protected void onResume() {
-		datasource.open();
 		super.onResume();
 	}
 
 	@Override
 	protected void onPause() {
-		datasource.close();
 		super.onPause();
 	}
 
@@ -197,22 +173,14 @@ public class SelectionActivity extends FragmentActivity {
 				return;
 			}
 			Log.d(TAG, json);
-			EventsListMessage message = new Gson().fromJson(json, EventsListMessage.class);
-			if ( message == null ) {
+			EventsListMessage eventsListMessage = new Gson().fromJson(json, EventsListMessage.class);
+			if ( eventsListMessage == null ) {
 				Log.e(TAG,"Failed to parse json");
 				return;
 			}
-			EventsList list = message.convertToEventsList();
-			allEvents.clear();
-			for ( de.greencity.bladenightapp.events.Event event : list) {
-				Event appEvent = new Event();
-				appEvent.setCourse(event.getRouteName());
-				appEvent.setDate(event.getStartDate());
-				appEvent.setLength("2 km");
-				appEvent.setStatus("confirmed");
-				allEvents.add(appEvent);
-			}
-			mAdapter.notifyDataSetChanged();
+			mAdapter = new MyAdapter(getSupportFragmentManager(), eventsListMessage);
+			mPager.setAdapter(mAdapter);
+			// mAdapter.notifyDataSetChanged();
 		}
 	};
 
@@ -228,17 +196,17 @@ public class SelectionActivity extends FragmentActivity {
 		@SuppressWarnings("unused")
 		final private String TAG = "SelectionActivity.MyAdapter"; 
 
-		public LinkedList<Event> allEvents;
+		public EventsListMessage eventsListMessage;
 
-		public MyAdapter(FragmentManager fm, LinkedList<Event> allEvents) {
+		public MyAdapter(FragmentManager fm, EventsListMessage eventsListMessage) {
 			super(fm);
-			this.allEvents = allEvents;
+			this.eventsListMessage = eventsListMessage;
 		}
 
 		@Override
 		public int getCount() {
 			// Log.d(TAG, "getCount");
-			return allEvents.size();
+			return eventsListMessage.size();
 		}
 
 		@Override
@@ -252,7 +220,7 @@ public class SelectionActivity extends FragmentActivity {
 			// Log.d(TAG, "getItem("+position+")");
 			boolean hasRight = position < getCount()-1;
 			boolean hasLeft = position > 0;
-			Fragment fragment = new EventFragment(allEvents.get(position), hasLeft, hasRight);
+			Fragment fragment = new EventFragment(eventsListMessage.get(position), hasLeft, hasRight);
 			return fragment;      
 		}
 
