@@ -4,39 +4,42 @@ import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 
 import com.google.gson.Gson;
 
+import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
 import de.greencity.bladenightapp.network.BladenightUrl;
 import de.greencity.bladenightapp.network.messages.EventsListMessage;
+import de.greencity.bladenightapp.network.messages.RouteMessage;
 import de.tavendo.autobahn.Wamp;
 import de.tavendo.autobahn.Wamp.CallHandler;
 import de.tavendo.autobahn.WampConnection;
 import de.tavendo.autobahn.WampOptions;
 
 public class NetworkService extends Service {
-	private final String TAG = "NewNetworkService";
+	private final String TAG = "NetworkService";
 	private WampConnection wampConnection;
 	private boolean isConnected = false;
 	private String server;
+	private BroadcastReceiversRegister broadcastReceiversRegister = new BroadcastReceiversRegister(this); 
 	
 	@Override
 	public void onCreate() {
 		Log.i(TAG, "onCreate");
 		super.onCreate();
 		connect();
-		registerReceivers();
+		broadcastReceiversRegister.registerReceiver(Actions.GET_ALL_EVENTS, getAllEventsReceiver);
+		broadcastReceiversRegister.registerReceiver(Actions.GET_ACTIVE_ROUTE, getActiveRouteReceiver);
 	}
 
 	@Override
 	public void onDestroy() {
 		Log.i(TAG, "onDestroy");
 		super.onDestroy();
-		unregisterReceivers();
+		broadcastReceiversRegister.unregisterReceivers();
 	}
 
 
@@ -65,16 +68,6 @@ public class NetworkService extends Service {
 	public IBinder onBind(Intent intent) {
 		Log.i(TAG, "onBind");
 		return new Binder();
-	}
-
-	private void registerReceivers() {
-		IntentFilter filter2 = new IntentFilter();
-		filter2.addAction(Actions.GET_ALL_EVENTS);
-		registerReceiver(getAllEventsReceiver, filter2);
-	}
-
-	private void unregisterReceivers() {
-		unregisterReceiver(getAllEventsReceiver);
 	}
 
 	private void findServer() {
@@ -156,20 +149,44 @@ public class NetworkService extends Service {
 						Log.e(TAG, "getAllEvents: Failed to cast");
 						return;
 					}
-					// Toast.makeText(NetworkService.this, msg.toString(), Toast.LENGTH_LONG).show();
-					// Log.d(TAG, "Got message " + msg.toString());
 					Intent intent = new Intent(Actions.GOT_ALL_EVENTS);
 					intent.putExtra("json", new Gson().toJson(object));
 					NetworkService.this.sendBroadcast(intent);
 				}
 			});
-
-			//			Intent intent = new Intent(Actions.GOT_ALL_EVENTS);
-			//			intent.putExtra("json", new Gson().toJson(object));
-			//			NetworkService.this.sendBroadcast(intent);
 		}
 	};
 
+	private final BroadcastReceiver getActiveRouteReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			Log.d(TAG,"getActiveRouteReceiver.onReceive");
 
+			if ( ! isConnected ) {
+				Log.w(TAG, "getActiveRouteReceiver: Not connected");
+				return;
+			}
 
+			wampConnection.call(BladenightUrl.GET_ACTIVE_ROUTE.getText(), RouteMessage.class, new CallHandler() {
+				@Override
+				public void onError(String arg0, String arg1) {
+					Log.e(TAG, arg0 + " " + arg1);
+				}
+
+				@Override
+				public void onResult(Object object) {
+					RouteMessage msg = (RouteMessage) object;
+					if ( msg == null ) {
+						Log.e(TAG, "getActiveRoute: Failed to cast");
+						return;
+					}
+					Log.d(TAG, "getActiveRoute: " + object.toString());
+					Log.d(TAG, "getActiveRoute: " + msg.toString());
+					Intent intent = new Intent(Actions.GOT_ACTIVE_ROUTE);
+					intent.putExtra("json", new Gson().toJson(msg));
+					NetworkService.this.sendBroadcast(intent);
+				}
+			});
+		}
+	};
 }

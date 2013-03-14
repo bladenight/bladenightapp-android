@@ -11,7 +11,7 @@
     <string name="title_options">Options</string>
     <string name="title_statistics">Statistics</string>
     <string name="title_social">Social</string>
-    <string name="title_action">Action</string>
+    <string name="title_map">Live</string>
     <string name="button_action">Participate</string>
     <string name="button_statistics">Statistics</string>
     <string name="button_social">Manage Friends</string>
@@ -19,6 +19,7 @@
     <string name="arrow_left">&lt;</string>
     <string name="arrow_right">&gt;</string>
     <string name="arrow_no"></string>
+    <string name="msg_failed_to_load_map">Failed to load the map</string>
     
 
 </resources>

@@ -1,14 +1,13 @@
 
 package de.greencity.bladenightapp.android.selection;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.codehaus.jackson.JsonFactory;
+import org.codehaus.jackson.map.ObjectMapper;
 
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -26,12 +25,13 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 
 import de.greencity.bladenightapp.android.R;
-import de.greencity.bladenightapp.android.action.ActionActivity;
+import de.greencity.bladenightapp.android.map.BladenightMapActivity;
 import de.greencity.bladenightapp.android.network.Actions;
 import de.greencity.bladenightapp.android.network.NetworkService;
 import de.greencity.bladenightapp.android.options.OptionsActivity;
 import de.greencity.bladenightapp.android.social.SocialActivity;
 import de.greencity.bladenightapp.android.statistics.StatisticsActivity;
+import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
 import de.greencity.bladenightapp.network.messages.EventsListMessage;
 
 public class SelectionActivity extends FragmentActivity {
@@ -39,7 +39,7 @@ public class SelectionActivity extends FragmentActivity {
 	private ViewPager mPager;
 	private final String TAG = "SelectionActivity"; 
 	private ServiceConnection serviceConnection;
-	private final List<BroadcastReceiver> registeredBroadcasterReceivers = new ArrayList<BroadcastReceiver>();
+	private BroadcastReceiversRegister broadcastReceiversRegister = new BroadcastReceiversRegister(this); 
 
 
 	@Override
@@ -64,7 +64,8 @@ public class SelectionActivity extends FragmentActivity {
 		Log.i(TAG, "onStart");
 		super.onStart();
 
-		registerReceivers();
+		broadcastReceiversRegister.registerReceiver(Actions.GOT_ALL_EVENTS, gotAllEventsReceiver);
+		broadcastReceiversRegister.registerReceiver(Actions.CONNECTED, connectedReceiver);
 
 		serviceConnection = new ServiceConnection() {
 			@Override
@@ -81,34 +82,13 @@ public class SelectionActivity extends FragmentActivity {
 		bindService(new Intent(this, NetworkService.class), serviceConnection,  BIND_AUTO_CREATE);
 	}	
 
-	private void registerReceivers() {
-		registerReceiver(Actions.GOT_ALL_EVENTS, gotAllEventsReceiver);
-		registerReceiver(Actions.CONNECTED, connectedReceiver);
-	}
-	
-	private void registerReceiver(String action, BroadcastReceiver receiver) {
-		Log.i(TAG, "Registering " + action);
-		IntentFilter filter = new IntentFilter();
-		filter.addAction(action);
-		registerReceiver(receiver, filter);
-		registeredBroadcasterReceivers.add(receiver);
-	}
-
-	
 	@Override
 	protected void onStop() {
 		Log.i(TAG, "onStop");
 		super.onStop();
 
-		unregisterReceivers();
+		broadcastReceiversRegister.unregisterReceivers();
 		unbindService(serviceConnection);
-	}
-
-	private void unregisterReceivers() {
-		while ( registeredBroadcasterReceivers.size() > 0 ) {
-			unregisterReceiver(registeredBroadcasterReceivers.get(0));
-			registeredBroadcasterReceivers.remove(0);
-		}
 	}
 
 	@Override
@@ -148,7 +128,7 @@ public class SelectionActivity extends FragmentActivity {
 	}
 
 	private void goAction(){
-		Intent intent = new Intent(SelectionActivity.this, ActionActivity.class);
+		Intent intent = new Intent(SelectionActivity.this, BladenightMapActivity.class);
 		startActivity(intent);
 	}
 
@@ -167,6 +147,8 @@ public class SelectionActivity extends FragmentActivity {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			Log.d(TAG,"getAllEventsReceiver.onReceive");
+			Log.d(TAG,"getAllEventsReceiver.onReceive " + intent);
+			Log.d(TAG,"getAllEventsReceiver.onReceive " + intent.getExtras());
 			String json = (String) intent.getExtras().get("json");
 			if ( json == null ) {
 				Log.e(TAG,"Failed to get json");
@@ -223,6 +205,11 @@ public class SelectionActivity extends FragmentActivity {
 			Fragment fragment = new EventFragment(eventsListMessage.get(position), hasLeft, hasRight);
 			return fragment;      
 		}
+	}
+	
+	void testJackson() {
+	      ObjectMapper mJsonMapper = new ObjectMapper();
+	      JsonFactory mJsonFactory = mJsonMapper.getJsonFactory();
 
 	}
 } 
