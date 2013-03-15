@@ -139,10 +139,9 @@ public class RouteOverlay extends ListOverlay {
 		return geoPoints;
 	}
 
-	final private MapView mapView;
+	private final MapView mapView;
 	private Polyline routePolyline;
 	private Polyline processionPolyline;
 	private List<GeoPoint> routeNodes;
-
-	final String TAG = "RouteOverlay";
+	private final String TAG = "RouteOverlay";
 }

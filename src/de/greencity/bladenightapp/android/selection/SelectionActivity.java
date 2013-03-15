@@ -1,9 +1,6 @@
 
 package de.greencity.bladenightapp.android.selection;
 
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.map.ObjectMapper;
-
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
