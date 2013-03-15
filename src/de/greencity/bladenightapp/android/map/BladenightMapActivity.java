@@ -40,7 +40,7 @@ import de.greencity.bladenightapp.network.messages.RouteMessage;
 
 public class BladenightMapActivity extends MapActivity {
 
-	private Polyline routePolyline = createRoutePolyline();
+	private RouteOverlay routeOverlay;
 	private MapView mapView;
 
 	@Override
@@ -53,18 +53,18 @@ public class BladenightMapActivity extends MapActivity {
 		titlebar.setImageResource(R.drawable.ic_map);
 		TextView titletext = (TextView)findViewById(R.id.title);
 		titletext.setText(R.string.title_map);
-		
+
 		createMapView();
 
 		broadcastReceiversRegister.registerReceiver(Actions.GOT_ACTIVE_ROUTE, gotActiveRouteReceiver);
 	}
-	
+
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
 		broadcastReceiversRegister.unregisterReceivers();
 	}
-	
+
 	@Override
 	public void onStart() {
 		super.onStart();
@@ -87,9 +87,9 @@ public class BladenightMapActivity extends MapActivity {
 		mapView = new MapView(this);
 		mapView.setClickable(true);
 		mapView.setBuiltInZoomControls(true);
-		
+
 		String externalStoragePath = Environment.getExternalStorageDirectory().getPath();
-		
+
 		String mapPath = externalStoragePath+"/Bladenight/munich-new.map";
 		if ( mapView.setMapFile(new File(mapPath)) != FileOpenResult.SUCCESS ) {
 			Log.e(TAG, "Failed to set map file: " + mapPath);
@@ -104,52 +104,12 @@ public class BladenightMapActivity extends MapActivity {
 		mapView.getMapViewPosition().setZoomLevel((byte) 15);
 		parent.addView(mapView);
 
-		ListOverlay routeOverlay = new ListOverlay();
-		routePolyline = createRoutePolyline();
-		if ( routePolyline != null ) // you never know
-			routeOverlay.getOverlayItems().add(routePolyline);
-		mapView.getOverlays().add(routeOverlay);
+		routeOverlay = new RouteOverlay(mapView);
 
-		ListOverlay processionOverlay = new ListOverlay();
-		Polyline processionPolyline = createProcessionPolyline();
-		if ( processionPolyline != null ) // you never know
-			processionOverlay.getOverlayItems().add(processionPolyline);
-		mapView.getOverlays().add(processionOverlay);
-
-		
 		TileCache fileSystemTileCache = mapView.getFileSystemTileCache();
 		fileSystemTileCache.setPersistent(true);
 		fileSystemTileCache.setCapacity(20000);
 	}
-	
-	private Polyline createProcessionPolyline() {
-
-		PolygonalChain polygonalChain = new PolygonalChain(new ArrayList<GeoPoint>());
-
-		Paint paintStroke = new Paint(Paint.ANTI_ALIAS_FLAG);
-		paintStroke.setStyle(Paint.Style.STROKE);
-		paintStroke.setColor(Color.BLUE);
-		// paintStroke.setAlpha(128);
-		paintStroke.setStrokeWidth(4);
-		// paintStroke.setPathEffect(new DashPathEffect(new float[] { 25, 15 }, 0));
-
-		return new Polyline(polygonalChain, paintStroke);
-	}
-	private Polyline createRoutePolyline() {
-
-		PolygonalChain polygonalChain = new PolygonalChain(new ArrayList<GeoPoint>());
-
-		Paint paintStroke = new Paint(Paint.ANTI_ALIAS_FLAG);
-		paintStroke.setStyle(Paint.Style.STROKE);
-		paintStroke.setColor(Color.MAGENTA);
-		paintStroke.setAlpha(128);
-		paintStroke.setStrokeWidth(7);
-		// paintStroke.setPathEffect(new DashPathEffect(new float[] { 25, 15 }, 0));
-
-		return new Polyline(polygonalChain, paintStroke);
-	}
-
-
 
 	// Will be called via the onClick attribute
 	// of the buttons in main.xml
@@ -164,13 +124,7 @@ public class BladenightMapActivity extends MapActivity {
 	private final BroadcastReceiver gotActiveRouteReceiver = new JsonBroadcastReceiver<RouteMessage>("gotActiveRouteReceiver", RouteMessage.class) {
 		@Override
 		public void onReceive(RouteMessage routeMessage) {
-			List<GeoPoint> geoPoints = new ArrayList<GeoPoint>();
-			for (LatLong node : routeMessage.nod) {
-				geoPoints.add(new GeoPoint(node.getLatitude(), node.getLongitude()));
-			}
-			routePolyline.setPolygonalChain(new PolygonalChain(geoPoints));
-			// centerMapOnRouteCenter();
-			mapView.redraw();
+			routeOverlay.update(routeMessage);
 		}
 	};
 

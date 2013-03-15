@@ -180,8 +180,6 @@ public class NetworkService extends Service {
 						Log.e(TAG, "getActiveRoute: Failed to cast");
 						return;
 					}
-					Log.d(TAG, "getActiveRoute: " + object.toString());
-					Log.d(TAG, "getActiveRoute: " + msg.toString());
 					Intent intent = new Intent(Actions.GOT_ACTIVE_ROUTE);
 					intent.putExtra("json", new Gson().toJson(msg));
 					NetworkService.this.sendBroadcast(intent);
