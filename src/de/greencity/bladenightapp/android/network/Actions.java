@@ -1,6 +1,8 @@
 package de.greencity.bladenightapp.android.network;
 
 
+
+
 public interface Actions {
 	static final String prefix =  "de.greencity.bladenightapp.android.";
 
@@ -10,6 +12,7 @@ public interface Actions {
 	static public final String GET_ACTIVE_EVENT 	= prefix+"GET_ACTIVE_EVENT";
 	static public final String GET_ALL_EVENTS 		= prefix+"GET_ALL_EVENTS";
 	static public final String GET_ACTIVE_ROUTE 	= prefix+"GET_ACTIVE_ROUTE";
+	static public final String GET_REAL_TIME_DATA 	= prefix+"GET_REAL_TIME_DATA";
 
 	// Broadcast sent by the NetworkService on updates from the server 
 	static public final String CONNECTED 			= prefix+"CONNECTED"; 
@@ -17,4 +20,6 @@ public interface Actions {
 	static public final String GOT_ACTIVE_EVENT 	= prefix+"GOT_ACTIVE_EVENT";
 	static public final String GOT_ALL_EVENTS 		= prefix+"GOT_ALL_EVENTS";
 	static public final String GOT_ACTIVE_ROUTE 	= prefix+"GOT_ACTIVE_ROUTE";
+	static public final String GOT_REAL_TIME_DATA 	= prefix+"GOT_REAL_TIME_DATA";
+
 }

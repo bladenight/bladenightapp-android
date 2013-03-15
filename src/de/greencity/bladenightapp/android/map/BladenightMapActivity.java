@@ -2,24 +2,16 @@ package de.greencity.bladenightapp.android.map;
 
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.mapsforge.android.maps.MapActivity;
 import org.mapsforge.android.maps.MapView;
 import org.mapsforge.android.maps.mapgenerator.TileCache;
-import org.mapsforge.android.maps.overlay.ListOverlay;
-import org.mapsforge.android.maps.overlay.PolygonalChain;
-import org.mapsforge.android.maps.overlay.Polyline;
-import org.mapsforge.core.model.GeoPoint;
 import org.mapsforge.map.reader.header.FileOpenResult;
 
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.graphics.Color;
-import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
@@ -35,13 +27,15 @@ import de.greencity.bladenightapp.android.network.Actions;
 import de.greencity.bladenightapp.android.network.NetworkService;
 import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
 import de.greencity.bladenightapp.android.utils.JsonBroadcastReceiver;
-import de.greencity.bladenightapp.network.messages.LatLong;
+import de.greencity.bladenightapp.android.utils.PeriodicBroadcastIntentManager;
+import de.greencity.bladenightapp.network.messages.RealTimeUpdateData;
 import de.greencity.bladenightapp.network.messages.RouteMessage;
 
 public class BladenightMapActivity extends MapActivity {
 
 	private RouteOverlay routeOverlay;
 	private MapView mapView;
+	PeriodicBroadcastIntentManager periodicBroadcastIntentManager = new PeriodicBroadcastIntentManager(this);
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -54,20 +48,6 @@ public class BladenightMapActivity extends MapActivity {
 		TextView titletext = (TextView)findViewById(R.id.title);
 		titletext.setText(R.string.title_map);
 
-		createMapView();
-
-		broadcastReceiversRegister.registerReceiver(Actions.GOT_ACTIVE_ROUTE, gotActiveRouteReceiver);
-	}
-
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-		broadcastReceiversRegister.unregisterReceivers();
-	}
-
-	@Override
-	public void onStart() {
-		super.onStart();
 		serviceConnection = new ServiceConnection() {
 			@Override
 			public void onServiceConnected(ComponentName name, IBinder service) {
@@ -80,7 +60,35 @@ public class BladenightMapActivity extends MapActivity {
 			}
 
 		};
+
+		createMapView();
+
+		broadcastReceiversRegister.registerReceiver(Actions.GOT_ACTIVE_ROUTE, gotActiveRouteReceiver);
+		broadcastReceiversRegister.registerReceiver(Actions.GOT_REAL_TIME_DATA, gotRealTimeDataReceiver);
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		broadcastReceiversRegister.unregisterReceivers();
+	}
+
+	@Override
+	public void onStart() {
+		super.onStart();
+
 		bindService(new Intent(this, NetworkService.class), serviceConnection,  BIND_AUTO_CREATE);
+
+		periodicBroadcastIntentManager.schedulePeriodicBroadcastIntent(new Intent(Actions.GET_REAL_TIME_DATA), 1000);
+	}
+
+	@Override
+	public void onStop() {
+		super.onStop();
+
+		unbindService(serviceConnection);
+		
+		periodicBroadcastIntentManager.cancelPeriodicBroadcastIntents();
 	}
 
 	public void createMapView() {
@@ -127,6 +135,14 @@ public class BladenightMapActivity extends MapActivity {
 			routeOverlay.update(routeMessage);
 		}
 	};
+
+	private final BroadcastReceiver gotRealTimeDataReceiver = new JsonBroadcastReceiver<RealTimeUpdateData>("gotRealTimeDataReceiver", RealTimeUpdateData.class) {
+		@Override
+		public void onReceive(RealTimeUpdateData data) {
+			routeOverlay.update(data);
+		}
+	};
+
 
 	final String TAG = "BladenightMapActivity";
 	private BroadcastReceiversRegister broadcastReceiversRegister = new BroadcastReceiversRegister(this); 

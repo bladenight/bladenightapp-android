@@ -6,7 +6,6 @@ import java.util.List;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.IntentFilter;
-import de.greencity.bladenightapp.android.network.Actions;
 
 public class BroadcastReceiversRegister {
 	public BroadcastReceiversRegister(Context context) {

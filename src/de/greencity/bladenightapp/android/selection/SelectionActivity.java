@@ -207,9 +207,4 @@ public class SelectionActivity extends FragmentActivity {
 		}
 	}
 	
-	void testJackson() {
-	      ObjectMapper mJsonMapper = new ObjectMapper();
-	      JsonFactory mJsonFactory = mJsonMapper.getJsonFactory();
-
-	}
 } 
