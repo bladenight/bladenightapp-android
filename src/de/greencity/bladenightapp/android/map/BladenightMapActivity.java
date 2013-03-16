@@ -3,13 +3,18 @@ package de.greencity.bladenightapp.android.map;
 
 import java.io.File;
 
+import org.apache.commons.io.FileUtils;
 import org.mapsforge.android.maps.MapActivity;
 import org.mapsforge.android.maps.MapView;
 import org.mapsforge.android.maps.mapgenerator.TileCache;
+import org.mapsforge.core.model.GeoPoint;
+import org.mapsforge.core.model.MapPosition;
 import org.mapsforge.map.reader.header.FileOpenResult;
 
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
@@ -63,8 +68,13 @@ public class BladenightMapActivity extends MapActivity {
 
 		createMapView();
 
+		downloadProgressDialog = new ProgressDialog(this);
+
 		broadcastReceiversRegister.registerReceiver(Actions.GOT_ACTIVE_ROUTE, gotActiveRouteReceiver);
 		broadcastReceiversRegister.registerReceiver(Actions.GOT_REAL_TIME_DATA, gotRealTimeDataReceiver);
+		broadcastReceiversRegister.registerReceiver(Actions.DOWNLOAD_FAILURE, gotDownloadFailureReceiver);
+		broadcastReceiversRegister.registerReceiver(Actions.DOWNLOAD_SUCCESS, gotDownloadSuccessReceiver);
+		broadcastReceiversRegister.registerReceiver(Actions.DOWNLOAD_PROGRESS, gotDownloadProgressReceiver);
 	}
 
 	@Override
@@ -79,7 +89,9 @@ public class BladenightMapActivity extends MapActivity {
 
 		bindService(new Intent(this, NetworkService.class), serviceConnection,  BIND_AUTO_CREATE);
 
-		periodicBroadcastIntentManager.schedulePeriodicBroadcastIntent(new Intent(Actions.GET_REAL_TIME_DATA), 1000);
+		periodicBroadcastIntentManager.schedulePeriodicBroadcastIntent(new Intent(Actions.GET_REAL_TIME_DATA), 5000);
+
+		verifyMapFile();
 	}
 
 	@Override
@@ -87,7 +99,7 @@ public class BladenightMapActivity extends MapActivity {
 		super.onStop();
 
 		unbindService(serviceConnection);
-		
+
 		periodicBroadcastIntentManager.cancelPeriodicBroadcastIntents();
 	}
 
@@ -96,20 +108,11 @@ public class BladenightMapActivity extends MapActivity {
 		mapView.setClickable(true);
 		mapView.setBuiltInZoomControls(true);
 
-		String externalStoragePath = Environment.getExternalStorageDirectory().getPath();
+		setMapFile();
 
-		String mapPath = externalStoragePath+"/Bladenight/munich-new.map";
-		if ( mapView.setMapFile(new File(mapPath)) != FileOpenResult.SUCCESS ) {
-			Log.e(TAG, "Failed to set map file: " + mapPath);
-			Toast.makeText(this, R.string.msg_failed_to_load_map , Toast.LENGTH_LONG).show();
-		}
-		else {
-			Toast.makeText(this, "File opened", Toast.LENGTH_LONG).show();
-		}
 		RelativeLayout parent = (RelativeLayout) findViewById(R.id.map_parent);
 		parent.removeAllViews();
 
-		mapView.getMapViewPosition().setZoomLevel((byte) 15);
 		parent.addView(mapView);
 
 		routeOverlay = new RouteOverlay(mapView);
@@ -129,10 +132,50 @@ public class BladenightMapActivity extends MapActivity {
 		}
 	}
 
+	private void verifyMapFile() {
+		if ( ! new File(mapLocalPath).exists() ) {
+			startMapFileDownload();
+		}
+	}
+
+	private void startMapFileDownload() {
+		downloadProgressDialog.setMessage("Kartenmaterial wird heruntergeladen...");
+		downloadProgressDialog.setIndeterminate(false);
+		downloadProgressDialog.setMax(100);
+		downloadProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+
+		downloadProgressDialog.show();
+
+		Intent intent = new Intent(Actions.DOWNLOAD_REQUEST);
+		intent.putExtra("localPath", mapLocalPath);
+		intent.putExtra("remotePath", mapRemotePath);
+		sendBroadcast(intent);
+	}
+
+	private void setMapFile() {
+		if ( mapView.setMapFile(new File(mapLocalPath)) == FileOpenResult.SUCCESS ) {
+			mapView.redraw();
+			mapView.getMapViewPosition().setZoomLevel((byte) 15);
+		}
+		else {
+			Log.e(TAG, "Failed to set map file: " + mapLocalPath);
+		}
+	}
+
+	protected void centerMapOnRouteCenter() {
+		centerMapOnCoordinates(routeOverlay.getRouteCenter(), (byte)13);
+	}
+
+	protected void centerMapOnCoordinates(GeoPoint center, byte zoomLevel) {
+		mapView.getMapViewPosition().setMapPosition(new MapPosition(center, zoomLevel));
+	}
+
+
 	private final BroadcastReceiver gotActiveRouteReceiver = new JsonBroadcastReceiver<RouteMessage>("gotActiveRouteReceiver", RouteMessage.class) {
 		@Override
 		public void onReceive(RouteMessage routeMessage) {
 			routeOverlay.update(routeMessage);
+			centerMapOnRouteCenter();
 		}
 	};
 
@@ -143,8 +186,68 @@ public class BladenightMapActivity extends MapActivity {
 		}
 	};
 
+	private final BroadcastReceiver gotDownloadSuccessReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			if ( mapRemotePath.equals(intent.getExtras().getString("id")) ) {
+				onMapFileDownloadSuccess();
+			}
+		}
+	};
+
+	private final BroadcastReceiver gotDownloadFailureReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			if ( mapRemotePath.equals(intent.getExtras().getString("id")) ) {
+				onMapFileDownloadFailure();
+			}
+		}
+	};
+
+	private final BroadcastReceiver gotDownloadProgressReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			if ( mapRemotePath.equals(intent.getExtras().getString("id")) ) {
+				long total = intent.getExtras().getLong("total");
+				long current = intent.getExtras().getLong("current");
+				if ( total > 0) {
+					double percent = current * ( 100.0 / total  );
+					downloadProgressDialog.setProgress((int) percent );
+				}
+			}
+		}
+	};
+
+	private void onMapFileDownloadSuccess() {
+		downloadProgressDialog.dismiss();
+		Toast.makeText(this, "Download success", Toast.LENGTH_LONG).show();
+		clearTileCache();
+		setMapFile();
+	}
+
+	private void onMapFileDownloadFailure() {
+		downloadProgressDialog.dismiss();
+		Toast.makeText(this, "Download failure", Toast.LENGTH_LONG).show();
+	}
+
+	private void clearTileCache() {
+		try {
+			Log.i(TAG, "Clearing Mapsforge cache...");
+			String externalStorageDirectory = Environment.getExternalStorageDirectory().getAbsolutePath();
+			String CACHE_DIRECTORY = "/Android/data/org.mapsforge.android.maps/cache/";
+			String cacheDirectoryPath = externalStorageDirectory + CACHE_DIRECTORY;
+			Log.i(TAG, "cacheDirectoryPath="+cacheDirectoryPath);
+			FileUtils.deleteDirectory(new File(cacheDirectoryPath));
+		} catch (Exception e) {
+			Log.w(TAG, "Failed to clear the MapsForge cache",e);
+		}
+	}
+
 
 	final String TAG = "BladenightMapActivity";
 	private BroadcastReceiversRegister broadcastReceiversRegister = new BroadcastReceiversRegister(this); 
 	private ServiceConnection serviceConnection;
+	private final String mapLocalPath = Environment.getExternalStorageDirectory().getPath()+"/Bladenight/munich.map";
+	private final String mapRemotePath = "maps/munich.map";
+	private ProgressDialog downloadProgressDialog;
 } 

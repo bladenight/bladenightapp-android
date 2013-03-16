@@ -109,9 +109,9 @@ public class RouteOverlay extends ListOverlay {
 			Location.distanceBetween (n1.latitude, n1.longitude, n2.latitude, n2.longitude, results);
 			double segmentLength = results[0]; 
 
-//			 Log.i(TAG, ""+i);
-//			 Log.i(TAG, "segmentLength="+segmentLength);
-//			 Log.i(TAG, "currentLinearPosition="+currentLinearPosition);
+			//			 Log.i(TAG, ""+i);
+			//			 Log.i(TAG, "segmentLength="+segmentLength);
+			//			 Log.i(TAG, "currentLinearPosition="+currentLinearPosition);
 
 			double deltaLatitude = n2.latitude - n1.latitude;
 			double deltaLongitude = n2.longitude - n1.longitude;
@@ -137,6 +137,28 @@ public class RouteOverlay extends ListOverlay {
 			currentLinearPosition += segmentLength;
 		}
 		return geoPoints;
+	}
+
+	public GeoPoint getRouteCenter() {
+		double latitudeSum = 0;
+		double longitudeSum = 0;
+		double weightSum = 0;
+		for (int i=0; i <= routeNodes.size() - 1; i++) {
+			GeoPoint n1;
+			if ( i > 0 )
+				n1 = routeNodes.get(i-1);
+			else
+				n1 = routeNodes.get(routeNodes.size() - 1); 
+			GeoPoint n2 = routeNodes.get(i);
+			float[] results = new float[1];
+			Location.distanceBetween (n1.latitude, n1.longitude, n2.latitude, n2.longitude, results);
+			float distance = results[0];
+
+			latitudeSum += distance * n2.latitude; 
+			longitudeSum += distance * n2.longitude; 
+			weightSum += distance; 
+		}
+		return new GeoPoint(latitudeSum/weightSum, longitudeSum/weightSum);
 	}
 
 	private final MapView mapView;

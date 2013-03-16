@@ -2,10 +2,12 @@ package de.greencity.bladenightapp.android.network;
 
 import android.app.Service;
 import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
+import de.greencity.bladenightapp.android.utils.AsyncDownloadTask;
 import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
 import de.greencity.bladenightapp.network.BladenightUrl;
 import de.greencity.bladenightapp.network.messages.EventsListMessage;
@@ -18,7 +20,8 @@ public class NetworkService extends Service {
 	private final String TAG = "NetworkService";
 	private BladenightWampConnection wampConnection = new BladenightWampConnection();
 	private String server;
-	private BroadcastReceiversRegister broadcastReceiversRegister = new BroadcastReceiversRegister(this); 
+	private BroadcastReceiversRegister broadcastReceiversRegister = new BroadcastReceiversRegister(this);
+	final int port = 8081;
 	
 	@Override
 	public void onCreate() {
@@ -28,6 +31,7 @@ public class NetworkService extends Service {
 		broadcastReceiversRegister.registerReceiver(Actions.GET_ALL_EVENTS, getAllEventsReceiver);
 		broadcastReceiversRegister.registerReceiver(Actions.GET_ACTIVE_ROUTE, getActiveRouteReceiver);
 		broadcastReceiversRegister.registerReceiver(Actions.GET_REAL_TIME_DATA, getRealTimeDataReceiver);
+		broadcastReceiversRegister.registerReceiver(Actions.DOWNLOAD_REQUEST, getDownloadRequestReceiver);
 	}
 
 	@Override
@@ -71,7 +75,6 @@ public class NetworkService extends Service {
 
 		Log.i(TAG, "Looking for server...");
 
-		int port = 8081;
 		ServerFinder serverFinder = new ServerFinder(this, port);
 		try {
 			server = serverFinder.findServer();
@@ -82,10 +85,14 @@ public class NetworkService extends Service {
 		Log.i(TAG, "Server="+server);
 	}
 	
+	private String getUrl(String protocol) {
+		return protocol + "://" + server + ":" + port;
+	}
+	
 	void connect() {
 		findServer();
 		
-		final String uri = "ws://" + server + ":8081";
+		final String uri = getUrl("ws");
 		Log.i(TAG, "Connecting to: " + uri);
 
 		Wamp.ConnectionHandler handler  = new Wamp.ConnectionHandler() {
@@ -142,4 +149,44 @@ public class NetworkService extends Service {
 			.setOutputIntentName(Actions.GOT_REAL_TIME_DATA)
 			.build();
 
+	private final BroadcastReceiver getDownloadRequestReceiver = new BroadcastReceiver() {
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			final String remotePath = intent.getExtras().getString("remotePath");
+			
+			if ( remotePath == null ) {
+				Log.e(TAG, "remotePath is null");
+				return;
+			}
+			
+			String localPath = intent.getExtras().getString("localPath");
+
+			if ( localPath == null ) {
+				Log.e(TAG, "localPath is null");
+				return;
+			}
+
+			String url = getUrl("http") + "/" + remotePath;
+			
+			AsyncDownloadTask asyncDownloadTask = new AsyncDownloadTask(context, remotePath) {
+				@Override
+				public void onDownloadFailure() {
+					Log.i(TAG, "onDownloadFailure");
+					Intent intent = new Intent(Actions.DOWNLOAD_FAILURE);
+					intent.putExtra("id", remotePath);
+					sendBroadcast(intent);
+				}
+				@Override
+				public void onDownloadSuccess() {
+					Log.i(TAG, "onDownloadSuccess");
+					Intent intent = new Intent(Actions.DOWNLOAD_SUCCESS);
+					intent.putExtra("id", remotePath);
+					sendBroadcast(intent);
+				}
+			};
+			asyncDownloadTask.execute(url, localPath);
+		}
+		
+	};
 }
