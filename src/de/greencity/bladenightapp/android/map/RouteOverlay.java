@@ -7,6 +7,7 @@ import org.mapsforge.android.maps.MapView;
 import org.mapsforge.android.maps.overlay.ListOverlay;
 import org.mapsforge.android.maps.overlay.PolygonalChain;
 import org.mapsforge.android.maps.overlay.Polyline;
+import org.mapsforge.core.model.BoundingBox;
 import org.mapsforge.core.model.GeoPoint;
 
 import android.graphics.Color;
@@ -66,16 +67,16 @@ public class RouteOverlay extends ListOverlay {
 		for (LatLong node : routeMessage.nod) {
 			routeNodes.add(new GeoPoint(node.getLatitude(), node.getLongitude()));
 		}
+		updateRouteBoundingBox();
+		
 		routePolyline.setPolygonalChain(new PolygonalChain(routeNodes));
-
-		List<GeoPoint> geoPoints = generateProcessionsGeopoints(1000,2000);
-		processionPolyline.setPolygonalChain(new PolygonalChain(geoPoints));
 
 		mapView.redraw();
 	}
 
 	public void update(RealTimeUpdateData realTimeUpdateData) {
 		List<GeoPoint> geoPoints = generateProcessionsGeopoints(realTimeUpdateData);
+		processionBoundingBox = computeBoundingBox(geoPoints);
 		processionPolyline.setPolygonalChain(new PolygonalChain(geoPoints));
 		mapView.redraw();
 	}
@@ -139,6 +140,48 @@ public class RouteOverlay extends ListOverlay {
 		return geoPoints;
 	}
 
+	public BoundingBox getProcessionBoundingBox() {
+		return processionBoundingBox;
+	}
+
+	public BoundingBox getRouteBoundingBox() {
+		return routeBoundingBox;
+	}
+	
+	public void updateRouteBoundingBox() {
+		routeBoundingBox = computeRouteBoundingBox();
+	}
+	
+	protected BoundingBox computeRouteBoundingBox() {
+		if ( routeNodes == null ) {
+			Log.e(TAG, "getRouteBoundingBox: no nodes available " + routeNodes);
+			return new BoundingBox(0,0,0,0);
+		}
+		return computeBoundingBox(routeNodes);
+	}
+
+	protected BoundingBox computeBoundingBox(List<GeoPoint> geoPoints) {
+		if ( geoPoints.size() == 0 ) {
+			Log.e(TAG, "computeBoundingBox: no nodes available");
+			return new BoundingBox(0,0,0,0);
+		}
+		GeoPoint firstPoint = geoPoints.get(0);
+		double minLatitude = firstPoint.latitude;
+		double maxLatitude = minLatitude;
+		double minLongitude = firstPoint.longitude;
+		double maxLongitude = minLongitude;
+		
+		for (GeoPoint geoPoint : geoPoints) {
+			minLatitude = Math.min(minLatitude, geoPoint.latitude);
+			maxLatitude = Math.max(maxLatitude, geoPoint.latitude);
+
+			minLongitude = Math.min(minLongitude, geoPoint.longitude);
+			maxLongitude = Math.max(maxLongitude, geoPoint.longitude);
+			
+		}
+		return new BoundingBox(minLatitude, minLongitude, maxLatitude, maxLongitude);
+	}
+
 	public GeoPoint getRouteCenter() {
 		double latitudeSum = 0;
 		double longitudeSum = 0;
@@ -161,9 +204,16 @@ public class RouteOverlay extends ListOverlay {
 		return new GeoPoint(latitudeSum/weightSum, longitudeSum/weightSum);
 	}
 
+	
 	private final MapView mapView;
+
 	private Polyline routePolyline;
-	private Polyline processionPolyline;
 	private List<GeoPoint> routeNodes;
+	private BoundingBox routeBoundingBox = new BoundingBox(0, 0, 0, 0);
+	private BoundingBox processionBoundingBox  = new BoundingBox(0, 0, 0, 0);
+
+	private Polyline processionPolyline;
+
 	private final String TAG = "RouteOverlay";
+
 }

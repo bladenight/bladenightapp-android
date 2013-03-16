@@ -5,8 +5,8 @@ import java.io.File;
 
 import org.apache.commons.io.FileUtils;
 import org.mapsforge.android.maps.MapActivity;
-import org.mapsforge.android.maps.MapView;
 import org.mapsforge.android.maps.mapgenerator.TileCache;
+import org.mapsforge.core.model.BoundingBox;
 import org.mapsforge.core.model.GeoPoint;
 import org.mapsforge.core.model.MapPosition;
 import org.mapsforge.map.reader.header.FileOpenResult;
@@ -39,7 +39,7 @@ import de.greencity.bladenightapp.network.messages.RouteMessage;
 public class BladenightMapActivity extends MapActivity {
 
 	private RouteOverlay routeOverlay;
-	private MapView mapView;
+	private BladenightMapView mapView;
 	PeriodicBroadcastIntentManager periodicBroadcastIntentManager = new PeriodicBroadcastIntentManager(this);
 
 	@Override
@@ -75,6 +75,7 @@ public class BladenightMapActivity extends MapActivity {
 		broadcastReceiversRegister.registerReceiver(Actions.DOWNLOAD_FAILURE, gotDownloadFailureReceiver);
 		broadcastReceiversRegister.registerReceiver(Actions.DOWNLOAD_SUCCESS, gotDownloadSuccessReceiver);
 		broadcastReceiversRegister.registerReceiver(Actions.DOWNLOAD_PROGRESS, gotDownloadProgressReceiver);
+		broadcastReceiversRegister.registerReceiver(Actions.CONNECTED, connectedReceiver);
 	}
 
 	@Override
@@ -104,7 +105,7 @@ public class BladenightMapActivity extends MapActivity {
 	}
 
 	public void createMapView() {
-		mapView = new MapView(this);
+		mapView = new BladenightMapView(this);
 		mapView.setClickable(true);
 		mapView.setBuiltInZoomControls(true);
 
@@ -162,11 +163,21 @@ public class BladenightMapActivity extends MapActivity {
 		}
 	}
 
-	protected void centerMapOnRouteCenter() {
-		centerMapOnCoordinates(routeOverlay.getRouteCenter(), (byte)13);
+	protected void fitViewToBoundingBox(BoundingBox boundingBox) {
+		if ( boundingBox != null && boundingBox.getLatitudeSpan() > 0 && boundingBox.getLongitudeSpan() > 0 )
+			mapView.fitViewToBoundingBox(boundingBox);
 	}
 
-	protected void centerMapOnCoordinates(GeoPoint center, byte zoomLevel) {
+	protected void fitViewToRoute() {
+		fitViewToBoundingBox(routeOverlay.getRouteBoundingBox());
+	}
+
+	protected void fitViewToProcession() {
+		fitViewToBoundingBox(routeOverlay.getProcessionBoundingBox());
+	}
+
+
+	protected void centerViewOnCoordinates(GeoPoint center, byte zoomLevel) {
 		mapView.getMapViewPosition().setMapPosition(new MapPosition(center, zoomLevel));
 	}
 
@@ -175,7 +186,7 @@ public class BladenightMapActivity extends MapActivity {
 		@Override
 		public void onReceive(RouteMessage routeMessage) {
 			routeOverlay.update(routeMessage);
-			centerMapOnRouteCenter();
+			fitViewToRoute();
 		}
 	};
 
@@ -183,6 +194,7 @@ public class BladenightMapActivity extends MapActivity {
 		@Override
 		public void onReceive(RealTimeUpdateData data) {
 			routeOverlay.update(data);
+			fitViewToProcession();
 		}
 	};
 
@@ -217,6 +229,16 @@ public class BladenightMapActivity extends MapActivity {
 			}
 		}
 	};
+
+	private final BroadcastReceiver connectedReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			Log.d(TAG,"connectedReceiver.onReceive");
+			sendBroadcast(new Intent(Actions.GET_ACTIVE_ROUTE));
+			sendBroadcast(new Intent(Actions.GET_REAL_TIME_DATA));
+		}
+	};
+	
 
 	private void onMapFileDownloadSuccess() {
 		downloadProgressDialog.dismiss();

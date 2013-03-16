@@ -166,7 +166,7 @@ public class SelectionActivity extends FragmentActivity {
 	private final BroadcastReceiver connectedReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			Log.d(TAG,"getAllEventsReceiver.onReceive");
+			Log.d(TAG,"connectedReceiver.onReceive");
 			sendBroadcast(new Intent(Actions.GET_ALL_EVENTS));
 		}
 	};
