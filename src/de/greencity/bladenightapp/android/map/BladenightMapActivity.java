@@ -105,11 +105,14 @@ public class BladenightMapActivity extends MapActivity {
 	}
 
 	public void createMapView() {
+		// TODO to remove !
+		clearTileCache();
 
 		mapView = new BladenightMapView(this);
 		mapView.setClickable(true);
 		mapView.setBuiltInZoomControls(true);
 		mapView.setRenderTheme(CustomRenderTheme.CUSTOM_RENDER);
+		
 
 		setMapFile();
 
@@ -196,7 +199,7 @@ public class BladenightMapActivity extends MapActivity {
 		@Override
 		public void onReceive(RealTimeUpdateData data) {
 			routeOverlay.update(data);
-			fitViewToProcession();
+			// fitViewToProcession();
 		}
 	};
 

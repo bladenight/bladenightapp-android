@@ -16,7 +16,7 @@
 				<area fill="#ffebeb" stroke="#e4e4e4" stroke-width="0.2" />
 			</rule>
 			<rule e="way" k="landuse" v="industrial|brownfield|railway">
-				<area fill="#ecd8ff" stroke="#e4e4e4" stroke-width="0.2" />
+				<area fill="#848484" stroke="#e4e4e4" stroke-width="0.2" />
 			</rule>
 			<rule e="way" k="landuse" v="commercial">
 				<area fill="#ffffc0" stroke="#e4e4e4" stroke-width="0.2" />
@@ -148,38 +148,38 @@
 
 		<!-- amenity -->
 		<rule e="way" k="amenity" v="*">
-			<rule e="way" k="amenity" v="kindergarten|school|college|university">
+			<rule e="way" k="amenity" v="kindergarten|school|college|university" zoom-min="20">
 				<area fill="#cdabde" stroke="#e9dd72" stroke-width="0.2" />
 			</rule>
-			<rule e="way" k="amenity" v="grave_yard">
+			<rule e="way" k="amenity" v="grave_yard" zoom-min="20">
 				<area src="jar:patterns/cemetery.png" stroke="#e4e4e4" stroke-width="0.2" />
 			</rule>
-			<rule e="way" k="amenity" v="parking">
+			<rule e="way" k="amenity" v="parking" zoom-min="20">
 				<area fill="#ffffc0" stroke="#e9dd72" stroke-width="0.2" />
 				<rule e="way" k="access" v="private" zoom-min="15">
 					<area src="jar:patterns/access-private.png" />
 				</rule>
-				<rule e="way" k="*" v="*" zoom-min="17">
+				<rule e="way" k="*" v="*" zoom-min="20">
 					<symbol src="jar:symbols/parking.png" />
 				</rule>
 			</rule>
-			<rule e="way" k="amenity" v="fountain" closed="yes">
+			<rule e="way" k="amenity" v="fountain" closed="yes" zoom-min="20">
 				<area fill="#b5d6f1" stroke="#000080" stroke-width="0.15" />
-				<rule e="way" k="*" v="*" zoom-min="17">
+				<rule e="way" k="*" v="*" zoom-min="18">
 					<symbol src="jar:symbols/fountain.png" />
 				</rule>
 			</rule>
-			<rule e="way" k="amenity" v="hospital" zoom-min="15">
+			<rule e="way" k="amenity" v="hospital" zoom-min="20">
 				<symbol src="jar:symbols/hospital.png" />
 			</rule>
-			<rule e="way" k="amenity" v="theatre" zoom-min="17">
+			<rule e="way" k="amenity" v="theatre" zoom-min="20">
 				<symbol src="jar:symbols/theatre.png" />
 			</rule>
-			<rule e="way" k="amenity" v="toilets" zoom-min="17">
+			<rule e="way" k="amenity" v="toilets" zoom-min="20">
 				<symbol src="jar:symbols/toilets.png" />
 			</rule>
 
-			<rule e="way" k="*" v="*" zoom-min="17">
+			<rule e="way" k="*" v="*" zoom-min="20">
 				<caption k="name" font-style="bold" font-size="10" fill="#4040ff" stroke="#ffffff" stroke-width="2.0" />
 			</rule>
 		</rule>
@@ -224,7 +224,7 @@
 			</rule>
 			<rule e="way" k="leisure" v="playground|playing_fields|pitch|dog_park">
 				<area fill="#c7f1a3" stroke="#6fc18e" stroke-width="0.2" />
-				<rule e="way" k="*" v="playground" zoom-min="17">
+				<rule e="way" k="*" v="playground" zoom-min="20">
 					<symbol src="jar:symbols/playground.png" />
 				</rule>
 			</rule>
@@ -375,7 +375,7 @@
 
 
 		<!-- platform cores -->
-		<rule e="way" k="highway|railway|public_transport" v="platform">
+		<rule e="way" k="highway|railway|public_transport" v="platform" zoom-min="19">
 			<rule e="way" k="*" v="*" closed="yes">
 				<area fill="#9b9b79" />
 			</rule>
@@ -501,10 +501,10 @@
 
 
 		<!-- building -->
-		<rule e="way" k="building" v="*">
+		<rule e="way" k="building" v="*" zoom-min="18">
 			<area fill="#f3d6b6" stroke="#6a5a8e" stroke-width="0.2" />
 
-			<rule e="way" k="*" v="*" zoom-min="17">
+			<rule e="way" k="*" v="*" zoom-min="18">
 				<caption k="name" font-style="bold" font-size="10" fill="#4040ff" stroke="#ffffff" stroke-width="2.0" />
 				<caption k="addr:housenumber" font-style="bold" font-size="10" fill="#606060" stroke="#ffffff" stroke-width="2.0" />
 			</rule>
@@ -942,10 +942,10 @@
 	<rule e="node" k="*" v="*">
 		<!-- aeroway -->
 		<rule e="node" k="aeroway" v="*">
-			<rule e="node" k="aeroway" v="helipad" zoom-min="17">
+			<rule e="node" k="aeroway" v="helipad" zoom-min="20">
 				<symbol src="jar:symbols/helipad.png" />
 			</rule>
-			<rule e="node" k="aeroway" v="aerodrome|airport" zoom-max="13">
+			<rule e="node" k="aeroway" v="aerodrome|airport" zoom-max="20">
 				<symbol src="jar:symbols/airport.png" />
 			</rule>
 		</rule>
@@ -953,58 +953,58 @@
 
 		<!-- amenity -->
 		<rule e="node" k="amenity" v="*">
-			<rule e="node" k="amenity" v="atm" zoom-min="17">
+			<rule e="node" k="amenity" v="atm" zoom-min="20">
 				<symbol src="jar:symbols/atm.png" />
 			</rule>
-			<rule e="node" k="amenity" v="bank" zoom-min="17">
+			<rule e="node" k="amenity" v="bank" zoom-min="20">
 				<symbol src="jar:symbols/bank.png" />
 			</rule>
-			<rule e="node" k="amenity" v="bench" zoom-min="17">
+			<rule e="node" k="amenity" v="bench" zoom-min="20">
 				<symbol src="jar:symbols/bench.png" />
 			</rule>
-			<rule e="node" k="amenity" v="bicycle_rental" zoom-min="17">
+			<rule e="node" k="amenity" v="bicycle_rental" zoom-min="20">
 				<symbol src="jar:symbols/bicycle_rental.png" />
 			</rule>
-			<rule e="node" k="amenity" v="bus_station" zoom-min="17">
+			<rule e="node" k="amenity" v="bus_station" zoom-min="20">
 				<symbol src="jar:symbols/bus_sta.png" />
 			</rule>
-			<rule e="node" k="amenity" v="cafe" zoom-min="17">
+			<rule e="node" k="amenity" v="cafe" zoom-min="20">
 				<symbol src="jar:symbols/cafe.png" />
 			</rule>
-			<rule e="node" k="amenity" v="cinema" zoom-min="17">
+			<rule e="node" k="amenity" v="cinema" zoom-min="20">
 				<symbol src="jar:symbols/cinema.png" />
 			</rule>
-			<rule e="node" k="amenity" v="drinking_water" zoom-min="17">
+			<rule e="node" k="amenity" v="drinking_water" zoom-min="20">
 				<symbol src="jar:symbols/drinking_water.png" />
 			</rule>
-			<rule e="node" k="amenity" v="fast_food" zoom-min="17">
+			<rule e="node" k="amenity" v="fast_food" zoom-min="20">
 				<symbol src="jar:symbols/fastfood.png" />
 			</rule>
-			<rule e="node" k="amenity" v="fire_station" zoom-min="17">
+			<rule e="node" k="amenity" v="fire_station" zoom-min="20">
 				<symbol src="jar:symbols/firebrigade.png" />
 			</rule>
-			<rule e="node" k="amenity" v="fountain" zoom-min="17">
+			<rule e="node" k="amenity" v="fountain" zoom-min="20">
 				<symbol src="jar:symbols/fountain.png" />
 			</rule>
-			<rule e="node" k="amenity" v="fuel" zoom-min="17">
+			<rule e="node" k="amenity" v="fuel" zoom-min="20">
 				<symbol src="jar:symbols/petrolStation.png" />
 			</rule>
-			<rule e="node" k="amenity" v="hospital" zoom-min="15">
+			<rule e="node" k="amenity" v="hospital" zoom-min="20">
 				<symbol src="jar:symbols/hospital.png" />
 			</rule>
-			<rule e="node" k="amenity" v="kindergarten" zoom-min="17">
+			<rule e="node" k="amenity" v="kindergarten" zoom-min="20">
 				<symbol src="jar:symbols/kindergarten.png" />
 			</rule>
-			<rule e="node" k="amenity" v="library" zoom-min="17">
+			<rule e="node" k="amenity" v="library" zoom-min="20">
 				<symbol src="jar:symbols/library.png" />
 			</rule>
-			<rule e="node" k="amenity" v="parking" zoom-min="17">
+			<rule e="node" k="amenity" v="parking" zoom-min="20">
 				<symbol src="jar:symbols/parking.png" />
 			</rule>
-			<rule e="node" k="amenity" v="pharmacy" zoom-min="17">
+			<rule e="node" k="amenity" v="pharmacy" zoom-min="20">
 				<symbol src="jar:symbols/pharmacy.png" />
 			</rule>
-			<rule e="node" k="amenity" v="place_of_worship" zoom-min="17">
+			<rule e="node" k="amenity" v="place_of_worship" zoom-min="20">
 				<rule e="node" k="denomination|religion" v="jewish">
 					<symbol src="jar:symbols/synagogue.png" />
 				</rule>
@@ -1015,41 +1015,41 @@
 					<symbol src="jar:symbols/church.png" />
 				</rule>
 			</rule>
-			<rule e="node" k="amenity" v="post_box" zoom-min="17">
+			<rule e="node" k="amenity" v="post_box" zoom-min="20">
 				<symbol src="jar:symbols/postbox.png" />
 			</rule>
-			<rule e="node" k="amenity" v="post_office" zoom-min="17">
+			<rule e="node" k="amenity" v="post_office" zoom-min="20">
 				<symbol src="jar:symbols/postoffice.png" />
 			</rule>
-			<rule e="node" k="amenity" v="pub|bar" zoom-min="17">
+			<rule e="node" k="amenity" v="pub|bar" zoom-min="20">
 				<symbol src="jar:symbols/pub.png" />
 			</rule>
-			<rule e="node" k="amenity" v="recycling" zoom-min="17">
+			<rule e="node" k="amenity" v="recycling" zoom-min="20">
 				<symbol src="jar:symbols/recycling.png" />
 			</rule>
-			<rule e="node" k="amenity" v="restaurant" zoom-min="17">
+			<rule e="node" k="amenity" v="restaurant" zoom-min="20">
 				<symbol src="jar:symbols/restaurant.png" />
 			</rule>
-			<rule e="node" k="amenity" v="school" zoom-min="17">
+			<rule e="node" k="amenity" v="school" zoom-min="20">
 				<symbol src="jar:symbols/school.png" />
 			</rule>
-			<rule e="node" k="amenity" v="shelter" zoom-min="17">
+			<rule e="node" k="amenity" v="shelter" zoom-min="20">
 				<symbol src="jar:symbols/shelter.png" />
 			</rule>
-			<rule e="node" k="amenity" v="telephone" zoom-min="17">
+			<rule e="node" k="amenity" v="telephone" zoom-min="20">
 				<symbol src="jar:symbols/telephone.png" />
 			</rule>
-			<rule e="node" k="amenity" v="theatre" zoom-min="17">
+			<rule e="node" k="amenity" v="theatre" zoom-min="20">
 				<symbol src="jar:symbols/theatre.png" />
 			</rule>
-			<rule e="node" k="amenity" v="toilets" zoom-min="17">
+			<rule e="node" k="amenity" v="toilets" zoom-min="20">
 				<symbol src="jar:symbols/toilets.png" />
 			</rule>
-			<rule e="node" k="amenity" v="university|college" zoom-min="17">
+			<rule e="node" k="amenity" v="university|college" zoom-min="20">
 				<symbol src="jar:symbols/university.png" />
 			</rule>
 
-			<rule e="node" k="*" v="*" zoom-min="17">
+			<rule e="node" k="*" v="*" zoom-min="20">
 				<caption k="name" font-style="bold" font-size="10" fill="#4040ff" stroke="#ffffff" stroke-width="2.0" />
 			</rule>
 		</rule>
@@ -1063,13 +1063,13 @@
 
 		<!-- highway -->
 		<rule e="node" k="highway" v="*">
-			<rule e="node" k="highway" v="bus_stop" zoom-min="16">
+			<rule e="node" k="highway" v="bus_stop" zoom-min="20">
 				<symbol src="jar:symbols/bus.png" />
 			</rule>
-			<rule e="node" k="highway" v="traffic_signals" zoom-min="17">
+			<rule e="node" k="highway" v="traffic_signals" zoom-min="20">
 				<symbol src="jar:symbols/traffic_signal.png" />
 			</rule>
-			<rule e="node" k="highway" v="turning_circle">
+			<rule e="node" k="highway" v="turning_circle" zoom-min="19">
 				<circle radius="1.4" scale-radius="true" fill="#ffffff" />
 			</rule>
 		</rule>
@@ -1079,14 +1079,14 @@
 		<rule e="node" k="historic" v="*">
 			<circle radius="3" fill="#4040ff" stroke="#606060" stroke-width="1.5" />
 
-			<rule e="node" k="*" v="*" zoom-min="17">
+			<rule e="node" k="*" v="*" zoom-min="19">
 				<caption k="name" dy="-10" font-style="bold" font-size="10" fill="#4040ff" stroke="#ffffff" stroke-width="2.0" />
 			</rule>
 		</rule>
 
 
 		<!-- house numbers -->
-		<rule e="node" k="addr:housenumber" v="*" zoom-min="18">
+		<rule e="node" k="addr:housenumber" v="*" zoom-min="20">
 			<caption k="addr:housenumber" font-style="bold" font-size="10" fill="#606060" stroke="#ffffff" stroke-width="2.0" />
 		</rule>
 
@@ -1166,17 +1166,17 @@
 
 		<!-- shop -->
 		<rule e="node" k="shop" v="*">
-			<rule e="node" k="shop" v="bakery" zoom-min="17">
+			<rule e="node" k="shop" v="bakery" zoom-min="20">
 				<symbol src="jar:symbols/bakery.png" />
 			</rule>
-			<rule e="node" k="shop" v="florist" zoom-min="17">
+			<rule e="node" k="shop" v="florist" zoom-min="20">
 				<symbol src="jar:symbols/florist.png" />
 			</rule>
-			<rule e="node" k="shop" v="supermarket|organic" zoom-min="17">
+			<rule e="node" k="shop" v="supermarket|organic" zoom-min="20">
 				<symbol src="jar:symbols/supermarket.png" />
 			</rule>
 
-			<rule e="node" k="*" v="*" zoom-min="17">
+			<rule e="node" k="*" v="*" zoom-min="20">
 				<caption k="name" font-style="bold" font-size="10" fill="#4040ff" stroke="#ffffff" stroke-width="2.0" />
 			</rule>
 		</rule>
@@ -1184,26 +1184,26 @@
 
 		<!-- tourism -->
 		<rule e="node" k="tourism" v="*">
-			<rule e="node" k="tourism" v="alpine_hut" zoom-min="16">
+			<rule e="node" k="tourism" v="alpine_hut" zoom-min="20">
 				<symbol src="jar:symbols/alpine_hut.png" />
 			</rule>
-			<rule e="node" k="tourism" v="camp_site" zoom-min="17">
+			<rule e="node" k="tourism" v="camp_site" zoom-min="20">
 				<symbol src="jar:symbols/campSite.png" />
 			</rule>
-			<rule e="node" k="tourism" v="hostel" zoom-min="17">
+			<rule e="node" k="tourism" v="hostel" zoom-min="20">
 				<symbol src="jar:symbols/hostel.png" />
 			</rule>
-			<rule e="node" k="tourism" v="hotel" zoom-min="17">
+			<rule e="node" k="tourism" v="hotel" zoom-min="20">
 				<symbol src="jar:symbols/hotel.png" />
 			</rule>
-			<rule e="node" k="tourism" v="information" zoom-min="17">
+			<rule e="node" k="tourism" v="information" zoom-min="20">
 				<symbol src="jar:symbols/information.png" />
 			</rule>
-			<rule e="node" k="tourism" v="viewpoint" zoom-min="15">
+			<rule e="node" k="tourism" v="viewpoint" zoom-min="20">
 				<symbol src="jar:symbols/viewpoint.png" />
 			</rule>
 
-			<rule e="node" k="*" v="*" zoom-min="17">
+			<rule e="node" k="*" v="*" zoom-min="20">
 				<caption k="name" font-style="bold" font-size="10" fill="#4040ff" stroke="#ffffff" stroke-width="2.0" />
 			</rule>
 		</rule>
