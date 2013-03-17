@@ -131,7 +131,6 @@ public class AsyncDownloadTask extends AsyncTask<String, Long, Boolean> {
 
 	private final String TAG  = "AsyncDownloadTask";
 	private long fileSize = 0;
-	private long lastProgress = 0;
 	private String downloadId;
 	private Context context;
 
