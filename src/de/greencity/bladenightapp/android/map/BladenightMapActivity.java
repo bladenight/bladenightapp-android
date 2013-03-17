@@ -105,9 +105,11 @@ public class BladenightMapActivity extends MapActivity {
 	}
 
 	public void createMapView() {
+
 		mapView = new BladenightMapView(this);
 		mapView.setClickable(true);
 		mapView.setBuiltInZoomControls(true);
+		mapView.setRenderTheme(CustomRenderTheme.CUSTOM_RENDER);
 
 		setMapFile();
 
