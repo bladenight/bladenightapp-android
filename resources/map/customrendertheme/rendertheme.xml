@@ -623,7 +623,7 @@
 					</rule>
 					<rule e="way" k="highway" v="tertiary">
 						<line stroke="#ffff90" stroke-width="1.5" />
-						<rule e="way" k="*" v="*" zoom-min="14">
+						<rule e="way" k="*" v="*" zoom-min="16"> <!-- Changed -->
 							<pathText k="name" font-style="bold" font-size="10" stroke="#ffff90" stroke-width="2.0" />
 						</rule>
 					</rule>
@@ -653,7 +653,7 @@
 					</rule>
 					<rule e="way" k="highway" v="secondary">
 						<line stroke="#fdbf6f" stroke-width="1.5" />
-						<rule e="way" k="*" v="*" zoom-min="14">
+						<rule e="way" k="*" v="*" zoom-min="15">  <!-- Changed -->
 							<pathText k="name" font-style="bold" font-size="10" stroke="#fdbf6f" stroke-width="2.0" />
 						</rule>
 					</rule>
@@ -1153,7 +1153,7 @@
 			<rule e="node" k="railway" v="level_crossing" zoom-min="16">
 				<symbol src="jar:symbols/railway-crossing.png" />
 			</rule>
-			<rule e="node" k="railway" v="station" zoom-min="14">
+			<rule e="node" k="railway" v="station" zoom-min="25"> <!-- Changed -->
 				<circle radius="6" fill="#ec2d2d" stroke="#606060" stroke-width="1.5" />
 				<caption k="name" dy="-10" font-style="bold" font-size="13" fill="#ec2d2d" stroke="#ffffff" stroke-width="2.0" />
 			</rule>
@@ -1161,6 +1161,21 @@
 				<circle radius="4" fill="#ec2d2d" stroke="#606060" stroke-width="1.5" />
 				<caption k="name" dy="-15" font-style="bold" font-size="11" fill="#ec2d2d" stroke="#ffffff" stroke-width="2.0" />
 			</rule>
+		</rule>
+
+		<rule e="node" k="station_type" v="ubahn" zoom-min="15">
+			<symbol src="jar:symbols/ubahn.png" />
+			<caption k="name" font-style="bold" font-size="13" fill="#2d2dec" stroke="#ffffff" stroke-width="2.0" />
+		</rule>
+
+		<rule e="node" k="station_type" v="sbahn" zoom-min="15">
+			<symbol src="jar:symbols/sbahn.png" />
+			<caption k="name" font-style="bold" font-size="13" fill="#2d2dec" stroke="#ffffff" stroke-width="2.0" />
+		</rule>
+
+		<rule e="node" k="station_type" v="ubahn;sbahn" zoom-min="15">
+			<symbol src="jar:symbols/ubahn-sbahn.png" />
+			<caption k="name" font-style="bold" font-size="13" fill="#2d2dec" stroke="#ffffff" stroke-width="2.0" />
 		</rule>
 
 
