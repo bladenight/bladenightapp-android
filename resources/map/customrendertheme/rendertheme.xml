@@ -1163,19 +1163,20 @@
 			</rule>
 		</rule>
 
+		<rule e="node" k="station_name" v="yes" zoom-min="15">
+			<caption k="name" font-style="bold" font-size="13" fill="#2d2dec" stroke="#ffffff" stroke-width="2.0" />
+		</rule>
+
 		<rule e="node" k="station_type" v="ubahn" zoom-min="15">
 			<symbol src="jar:symbols/ubahn.png" />
-			<caption k="name" font-style="bold" font-size="13" fill="#2d2dec" stroke="#ffffff" stroke-width="2.0" />
 		</rule>
 
 		<rule e="node" k="station_type" v="sbahn" zoom-min="15">
 			<symbol src="jar:symbols/sbahn.png" />
-			<caption k="name" font-style="bold" font-size="13" fill="#2d2dec" stroke="#ffffff" stroke-width="2.0" />
 		</rule>
 
 		<rule e="node" k="station_type" v="ubahn;sbahn" zoom-min="15">
 			<symbol src="jar:symbols/ubahn-sbahn.png" />
-			<caption k="name" font-style="bold" font-size="13" fill="#2d2dec" stroke="#ffffff" stroke-width="2.0" />
 		</rule>
 
 
