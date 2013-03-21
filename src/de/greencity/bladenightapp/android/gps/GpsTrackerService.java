@@ -21,7 +21,6 @@ import de.greencity.bladenightapp.android.network.NetworkService;
 import de.greencity.bladenightapp.android.selection.SelectionActivity;
 import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
 import de.greencity.bladenightapp.android.utils.PeriodicBroadcastIntentManager;
-import de.greencity.bladenightapp.network.messages.GpsInfo;
 import de.greencity.bladenightapp.network.messages.LatLong;
 
 public class GpsTrackerService extends Service {

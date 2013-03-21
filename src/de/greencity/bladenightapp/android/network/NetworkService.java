@@ -1,7 +1,5 @@
 package de.greencity.bladenightapp.android.network;
 
-import com.google.gson.Gson;
-
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -10,8 +8,12 @@ import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+
+import com.google.gson.Gson;
+
 import de.greencity.bladenightapp.android.utils.AsyncDownloadTask;
 import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
+import de.greencity.bladenightapp.android.utils.DeviceId;
 import de.greencity.bladenightapp.network.BladenightUrl;
 import de.greencity.bladenightapp.network.messages.EventsListMessage;
 import de.greencity.bladenightapp.network.messages.GpsInfo;
@@ -19,18 +21,19 @@ import de.greencity.bladenightapp.network.messages.LatLong;
 import de.greencity.bladenightapp.network.messages.RealTimeUpdateData;
 import de.greencity.bladenightapp.network.messages.RouteMessage;
 import de.tavendo.autobahn.Wamp;
-import de.tavendo.autobahn.WampOptions;
 import de.tavendo.autobahn.Wamp.CallHandler;
+import de.tavendo.autobahn.WampOptions;
 
 public class NetworkService extends Service {
 	private final String TAG = "NetworkService";
 	private BladenightWampConnection wampConnection = new BladenightWampConnection();
 	private String server;
-	private BroadcastReceiversRegister broadcastReceiversRegister = new BroadcastReceiversRegister(this);
-	private LatLong lastKnownPosition = new LatLong(0, 0);
+	private final BroadcastReceiversRegister broadcastReceiversRegister = new BroadcastReceiversRegister(this);
+	private final LatLong lastKnownPosition = new LatLong(0, 0);
+	private final GpsInfo gpsInfo = new GpsInfo("", true, 0, 0);
 
-	final int port = 8081;
-	final long locationTimeout = 60000;
+	final private int port = 8081;
+	final private long locationTimeout = 60000;
 
 	@Override
 	public void onCreate() {
@@ -42,6 +45,8 @@ public class NetworkService extends Service {
 		broadcastReceiversRegister.registerReceiver(Actions.GET_REAL_TIME_DATA, getRealTimeDataReceiver);
 		broadcastReceiversRegister.registerReceiver(Actions.DOWNLOAD_REQUEST, getDownloadRequestReceiver);
 		broadcastReceiversRegister.registerReceiver(Actions.LOCATION_UPDATE, updateLocationReceiver);
+		
+		gpsInfo.setDeviceId(DeviceId.getDeviceId(this));
 	}
 
 	@Override
@@ -250,10 +255,11 @@ public class NetworkService extends Service {
 				sendBroadcast(intent);
 			}
 		};
-
-		GpsInfo gpsInfo = new GpsInfo("DEVICE-ID", true, lastKnownPosition.getLatitude(), lastKnownPosition.getLongitude());
+		
+		gpsInfo.setLatitude(lastKnownPosition.getLatitude());
+		gpsInfo.setLongitude(lastKnownPosition.getLongitude());
 
 		String url = BladenightUrl.GET_REALTIME_UPDATE.getText();
-		wampConnection.call(url, RealTimeUpdateData.class, callHandler, gpsInfo);
+			wampConnection.call(url, RealTimeUpdateData.class, callHandler, gpsInfo);
 	}
 }
