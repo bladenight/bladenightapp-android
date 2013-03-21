@@ -22,6 +22,7 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 
 import de.greencity.bladenightapp.android.R;
+import de.greencity.bladenightapp.android.gps.GpsTrackerService;
 import de.greencity.bladenightapp.android.map.BladenightMapActivity;
 import de.greencity.bladenightapp.android.network.Actions;
 import de.greencity.bladenightapp.android.network.NetworkService;
@@ -29,13 +30,14 @@ import de.greencity.bladenightapp.android.options.OptionsActivity;
 import de.greencity.bladenightapp.android.social.SocialActivity;
 import de.greencity.bladenightapp.android.statistics.StatisticsActivity;
 import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
+import de.greencity.bladenightapp.android.utils.ServiceUtils;
 import de.greencity.bladenightapp.network.messages.EventsListMessage;
 
 public class SelectionActivity extends FragmentActivity {
 	private MyAdapter mAdapter;
 	private ViewPager mPager;
 	private final String TAG = "SelectionActivity"; 
-	private ServiceConnection serviceConnection;
+	private ServiceConnection networkServiceConnection;
 	private BroadcastReceiversRegister broadcastReceiversRegister = new BroadcastReceiversRegister(this); 
 
 
@@ -64,7 +66,7 @@ public class SelectionActivity extends FragmentActivity {
 		broadcastReceiversRegister.registerReceiver(Actions.GOT_ALL_EVENTS, gotAllEventsReceiver);
 		broadcastReceiversRegister.registerReceiver(Actions.CONNECTED, connectedReceiver);
 
-		serviceConnection = new ServiceConnection() {
+		networkServiceConnection = new ServiceConnection() {
 			@Override
 			public void onServiceConnected(ComponentName name, IBinder service) {
 				Log.i(TAG+".ServiceConnection", "onServiceConnected");
@@ -76,7 +78,7 @@ public class SelectionActivity extends FragmentActivity {
 			}
 
 		};
-		bindService(new Intent(this, NetworkService.class), serviceConnection,  BIND_AUTO_CREATE);
+		bindService(new Intent(this, NetworkService.class), networkServiceConnection,  BIND_AUTO_CREATE);
 	}	
 
 	@Override
@@ -85,7 +87,7 @@ public class SelectionActivity extends FragmentActivity {
 		super.onStop();
 
 		broadcastReceiversRegister.unregisterReceivers();
-		unbindService(serviceConnection);
+		unbindService(networkServiceConnection);
 	}
 
 	@Override
@@ -130,11 +132,15 @@ public class SelectionActivity extends FragmentActivity {
 	}
 
 	private void goSocial(){
+		Log.d(TAG,"goSocial");
+
 		Intent intent = new Intent(SelectionActivity.this, SocialActivity.class);
 		startActivity(intent);
+		
 	}
 
 	private void goOptions(){
+		Log.d(TAG,"goOptions");
 		Intent intent = new Intent(SelectionActivity.this, OptionsActivity.class);
 		startActivity(intent);
 	}

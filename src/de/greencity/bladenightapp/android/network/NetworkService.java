@@ -1,28 +1,37 @@
 package de.greencity.bladenightapp.android.network;
 
+import com.google.gson.Gson;
+
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 import de.greencity.bladenightapp.android.utils.AsyncDownloadTask;
 import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
 import de.greencity.bladenightapp.network.BladenightUrl;
 import de.greencity.bladenightapp.network.messages.EventsListMessage;
+import de.greencity.bladenightapp.network.messages.GpsInfo;
+import de.greencity.bladenightapp.network.messages.LatLong;
 import de.greencity.bladenightapp.network.messages.RealTimeUpdateData;
 import de.greencity.bladenightapp.network.messages.RouteMessage;
 import de.tavendo.autobahn.Wamp;
 import de.tavendo.autobahn.WampOptions;
+import de.tavendo.autobahn.Wamp.CallHandler;
 
 public class NetworkService extends Service {
 	private final String TAG = "NetworkService";
 	private BladenightWampConnection wampConnection = new BladenightWampConnection();
 	private String server;
 	private BroadcastReceiversRegister broadcastReceiversRegister = new BroadcastReceiversRegister(this);
+	private LatLong lastKnownPosition = new LatLong(0, 0);
+
 	final int port = 8081;
-	
+	final long locationTimeout = 60000;
+
 	@Override
 	public void onCreate() {
 		Log.i(TAG, "onCreate");
@@ -32,6 +41,7 @@ public class NetworkService extends Service {
 		broadcastReceiversRegister.registerReceiver(Actions.GET_ACTIVE_ROUTE, getActiveRouteReceiver);
 		broadcastReceiversRegister.registerReceiver(Actions.GET_REAL_TIME_DATA, getRealTimeDataReceiver);
 		broadcastReceiversRegister.registerReceiver(Actions.DOWNLOAD_REQUEST, getDownloadRequestReceiver);
+		broadcastReceiversRegister.registerReceiver(Actions.LOCATION_UPDATE, updateLocationReceiver);
 	}
 
 	@Override
@@ -57,17 +67,17 @@ public class NetworkService extends Service {
 
 
 	@Override
+	public IBinder onBind(Intent intent) {
+		Log.i(TAG, "onBind");
+		return new Binder();
+	}
+
+	@Override
 	public boolean onUnbind(Intent intent) {
 		Log.i(TAG, "onUnbind");
 		return super.onUnbind(intent);
 	}
 
-
-	@Override
-	public IBinder onBind(Intent intent) {
-		Log.i(TAG, "onBind");
-		return new Binder();
-	}
 
 	private void findServer() {
 		if ( server != null)
@@ -84,14 +94,14 @@ public class NetworkService extends Service {
 		}
 		Log.i(TAG, "Server="+server);
 	}
-	
+
 	private String getUrl(String protocol) {
 		return protocol + "://" + server + ":" + port;
 	}
-	
+
 	void connect() {
 		findServer();
-		
+
 		final String uri = getUrl("ws");
 		Log.i(TAG, "Connecting to: " + uri);
 
@@ -142,24 +152,47 @@ public class NetworkService extends Service {
 			.setOutputIntentName(Actions.GOT_ACTIVE_ROUTE)
 			.build();
 
-	private final BroadcastReceiver getRealTimeDataReceiver = new BroadcastWampBridgeBuilder<String, RealTimeUpdateData>(String.class, RealTimeUpdateData.class)
-			.setLogPrefix("getRealTimeDataReceiver")
-			.setWampConnection(wampConnection)
-			.setUrl(BladenightUrl.GET_REALTIME_UPDATE.getText())
-			.setOutputIntentName(Actions.GOT_REAL_TIME_DATA)
-			.build();
+	private final BroadcastReceiver getRealTimeDataReceiver = new BroadcastReceiver() {
+		final private String logPrefix = "getRealTimeDataReceiver";
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			getRealTimeData();
+		}
+
+	};
+
+	private final BroadcastReceiver updateLocationReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			LatLong latLong = null;
+			Bundle extras = intent.getExtras();
+			if ( extras != null ) {
+				String inputJson = extras.getString("json");
+				if ( inputJson != null ) {
+					latLong = new Gson().fromJson(inputJson, LatLong.class);
+				}
+			}
+			if ( latLong == null ) {
+				Log.e(TAG, "updateLocationReceiver: Failed to get new coordinates");
+				return;
+			}
+			lastKnownPosition.setLatitude(latLong.getLatitude());
+			lastKnownPosition.setLongitude(latLong.getLongitude());
+			getRealTimeData();
+		}
+	};
 
 	private final BroadcastReceiver getDownloadRequestReceiver = new BroadcastReceiver() {
 
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			final String remotePath = intent.getExtras().getString("remotePath");
-			
+
 			if ( remotePath == null ) {
 				Log.e(TAG, "remotePath is null");
 				return;
 			}
-			
+
 			String localPath = intent.getExtras().getString("localPath");
 
 			if ( localPath == null ) {
@@ -168,7 +201,7 @@ public class NetworkService extends Service {
 			}
 
 			String url = getUrl("http") + "/" + remotePath;
-			
+
 			AsyncDownloadTask asyncDownloadTask = new AsyncDownloadTask(context, remotePath) {
 				@Override
 				public void onDownloadFailure() {
@@ -187,6 +220,40 @@ public class NetworkService extends Service {
 			};
 			asyncDownloadTask.execute(url, localPath);
 		}
-		
+
 	};
+
+	protected void getRealTimeData() {
+		final String logPrefix = "getRealTimeData";
+		if ( ! wampConnection.isUsable() ) {
+			Log.w(TAG, logPrefix + ": Not connected");
+			sendBroadcast(new Intent(Actions.CONNECT));
+			return;
+		}
+
+		CallHandler callHandler = new CallHandler() {
+			@Override
+			public void onError(String arg0, String arg1) {
+				Log.e(TAG, logPrefix + " onError: " + arg0 + " " + arg1);
+			}
+
+			@Override
+			public void onResult(Object object) {
+				@SuppressWarnings("unchecked")
+				RealTimeUpdateData msg = (RealTimeUpdateData) object;
+				if ( msg == null ) {
+					Log.e(TAG, logPrefix+" Failed to cast");
+					return;
+				}
+				Intent intent = new Intent(Actions.GOT_REAL_TIME_DATA);
+				intent.putExtra("json", new Gson().toJson(msg));
+				sendBroadcast(intent);
+			}
+		};
+
+		GpsInfo gpsInfo = new GpsInfo("DEVICE-ID", true, lastKnownPosition.getLatitude(), lastKnownPosition.getLongitude());
+
+		String url = BladenightUrl.GET_REALTIME_UPDATE.getText();
+		wampConnection.call(url, RealTimeUpdateData.class, callHandler, gpsInfo);
+	}
 }

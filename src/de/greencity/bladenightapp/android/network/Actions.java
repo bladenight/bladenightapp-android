@@ -4,7 +4,7 @@ package de.greencity.bladenightapp.android.network;
 
 
 public interface Actions {
-	static final String prefix =  "de.greencity.bladenightapp.android.";
+	static final String prefix =  "de.greencity.bladenightapp.android.network.";
 
 	// Actions sent to the NetworkService to request an action
 	static public final String CONNECT 				= prefix+"CONNECT"; 
@@ -25,4 +25,7 @@ public interface Actions {
 	static public final String DOWNLOAD_PROGRESS 	= prefix+"DOWNLOAD_PROGRESS";
 	static public final String DOWNLOAD_SUCCESS 	= prefix+"DOWNLOAD_SUCCESS";
 	static public final String DOWNLOAD_FAILURE 	= prefix+"DOWNLOAD_FAILURE";
+	
+	// Actions to update the persistent state of the network service
+	static public final String LOCATION_UPDATE		= prefix+"LOCATION_UPDATE"; 
 }
