@@ -1,6 +1,8 @@
 
 package de.greencity.bladenightapp.android.selection;
 
+import org.joda.time.DateTime;
+
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -31,6 +33,9 @@ import de.greencity.bladenightapp.android.social.SocialActivity;
 import de.greencity.bladenightapp.android.statistics.StatisticsActivity;
 import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
 import de.greencity.bladenightapp.android.utils.ServiceUtils;
+import de.greencity.bladenightapp.events.Event;
+import de.greencity.bladenightapp.events.EventsList;
+import de.greencity.bladenightapp.network.messages.EventMessage;
 import de.greencity.bladenightapp.network.messages.EventsListMessage;
 
 public class SelectionActivity extends FragmentActivity {
@@ -136,7 +141,7 @@ public class SelectionActivity extends FragmentActivity {
 
 		Intent intent = new Intent(SelectionActivity.this, SocialActivity.class);
 		startActivity(intent);
-		
+
 	}
 
 	private void goOptions(){
@@ -150,8 +155,6 @@ public class SelectionActivity extends FragmentActivity {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			Log.d(TAG,"getAllEventsReceiver.onReceive");
-			Log.d(TAG,"getAllEventsReceiver.onReceive " + intent);
-			Log.d(TAG,"getAllEventsReceiver.onReceive " + intent.getExtras());
 			String json = (String) intent.getExtras().get("json");
 			if ( json == null ) {
 				Log.e(TAG,"Failed to get json");
@@ -165,7 +168,13 @@ public class SelectionActivity extends FragmentActivity {
 			}
 			mAdapter = new MyAdapter(getSupportFragmentManager(), eventsListMessage);
 			mPager.setAdapter(mAdapter);
-			// mAdapter.notifyDataSetChanged();
+
+			EventsList eventsList = eventsListMessage.convertToEventsList();
+			Event nextEvent = eventsList.getNextEvent();
+			if ( nextEvent != null ) {
+				int startFragment = eventsList.indexOf(nextEvent);
+				mPager.setCurrentItem(startFragment);
+			}
 		}
 	};
 
@@ -176,7 +185,7 @@ public class SelectionActivity extends FragmentActivity {
 			sendBroadcast(new Intent(Actions.GET_ALL_EVENTS));
 		}
 	};
-	
+
 	public static class MyAdapter extends FragmentPagerAdapter {
 		@SuppressWarnings("unused")
 		final private String TAG = "SelectionActivity.MyAdapter"; 
@@ -209,5 +218,5 @@ public class SelectionActivity extends FragmentActivity {
 			return fragment;      
 		}
 	}
-	
+
 } 
