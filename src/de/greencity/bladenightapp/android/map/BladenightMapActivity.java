@@ -23,11 +23,15 @@ import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
-import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
+
+import com.markupartist.android.widget.ActionBar;
+
 import de.greencity.bladenightapp.android.R;
+import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
+import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator.ActionItemType;
 import de.greencity.bladenightapp.android.network.Actions;
 import de.greencity.bladenightapp.android.network.NetworkService;
 import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
@@ -45,13 +49,13 @@ public class BladenightMapActivity extends MapActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
+		
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_action);
-		getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.titlebar);
-		ImageView titlebar = (ImageView)(findViewById(R.id.icon));
-		titlebar.setImageResource(R.drawable.ic_map);
-		TextView titletext = (TextView)findViewById(R.id.title);
-		titletext.setText(R.string.title_map);
+		configureActionBar();
+		createMapView();
+
+		downloadProgressDialog = new ProgressDialog(this);
 
 		serviceConnection = new ServiceConnection() {
 			@Override
@@ -66,16 +70,20 @@ public class BladenightMapActivity extends MapActivity {
 
 		};
 
-		createMapView();
-
-		downloadProgressDialog = new ProgressDialog(this);
-
 		broadcastReceiversRegister.registerReceiver(Actions.GOT_ACTIVE_ROUTE, gotActiveRouteReceiver);
 		broadcastReceiversRegister.registerReceiver(Actions.GOT_REAL_TIME_DATA, gotRealTimeDataReceiver);
 		broadcastReceiversRegister.registerReceiver(Actions.DOWNLOAD_FAILURE, gotDownloadFailureReceiver);
 		broadcastReceiversRegister.registerReceiver(Actions.DOWNLOAD_SUCCESS, gotDownloadSuccessReceiver);
 		broadcastReceiversRegister.registerReceiver(Actions.DOWNLOAD_PROGRESS, gotDownloadProgressReceiver);
 		broadcastReceiversRegister.registerReceiver(Actions.CONNECTED, connectedReceiver);
+	}
+
+	private void configureActionBar() {
+		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
+		new ActionBarConfigurator(actionBar)
+		.hide(ActionItemType.MAP)
+		.setTitle(R.string.title_map)
+		.configure();
 	}
 
 	@Override
@@ -116,7 +124,7 @@ public class BladenightMapActivity extends MapActivity {
 
 		setMapFile();
 
-		RelativeLayout parent = (RelativeLayout) findViewById(R.id.map_parent);
+		LinearLayout parent = (LinearLayout) findViewById(R.id.map_parent);
 		parent.removeAllViews();
 
 		parent.addView(mapView);

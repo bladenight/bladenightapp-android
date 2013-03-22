@@ -1,8 +1,6 @@
 
 package de.greencity.bladenightapp.android.selection;
 
-import org.joda.time.DateTime;
-
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -19,13 +17,18 @@ import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
+import com.markupartist.android.widget.ActionBar;
+import com.markupartist.android.widget.ActionBar.Action;
+import com.markupartist.android.widget.ActionBar.IntentAction;
 
 import de.greencity.bladenightapp.android.R;
-import de.greencity.bladenightapp.android.gps.GpsTrackerService;
+import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
+import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator.ActionItemType;
 import de.greencity.bladenightapp.android.map.BladenightMapActivity;
 import de.greencity.bladenightapp.android.network.Actions;
 import de.greencity.bladenightapp.android.network.NetworkService;
@@ -33,15 +36,12 @@ import de.greencity.bladenightapp.android.options.OptionsActivity;
 import de.greencity.bladenightapp.android.social.SocialActivity;
 import de.greencity.bladenightapp.android.statistics.StatisticsActivity;
 import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
-import de.greencity.bladenightapp.android.utils.ServiceUtils;
 import de.greencity.bladenightapp.events.Event;
 import de.greencity.bladenightapp.events.EventsList;
-import de.greencity.bladenightapp.network.messages.EventMessage;
 import de.greencity.bladenightapp.network.messages.EventsListMessage;
 
 public class SelectionActivity extends FragmentActivity {
 	private MyAdapter mAdapter;
-	private ViewPager mPager;
 	private final String TAG = "SelectionActivity"; 
 	private ServiceConnection networkServiceConnection;
 	private BroadcastReceiversRegister broadcastReceiversRegister = new BroadcastReceiversRegister(this); 
@@ -51,17 +51,22 @@ public class SelectionActivity extends FragmentActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		Log.i(TAG, "onCreate");
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
-		setContentView(R.layout.activity_selection);
-		getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.titlebar);
-		ImageView titlebar = (ImageView)findViewById(R.id.icon);
-		titlebar.setImageResource(R.drawable.ic_calendar);
-		TextView titletext = (TextView)findViewById(R.id.title);
-		titletext.setText(R.string.title_selection);
 
-		// mAdapter = new MyAdapter(getSupportFragmentManager(), );
-		mPager = (ViewPager) findViewById(R.id.pager);
-		// mPager.setAdapter(mAdapter);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		//		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+		//				WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+		setContentView(R.layout.activity_selection);
+
+		configureActionBar();
+	}
+
+	private void configureActionBar() {
+		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
+		new ActionBarConfigurator(actionBar)
+		.hide(ActionItemType.EVENT_SELECTION)
+		.setTitle(R.string.title_selection)
+		.configure();
 	}
 
 	@Override
@@ -147,12 +152,12 @@ public class SelectionActivity extends FragmentActivity {
 
 	private void goOptions(){
 		Log.d(TAG,"goOptions");
-//		Intent intent = new Intent(SelectionActivity.this, OptionsActivity.class);
-//		startActivity(intent);
-		Intent sendIntent = new Intent(Intent.ACTION_VIEW);         
-		sendIntent.setData(Uri.parse("sms:"));
-		sendIntent.putExtra("sms_body", "Bladenight Einladung " + 123456789); 
-		startActivity(sendIntent);
+		Intent intent = new Intent(SelectionActivity.this, OptionsActivity.class);
+		startActivity(intent);
+		//		Intent sendIntent = new Intent(Intent.ACTION_VIEW);         
+		//		sendIntent.setData(Uri.parse("sms:"));
+		//		sendIntent.putExtra("sms_body", "Bladenight Einladung " + 123456789); 
+		//		startActivity(sendIntent);
 	}
 
 
@@ -160,6 +165,11 @@ public class SelectionActivity extends FragmentActivity {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			Log.d(TAG,"getAllEventsReceiver.onReceive");
+			ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
+			if ( viewPager == null ) {
+				Log.e(TAG, "viewPager is null");
+				return;
+			}
 			String json = (String) intent.getExtras().get("json");
 			if ( json == null ) {
 				Log.e(TAG,"Failed to get json");
@@ -172,13 +182,13 @@ public class SelectionActivity extends FragmentActivity {
 				return;
 			}
 			mAdapter = new MyAdapter(getSupportFragmentManager(), eventsListMessage);
-			mPager.setAdapter(mAdapter);
+			viewPager.setAdapter(mAdapter);
 
 			EventsList eventsList = eventsListMessage.convertToEventsList();
 			Event nextEvent = eventsList.getNextEvent();
 			if ( nextEvent != null ) {
 				int startFragment = eventsList.indexOf(nextEvent);
-				mPager.setCurrentItem(startFragment);
+				viewPager.setCurrentItem(startFragment);
 			}
 		}
 	};
