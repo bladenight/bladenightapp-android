@@ -2,7 +2,6 @@ package de.greencity.bladenightapp.android.options;
 
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
@@ -21,6 +20,11 @@ public class OptionsActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_options);
+	}
+
+	@Override
+	public void onStart() {
+		super.onStart();
 		configureActionBar();
 	}
 
@@ -29,6 +33,7 @@ public class OptionsActivity extends Activity {
 		new ActionBarConfigurator(actionBar)
 			.hide(ActionItemType.OPTIONS)
 			.hide(ActionItemType.RELOAD)
+			.hide(ActionItemType.TRACKER_CONTROL)
 			.setTitle(R.string.title_options)
 			.configure();
 	}

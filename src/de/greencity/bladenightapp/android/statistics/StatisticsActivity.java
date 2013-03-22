@@ -22,6 +22,12 @@ public class StatisticsActivity extends Activity {
 		configureActionBar();
 	}
 
+	@Override
+	public void onStart() {
+		super.onStart();
+		configureActionBar();
+	}
+	
 	private void configureActionBar() {
 		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
 		new ActionBarConfigurator(actionBar)

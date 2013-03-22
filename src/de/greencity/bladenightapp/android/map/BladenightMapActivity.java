@@ -24,7 +24,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.markupartist.android.widget.ActionBar;
@@ -78,14 +77,7 @@ public class BladenightMapActivity extends MapActivity {
 		broadcastReceiversRegister.registerReceiver(Actions.CONNECTED, connectedReceiver);
 	}
 
-	private void configureActionBar() {
-		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
-		new ActionBarConfigurator(actionBar)
-		.hide(ActionItemType.MAP)
-		.setTitle(R.string.title_map)
-		.configure();
-	}
-
+	
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
@@ -101,7 +93,18 @@ public class BladenightMapActivity extends MapActivity {
 		periodicBroadcastIntentManager.schedulePeriodicBroadcastIntent(new Intent(Actions.GET_REAL_TIME_DATA), 5000);
 
 		verifyMapFile();
+		
+		configureActionBar();
 	}
+
+	private void configureActionBar() {
+		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
+		new ActionBarConfigurator(actionBar)
+		.hide(ActionItemType.MAP)
+		.setTitle(R.string.title_map)
+		.configure();
+	}
+
 
 	@Override
 	public void onStop() {

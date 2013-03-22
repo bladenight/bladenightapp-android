@@ -30,10 +30,16 @@ public class SocialActivity extends Activity {
 			ServiceUtils.stopService(this, GpsTrackerService.class);
 	}
 
+	@Override
+	public void onStart() {
+		super.onStart();
+		configureActionBar();
+	}
+	
 	private void configureActionBar() {
 		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
 		new ActionBarConfigurator(actionBar)
-		.hide(ActionItemType.OPTIONS)
+		.hide(ActionItemType.FRIENDS)
 		.setTitle(R.string.title_social)
 		.configure();
 	}

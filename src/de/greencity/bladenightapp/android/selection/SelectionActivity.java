@@ -6,7 +6,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.Fragment;
@@ -17,14 +16,9 @@ import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
-import android.view.WindowManager;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.markupartist.android.widget.ActionBar;
-import com.markupartist.android.widget.ActionBar.Action;
-import com.markupartist.android.widget.ActionBar.IntentAction;
 
 import de.greencity.bladenightapp.android.R;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
@@ -58,21 +52,13 @@ public class SelectionActivity extends FragmentActivity {
 
 		setContentView(R.layout.activity_selection);
 
-		configureActionBar();
-	}
-
-	private void configureActionBar() {
-		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
-		new ActionBarConfigurator(actionBar)
-		.hide(ActionItemType.EVENT_SELECTION)
-		.setTitle(R.string.title_selection)
-		.configure();
 	}
 
 	@Override
 	protected void onStart() {
-		Log.i(TAG, "onStart");
 		super.onStart();
+
+		Log.i(TAG, "onStart");
 
 		broadcastReceiversRegister.registerReceiver(Actions.GOT_ALL_EVENTS, gotAllEventsReceiver);
 		broadcastReceiversRegister.registerReceiver(Actions.CONNECTED, connectedReceiver);
@@ -89,8 +75,20 @@ public class SelectionActivity extends FragmentActivity {
 			}
 
 		};
+
 		bindService(new Intent(this, NetworkService.class), networkServiceConnection,  BIND_AUTO_CREATE);
+		
+		configureActionBar();
 	}	
+
+	private void configureActionBar() {
+		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
+		new ActionBarConfigurator(actionBar)
+		.hide(ActionItemType.EVENT_SELECTION)
+		.setTitle(R.string.title_selection)
+		.configure();
+	}
+
 
 	@Override
 	protected void onStop() {

@@ -15,6 +15,7 @@ public class ActionBarConfigurator {
 
 	public enum ActionItemType {
 		EVENT_SELECTION,
+		TRACKER_CONTROL,
 		MAP,
 		FRIENDS,
 		RELOAD,
@@ -25,10 +26,12 @@ public class ActionBarConfigurator {
 		this.actionBar = actionBar;
 		typeToAction = new HashMap<ActionItemType, Action>();
 		typeToAction.put(ActionItemType.EVENT_SELECTION, new ActionEventSelection());
+		typeToAction.put(ActionItemType.TRACKER_CONTROL, new ActionTrackerControl(actionBar.getContext()));
 		typeToAction.put(ActionItemType.MAP, new ActionMap());
 		typeToAction.put(ActionItemType.FRIENDS, new ActionFriends());
 		typeToAction.put(ActionItemType.RELOAD, new ActionReload());
 		typeToAction.put(ActionItemType.OPTIONS, new ActionOptions());
+		
 	}
 	
 	public ActionBarConfigurator hide(ActionItemType type) {
@@ -46,6 +49,7 @@ public class ActionBarConfigurator {
 			Log.e(TAG, "actionBar == null");
 			return;
 		}
+		actionBar.removeAllActions();
 		for ( ActionItemType type: typesToShow) {
 			actionBar.addAction(typeToAction.get(type));
 		}
