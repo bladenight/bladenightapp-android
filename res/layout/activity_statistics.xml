@@ -1,12 +1,521 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
+<LinearLayout
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="4dp" >
 
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="statistics view" />
+    <LinearLayout
+        android:id="@+id/statistics_top"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@drawable/cell_shape"
+        android:layout_weight="3" 
+        android:padding="4dp" > 
+            
+        <TextView
+            android:id="@+id/statistics_date"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1.5"
+            android:gravity="center"
+            android:textSize="25dip"
+            android:textStyle="bold"
+            android:textColor="@color/bn_white"
+            android:text="17.05.2012" />
+        
+        <LinearLayout
+            android:id="@+id/statistics_course_and_length"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:layout_weight="1" 
+            android:padding="4dp" > 
+            
+            <TextView
+                android:id="@+id/statistics_course"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textSize="20dip"
+                android:textStyle="bold"
+                android:textColor="@color/bn_white"
+                android:text="Strecke Nord kurz" />
+            <TextView
+                android:id="@+id/statistics_length"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1.5"
+                android:gravity="center"
+                android:textSize="37dip"
+                android:textStyle="bold"
+                android:textColor="@color/bn_white"
+                android:text="17.5k" />
+        
+        </LinearLayout>
+    </LinearLayout>
+    
+    <TableLayout
+        android:id="@+id/statistics_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1" 
+        android:shrinkColumns="*"  
+        android:stretchColumns="*"
+        android:background="@drawable/cell_shape">     
+        
+        <TableRow  
+            android:id="@+id/tableRow1"  
+            android:layout_height="wrap_content"  
+            android:layout_width="match_parent"  
+            android:gravity="center_horizontal">  
+        
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="13dip"
+                android:padding="5dp"
+                android:textColor="@color/bn_white"
+                android:textStyle="bold"
+                android:text="People" />
+        </TableRow>
+        
+        <TableRow  
+	        android:id="@+id/tableRow1"  
+	        android:layout_height="wrap_content"  
+	        android:layout_width="match_parent"  
+	        android:gravity="center_horizontal">  
+        
+	        <TextView
+	            android:layout_weight="0.32"
+	            android:layout_height="wrap_content"
+	            android:layout_width="0px"
+	            android:textSize="13dip"
+	            android:padding="5dp"
+	            android:textColor="@color/bn_white"
+	            android:text="Participants" />
+	        
+	        <TextView
+	            android:layout_weight="0.18"
+	            android:layout_height="wrap_content"
+	            android:layout_width="0px"
+	            android:textSize="13dip"
+	            android:padding="5dp"
+	            android:textColor="@color/bn_white"
+	            android:text="5000" />
+	        
+	        <TextView
+                android:layout_weight="0.32"
+                android:layout_height="wrap_content"
+                android:layout_width="0px"
+                android:textSize="13dip"
+                android:padding="5dp"
+                android:textColor="@color/bn_white"
+                android:text="Completed" />
+            
+            <TextView
+                android:layout_weight="0.18"
+                android:layout_height="wrap_content"
+                android:layout_width="0px"
+                android:textSize="13dip"
+                android:padding="5dp"
+                android:textColor="@color/bn_white"
+                android:text="Yes" />
+        </TableRow>
+        
+        <TableRow  
+            android:id="@+id/tableRow2"  
+            android:layout_height="wrap_content"  
+            android:layout_width="match_parent"  
+            android:gravity="center_horizontal">  
+            
+            <TextView
+                android:layout_weight="0.32"
+                android:layout_height="wrap_content"
+                android:layout_width="0px"
+                android:textSize="13dip"
+                android:padding="5dp"
+                android:textColor="@color/bn_white"
+                android:text="BNA Users" />
+            
+            <TextView
+                android:layout_weight="0.18"
+                android:layout_height="wrap_content"
+                android:layout_width="0px"
+                android:textSize="13dip"
+                android:padding="5dp"
+                android:textColor="@color/bn_white"
+                android:text="12" />
+            
+            <TextView
+                android:layout_weight="0.32"
+                android:layout_height="wrap_content"
+                android:layout_width="0px"
+                android:textSize="13dip"
+                android:padding="5dp"
+                android:textColor="@color/bn_white"
+                android:text="" />
+            
+            <TextView
+                android:layout_weight="0.18"
+                android:layout_height="wrap_content"
+                android:layout_width="0px"
+                android:textSize="13dip"
+                android:padding="5dp"
+                android:textColor="@color/bn_white"
+                android:text="" />
+ 
+        </TableRow>
+    </TableLayout>
+    
+        <TableLayout
+        android:id="@+id/statistics_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1" 
+        android:shrinkColumns="*"  
+        android:stretchColumns="*"
+        android:background="@drawable/cell_shape">     
+        
+        <TableRow  
+            android:id="@+id/tableRow1"  
+            android:layout_height="wrap_content"  
+            android:layout_width="match_parent"  
+            android:gravity="center_horizontal">  
+        
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="13dip"
+                android:padding="5dp"
+                android:textColor="@color/bn_white"
+                android:textStyle="bold"
+                android:text="Time" />
+        </TableRow>
+        
+        <TableRow  
+            android:id="@+id/tableRow1"  
+            android:layout_height="wrap_content"  
+            android:layout_width="match_parent"  
+            android:gravity="center_horizontal">  
+        
+            <TextView
+                android:layout_weight="0.32"
+                android:layout_height="wrap_content"
+                android:layout_width="0px"
+                android:textSize="13dip"
+                android:padding="5dp"
+                android:textColor="@color/bn_white"
+                android:text="Avg Time" />
+            
+            <TextView
+                android:layout_weight="0.18"
+                android:layout_height="wrap_content"
+                android:layout_width="0px"
+                android:textSize="13dip"
+                android:padding="5dp"
+                android:textColor="@color/bn_white"
+                android:text="98min" />
+            
+            <TextView
+                android:layout_weight="0.32"
+                android:layout_height="wrap_content"
+                android:layout_width="0px"
+                android:textSize="13dip"
+                android:padding="5dp"
+                android:textColor="@color/bn_white"
+                android:text="Max Time" />
+            
+            <TextView
+                android:layout_weight="0.18"
+                android:layout_height="wrap_content"
+                android:layout_width="0px"
+                android:textSize="13dip"
+                android:padding="5dp"
+                android:textColor="@color/bn_white"
+                android:text="127min" />
+        </TableRow>
+        
+        <TableRow  
+            android:id="@+id/tableRow2"  
+            android:layout_height="wrap_content"  
+            android:layout_width="match_parent"  
+            android:gravity="center_horizontal">  
+            
+            <TextView
+                android:layout_weight="0.32"
+                android:layout_height="wrap_content"
+                android:layout_width="0px"
+                android:textSize="13dip"
+                android:padding="5dp"
+                android:textColor="@color/bn_white"
+                android:text="Min Time" />
+            
+            <TextView
+                android:layout_weight="0.18"
+                android:layout_height="wrap_content"
+                android:layout_width="0px"
+                android:textSize="13dip"
+                android:padding="5dp"
+                android:textColor="@color/bn_white"
+                android:text="59min" />
+            
+            <TextView
+                android:layout_weight="0.32"
+                android:layout_height="wrap_content"
+                android:layout_width="0px"
+                android:textSize="13dip"
+                android:padding="5dp"
+                android:textColor="@color/bn_white"
+                android:text="My Time" />
+            
+            <TextView
+                android:layout_weight="0.18"
+                android:layout_height="wrap_content"
+                android:layout_width="0px"
+                android:textSize="13dip"
+                android:padding="5dp"
+                android:textColor="@color/bn_white"
+                android:text="88min" />
+ 
+        </TableRow>
+    </TableLayout>
+    
+            <TableLayout
+        android:id="@+id/statistics_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1" 
+        android:shrinkColumns="*"  
+        android:stretchColumns="*"
+        android:background="@drawable/cell_shape">     
+        
+        <TableRow  
+            android:id="@+id/tableRow1"  
+            android:layout_height="wrap_content"  
+            android:layout_width="match_parent"  
+            android:gravity="center_horizontal">  
+        
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="13dip"
+                android:padding="5dp"
+                android:textColor="@color/bn_white"
+                android:textStyle="bold"
+                android:text="Speed" />
+        </TableRow>
+        
+        <TableRow  
+            android:id="@+id/tableRow1"  
+            android:layout_height="wrap_content"  
+            android:layout_width="match_parent"  
+            android:gravity="center_horizontal">  
+        
+            <TextView
+                android:layout_weight="0.32"
+                android:layout_height="wrap_content"
+                android:layout_width="0px"
+                android:textSize="13dip"
+                android:padding="5dp"
+                android:textColor="@color/bn_white"
+                android:text="Avg Speed" />
+            
+            <TextView
+                android:layout_weight="0.18"
+                android:layout_height="wrap_content"
+                android:layout_width="0px"
+                android:textSize="13dip"
+                android:padding="5dp"
+                android:textColor="@color/bn_white"
+                android:text="23km/h" />
+            
+            <TextView
+                android:layout_weight="0.32"
+                android:layout_height="wrap_content"
+                android:layout_width="0px"
+                android:textSize="13dip"
+                android:padding="5dp"
+                android:textColor="@color/bn_white"
+                android:text="My Avg Speed" />
+            
+            <TextView
+                android:layout_weight="0.18"
+                android:layout_height="wrap_content"
+                android:layout_width="0px"
+                android:textSize="13dip"
+                android:padding="5dp"
+                android:textColor="@color/bn_white"
+                android:text="25km/h" />
+        </TableRow>
+        
+        <TableRow  
+            android:id="@+id/tableRow2"  
+            android:layout_height="wrap_content"  
+            android:layout_width="match_parent"  
+            android:gravity="center_horizontal">  
+            
+            <TextView
+                android:layout_weight="0.32"
+                android:layout_height="wrap_content"
+                android:layout_width="0px"
+                android:textSize="13dip"
+                android:padding="5dp"
+                android:textColor="@color/bn_white"
+                android:text="Max Speed" />
+            
+            <TextView
+                android:layout_weight="0.18"
+                android:layout_height="wrap_content"
+                android:layout_width="0px"
+                android:textSize="13dip"
+                android:padding="5dp"
+                android:textColor="@color/bn_white"
+                android:text="61km/h" />
+            
+            <TextView
+                android:layout_weight="0.32"
+                android:layout_height="wrap_content"
+                android:layout_width="0px"
+                android:textSize="13dip"
+                android:padding="5dp"
+                android:textColor="@color/bn_white"
+                android:text="My Max Speed" />
+            
+            <TextView
+                android:layout_weight="0.18"
+                android:layout_height="wrap_content"
+                android:layout_width="0px"
+                android:textSize="13dip"
+                android:padding="5dp"
+                android:textColor="@color/bn_white"
+                android:text="39km/h" />
+ 
+        </TableRow>
+    </TableLayout>
+    
+                <TableLayout
+        android:id="@+id/statistics_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1" 
+        android:shrinkColumns="*"  
+        android:stretchColumns="*"
+        android:background="@drawable/cell_shape">     
+        
+        <TableRow  
+            android:id="@+id/tableRow1"  
+            android:layout_height="wrap_content"  
+            android:layout_width="match_parent"  
+            android:gravity="center_horizontal">  
+        
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="13dip"
+                android:padding="5dp"
+                android:textColor="@color/bn_white"
+                android:textStyle="bold"
+                android:text="Misc" />
+        </TableRow>
+        
+        <TableRow  
+            android:id="@+id/tableRow1"  
+            android:layout_height="wrap_content"  
+            android:layout_width="match_parent"  
+            android:gravity="center_horizontal">  
+        
+            <TextView
+                android:layout_weight="0.32"
+                android:layout_height="wrap_content"
+                android:layout_width="0px"
+                android:textSize="13dip"
+                android:padding="5dp"
+                android:textColor="@color/bn_white"
+                android:text="Avg Group Length" />
+            
+            <TextView
+                android:layout_weight="0.18"
+                android:layout_height="wrap_content"
+                android:layout_width="0px"
+                android:textSize="13dip"
+                android:padding="5dp"
+                android:textColor="@color/bn_white"
+                android:text="2.3k" />
+            
+            <TextView
+                android:layout_weight="0.32"
+                android:layout_height="wrap_content"
+                android:layout_width="0px"
+                android:textSize="13dip"
+                android:padding="5dp"
+                android:textColor="@color/bn_white"
+                android:text="Max Group Length" />
+            
+            <TextView
+                android:layout_weight="0.18"
+                android:layout_height="wrap_content"
+                android:layout_width="0px"
+                android:textSize="13dip"
+                android:padding="5dp"
+                android:textColor="@color/bn_white"
+                android:text="3.3k" />
+        </TableRow>
+        
+        <TableRow  
+            android:id="@+id/tableRow2"  
+            android:layout_height="wrap_content"  
+            android:layout_width="match_parent"  
+            android:gravity="center_horizontal">  
+            
+            <TextView
+                android:layout_weight="0.32"
+                android:layout_height="wrap_content"
+                android:layout_width="0px"
+                android:textSize="13dip"
+                android:padding="5dp"
+                android:textColor="@color/bn_white"
+                android:text="Fluency" />
+            
+            <TextView
+                android:layout_weight="0.18"
+                android:layout_height="wrap_content"
+                android:layout_width="0px"
+                android:textSize="13dip"
+                android:padding="5dp"
+                android:textColor="@color/bn_white"
+                android:text="Good" />
+            
+            <TextView
+                android:layout_weight="0.32"
+                android:layout_height="wrap_content"
+                android:layout_width="0px"
+                android:textSize="13dip"
+                android:padding="5dp"
+                android:textColor="@color/bn_white"
+                android:text="Weather" />
+            
+            <TextView
+                android:layout_weight="0.18"
+                android:layout_height="wrap_content"
+                android:layout_width="0px"
+                android:textSize="13dip"
+                android:padding="5dp"
+                android:textColor="@color/bn_white"
+                android:text="Sunny" />
+ 
+        </TableRow>
+    </TableLayout>
+    
+    
+        
+        
 
-</RelativeLayout>
+</LinearLayout>
+</ScrollView>

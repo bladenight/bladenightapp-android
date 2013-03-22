@@ -16,6 +16,8 @@
     <string name="button_statistics">Statistics</string>
     <string name="button_social">Manage Friends</string>
     <string name="button_options">Options</string>
+    <string name="button_addFriend">Add Friend</string>
+    <string name="button_confirmFriend">Confirm Friend</string>
     <string name="arrow_left">&lt;</string>
     <string name="arrow_right">&gt;</string>
     <string name="arrow_no"></string>

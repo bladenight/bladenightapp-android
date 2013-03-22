@@ -1,0 +1,23 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/add_friend"
+    android:layout_width="wrap_content" android:layout_height="wrap_content"
+    android:layout_gravity="center" android:orientation="vertical"  >
+
+    <TextView
+        android:id="@+id/code_text" android:text="Test" 
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:textSize="20dip"
+        android:gravity="center"
+        android:textStyle="bold" 
+        android:layout_weight="1"/>
+
+        <Button
+            android:id="@+id/show_code_confirm"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:text="OK" 
+            android:onClick="onClick"/>  
+        
+</LinearLayout>

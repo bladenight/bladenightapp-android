@@ -23,14 +23,4 @@ public class StatisticsActivity extends Activity {
     TextView titletext = (TextView)findViewById(R.id.title);
     titletext.setText(R.string.title_statistics);
   }
-  
-  // Will be called via the onClick attribute
-  // of the buttons in main.xml
-  public void onClick(View view) {	  
-    switch (view.getId()) {
-//	    case R.id.next: goUp();
-//	      break;
-	    
-    }
-  }
 } 
