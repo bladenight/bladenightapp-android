@@ -135,13 +135,17 @@ public class GpsTrackerService extends Service {
 
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			Intent outgoingIntent = new Intent(Actions.LOCATION_UPDATE);
-			String json = new Gson().toJson(lastKnownPosition);
-			outgoingIntent.putExtra("json", json);
-			Log.d(TAG, "sendPositionUpdateToNetworkService: "+json);
-			sendBroadcast(outgoingIntent);
+			sendLocationUpdateToNetworkService();
 		}
 	};
+	
+	private void sendLocationUpdateToNetworkService() {
+		Intent outgoingIntent = new Intent(Actions.LOCATION_UPDATE);
+		String json = new Gson().toJson(lastKnownPosition);
+		outgoingIntent.putExtra("json", json);
+		Log.d(TAG, "sendPositionUpdateToNetworkService: "+json);
+		sendBroadcast(outgoingIntent);
+	}
 
 
 	private ServiceConnection networkServiceConnection;

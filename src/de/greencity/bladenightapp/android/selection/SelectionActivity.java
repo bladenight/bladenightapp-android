@@ -8,6 +8,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.Fragment;
@@ -146,8 +147,12 @@ public class SelectionActivity extends FragmentActivity {
 
 	private void goOptions(){
 		Log.d(TAG,"goOptions");
-		Intent intent = new Intent(SelectionActivity.this, OptionsActivity.class);
-		startActivity(intent);
+//		Intent intent = new Intent(SelectionActivity.this, OptionsActivity.class);
+//		startActivity(intent);
+		Intent sendIntent = new Intent(Intent.ACTION_VIEW);         
+		sendIntent.setData(Uri.parse("sms:"));
+		sendIntent.putExtra("sms_body", "Bladenight Einladung " + 123456789); 
+		startActivity(sendIntent);
 	}
 
 

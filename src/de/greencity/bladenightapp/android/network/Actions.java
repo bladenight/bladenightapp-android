@@ -3,6 +3,7 @@ package de.greencity.bladenightapp.android.network;
 
 
 
+
 public interface Actions {
 	static final String prefix =  "de.greencity.bladenightapp.android.network.";
 
@@ -27,5 +28,5 @@ public interface Actions {
 	static public final String DOWNLOAD_FAILURE 	= prefix+"DOWNLOAD_FAILURE";
 	
 	// Actions to update the persistent state of the network service
-	static public final String LOCATION_UPDATE		= prefix+"LOCATION_UPDATE"; 
+	static public final String LOCATION_UPDATE		= prefix+"LOCATION_UPDATE";
 }

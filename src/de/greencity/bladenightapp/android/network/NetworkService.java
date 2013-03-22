@@ -11,9 +11,11 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 
+import de.greencity.bladenightapp.android.gps.GpsTrackerService;
 import de.greencity.bladenightapp.android.utils.AsyncDownloadTask;
 import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
 import de.greencity.bladenightapp.android.utils.DeviceId;
+import de.greencity.bladenightapp.android.utils.ServiceUtils;
 import de.greencity.bladenightapp.network.BladenightUrl;
 import de.greencity.bladenightapp.network.messages.EventsListMessage;
 import de.greencity.bladenightapp.network.messages.GpsInfo;
@@ -244,7 +246,6 @@ public class NetworkService extends Service {
 
 			@Override
 			public void onResult(Object object) {
-				@SuppressWarnings("unchecked")
 				RealTimeUpdateData msg = (RealTimeUpdateData) object;
 				if ( msg == null ) {
 					Log.e(TAG, logPrefix+" Failed to cast");
@@ -258,6 +259,7 @@ public class NetworkService extends Service {
 		
 		gpsInfo.setLatitude(lastKnownPosition.getLatitude());
 		gpsInfo.setLongitude(lastKnownPosition.getLongitude());
+		gpsInfo.isParticipating(ServiceUtils.isServiceRunning(this, GpsTrackerService.class));
 
 		String url = BladenightUrl.GET_REALTIME_UPDATE.getText();
 			wampConnection.call(url, RealTimeUpdateData.class, callHandler, gpsInfo);
