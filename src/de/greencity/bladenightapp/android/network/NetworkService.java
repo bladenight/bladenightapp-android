@@ -5,33 +5,51 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+
+import com.google.gson.Gson;
+
+import de.greencity.bladenightapp.android.tracker.GpsTrackerService;
 import de.greencity.bladenightapp.android.utils.AsyncDownloadTask;
 import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
+import de.greencity.bladenightapp.android.utils.DeviceId;
+import de.greencity.bladenightapp.android.utils.ServiceUtils;
 import de.greencity.bladenightapp.network.BladenightUrl;
 import de.greencity.bladenightapp.network.messages.EventsListMessage;
+import de.greencity.bladenightapp.network.messages.GpsInfo;
+import de.greencity.bladenightapp.network.messages.LatLong;
 import de.greencity.bladenightapp.network.messages.RealTimeUpdateData;
 import de.greencity.bladenightapp.network.messages.RouteMessage;
 import de.tavendo.autobahn.Wamp;
+import de.tavendo.autobahn.Wamp.CallHandler;
 import de.tavendo.autobahn.WampOptions;
 
 public class NetworkService extends Service {
 	private final String TAG = "NetworkService";
 	private BladenightWampConnection wampConnection = new BladenightWampConnection();
 	private String server;
-	private BroadcastReceiversRegister broadcastReceiversRegister = new BroadcastReceiversRegister(this);
-	final int port = 8081;
-	
+	private final BroadcastReceiversRegister broadcastReceiversRegister = new BroadcastReceiversRegister(this);
+	private final LatLong lastKnownPosition = new LatLong(0, 0);
+	private final GpsInfo gpsInfo = new GpsInfo("", true, 0, 0);
+
+	final private int port = 8081;
+//	final private long locationTimeout = 60000;
+
 	@Override
 	public void onCreate() {
 		Log.i(TAG, "onCreate");
 		super.onCreate();
 		connect();
-		broadcastReceiversRegister.registerReceiver(Actions.GET_ALL_EVENTS, getAllEventsReceiver);
-		broadcastReceiversRegister.registerReceiver(Actions.GET_ACTIVE_ROUTE, getActiveRouteReceiver);
-		broadcastReceiversRegister.registerReceiver(Actions.GET_REAL_TIME_DATA, getRealTimeDataReceiver);
-		broadcastReceiversRegister.registerReceiver(Actions.DOWNLOAD_REQUEST, getDownloadRequestReceiver);
+		broadcastReceiversRegister.registerReceiver(NetworkIntents.GET_ALL_EVENTS, getAllEventsReceiver);
+		broadcastReceiversRegister.registerReceiver(NetworkIntents.GET_ACTIVE_ROUTE, getActiveRouteReceiver);
+		broadcastReceiversRegister.registerReceiver(NetworkIntents.GET_ROUTE, getRouteReceiver);
+		broadcastReceiversRegister.registerReceiver(NetworkIntents.GET_REAL_TIME_DATA, getRealTimeDataReceiver);
+		broadcastReceiversRegister.registerReceiver(NetworkIntents.DOWNLOAD_REQUEST, getDownloadRequestReceiver);
+		broadcastReceiversRegister.registerReceiver(NetworkIntents.LOCATION_UPDATE, updateLocationReceiver);
+		
+		gpsInfo.setDeviceId(DeviceId.getDeviceId(this));
 	}
 
 	@Override
@@ -57,17 +75,17 @@ public class NetworkService extends Service {
 
 
 	@Override
+	public IBinder onBind(Intent intent) {
+		Log.i(TAG, "onBind");
+		return new Binder();
+	}
+
+	@Override
 	public boolean onUnbind(Intent intent) {
 		Log.i(TAG, "onUnbind");
 		return super.onUnbind(intent);
 	}
 
-
-	@Override
-	public IBinder onBind(Intent intent) {
-		Log.i(TAG, "onBind");
-		return new Binder();
-	}
 
 	private void findServer() {
 		if ( server != null)
@@ -84,14 +102,14 @@ public class NetworkService extends Service {
 		}
 		Log.i(TAG, "Server="+server);
 	}
-	
+
 	private String getUrl(String protocol) {
 		return protocol + "://" + server + ":" + port;
 	}
-	
+
 	void connect() {
 		findServer();
-		
+
 		final String uri = getUrl("ws");
 		Log.i(TAG, "Connecting to: " + uri);
 
@@ -99,7 +117,7 @@ public class NetworkService extends Service {
 			@Override
 			public void onOpen() {
 				Log.d(TAG, "Status: Connected to " + uri);
-				sendBroadcast(new Intent(Actions.CONNECTED));
+				sendBroadcast(new Intent(NetworkIntents.CONNECTED));
 				wampConnection.isUsable(true);
 			}
 
@@ -107,7 +125,7 @@ public class NetworkService extends Service {
 			public void onClose(int code, String reason) {
 				Log.d(TAG, "Connection lost to " + uri);
 				Log.d(TAG, "Reason:" + reason);
-				sendBroadcast(new Intent(Actions.DISCONNECTED));
+				sendBroadcast(new Intent(NetworkIntents.DISCONNECTED));
 				wampConnection.isUsable(false);
 			}
 
@@ -132,34 +150,64 @@ public class NetworkService extends Service {
 			.setLogPrefix("getAllEventsReceiver")
 			.setWampConnection(wampConnection)
 			.setUrl(BladenightUrl.GET_ALL_EVENTS.getText())
-			.setOutputIntentName(Actions.GOT_ALL_EVENTS)
+			.setOutputIntentName(NetworkIntents.GOT_ALL_EVENTS)
 			.build();
 
 	private final BroadcastReceiver getActiveRouteReceiver = new BroadcastWampBridgeBuilder<String, RouteMessage>(String.class, RouteMessage.class)
 			.setLogPrefix("getActiveRouteReceiver")
 			.setWampConnection(wampConnection)
 			.setUrl(BladenightUrl.GET_ACTIVE_ROUTE.getText())
-			.setOutputIntentName(Actions.GOT_ACTIVE_ROUTE)
+			.setOutputIntentName(NetworkIntents.GOT_ACTIVE_ROUTE)
 			.build();
 
-	private final BroadcastReceiver getRealTimeDataReceiver = new BroadcastWampBridgeBuilder<String, RealTimeUpdateData>(String.class, RealTimeUpdateData.class)
-			.setLogPrefix("getRealTimeDataReceiver")
+	private final BroadcastReceiver getRouteReceiver = new BroadcastWampBridgeBuilder<String, RouteMessage>(String.class, RouteMessage.class)
+			.setLogPrefix("getRouteReceiver")
 			.setWampConnection(wampConnection)
-			.setUrl(BladenightUrl.GET_REALTIME_UPDATE.getText())
-			.setOutputIntentName(Actions.GOT_REAL_TIME_DATA)
+			.setUrl(BladenightUrl.GET_ROUTE.getText())
+			.setOutputIntentName(NetworkIntents.GOT_ROUTE)
 			.build();
+
+	private final BroadcastReceiver getRealTimeDataReceiver = new BroadcastReceiver() {
+		// final private String logPrefix = "getRealTimeDataReceiver";
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			getRealTimeData();
+		}
+
+	};
+
+	private final BroadcastReceiver updateLocationReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			LatLong latLong = null;
+			Bundle extras = intent.getExtras();
+			if ( extras != null ) {
+				String inputJson = extras.getString("json");
+				if ( inputJson != null ) {
+					latLong = new Gson().fromJson(inputJson, LatLong.class);
+				}
+			}
+			if ( latLong == null ) {
+				Log.e(TAG, "updateLocationReceiver: Failed to get new coordinates");
+				return;
+			}
+			lastKnownPosition.setLatitude(latLong.getLatitude());
+			lastKnownPosition.setLongitude(latLong.getLongitude());
+			getRealTimeData();
+		}
+	};
 
 	private final BroadcastReceiver getDownloadRequestReceiver = new BroadcastReceiver() {
 
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			final String remotePath = intent.getExtras().getString("remotePath");
-			
+
 			if ( remotePath == null ) {
 				Log.e(TAG, "remotePath is null");
 				return;
 			}
-			
+
 			String localPath = intent.getExtras().getString("localPath");
 
 			if ( localPath == null ) {
@@ -168,25 +216,60 @@ public class NetworkService extends Service {
 			}
 
 			String url = getUrl("http") + "/" + remotePath;
-			
+
 			AsyncDownloadTask asyncDownloadTask = new AsyncDownloadTask(context, remotePath) {
 				@Override
 				public void onDownloadFailure() {
 					Log.i(TAG, "onDownloadFailure");
-					Intent intent = new Intent(Actions.DOWNLOAD_FAILURE);
+					Intent intent = new Intent(NetworkIntents.DOWNLOAD_FAILURE);
 					intent.putExtra("id", remotePath);
 					sendBroadcast(intent);
 				}
 				@Override
 				public void onDownloadSuccess() {
 					Log.i(TAG, "onDownloadSuccess");
-					Intent intent = new Intent(Actions.DOWNLOAD_SUCCESS);
+					Intent intent = new Intent(NetworkIntents.DOWNLOAD_SUCCESS);
 					intent.putExtra("id", remotePath);
 					sendBroadcast(intent);
 				}
 			};
 			asyncDownloadTask.execute(url, localPath);
 		}
-		
+
 	};
+
+	protected void getRealTimeData() {
+		final String logPrefix = "getRealTimeData";
+		if ( ! wampConnection.isUsable() ) {
+			Log.w(TAG, logPrefix + ": Not connected");
+			sendBroadcast(new Intent(NetworkIntents.CONNECT));
+			return;
+		}
+
+		CallHandler callHandler = new CallHandler() {
+			@Override
+			public void onError(String arg0, String arg1) {
+				Log.e(TAG, logPrefix + " onError: " + arg0 + " " + arg1);
+			}
+
+			@Override
+			public void onResult(Object object) {
+				RealTimeUpdateData msg = (RealTimeUpdateData) object;
+				if ( msg == null ) {
+					Log.e(TAG, logPrefix+" Failed to cast");
+					return;
+				}
+				Intent intent = new Intent(NetworkIntents.GOT_REAL_TIME_DATA);
+				intent.putExtra("json", new Gson().toJson(msg));
+				sendBroadcast(intent);
+			}
+		};
+		
+		gpsInfo.setLatitude(lastKnownPosition.getLatitude());
+		gpsInfo.setLongitude(lastKnownPosition.getLongitude());
+		gpsInfo.isParticipating(ServiceUtils.isServiceRunning(this, GpsTrackerService.class));
+
+		String url = BladenightUrl.GET_REALTIME_UPDATE.getText();
+			wampConnection.call(url, RealTimeUpdateData.class, callHandler, gpsInfo);
+	}
 }

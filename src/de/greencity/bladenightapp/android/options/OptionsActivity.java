@@ -1,13 +1,16 @@
 package de.greencity.bladenightapp.android.options;
 
 
-import de.greencity.bladenightapp.android.R;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
-import android.widget.ImageView;
-import android.widget.TextView;
+
+import com.markupartist.android.widget.ActionBar;
+
+import de.greencity.bladenightapp.android.R;
+import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
+import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator.ActionItemType;
 
 public class OptionsActivity extends Activity {
 
@@ -15,13 +18,24 @@ public class OptionsActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_options);
-		getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.titlebar);
-		ImageView titlebar = (ImageView)(findViewById(R.id.icon));
-		titlebar.setImageResource(R.drawable.ic_menu_centeron);
-		TextView titletext = (TextView)findViewById(R.id.title);
-		titletext.setText(R.string.title_options);
+	}
+
+	@Override
+	public void onStart() {
+		super.onStart();
+		configureActionBar();
+	}
+
+	private void configureActionBar() {
+		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
+		new ActionBarConfigurator(actionBar)
+			.hide(ActionItemType.OPTIONS)
+			.hide(ActionItemType.RELOAD)
+			.hide(ActionItemType.TRACKER_CONTROL)
+			.setTitle(R.string.title_options)
+			.configure();
 	}
 
 	// Will be called via the onClick attribute

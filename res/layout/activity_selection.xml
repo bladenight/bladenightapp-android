@@ -1,49 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    >
+
+    <com.markupartist.android.widget.ActionBar
+        android:id="@+id/actionbar"
+        style="@style/ActionBar"
+        />
 
     <android.support.v4.view.ViewPager
         android:id="@+id/pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:padding="4dp" 
-         />
-    
-    
+        android:padding="4dp" />
 
-        
-    	
-        <LinearLayout
-	        android:id="@+id/group_options"
-	        android:layout_width="match_parent"
-	        android:layout_height="match_parent"
-	        android:orientation="horizontal"
-	        android:layout_weight="5"  >   
-	        
-		    <Button
-	            android:id="@+id/social"
-	            android:layout_weight="1"
-	            android:layout_width="match_parent"
-	            android:layout_height="match_parent"
-	            android:text="@string/button_social" 
-	            android:onClick="onClick"/>
-	
-	        <Button
-	            android:id="@+id/options"
-	            android:layout_weight="1"
-	            android:layout_height="match_parent"
-	            android:layout_width="match_parent"
-	            android:text="@string/button_options" 
-	            android:onClick="onClick"/>  
-    	
-        
-       
-        
-    </LinearLayout>
-
-    
-
-</LinearLayout> 
+</LinearLayout>

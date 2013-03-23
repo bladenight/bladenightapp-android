@@ -3,6 +3,7 @@ package de.greencity.bladenightapp.android.network;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -27,10 +28,11 @@ public class BroadcastWampBridge<Input, Output> extends BroadcastReceiver {
 
 		if ( ! wampConnection.isUsable() ) {
 			Log.w(TAG, logPrefix + ": Not connected");
+			context.sendBroadcast(new Intent(NetworkIntents.CONNECT));
 			return;
 		}
 
-		wampConnection.call(url, outputPayloadClass, new CallHandler() {
+		CallHandler callHandler = new CallHandler() {
 			@Override
 			public void onError(String arg0, String arg1) {
 				Log.e(TAG, logPrefix + " onError: " + arg0 + " " + arg1);
@@ -41,14 +43,35 @@ public class BroadcastWampBridge<Input, Output> extends BroadcastReceiver {
 				@SuppressWarnings("unchecked")
 				Output msg = (Output) object;
 				if ( msg == null ) {
-					Log.e(TAG, logPrefix+"Failed to cast");
+					Log.e(TAG, logPrefix+" Failed to cast");
 					return;
 				}
 				Intent intent = new Intent(outputIntentName);
 				intent.putExtra("json", new Gson().toJson(msg));
 				context.sendBroadcast(intent);
 			}
-		});
+		};
+		
+		Input input = getInput(intent);
+		
+		if ( input == null )
+			wampConnection.call(url, outputPayloadClass, callHandler);
+		else
+			wampConnection.call(url, outputPayloadClass, callHandler, input);
+	}
+	
+	private Input getInput(Intent intent) {
+		Bundle extras = intent.getExtras();
+		if ( extras == null )
+			return null;
+		String inputJson = extras.getString("json");
+		if ( inputJson == null )
+			return null;
+		Input input = new Gson().fromJson(inputJson, inputPayloadClass);
+		if ( input == null ) {
+			Log.e(TAG, "Failed to parse json: " + inputJson);
+		}
+		return input;
 	}
 
 	public String getLogPrefix() {

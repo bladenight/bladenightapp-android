@@ -1,17 +1,17 @@
 package de.greencity.bladenightapp.android.statistics;
 
 
-import de.greencity.bladenightapp.android.R;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
-import android.widget.ImageView;
-import android.widget.TextView;
+
+import com.markupartist.android.widget.ActionBar;
+
+import de.greencity.bladenightapp.android.R;
+import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
 
 public class StatisticsActivity extends Activity {
-  
-
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);

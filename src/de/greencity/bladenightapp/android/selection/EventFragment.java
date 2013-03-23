@@ -2,12 +2,16 @@ package de.greencity.bladenightapp.android.selection;
 
 
 
+import java.util.Locale;
+
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +21,7 @@ import android.widget.TextView;
 import de.greencity.bladenightapp.android.R;
 import de.greencity.bladenightapp.network.messages.EventMessage;
 
+@SuppressLint("ValidFragment")
 public class EventFragment extends Fragment {
 	private EventMessage event;
 	private DateTime startDateTime;
@@ -24,7 +29,7 @@ public class EventFragment extends Fragment {
 	private boolean hasRight;
 	private boolean hasLeft;
 	private DateTimeFormatter fromDateFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm");
-	private DateTimeFormatter toDateFormat = DateTimeFormat.forPattern("dd.MM, HH:mm");
+	private static DateTimeFormatter toDateFormat = getDestinationDateFormatter(Locale.getDefault());
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -72,13 +77,13 @@ public class EventFragment extends Fragment {
 	private void updateStatus(){
 		ImageView imageViewStatus = (ImageView)view.findViewById(R.id.status);
 		switch (event.getStatus()) {
-		case CANCELLED:
+		case CAN:
 			imageViewStatus.setImageResource(R.drawable.icon_no);
 			break;
-		case CONFIRMED:
+		case CON:
 			imageViewStatus.setImageResource(R.drawable.icon_ok);
 			break;
-		case PENDING:
+		case PEN:
 			imageViewStatus.setImageResource(R.drawable.icon_pending);
 			break;
 		default:
@@ -101,4 +106,24 @@ public class EventFragment extends Fragment {
 	private boolean isUpcoming(){
 		return startDateTime.isAfterNow();
 	}
+
+	private static DateTimeFormatter getDestinationDateFormatter(Locale locale) {
+		String country = locale.getISO3Country();
+		String localString = locale.toString();
+		Log.i(TAG,"localString="+localString + " / country="+country);
+		if ( localString.startsWith("de") ||  "DEU".equals(country) ) {
+			return DateTimeFormat.forPattern("dd. MMM YY, HH:mm").withLocale(locale);
+		}
+		if ( localString.startsWith("fr") ||  "FRA".equals(country) ) {
+			return DateTimeFormat.forPattern("dd MMM YY, HH:mm").withLocale(locale);
+		}
+		if ( localString.startsWith("en") ||  "USA".equals(country) ) {
+			return DateTimeFormat.forStyle("MS").withLocale(locale);
+		}
+		else {
+			return DateTimeFormat.forStyle("MS").withLocale(locale);
+		}
+	}
+	
+	final static String TAG = "EventFragment";
 }

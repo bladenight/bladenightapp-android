@@ -13,7 +13,6 @@
         android:layout_weight="1"    
         android:layout_gravity="fill_vertical"
         android:scrollbars="vertical" >
-
     </ListView>
     
     <LinearLayout
@@ -45,4 +44,3 @@
     </LinearLayout>
  
 </LinearLayout>
-

@@ -268,5 +268,4 @@ public class SocialActivity extends FragmentActivity implements AddFriendDialogL
           Dialog.dismiss();
       }
   }
- 
 } 

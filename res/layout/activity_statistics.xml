@@ -8,7 +8,6 @@
     android:orientation="vertical"
     android:padding="4dp" >
 
-
     <LinearLayout
         android:id="@+id/statistics_top"
         android:layout_width="match_parent"
@@ -512,10 +511,5 @@
  
         </TableRow>
     </TableLayout>
-    
-    
-        
-        
-
 </LinearLayout>
 </ScrollView>
