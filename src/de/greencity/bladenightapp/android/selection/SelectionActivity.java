@@ -26,8 +26,6 @@ import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator.Action
 import de.greencity.bladenightapp.android.map.BladenightMapActivity;
 import de.greencity.bladenightapp.android.network.Actions;
 import de.greencity.bladenightapp.android.network.NetworkService;
-import de.greencity.bladenightapp.android.options.OptionsActivity;
-import de.greencity.bladenightapp.android.social.SocialActivity;
 import de.greencity.bladenightapp.android.statistics.StatisticsActivity;
 import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
 import de.greencity.bladenightapp.events.Event;
@@ -123,10 +121,6 @@ public class SelectionActivity extends FragmentActivity {
 				goAction();
 			}
 			break;
-		case R.id.options: goOptions();
-		break;
-		case R.id.social: goSocial();
-		break;
 		}
 	}
 
@@ -139,25 +133,6 @@ public class SelectionActivity extends FragmentActivity {
 		Intent intent = new Intent(SelectionActivity.this, BladenightMapActivity.class);
 		startActivity(intent);
 	}
-
-	private void goSocial(){
-		Log.d(TAG,"goSocial");
-
-		Intent intent = new Intent(SelectionActivity.this, SocialActivity.class);
-		startActivity(intent);
-
-	}
-
-	private void goOptions(){
-		Log.d(TAG,"goOptions");
-		Intent intent = new Intent(SelectionActivity.this, OptionsActivity.class);
-		startActivity(intent);
-		//		Intent sendIntent = new Intent(Intent.ACTION_VIEW);         
-		//		sendIntent.setData(Uri.parse("sms:"));
-		//		sendIntent.putExtra("sms_body", "Bladenight Einladung " + 123456789); 
-		//		startActivity(sendIntent);
-	}
-
 
 	private final BroadcastReceiver gotAllEventsReceiver = new BroadcastReceiver() {
 		@Override

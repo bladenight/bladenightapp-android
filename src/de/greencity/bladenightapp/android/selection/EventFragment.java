@@ -72,13 +72,13 @@ public class EventFragment extends Fragment {
 	private void updateStatus(){
 		ImageView imageViewStatus = (ImageView)view.findViewById(R.id.status);
 		switch (event.getStatus()) {
-		case CANCELLED:
+		case CAN:
 			imageViewStatus.setImageResource(R.drawable.icon_no);
 			break;
-		case CONFIRMED:
+		case CON:
 			imageViewStatus.setImageResource(R.drawable.icon_ok);
 			break;
-		case PENDING:
+		case PEN:
 			imageViewStatus.setImageResource(R.drawable.icon_pending);
 			break;
 		default:

@@ -29,7 +29,7 @@ public class ActionBarConfigurator {
 		typeToAction.put(ActionItemType.TRACKER_CONTROL, new ActionTrackerControl(actionBar.getContext()));
 		typeToAction.put(ActionItemType.MAP, new ActionMap());
 		typeToAction.put(ActionItemType.FRIENDS, new ActionFriends());
-		typeToAction.put(ActionItemType.RELOAD, new ActionReload());
+		// typeToAction.put(ActionItemType.RELOAD, new ActionReload());
 		typeToAction.put(ActionItemType.OPTIONS, new ActionOptions());
 		
 	}
@@ -51,7 +51,9 @@ public class ActionBarConfigurator {
 		}
 		actionBar.removeAllActions();
 		for ( ActionItemType type: typesToShow) {
-			actionBar.addAction(typeToAction.get(type));
+			Action action = typeToAction.get(type);
+			if ( action != null )
+				actionBar.addAction(action);
 		}
 		actionBar.setTitle(title);
 	}

@@ -18,28 +18,4 @@
         android:layout_weight="1"
         android:padding="4dp" />
 
-    <LinearLayout
-        android:id="@+id/group_options"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="5"
-        android:orientation="horizontal" >
-
-        <Button
-            android:id="@+id/social"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:onClick="onClick"
-            android:text="@string/button_social" />
-
-        <Button
-            android:id="@+id/options"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:onClick="onClick"
-            android:text="@string/button_options" />
-    </LinearLayout>
-
 </LinearLayout>
