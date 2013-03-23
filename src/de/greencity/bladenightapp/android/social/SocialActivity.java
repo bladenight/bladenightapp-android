@@ -11,7 +11,7 @@ import com.markupartist.android.widget.ActionBar;
 import de.greencity.bladenightapp.android.R;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator.ActionItemType;
-import de.greencity.bladenightapp.android.gps.GpsTrackerService;
+import de.greencity.bladenightapp.android.tracker.GpsTrackerService;
 import de.greencity.bladenightapp.android.utils.ServiceUtils;
 
 public class SocialActivity extends Activity {

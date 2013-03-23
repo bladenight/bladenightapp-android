@@ -4,7 +4,7 @@ package de.greencity.bladenightapp.android.network;
 
 
 
-public interface Actions {
+public interface NetworkIntents {
 	static final String prefix =  "de.greencity.bladenightapp.android.network.";
 
 	// Actions sent to the NetworkService to request an action

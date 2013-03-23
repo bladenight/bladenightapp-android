@@ -1,4 +1,4 @@
-package de.greencity.bladenightapp.android.gps;
+package de.greencity.bladenightapp.android.tracker;
 
 import android.content.Context;
 import android.location.Location;

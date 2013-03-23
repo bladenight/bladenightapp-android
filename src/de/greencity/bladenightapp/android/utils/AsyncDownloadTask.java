@@ -12,7 +12,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Log;
-import de.greencity.bladenightapp.android.network.Actions;
+import de.greencity.bladenightapp.android.network.NetworkIntents;
 
 public class AsyncDownloadTask extends AsyncTask<String, Long, Boolean> {
 	
@@ -72,7 +72,7 @@ public class AsyncDownloadTask extends AsyncTask<String, Long, Boolean> {
 
 		Log.i(TAG, "onProgressUpdate " + newProgress);
 
-		Intent intent = new Intent(Actions.DOWNLOAD_PROGRESS);
+		Intent intent = new Intent(NetworkIntents.DOWNLOAD_PROGRESS);
 		intent.putExtra("id", downloadId);
 		intent.putExtra("total", fileSize);
 		intent.putExtra("current", newProgress);

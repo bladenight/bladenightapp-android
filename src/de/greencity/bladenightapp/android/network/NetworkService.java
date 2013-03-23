@@ -11,7 +11,7 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 
-import de.greencity.bladenightapp.android.gps.GpsTrackerService;
+import de.greencity.bladenightapp.android.tracker.GpsTrackerService;
 import de.greencity.bladenightapp.android.utils.AsyncDownloadTask;
 import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
 import de.greencity.bladenightapp.android.utils.DeviceId;
@@ -42,11 +42,11 @@ public class NetworkService extends Service {
 		Log.i(TAG, "onCreate");
 		super.onCreate();
 		connect();
-		broadcastReceiversRegister.registerReceiver(Actions.GET_ALL_EVENTS, getAllEventsReceiver);
-		broadcastReceiversRegister.registerReceiver(Actions.GET_ACTIVE_ROUTE, getActiveRouteReceiver);
-		broadcastReceiversRegister.registerReceiver(Actions.GET_REAL_TIME_DATA, getRealTimeDataReceiver);
-		broadcastReceiversRegister.registerReceiver(Actions.DOWNLOAD_REQUEST, getDownloadRequestReceiver);
-		broadcastReceiversRegister.registerReceiver(Actions.LOCATION_UPDATE, updateLocationReceiver);
+		broadcastReceiversRegister.registerReceiver(NetworkIntents.GET_ALL_EVENTS, getAllEventsReceiver);
+		broadcastReceiversRegister.registerReceiver(NetworkIntents.GET_ACTIVE_ROUTE, getActiveRouteReceiver);
+		broadcastReceiversRegister.registerReceiver(NetworkIntents.GET_REAL_TIME_DATA, getRealTimeDataReceiver);
+		broadcastReceiversRegister.registerReceiver(NetworkIntents.DOWNLOAD_REQUEST, getDownloadRequestReceiver);
+		broadcastReceiversRegister.registerReceiver(NetworkIntents.LOCATION_UPDATE, updateLocationReceiver);
 		
 		gpsInfo.setDeviceId(DeviceId.getDeviceId(this));
 	}
@@ -116,7 +116,7 @@ public class NetworkService extends Service {
 			@Override
 			public void onOpen() {
 				Log.d(TAG, "Status: Connected to " + uri);
-				sendBroadcast(new Intent(Actions.CONNECTED));
+				sendBroadcast(new Intent(NetworkIntents.CONNECTED));
 				wampConnection.isUsable(true);
 			}
 
@@ -124,7 +124,7 @@ public class NetworkService extends Service {
 			public void onClose(int code, String reason) {
 				Log.d(TAG, "Connection lost to " + uri);
 				Log.d(TAG, "Reason:" + reason);
-				sendBroadcast(new Intent(Actions.DISCONNECTED));
+				sendBroadcast(new Intent(NetworkIntents.DISCONNECTED));
 				wampConnection.isUsable(false);
 			}
 
@@ -149,14 +149,14 @@ public class NetworkService extends Service {
 			.setLogPrefix("getAllEventsReceiver")
 			.setWampConnection(wampConnection)
 			.setUrl(BladenightUrl.GET_ALL_EVENTS.getText())
-			.setOutputIntentName(Actions.GOT_ALL_EVENTS)
+			.setOutputIntentName(NetworkIntents.GOT_ALL_EVENTS)
 			.build();
 
 	private final BroadcastReceiver getActiveRouteReceiver = new BroadcastWampBridgeBuilder<String, RouteMessage>(String.class, RouteMessage.class)
 			.setLogPrefix("getActiveRouteReceiver")
 			.setWampConnection(wampConnection)
 			.setUrl(BladenightUrl.GET_ACTIVE_ROUTE.getText())
-			.setOutputIntentName(Actions.GOT_ACTIVE_ROUTE)
+			.setOutputIntentName(NetworkIntents.GOT_ACTIVE_ROUTE)
 			.build();
 
 	private final BroadcastReceiver getRealTimeDataReceiver = new BroadcastReceiver() {
@@ -213,14 +213,14 @@ public class NetworkService extends Service {
 				@Override
 				public void onDownloadFailure() {
 					Log.i(TAG, "onDownloadFailure");
-					Intent intent = new Intent(Actions.DOWNLOAD_FAILURE);
+					Intent intent = new Intent(NetworkIntents.DOWNLOAD_FAILURE);
 					intent.putExtra("id", remotePath);
 					sendBroadcast(intent);
 				}
 				@Override
 				public void onDownloadSuccess() {
 					Log.i(TAG, "onDownloadSuccess");
-					Intent intent = new Intent(Actions.DOWNLOAD_SUCCESS);
+					Intent intent = new Intent(NetworkIntents.DOWNLOAD_SUCCESS);
 					intent.putExtra("id", remotePath);
 					sendBroadcast(intent);
 				}
@@ -234,7 +234,7 @@ public class NetworkService extends Service {
 		final String logPrefix = "getRealTimeData";
 		if ( ! wampConnection.isUsable() ) {
 			Log.w(TAG, logPrefix + ": Not connected");
-			sendBroadcast(new Intent(Actions.CONNECT));
+			sendBroadcast(new Intent(NetworkIntents.CONNECT));
 			return;
 		}
 
@@ -251,7 +251,7 @@ public class NetworkService extends Service {
 					Log.e(TAG, logPrefix+" Failed to cast");
 					return;
 				}
-				Intent intent = new Intent(Actions.GOT_REAL_TIME_DATA);
+				Intent intent = new Intent(NetworkIntents.GOT_REAL_TIME_DATA);
 				intent.putExtra("json", new Gson().toJson(msg));
 				sendBroadcast(intent);
 			}

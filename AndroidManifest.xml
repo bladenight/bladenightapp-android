@@ -21,7 +21,7 @@
             android:name=".network.NetworkService"
             android:exported="false" />
         <service
-            android:name=".gps.GpsTrackerService"
+            android:name="de.greencity.bladenightapp.android.tracker.GpsTrackerService"
             android:exported="false" />
 
         <activity

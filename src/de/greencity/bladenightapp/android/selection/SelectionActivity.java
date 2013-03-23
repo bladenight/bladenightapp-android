@@ -24,7 +24,7 @@ import de.greencity.bladenightapp.android.R;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator.ActionItemType;
 import de.greencity.bladenightapp.android.map.BladenightMapActivity;
-import de.greencity.bladenightapp.android.network.Actions;
+import de.greencity.bladenightapp.android.network.NetworkIntents;
 import de.greencity.bladenightapp.android.network.NetworkService;
 import de.greencity.bladenightapp.android.statistics.StatisticsActivity;
 import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
@@ -58,14 +58,14 @@ public class SelectionActivity extends FragmentActivity {
 
 		Log.i(TAG, "onStart");
 
-		broadcastReceiversRegister.registerReceiver(Actions.GOT_ALL_EVENTS, gotAllEventsReceiver);
-		broadcastReceiversRegister.registerReceiver(Actions.CONNECTED, connectedReceiver);
+		broadcastReceiversRegister.registerReceiver(NetworkIntents.GOT_ALL_EVENTS, gotAllEventsReceiver);
+		broadcastReceiversRegister.registerReceiver(NetworkIntents.CONNECTED, connectedReceiver);
 
 		networkServiceConnection = new ServiceConnection() {
 			@Override
 			public void onServiceConnected(ComponentName name, IBinder service) {
 				Log.i(TAG+".ServiceConnection", "onServiceConnected");
-				sendBroadcast(new Intent(Actions.GET_ALL_EVENTS));
+				sendBroadcast(new Intent(NetworkIntents.GET_ALL_EVENTS));
 			}
 			@Override
 			public void onServiceDisconnected(ComponentName name) {
@@ -170,7 +170,7 @@ public class SelectionActivity extends FragmentActivity {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			Log.d(TAG,"connectedReceiver.onReceive");
-			sendBroadcast(new Intent(Actions.GET_ALL_EVENTS));
+			sendBroadcast(new Intent(NetworkIntents.GET_ALL_EVENTS));
 		}
 	};
 

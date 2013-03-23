@@ -28,7 +28,7 @@ public class BroadcastWampBridge<Input, Output> extends BroadcastReceiver {
 
 		if ( ! wampConnection.isUsable() ) {
 			Log.w(TAG, logPrefix + ": Not connected");
-			context.sendBroadcast(new Intent(Actions.CONNECT));
+			context.sendBroadcast(new Intent(NetworkIntents.CONNECT));
 			return;
 		}
 

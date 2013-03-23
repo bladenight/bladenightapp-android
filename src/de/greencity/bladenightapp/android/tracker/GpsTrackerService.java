@@ -1,4 +1,4 @@
-package de.greencity.bladenightapp.android.gps;
+package de.greencity.bladenightapp.android.tracker;
 
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -16,7 +16,7 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 
-import de.greencity.bladenightapp.android.network.Actions;
+import de.greencity.bladenightapp.android.network.NetworkIntents;
 import de.greencity.bladenightapp.android.network.NetworkService;
 import de.greencity.bladenightapp.android.selection.SelectionActivity;
 import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
@@ -32,7 +32,7 @@ public class GpsTrackerService extends Service {
 			@Override
 			public void onServiceConnected(ComponentName name, IBinder service) {
 				Log.i(TAG+".ServiceConnection", "onServiceConnected");
-				sendBroadcast(new Intent(Actions.GET_ALL_EVENTS));
+				sendBroadcast(new Intent(NetworkIntents.GET_ALL_EVENTS));
 			}
 			@Override
 			public void onServiceDisconnected(ComponentName name) {
@@ -140,7 +140,7 @@ public class GpsTrackerService extends Service {
 	};
 	
 	private void sendLocationUpdateToNetworkService() {
-		Intent outgoingIntent = new Intent(Actions.LOCATION_UPDATE);
+		Intent outgoingIntent = new Intent(NetworkIntents.LOCATION_UPDATE);
 		String json = new Gson().toJson(lastKnownPosition);
 		outgoingIntent.putExtra("json", json);
 		Log.d(TAG, "sendPositionUpdateToNetworkService: "+json);

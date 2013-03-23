@@ -31,7 +31,7 @@ import com.markupartist.android.widget.ActionBar;
 import de.greencity.bladenightapp.android.R;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator.ActionItemType;
-import de.greencity.bladenightapp.android.network.Actions;
+import de.greencity.bladenightapp.android.network.NetworkIntents;
 import de.greencity.bladenightapp.android.network.NetworkService;
 import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
 import de.greencity.bladenightapp.android.utils.JsonBroadcastReceiver;
@@ -60,7 +60,7 @@ public class BladenightMapActivity extends MapActivity {
 			@Override
 			public void onServiceConnected(ComponentName name, IBinder service) {
 				Log.i(TAG+".ServiceConnection", "onServiceConnected");
-				sendBroadcast(new Intent(Actions.GET_ACTIVE_ROUTE));
+				sendBroadcast(new Intent(NetworkIntents.GET_ACTIVE_ROUTE));
 			}
 			@Override
 			public void onServiceDisconnected(ComponentName name) {
@@ -69,12 +69,12 @@ public class BladenightMapActivity extends MapActivity {
 
 		};
 
-		broadcastReceiversRegister.registerReceiver(Actions.GOT_ACTIVE_ROUTE, gotActiveRouteReceiver);
-		broadcastReceiversRegister.registerReceiver(Actions.GOT_REAL_TIME_DATA, gotRealTimeDataReceiver);
-		broadcastReceiversRegister.registerReceiver(Actions.DOWNLOAD_FAILURE, gotDownloadFailureReceiver);
-		broadcastReceiversRegister.registerReceiver(Actions.DOWNLOAD_SUCCESS, gotDownloadSuccessReceiver);
-		broadcastReceiversRegister.registerReceiver(Actions.DOWNLOAD_PROGRESS, gotDownloadProgressReceiver);
-		broadcastReceiversRegister.registerReceiver(Actions.CONNECTED, connectedReceiver);
+		broadcastReceiversRegister.registerReceiver(NetworkIntents.GOT_ACTIVE_ROUTE, gotActiveRouteReceiver);
+		broadcastReceiversRegister.registerReceiver(NetworkIntents.GOT_REAL_TIME_DATA, gotRealTimeDataReceiver);
+		broadcastReceiversRegister.registerReceiver(NetworkIntents.DOWNLOAD_FAILURE, gotDownloadFailureReceiver);
+		broadcastReceiversRegister.registerReceiver(NetworkIntents.DOWNLOAD_SUCCESS, gotDownloadSuccessReceiver);
+		broadcastReceiversRegister.registerReceiver(NetworkIntents.DOWNLOAD_PROGRESS, gotDownloadProgressReceiver);
+		broadcastReceiversRegister.registerReceiver(NetworkIntents.CONNECTED, connectedReceiver);
 	}
 
 	
@@ -90,7 +90,7 @@ public class BladenightMapActivity extends MapActivity {
 
 		bindService(new Intent(this, NetworkService.class), serviceConnection,  BIND_AUTO_CREATE);
 
-		periodicBroadcastIntentManager.schedulePeriodicBroadcastIntent(new Intent(Actions.GET_REAL_TIME_DATA), 5000);
+		periodicBroadcastIntentManager.schedulePeriodicBroadcastIntent(new Intent(NetworkIntents.GET_REAL_TIME_DATA), 5000);
 
 		verifyMapFile();
 		
@@ -163,7 +163,7 @@ public class BladenightMapActivity extends MapActivity {
 
 		downloadProgressDialog.show();
 
-		Intent intent = new Intent(Actions.DOWNLOAD_REQUEST);
+		Intent intent = new Intent(NetworkIntents.DOWNLOAD_REQUEST);
 		intent.putExtra("localPath", mapLocalPath);
 		intent.putExtra("remotePath", mapRemotePath);
 		sendBroadcast(intent);
@@ -250,8 +250,8 @@ public class BladenightMapActivity extends MapActivity {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			Log.d(TAG,"connectedReceiver.onReceive");
-			sendBroadcast(new Intent(Actions.GET_ACTIVE_ROUTE));
-			sendBroadcast(new Intent(Actions.GET_REAL_TIME_DATA));
+			sendBroadcast(new Intent(NetworkIntents.GET_ACTIVE_ROUTE));
+			sendBroadcast(new Intent(NetworkIntents.GET_REAL_TIME_DATA));
 		}
 	};
 	
