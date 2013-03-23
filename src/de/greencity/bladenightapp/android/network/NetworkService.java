@@ -35,7 +35,7 @@ public class NetworkService extends Service {
 	private final GpsInfo gpsInfo = new GpsInfo("", true, 0, 0);
 
 	final private int port = 8081;
-	final private long locationTimeout = 60000;
+//	final private long locationTimeout = 60000;
 
 	@Override
 	public void onCreate() {
@@ -44,6 +44,7 @@ public class NetworkService extends Service {
 		connect();
 		broadcastReceiversRegister.registerReceiver(NetworkIntents.GET_ALL_EVENTS, getAllEventsReceiver);
 		broadcastReceiversRegister.registerReceiver(NetworkIntents.GET_ACTIVE_ROUTE, getActiveRouteReceiver);
+		broadcastReceiversRegister.registerReceiver(NetworkIntents.GET_ROUTE, getRouteReceiver);
 		broadcastReceiversRegister.registerReceiver(NetworkIntents.GET_REAL_TIME_DATA, getRealTimeDataReceiver);
 		broadcastReceiversRegister.registerReceiver(NetworkIntents.DOWNLOAD_REQUEST, getDownloadRequestReceiver);
 		broadcastReceiversRegister.registerReceiver(NetworkIntents.LOCATION_UPDATE, updateLocationReceiver);
@@ -159,8 +160,15 @@ public class NetworkService extends Service {
 			.setOutputIntentName(NetworkIntents.GOT_ACTIVE_ROUTE)
 			.build();
 
+	private final BroadcastReceiver getRouteReceiver = new BroadcastWampBridgeBuilder<String, RouteMessage>(String.class, RouteMessage.class)
+			.setLogPrefix("getRouteReceiver")
+			.setWampConnection(wampConnection)
+			.setUrl(BladenightUrl.GET_ROUTE.getText())
+			.setOutputIntentName(NetworkIntents.GOT_ROUTE)
+			.build();
+
 	private final BroadcastReceiver getRealTimeDataReceiver = new BroadcastReceiver() {
-		final private String logPrefix = "getRealTimeDataReceiver";
+		// final private String logPrefix = "getRealTimeDataReceiver";
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			getRealTimeData();

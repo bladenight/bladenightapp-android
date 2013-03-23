@@ -19,10 +19,12 @@ import android.view.Window;
 
 import com.google.gson.Gson;
 import com.markupartist.android.widget.ActionBar;
+import com.markupartist.android.widget.ActionBar.Action;
 
 import de.greencity.bladenightapp.android.R;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator.ActionItemType;
+import de.greencity.bladenightapp.android.actionbar.ActionMap;
 import de.greencity.bladenightapp.android.map.BladenightMapActivity;
 import de.greencity.bladenightapp.android.network.NetworkIntents;
 import de.greencity.bladenightapp.android.network.NetworkService;
@@ -33,12 +35,6 @@ import de.greencity.bladenightapp.events.EventsList;
 import de.greencity.bladenightapp.network.messages.EventsListMessage;
 
 public class SelectionActivity extends FragmentActivity {
-	private MyAdapter mAdapter;
-	private final String TAG = "SelectionActivity"; 
-	private ServiceConnection networkServiceConnection;
-	private BroadcastReceiversRegister broadcastReceiversRegister = new BroadcastReceiversRegister(this); 
-
-
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		Log.i(TAG, "onCreate");
@@ -49,6 +45,21 @@ public class SelectionActivity extends FragmentActivity {
 		//				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
 		setContentView(R.layout.activity_selection);
+
+		viewPager = (ViewPager) findViewById(R.id.pager);
+		viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+			@Override
+			public void onPageSelected(int page) {
+				posEventShown = page;
+				Log.i(TAG, "onPageSelected: currentFragmentShown="+posEventShown);
+			}
+			@Override
+			public void onPageScrolled(int arg0, float arg1, int arg2) {
+			}
+			@Override
+			public void onPageScrollStateChanged(int arg0) {
+			}
+		});
 
 	}
 
@@ -75,16 +86,34 @@ public class SelectionActivity extends FragmentActivity {
 		};
 
 		bindService(new Intent(this, NetworkService.class), networkServiceConnection,  BIND_AUTO_CREATE);
-		
+
 		configureActionBar();
+
+		tryToRestorePreviouslyShownEvent();
 	}	
 
 	private void configureActionBar() {
 		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
+		Action mapActionWithParameters = new ActionMap() {
+			@Override
+			public void performAction(View view) {
+			    Intent intent = new Intent(view.getContext(), BladenightMapActivity.class);
+			    Event event = getEventShown();
+			    if ( event == null ) {
+			    	Log.e(TAG, "No event currently shown");
+			    	return;
+			    }
+			    intent.putExtra("routeName", event.getRouteName());
+			    intent.putExtra("isRealTime", posEventCurrent == posEventShown);
+			    view.getContext().startActivity(intent);
+			}
+		};
 		new ActionBarConfigurator(actionBar)
 		.hide(ActionItemType.EVENT_SELECTION)
+		.replaceAction(ActionItemType.MAP, mapActionWithParameters)
 		.setTitle(R.string.title_selection)
 		.configure();
+		
 	}
 
 
@@ -138,7 +167,7 @@ public class SelectionActivity extends FragmentActivity {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			Log.d(TAG,"getAllEventsReceiver.onReceive");
-			ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
+
 			if ( viewPager == null ) {
 				Log.e(TAG, "viewPager is null");
 				return;
@@ -154,17 +183,59 @@ public class SelectionActivity extends FragmentActivity {
 				Log.e(TAG,"Failed to parse json");
 				return;
 			}
+
 			mAdapter = new MyAdapter(getSupportFragmentManager(), eventsListMessage);
 			viewPager.setAdapter(mAdapter);
-
-			EventsList eventsList = eventsListMessage.convertToEventsList();
-			Event nextEvent = eventsList.getNextEvent();
-			if ( nextEvent != null ) {
-				int startFragment = eventsList.indexOf(nextEvent);
-				viewPager.setCurrentItem(startFragment);
+			eventsList = eventsListMessage.convertToEventsList();
+			updatePositionEventCurrent();
+			if ( ! tryToRestorePreviouslyShownEvent() ) {
+				showNextEvent();
 			}
 		}
 	};
+
+	private boolean tryToRestorePreviouslyShownEvent() {
+		int count = getFragmentCount();
+		Log.i(TAG, "restore: currentFragmentShown="+posEventShown);
+		Log.i(TAG, "restore: max="+count);
+		if ( posEventShown >= 0 && posEventShown < count ) {
+			viewPager.setCurrentItem(posEventShown);
+			return true;
+		}
+		return false;
+	}
+	
+	private void updatePositionEventCurrent() {
+		posEventCurrent = -1;
+		Event nextEvent = eventsList.getNextEvent();
+		if ( nextEvent != null ) {
+			posEventCurrent = eventsList.indexOf(nextEvent);
+		}
+	}
+	
+	private boolean isValidFragmentPosition(int pos) {
+		return pos >=0 && pos < getFragmentCount();
+	}
+	
+	private void showNextEvent() {
+		Event nextEvent = eventsList.getNextEvent();
+		if ( isValidFragmentPosition(posEventCurrent) ) {
+			int startFragment = eventsList.indexOf(nextEvent);
+			viewPager.setCurrentItem(startFragment);
+		}
+	}
+	
+	private int getFragmentCount() {
+		if ( viewPager == null || viewPager.getAdapter() == null )
+			return 0;
+		return viewPager.getAdapter().getCount();
+	}
+	
+	protected Event getEventShown() {
+		if ( posEventShown < 0 || posEventShown >= eventsList.size() )
+			return null;
+		return eventsList.get(posEventShown);
+	}
 
 	private final BroadcastReceiver connectedReceiver = new BroadcastReceiver() {
 		@Override
@@ -206,5 +277,14 @@ public class SelectionActivity extends FragmentActivity {
 			return fragment;      
 		}
 	}
+
+	private MyAdapter mAdapter;
+	private final String TAG = "SelectionActivity"; 
+	private ServiceConnection networkServiceConnection;
+	private BroadcastReceiversRegister broadcastReceiversRegister = new BroadcastReceiversRegister(this);
+	private static int posEventShown = -1;
+	private static int posEventCurrent = -1;
+	private EventsList eventsList;
+	private ViewPager viewPager;
 
 } 

@@ -44,6 +44,11 @@ public class ActionBarConfigurator {
 		return this;
 	}
 	
+	public ActionBarConfigurator replaceAction(ActionItemType type, Action action) {
+		typeToAction.put(type, action);
+		return this;
+	}
+	
 	public void configure() {
 		if ( actionBar == null ) {
 			Log.e(TAG, "actionBar == null");

@@ -26,6 +26,7 @@ import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
 import com.markupartist.android.widget.ActionBar;
 
 import de.greencity.bladenightapp.android.R;
@@ -48,7 +49,7 @@ public class BladenightMapActivity extends MapActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_action);
 		configureActionBar();
@@ -60,7 +61,7 @@ public class BladenightMapActivity extends MapActivity {
 			@Override
 			public void onServiceConnected(ComponentName name, IBinder service) {
 				Log.i(TAG+".ServiceConnection", "onServiceConnected");
-				sendBroadcast(new Intent(NetworkIntents.GET_ACTIVE_ROUTE));
+				requestRouteFromNetworkService();
 			}
 			@Override
 			public void onServiceDisconnected(ComponentName name) {
@@ -70,18 +71,12 @@ public class BladenightMapActivity extends MapActivity {
 		};
 
 		broadcastReceiversRegister.registerReceiver(NetworkIntents.GOT_ACTIVE_ROUTE, gotActiveRouteReceiver);
+		broadcastReceiversRegister.registerReceiver(NetworkIntents.GOT_ROUTE, gotRouteReceiver);
 		broadcastReceiversRegister.registerReceiver(NetworkIntents.GOT_REAL_TIME_DATA, gotRealTimeDataReceiver);
 		broadcastReceiversRegister.registerReceiver(NetworkIntents.DOWNLOAD_FAILURE, gotDownloadFailureReceiver);
 		broadcastReceiversRegister.registerReceiver(NetworkIntents.DOWNLOAD_SUCCESS, gotDownloadSuccessReceiver);
 		broadcastReceiversRegister.registerReceiver(NetworkIntents.DOWNLOAD_PROGRESS, gotDownloadProgressReceiver);
 		broadcastReceiversRegister.registerReceiver(NetworkIntents.CONNECTED, connectedReceiver);
-	}
-
-	
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-		broadcastReceiversRegister.unregisterReceivers();
 	}
 
 	@Override
@@ -90,11 +85,56 @@ public class BladenightMapActivity extends MapActivity {
 
 		bindService(new Intent(this, NetworkService.class), serviceConnection,  BIND_AUTO_CREATE);
 
-		periodicBroadcastIntentManager.schedulePeriodicBroadcastIntent(new Intent(NetworkIntents.GET_REAL_TIME_DATA), 5000);
-
 		verifyMapFile();
-		
+
 		configureActionBar();
+
+		getActivityParametersFromIntent(getIntent());
+		
+		if ( isRealTime )
+			periodicBroadcastIntentManager.schedulePeriodicBroadcastIntent(new Intent(NetworkIntents.GET_REAL_TIME_DATA), 5000);
+	}
+
+
+	private void getActivityParametersFromIntent(Intent intent) {
+		if ( intent != null) {
+			Bundle bundle = intent.getExtras();
+			if ( bundle != null ) {
+				String s = bundle.getString("routeName");
+				if ( s != null)
+					routeName = s;
+				Log.i(TAG, "routeName="+routeName);
+				Boolean b = bundle.getBoolean("isRealTime");
+				if ( b != null)
+					isRealTime = b;
+				Log.i(TAG, "isRealTime="+isRealTime);
+			}
+			else {
+				Log.w(TAG, "bundle="+bundle);
+			}
+		}
+		else {
+			Log.w(TAG, "intent="+intent);
+		}
+	}
+
+	protected void requestRouteFromNetworkService() {
+		if ( isRealTime ) {
+			sendBroadcast(new Intent(NetworkIntents.GET_ACTIVE_ROUTE));
+			sendBroadcast(new Intent(NetworkIntents.GET_REAL_TIME_DATA));
+		}
+		else {
+			Intent intent = new Intent(NetworkIntents.GET_ROUTE);
+			intent.putExtra("json", new Gson().toJson(routeName));
+			sendBroadcast(intent);
+		}
+	}
+
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		broadcastReceiversRegister.unregisterReceivers();
 	}
 
 	private void configureActionBar() {
@@ -117,13 +157,13 @@ public class BladenightMapActivity extends MapActivity {
 
 	public void createMapView() {
 		// TODO to remove !
-		clearTileCache();
+		// clearTileCache();
 
 		mapView = new BladenightMapView(this);
 		mapView.setClickable(true);
 		mapView.setBuiltInZoomControls(true);
 		mapView.setRenderTheme(CustomRenderTheme.CUSTOM_RENDER);
-		
+
 
 		setMapFile();
 
@@ -198,7 +238,15 @@ public class BladenightMapActivity extends MapActivity {
 	}
 
 
-	private final BroadcastReceiver gotActiveRouteReceiver = new JsonBroadcastReceiver<RouteMessage>("gotActiveRouteReceiver", RouteMessage.class) {
+	private final BroadcastReceiver gotActiveRouteReceiver = new JsonBroadcastReceiver<RouteMessage>("gotRouteReceiver", RouteMessage.class) {
+		@Override
+		public void onReceive(RouteMessage routeMessage) {
+			routeOverlay.update(routeMessage);
+			fitViewToRoute();
+		}
+	};
+
+	private final BroadcastReceiver gotRouteReceiver = new JsonBroadcastReceiver<RouteMessage>("gotRouteReceiver", RouteMessage.class) {
 		@Override
 		public void onReceive(RouteMessage routeMessage) {
 			routeOverlay.update(routeMessage);
@@ -250,11 +298,10 @@ public class BladenightMapActivity extends MapActivity {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			Log.d(TAG,"connectedReceiver.onReceive");
-			sendBroadcast(new Intent(NetworkIntents.GET_ACTIVE_ROUTE));
-			sendBroadcast(new Intent(NetworkIntents.GET_REAL_TIME_DATA));
+			requestRouteFromNetworkService();
 		}
 	};
-	
+
 
 	private void onMapFileDownloadSuccess() {
 		downloadProgressDialog.dismiss();
@@ -288,4 +335,6 @@ public class BladenightMapActivity extends MapActivity {
 	private final String mapLocalPath = Environment.getExternalStorageDirectory().getPath()+"/Bladenight/munich.map";
 	private final String mapRemotePath = "maps/munich.map";
 	private ProgressDialog downloadProgressDialog;
+	private String routeName = "";
+	private boolean isRealTime = false;
 } 
