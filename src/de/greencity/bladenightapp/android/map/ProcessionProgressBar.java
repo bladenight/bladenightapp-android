@@ -32,6 +32,7 @@ public class ProcessionProgressBar extends ProgressBar {
 
 		textPaint = new Paint();  
 		textPaint.setColor(Color.WHITE);
+		textPaint.setAntiAlias(true);
 		textPaint.setTextSize(20);
 
 		processionOutlinePaint = new Paint();
