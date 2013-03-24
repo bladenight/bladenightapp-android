@@ -41,11 +41,6 @@ import de.greencity.bladenightapp.network.messages.RealTimeUpdateData;
 import de.greencity.bladenightapp.network.messages.RouteMessage;
 
 public class BladenightMapActivity extends MapActivity {
-
-	private RouteOverlay routeOverlay;
-	private BladenightMapView mapView;
-	PeriodicBroadcastIntentManager periodicBroadcastIntentManager = new PeriodicBroadcastIntentManager(this);
-
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -56,6 +51,7 @@ public class BladenightMapActivity extends MapActivity {
 		createMapView();
 
 		downloadProgressDialog = new ProgressDialog(this);
+		processionProgressBar = (ProcessionProgressBar) findViewById(R.id.progress_procession);
 
 		serviceConnection = new ServiceConnection() {
 			@Override
@@ -258,6 +254,7 @@ public class BladenightMapActivity extends MapActivity {
 		@Override
 		public void onReceive(RealTimeUpdateData data) {
 			routeOverlay.update(data);
+			processionProgressBar.update(data);
 			// fitViewToProcession();
 		}
 	};
@@ -337,4 +334,8 @@ public class BladenightMapActivity extends MapActivity {
 	private ProgressDialog downloadProgressDialog;
 	private String routeName = "";
 	private boolean isRealTime = false;
+	private RouteOverlay routeOverlay;
+	private BladenightMapView mapView;
+	private PeriodicBroadcastIntentManager periodicBroadcastIntentManager = new PeriodicBroadcastIntentManager(this);
+	private ProcessionProgressBar processionProgressBar;
 } 

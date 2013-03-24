@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
+import android.util.Log;
 import de.greencity.bladenightapp.network.scanner.PortScanner;
 
 public class ServerFinder {
@@ -17,13 +18,16 @@ public class ServerFinder {
 
 		scanner.setTimeout(1000);
 
-		if ( "google_sdk".equals( Build.PRODUCT ) || "sdk".equals( Build.PRODUCT ) )
+		Log.i(TAG, "BUILD_PRODUCT=" + Build.PRODUCT);
+		if ( "google_sdk".equals( Build.PRODUCT ) || "sdk".equals( Build.PRODUCT ) ) {
 			// Assume we are running in the emulator, and the server runs on the development host
 			scanner.addHost("10.0.2.2");
+		}
 
 		String wifiSubnet = getWifiSubnetAsString();
+		Log.i(TAG, "wifiSubnet=" + wifiSubnet);
 		if ( wifiSubnet != null )
-			scanner.addSubnet(wifiSubnet);
+			scanner.addIpRange(wifiSubnet, 1, 254);
 
 		scanner.scan();
 
@@ -54,4 +58,6 @@ public class ServerFinder {
 
 	private final Context context;
 	private final int port;
+	final static String TAG = "ServerFinder"; 
+
 }

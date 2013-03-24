@@ -42,9 +42,8 @@ public class RouteOverlay extends ListOverlay {
 		Paint paintStroke = new Paint(Paint.ANTI_ALIAS_FLAG);
 		paintStroke.setStyle(Paint.Style.STROKE);
 		paintStroke.setColor(Color.BLUE);
-		paintStroke.setAlpha(100);
+		paintStroke.setAlpha(50);
 		paintStroke.setStrokeWidth(9);
-		// paintStroke.setPathEffect(new DashPathEffect(new float[] { 25, 15 }, 0));
 
 		return new Polyline(polygonalChain, paintStroke);
 	}
@@ -54,10 +53,8 @@ public class RouteOverlay extends ListOverlay {
 
 		Paint paintStroke = new Paint(Paint.ANTI_ALIAS_FLAG);
 		paintStroke.setStyle(Paint.Style.STROKE);
-		paintStroke.setColor(Color.argb(255, 30, 255, 30));
-		// paintStroke.setAlpha(128);
+		paintStroke.setColor(Color.rgb(0, 200, 90));
 		paintStroke.setStrokeWidth(5);
-		// paintStroke.setPathEffect(new DashPathEffect(new float[] { 25, 15 }, 0));
 
 		return new Polyline(polygonalChain, paintStroke);
 	}
