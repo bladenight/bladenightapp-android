@@ -72,6 +72,9 @@ public class BladenightMapActivity extends MapActivity {
 			};
 			handler.postDelayed(periodicTask, updatePeriod);
 		}
+		else {
+			processionProgressBar.setVisibility(View.GONE);
+		}
 	}
 
 
