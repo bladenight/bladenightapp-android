@@ -3,60 +3,46 @@ package de.greencity.bladenightapp.android.tracker;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.location.LocationManager;
 import android.os.Binder;
+import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
-
-import com.google.gson.Gson;
-
-import de.greencity.bladenightapp.android.network.NetworkIntents;
-import de.greencity.bladenightapp.android.network.NetworkService;
+import de.greencity.bladenightapp.android.network.NetworkClient;
 import de.greencity.bladenightapp.android.selection.SelectionActivity;
-import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
-import de.greencity.bladenightapp.android.utils.PeriodicBroadcastIntentManager;
 import de.greencity.bladenightapp.network.messages.LatLong;
+import de.tavendo.autobahn.Wamp.CallHandler;
 
 public class GpsTrackerService extends Service {
 
 	@Override
 	public void onCreate() {
 		Log.d(TAG, "onCreate");
-		networkServiceConnection = new ServiceConnection() {
-			@Override
-			public void onServiceConnected(ComponentName name, IBinder service) {
-				Log.i(TAG+".ServiceConnection", "onServiceConnected");
-				sendBroadcast(new Intent(NetworkIntents.GET_ALL_EVENTS));
-			}
-			@Override
-			public void onServiceDisconnected(ComponentName name) {
-				Log.i(TAG+".ServiceConnection", "onServiceDisconnected");
-			}
 
-		};
-		bindService(new Intent(this, NetworkService.class), networkServiceConnection,  BIND_AUTO_CREATE);
+		networkClient = new NetworkClient(this);
+
 		requestLocationUpdates();
-
-		broadcastReceiversRegister.registerReceiver(INTENT_PERIODIC, sendPositionUpdateToNetworkService);
 
 		setNotification();
 
-		schedulePeriodicBroadcastIntents();
-
+		periodicRunnable = new Runnable() {
+			@Override
+			public void run() {
+				Log.i(TAG, "periodic task");
+				sendLocationUpdateToNetworkService();
+				handler.postDelayed(this, updatePeriod);
+			}
+		};
+		handler.postDelayed(periodicRunnable, updatePeriod);
 	}
 
 	@Override
 	public void onDestroy() {
-		unschedulePeriodicBroadcastIntents();
-		broadcastReceiversRegister.unregisterReceivers();
+		handler.removeCallbacks(periodicRunnable);
 		removeLocationUpdates();
-		unbindService(networkServiceConnection);
 	}
 
 	@Override
@@ -121,38 +107,27 @@ public class GpsTrackerService extends Service {
 		startForeground(1, notification);
 	}
 
-	private void schedulePeriodicBroadcastIntents() {
-		periodicBroadcastIntentManager.cancelPeriodicBroadcastIntents();
-		int period = 1000;
-		periodicBroadcastIntentManager.schedulePeriodicBroadcastIntent(new Intent(INTENT_PERIODIC), period);
-	}
-
-	private void unschedulePeriodicBroadcastIntents() {
-		periodicBroadcastIntentManager.cancelPeriodicBroadcastIntents();
-	}
-
-	private final BroadcastReceiver sendPositionUpdateToNetworkService = new BroadcastReceiver() {
-
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			sendLocationUpdateToNetworkService();
-		}
-	};
-	
 	private void sendLocationUpdateToNetworkService() {
-		Intent outgoingIntent = new Intent(NetworkIntents.LOCATION_UPDATE);
-		String json = new Gson().toJson(lastKnownPosition);
-		outgoingIntent.putExtra("json", json);
-		Log.d(TAG, "sendPositionUpdateToNetworkService: "+json);
-		sendBroadcast(outgoingIntent);
+		CallHandler callHandler = new CallHandler() {
+			@Override
+			public void onResult(Object arg0) {
+			}
+			
+			@Override
+			public void onError(String arg0, String arg1) {
+			}
+		};
+		Log.i(TAG, "Sending:"+lastKnownPosition);
+		networkClient.updateFromGpsTrackerService(lastKnownPosition);
 	}
 
 
-	private ServiceConnection networkServiceConnection;
 	private LatLong lastKnownPosition = new LatLong(0, 0);
 	final private BladenightLocationListener locationListener = new BladenightLocationListener(this, lastKnownPosition);
-	private PeriodicBroadcastIntentManager periodicBroadcastIntentManager = new PeriodicBroadcastIntentManager(this);
-	private BroadcastReceiversRegister broadcastReceiversRegister = new BroadcastReceiversRegister(this);
+	private NetworkClient networkClient;
+	private Runnable periodicRunnable;
+	final Handler handler = new Handler();
+	static final int updatePeriod = 5000;
 
 	static final String TAG = "GpsTrackerService";
 	static final String INTENT_PERIODIC = "de.greencity.bladenightapp.android.gps.periodic";

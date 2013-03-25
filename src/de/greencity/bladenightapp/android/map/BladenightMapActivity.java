@@ -12,39 +12,34 @@ import org.mapsforge.core.model.MapPosition;
 import org.mapsforge.map.reader.header.FileOpenResult;
 
 import android.app.ProgressDialog;
-import android.content.BroadcastReceiver;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.IBinder;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
-import com.google.gson.Gson;
 import com.markupartist.android.widget.ActionBar;
 
 import de.greencity.bladenightapp.android.R;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator.ActionItemType;
-import de.greencity.bladenightapp.android.network.NetworkIntents;
-import de.greencity.bladenightapp.android.network.NetworkService;
+import de.greencity.bladenightapp.android.network.NetworkClient;
+import de.greencity.bladenightapp.android.utils.AsyncDownloadTask;
 import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
-import de.greencity.bladenightapp.android.utils.JsonBroadcastReceiver;
-import de.greencity.bladenightapp.android.utils.PeriodicBroadcastIntentManager;
 import de.greencity.bladenightapp.network.messages.RealTimeUpdateData;
 import de.greencity.bladenightapp.network.messages.RouteMessage;
+import de.tavendo.autobahn.Wamp.CallHandler;
 
 public class BladenightMapActivity extends MapActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		networkClient = new NetworkClient(this);
+		
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_action);
 		configureActionBar();
@@ -52,34 +47,11 @@ public class BladenightMapActivity extends MapActivity {
 
 		downloadProgressDialog = new ProgressDialog(this);
 		processionProgressBar = (ProcessionProgressBar) findViewById(R.id.progress_procession);
-
-		serviceConnection = new ServiceConnection() {
-			@Override
-			public void onServiceConnected(ComponentName name, IBinder service) {
-				Log.i(TAG+".ServiceConnection", "onServiceConnected");
-				requestRouteFromNetworkService();
-			}
-			@Override
-			public void onServiceDisconnected(ComponentName name) {
-				Log.i(TAG+".ServiceConnection", "onServiceDisconnected");
-			}
-
-		};
-
-		broadcastReceiversRegister.registerReceiver(NetworkIntents.GOT_ACTIVE_ROUTE, gotActiveRouteReceiver);
-		broadcastReceiversRegister.registerReceiver(NetworkIntents.GOT_ROUTE, gotRouteReceiver);
-		broadcastReceiversRegister.registerReceiver(NetworkIntents.GOT_REAL_TIME_DATA, gotRealTimeDataReceiver);
-		broadcastReceiversRegister.registerReceiver(NetworkIntents.DOWNLOAD_FAILURE, gotDownloadFailureReceiver);
-		broadcastReceiversRegister.registerReceiver(NetworkIntents.DOWNLOAD_SUCCESS, gotDownloadSuccessReceiver);
-		broadcastReceiversRegister.registerReceiver(NetworkIntents.DOWNLOAD_PROGRESS, gotDownloadProgressReceiver);
-		broadcastReceiversRegister.registerReceiver(NetworkIntents.CONNECTED, connectedReceiver);
 	}
 
 	@Override
 	public void onStart() {
 		super.onStart();
-
-		bindService(new Intent(this, NetworkService.class), serviceConnection,  BIND_AUTO_CREATE);
 
 		verifyMapFile();
 
@@ -87,8 +59,19 @@ public class BladenightMapActivity extends MapActivity {
 
 		getActivityParametersFromIntent(getIntent());
 		
-		if ( isRealTime )
-			periodicBroadcastIntentManager.schedulePeriodicBroadcastIntent(new Intent(NetworkIntents.GET_REAL_TIME_DATA), 5000);
+		requestRouteFromNetworkService();
+		
+		if ( isRealTime ) {
+			periodicTask = new Runnable() {
+				@Override
+				public void run() {
+					Log.i(TAG, "periodic task");
+					getRealTimeDataFromServer();
+					handler.postDelayed(this, updatePeriod);
+				}
+			};
+			handler.postDelayed(periodicTask, updatePeriod);
+		}
 	}
 
 
@@ -115,17 +98,47 @@ public class BladenightMapActivity extends MapActivity {
 	}
 
 	protected void requestRouteFromNetworkService() {
+		getRouteFromServer(routeName);
 		if ( isRealTime ) {
-			sendBroadcast(new Intent(NetworkIntents.GET_ACTIVE_ROUTE));
-			sendBroadcast(new Intent(NetworkIntents.GET_REAL_TIME_DATA));
-		}
-		else {
-			Intent intent = new Intent(NetworkIntents.GET_ROUTE);
-			intent.putExtra("json", new Gson().toJson(routeName));
-			sendBroadcast(intent);
+			getRealTimeDataFromServer();
 		}
 	}
 
+
+	protected void getRealTimeDataFromServer() {
+		networkClient.getRealTimeData(new CallHandler() {
+			@Override
+			public void onResult(Object data) {
+				Log.i(TAG,this.toString() + " " + data);
+				RealTimeUpdateData realTimeUpdateData = (RealTimeUpdateData) data;
+				routeOverlay.update(realTimeUpdateData);
+				processionProgressBar.update(realTimeUpdateData);
+			}
+
+			@Override
+			public void onError(String arg0, String arg1) {
+				Log.e(TAG,this.toString() + " " + arg0 + " / "+ arg1);
+			}
+		});
+	}
+
+
+	private void getRouteFromServer(String routeName) {
+		Log.i(TAG,"getRouteFromServer routeName="+routeName);
+		networkClient.getRoute(routeName, new CallHandler() {
+			@Override
+			public void onResult(Object routeMessage) {
+				Log.i(TAG,this.toString() + " " + routeMessage);
+				routeOverlay.update((RouteMessage) routeMessage);
+				fitViewToRoute();
+			}
+
+			@Override
+			public void onError(String arg0, String arg1) {
+				Log.e(TAG, this.toString() + " " + arg0 + " / "+ arg1);
+			}
+		});
+	}
 
 	@Override
 	public void onDestroy() {
@@ -145,10 +158,6 @@ public class BladenightMapActivity extends MapActivity {
 	@Override
 	public void onStop() {
 		super.onStop();
-
-		unbindService(serviceConnection);
-
-		periodicBroadcastIntentManager.cancelPeriodicBroadcastIntents();
 	}
 
 	public void createMapView() {
@@ -199,10 +208,31 @@ public class BladenightMapActivity extends MapActivity {
 
 		downloadProgressDialog.show();
 
-		Intent intent = new Intent(NetworkIntents.DOWNLOAD_REQUEST);
-		intent.putExtra("localPath", mapLocalPath);
-		intent.putExtra("remotePath", mapRemotePath);
-		sendBroadcast(intent);
+		AsyncDownloadTask.StatusHandler handler = new AsyncDownloadTask.StatusHandler() {
+
+			@Override
+			public void onProgress(long current, long total) {
+				int percent = (int)(current*100.0/total);
+				downloadProgressDialog.setProgress(percent);
+			}
+
+			@Override
+			public void onDownloadSuccess() {
+				Log.i(TAG, "Download successful");
+				downloadProgressDialog.dismiss();
+				clearTileCache();
+				setMapFile();
+			}
+
+			@Override
+			public void onDownloadFailure() {
+				Log.i(TAG, "Download failed");
+				downloadProgressDialog.dismiss();
+				clearTileCache();
+				setMapFile();
+			}
+		};
+		networkClient.downloadFile(mapLocalPath, mapRemotePath, handler);
 	}
 
 	private void setMapFile() {
@@ -233,85 +263,6 @@ public class BladenightMapActivity extends MapActivity {
 		mapView.getMapViewPosition().setMapPosition(new MapPosition(center, zoomLevel));
 	}
 
-
-	private final BroadcastReceiver gotActiveRouteReceiver = new JsonBroadcastReceiver<RouteMessage>("gotRouteReceiver", RouteMessage.class) {
-		@Override
-		public void onReceive(RouteMessage routeMessage) {
-			routeOverlay.update(routeMessage);
-			fitViewToRoute();
-		}
-	};
-
-	private final BroadcastReceiver gotRouteReceiver = new JsonBroadcastReceiver<RouteMessage>("gotRouteReceiver", RouteMessage.class) {
-		@Override
-		public void onReceive(RouteMessage routeMessage) {
-			routeOverlay.update(routeMessage);
-			fitViewToRoute();
-		}
-	};
-
-	private final BroadcastReceiver gotRealTimeDataReceiver = new JsonBroadcastReceiver<RealTimeUpdateData>("gotRealTimeDataReceiver", RealTimeUpdateData.class) {
-		@Override
-		public void onReceive(RealTimeUpdateData data) {
-			routeOverlay.update(data);
-			processionProgressBar.update(data);
-			// fitViewToProcession();
-		}
-	};
-
-	private final BroadcastReceiver gotDownloadSuccessReceiver = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			if ( mapRemotePath.equals(intent.getExtras().getString("id")) ) {
-				onMapFileDownloadSuccess();
-			}
-		}
-	};
-
-	private final BroadcastReceiver gotDownloadFailureReceiver = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			if ( mapRemotePath.equals(intent.getExtras().getString("id")) ) {
-				onMapFileDownloadFailure();
-			}
-		}
-	};
-
-	private final BroadcastReceiver gotDownloadProgressReceiver = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			if ( mapRemotePath.equals(intent.getExtras().getString("id")) ) {
-				long total = intent.getExtras().getLong("total");
-				long current = intent.getExtras().getLong("current");
-				if ( total > 0) {
-					double percent = current * ( 100.0 / total  );
-					downloadProgressDialog.setProgress((int) percent );
-				}
-			}
-		}
-	};
-
-	private final BroadcastReceiver connectedReceiver = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			Log.d(TAG,"connectedReceiver.onReceive");
-			requestRouteFromNetworkService();
-		}
-	};
-
-
-	private void onMapFileDownloadSuccess() {
-		downloadProgressDialog.dismiss();
-		Toast.makeText(this, "Download success", Toast.LENGTH_LONG).show();
-		clearTileCache();
-		setMapFile();
-	}
-
-	private void onMapFileDownloadFailure() {
-		downloadProgressDialog.dismiss();
-		Toast.makeText(this, "Download failure", Toast.LENGTH_LONG).show();
-	}
-
 	private void clearTileCache() {
 		try {
 			Log.i(TAG, "Clearing Mapsforge cache...");
@@ -328,7 +279,6 @@ public class BladenightMapActivity extends MapActivity {
 
 	final String TAG = "BladenightMapActivity";
 	private BroadcastReceiversRegister broadcastReceiversRegister = new BroadcastReceiversRegister(this); 
-	private ServiceConnection serviceConnection;
 	private final String mapLocalPath = Environment.getExternalStorageDirectory().getPath()+"/Bladenight/munich.map";
 	private final String mapRemotePath = "maps/munich.map";
 	private ProgressDialog downloadProgressDialog;
@@ -336,6 +286,9 @@ public class BladenightMapActivity extends MapActivity {
 	private boolean isRealTime = false;
 	private RouteOverlay routeOverlay;
 	private BladenightMapView mapView;
-	private PeriodicBroadcastIntentManager periodicBroadcastIntentManager = new PeriodicBroadcastIntentManager(this);
 	private ProcessionProgressBar processionProgressBar;
+	private NetworkClient networkClient;
+	private final int updatePeriod = 2000;
+	private final Handler handler = new Handler();
+	private Runnable periodicTask;
 } 

@@ -68,14 +68,28 @@ public class RouteOverlay extends ListOverlay {
 		
 		routePolyline.setPolygonalChain(new PolygonalChain(routeNodes));
 
-		mapView.redraw();
+		redrawMapView();
 	}
 
 	public void update(RealTimeUpdateData realTimeUpdateData) {
 		List<GeoPoint> geoPoints = generateProcessionsGeopoints(realTimeUpdateData);
 		processionBoundingBox = computeBoundingBox(geoPoints);
 		processionPolyline.setPolygonalChain(new PolygonalChain(geoPoints));
-		mapView.redraw();
+		redrawMapView();
+	}
+	
+	public void redrawMapView() {
+		// Catch this kind of unexplainable exceptions:
+		// java.lang.IllegalStateException: copyPixelsFromBuffer called on recycled bitmap
+		// at android.graphics.Bitmap.checkRecycled(Bitmap.java:180)
+		// at android.graphics.Bitmap.copyPixelsFromBuffer(Bitmap.java:277)
+		// at org.mapsforge.android.maps.mapgenerator.FileSystemTileCache.get(FileSystemTileCache.java:302)
+		try {
+			mapView.redraw();
+		}
+		catch(IllegalStateException e) {
+			Log.e(TAG, e.toString());
+		}
 	}
 
 	private List<GeoPoint>  generateProcessionsGeopoints(RealTimeUpdateData realTimeUpdateData) {

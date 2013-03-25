@@ -1,13 +1,8 @@
 
 package de.greencity.bladenightapp.android.selection;
 
-import android.content.BroadcastReceiver;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -17,7 +12,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 
-import com.google.gson.Gson;
 import com.markupartist.android.widget.ActionBar;
 import com.markupartist.android.widget.ActionBar.Action;
 
@@ -26,13 +20,13 @@ import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator.ActionItemType;
 import de.greencity.bladenightapp.android.actionbar.ActionMap;
 import de.greencity.bladenightapp.android.map.BladenightMapActivity;
-import de.greencity.bladenightapp.android.network.NetworkIntents;
-import de.greencity.bladenightapp.android.network.NetworkService;
+import de.greencity.bladenightapp.android.network.NetworkClient;
 import de.greencity.bladenightapp.android.statistics.StatisticsActivity;
 import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
 import de.greencity.bladenightapp.events.Event;
 import de.greencity.bladenightapp.events.EventsList;
 import de.greencity.bladenightapp.network.messages.EventsListMessage;
+import de.tavendo.autobahn.Wamp.CallHandler;
 
 public class SelectionActivity extends FragmentActivity {
 	@Override
@@ -61,6 +55,7 @@ public class SelectionActivity extends FragmentActivity {
 			}
 		});
 
+		networkClient =  new NetworkClient(this);
 	}
 
 	@Override
@@ -69,43 +64,27 @@ public class SelectionActivity extends FragmentActivity {
 
 		Log.i(TAG, "onStart");
 
-		broadcastReceiversRegister.registerReceiver(NetworkIntents.GOT_ALL_EVENTS, gotAllEventsReceiver);
-		broadcastReceiversRegister.registerReceiver(NetworkIntents.CONNECTED, connectedReceiver);
-
-		networkServiceConnection = new ServiceConnection() {
-			@Override
-			public void onServiceConnected(ComponentName name, IBinder service) {
-				Log.i(TAG+".ServiceConnection", "onServiceConnected");
-				sendBroadcast(new Intent(NetworkIntents.GET_ALL_EVENTS));
-			}
-			@Override
-			public void onServiceDisconnected(ComponentName name) {
-				Log.i(TAG+".ServiceConnection", "onServiceDisconnected");
-			}
-
-		};
-
-		bindService(new Intent(this, NetworkService.class), networkServiceConnection,  BIND_AUTO_CREATE);
-
 		configureActionBar();
 
 		tryToRestorePreviouslyShownEvent();
-	}	
+
+		getEventsFromServer();
+	}
 
 	private void configureActionBar() {
 		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
 		Action mapActionWithParameters = new ActionMap() {
 			@Override
 			public void performAction(View view) {
-			    Intent intent = new Intent(view.getContext(), BladenightMapActivity.class);
-			    Event event = getEventShown();
-			    if ( event == null ) {
-			    	Log.e(TAG, "No event currently shown");
-			    	return;
-			    }
-			    intent.putExtra("routeName", event.getRouteName());
-			    intent.putExtra("isRealTime", posEventCurrent == posEventShown);
-			    view.getContext().startActivity(intent);
+				Intent intent = new Intent(view.getContext(), BladenightMapActivity.class);
+				Event event = getEventShown();
+				if ( event == null ) {
+					Log.e(TAG, "No event currently shown");
+					return;
+				}
+				intent.putExtra("routeName", event.getRouteName());
+				intent.putExtra("isRealTime", posEventCurrent == posEventShown);
+				view.getContext().startActivity(intent);
 			}
 		};
 		new ActionBarConfigurator(actionBar)
@@ -113,7 +92,7 @@ public class SelectionActivity extends FragmentActivity {
 		.replaceAction(ActionItemType.MAP, mapActionWithParameters)
 		.setTitle(R.string.title_selection)
 		.configure();
-		
+
 	}
 
 
@@ -123,7 +102,7 @@ public class SelectionActivity extends FragmentActivity {
 		super.onStop();
 
 		broadcastReceiversRegister.unregisterReceivers();
-		unbindService(networkServiceConnection);
+		// unbindService(networkServiceConnection);
 	}
 
 	@Override
@@ -163,36 +142,33 @@ public class SelectionActivity extends FragmentActivity {
 		startActivity(intent);
 	}
 
-	private final BroadcastReceiver gotAllEventsReceiver = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			Log.d(TAG,"getAllEventsReceiver.onReceive");
 
-			if ( viewPager == null ) {
-				Log.e(TAG, "viewPager is null");
-				return;
-			}
-			String json = (String) intent.getExtras().get("json");
-			if ( json == null ) {
-				Log.e(TAG,"Failed to get json");
-				return;
-			}
-			Log.d(TAG, json);
-			EventsListMessage eventsListMessage = new Gson().fromJson(json, EventsListMessage.class);
-			if ( eventsListMessage == null ) {
-				Log.e(TAG,"Failed to parse json");
-				return;
+	private void getEventsFromServer() {
+		networkClient.getAllEvents(new CallHandler() {
+
+			@Override
+			public void onResult(Object arg0) {
+				Log.i(TAG,"getAllEvent: " + arg0);
+				updateFragementsFromEventList((EventsListMessage)arg0);
 			}
 
-			mAdapter = new MyAdapter(getSupportFragmentManager(), eventsListMessage);
-			viewPager.setAdapter(mAdapter);
-			eventsList = eventsListMessage.convertToEventsList();
-			updatePositionEventCurrent();
-			if ( ! tryToRestorePreviouslyShownEvent() ) {
-				showNextEvent();
+			@Override
+			public void onError(String arg0, String arg1) {
+				Log.e(TAG,"getAllEvent: " + arg0 + " / "+ arg1);
 			}
+		});
+	}
+
+
+	private void updateFragementsFromEventList(EventsListMessage eventsListMessage) {
+		mAdapter = new MyAdapter(getSupportFragmentManager(), eventsListMessage);
+		viewPager.setAdapter(mAdapter);
+		eventsList = eventsListMessage.convertToEventsList();
+		updatePositionEventCurrent();
+		if ( ! tryToRestorePreviouslyShownEvent() ) {
+			showNextEvent();
 		}
-	};
+	}
 
 	private boolean tryToRestorePreviouslyShownEvent() {
 		int count = getFragmentCount();
@@ -204,7 +180,7 @@ public class SelectionActivity extends FragmentActivity {
 		}
 		return false;
 	}
-	
+
 	private void updatePositionEventCurrent() {
 		posEventCurrent = -1;
 		Event nextEvent = eventsList.getNextEvent();
@@ -212,11 +188,11 @@ public class SelectionActivity extends FragmentActivity {
 			posEventCurrent = eventsList.indexOf(nextEvent);
 		}
 	}
-	
+
 	private boolean isValidFragmentPosition(int pos) {
 		return pos >=0 && pos < getFragmentCount();
 	}
-	
+
 	private void showNextEvent() {
 		Event nextEvent = eventsList.getNextEvent();
 		if ( isValidFragmentPosition(posEventCurrent) ) {
@@ -224,26 +200,18 @@ public class SelectionActivity extends FragmentActivity {
 			viewPager.setCurrentItem(startFragment);
 		}
 	}
-	
+
 	private int getFragmentCount() {
 		if ( viewPager == null || viewPager.getAdapter() == null )
 			return 0;
 		return viewPager.getAdapter().getCount();
 	}
-	
+
 	protected Event getEventShown() {
 		if ( posEventShown < 0 || posEventShown >= eventsList.size() )
 			return null;
 		return eventsList.get(posEventShown);
 	}
-
-	private final BroadcastReceiver connectedReceiver = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			Log.d(TAG,"connectedReceiver.onReceive");
-			sendBroadcast(new Intent(NetworkIntents.GET_ALL_EVENTS));
-		}
-	};
 
 	public static class MyAdapter extends FragmentPagerAdapter {
 		@SuppressWarnings("unused")
@@ -280,11 +248,11 @@ public class SelectionActivity extends FragmentActivity {
 
 	private MyAdapter mAdapter;
 	private final String TAG = "SelectionActivity"; 
-	private ServiceConnection networkServiceConnection;
 	private BroadcastReceiversRegister broadcastReceiversRegister = new BroadcastReceiversRegister(this);
 	private static int posEventShown = -1;
 	private static int posEventCurrent = -1;
 	private EventsList eventsList;
 	private ViewPager viewPager;
+	private NetworkClient networkClient;
 
 } 
