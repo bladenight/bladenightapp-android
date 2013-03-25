@@ -21,7 +21,7 @@ public class ActionBarConfigurator {
 		RELOAD,
 		OPTIONS
 	}
-	
+
 	public ActionBarConfigurator(ActionBar actionBar) {
 		this.actionBar = actionBar;
 		typeToAction = new HashMap<ActionItemType, Action>();
@@ -30,10 +30,10 @@ public class ActionBarConfigurator {
 		typeToAction.put(ActionItemType.MAP, new ActionMap());
 		typeToAction.put(ActionItemType.FRIENDS, new ActionFriends());
 		// typeToAction.put(ActionItemType.RELOAD, new ActionReload());
-		typeToAction.put(ActionItemType.OPTIONS, new ActionOptions());
-		
+		// typeToAction.put(ActionItemType.OPTIONS, new ActionOptions());
+
 	}
-	
+
 	public ActionBarConfigurator hide(ActionItemType type) {
 		typesToShow.remove(type);
 		return this;
@@ -43,12 +43,12 @@ public class ActionBarConfigurator {
 		this.title = title;
 		return this;
 	}
-	
+
 	public ActionBarConfigurator replaceAction(ActionItemType type, Action action) {
 		typeToAction.put(type, action);
 		return this;
 	}
-	
+
 	public void configure() {
 		if ( actionBar == null ) {
 			Log.e(TAG, "actionBar == null");
@@ -62,10 +62,10 @@ public class ActionBarConfigurator {
 		}
 		actionBar.setTitle(title);
 	}
-	
+
 	private ActionBar actionBar;
 	private List<ActionItemType> typesToShow = new LinkedList<ActionItemType>(Arrays.asList(ActionItemType.values()));
 	private Map<ActionItemType, Action> typeToAction;
-	private int title;
+	private int title = -1;
 	private static final String TAG = "ActionBarConfigurator";
 }
