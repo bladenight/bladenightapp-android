@@ -1,14 +1,14 @@
 package de.greencity.bladenightapp.android.utils;
 
-import de.greencity.bladenightapp.network.messages.PointOnRoute;
+import de.greencity.bladenightapp.network.messages.NetMovingPoint;
 
 public class DistanceFormatting {
-	public static String getDiffDistanceAsString(PointOnRoute mp1, PointOnRoute mp2) {
+	public static String getDiffDistanceAsString(NetMovingPoint mp1, NetMovingPoint mp2) {
 		return getDistanceAsString(mp2.getPosition()-mp1.getPosition(), true );
 	}
 
 
-	public static String getDistanceAsString(PointOnRoute mp) {
+	public static String getDistanceAsString(NetMovingPoint mp) {
 		return getDistanceAsString(mp.getPosition(), true);
 	}
 
