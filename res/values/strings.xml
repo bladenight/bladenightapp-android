@@ -1,6 +1,6 @@
 <resources>
 
-    <string name="app_name">Blade Night</string>
+    <string name="app_name">AOK Blade Night App</string>
     <string name="hello_world">Hello world!</string>
     <string name="impressum">Impressum</string>
     <string name="menu_settings">Settings</string>
@@ -25,5 +25,6 @@
     <string name="msg_tracker_confirm_stop">Your friend will miss you, and track recording will stop. Are you sure ?</string>
     <string name="msg_yes">Yes</string>
     <string name="msg_no">No</string>
-
+    <string name="msg_tracking_running">Tracking is on</string>
+    
 </resources>

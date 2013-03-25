@@ -1,6 +1,7 @@
 package de.greencity.bladenightapp.android.tracker;
 
 import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
@@ -9,12 +10,13 @@ import android.location.LocationManager;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
+import de.greencity.bladenightapp.android.R;
 import de.greencity.bladenightapp.android.network.NetworkClient;
 import de.greencity.bladenightapp.android.selection.SelectionActivity;
 import de.greencity.bladenightapp.network.messages.LatLong;
-import de.tavendo.autobahn.Wamp.CallHandler;
 
 public class GpsTrackerService extends Service {
 
@@ -37,12 +39,15 @@ public class GpsTrackerService extends Service {
 			}
 		};
 		handler.postDelayed(periodicRunnable, updatePeriod);
+		
 	}
 
 	@Override
 	public void onDestroy() {
+		Log.i(TAG, "onDestroy");
 		handler.removeCallbacks(periodicRunnable);
 		removeLocationUpdates();
+		stopForeground(true);
 	}
 
 	@Override
@@ -87,36 +92,22 @@ public class GpsTrackerService extends Service {
 	}
 
 	private void setNotification() {
-		// NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-		int icon = android.R.drawable.alert_dark_frame;
-		CharSequence tickerText = "BladeNight";
-		long when = System.currentTimeMillis();
-
-		Notification notification = new Notification(icon, tickerText, when);
-
-		Context context = getApplicationContext();
-		CharSequence contentTitle = "BladeNight";
-		CharSequence contentText = "Application started";
-
 		Intent notificationIntent = new Intent(this, SelectionActivity.class);
 		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
-		notification.setLatestEventInfo(context, contentTitle, contentText, contentIntent);
+		Notification notification = new  NotificationCompat.Builder(this)
+		.setContentTitle(getString(R.string.msg_tracking_running))
+		.setContentText(getString(R.string.app_name))
+		.setSmallIcon(R.drawable.ic_launcher_bn)
+		.setContentIntent(contentIntent)
+		.build();
+		
+		notification.flags |= Notification.FLAG_FOREGROUND_SERVICE;
 
-		startForeground(1, notification);
+		startForeground(NOTIFICATION_ID, notification);
 	}
 
 	private void sendLocationUpdateToNetworkService() {
-		CallHandler callHandler = new CallHandler() {
-			@Override
-			public void onResult(Object arg0) {
-			}
-			
-			@Override
-			public void onError(String arg0, String arg1) {
-			}
-		};
 		Log.i(TAG, "Sending:"+lastKnownPosition);
 		networkClient.updateFromGpsTrackerService(lastKnownPosition);
 	}
@@ -127,7 +118,8 @@ public class GpsTrackerService extends Service {
 	private NetworkClient networkClient;
 	private Runnable periodicRunnable;
 	final Handler handler = new Handler();
-	static final int updatePeriod = 5000;
+	static private final int updatePeriod = 5000;
+	static private final int NOTIFICATION_ID = 1;
 
 	static final String TAG = "GpsTrackerService";
 	static final String INTENT_PERIODIC = "de.greencity.bladenightapp.android.gps.periodic";
