@@ -1,5 +1,6 @@
 package com.codebutler.android_websockets;
 
+import android.content.Context;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.text.TextUtils;
@@ -9,6 +10,10 @@ import org.apache.http.*;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.message.BasicLineParser;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.DefaultedHttpParams;
+
+import de.greencity.bladenightapp.android.R;
 
 import javax.net.SocketFactory;
 import javax.net.ssl.SSLContext;
@@ -17,11 +22,13 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import java.io.EOFException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.URI;
 import java.security.KeyManagementException;
+import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
@@ -79,8 +86,7 @@ public class WebSocketClient {
                     String originScheme = mURI.getScheme().equals("wss") ? "https" : "http";
                     URI origin = new URI(originScheme, "//" + mURI.getHost(), null);
 
-                    SocketFactory factory = (mURI.getScheme().equals("wss") || mURI.getScheme().equals("https")) ? getSSLSocketFactory() : SocketFactory.getDefault();
-                    mSocket = factory.createSocket(mURI.getHost(), port);
+                    mSocket = getSocket(mURI.getHost(), port);
 
                     PrintWriter out = new PrintWriter(mSocket.getOutputStream());
                     out.print("GET " + path + " HTTP/1.1\r\n");
@@ -228,9 +234,24 @@ public class WebSocketClient {
         public void onError(Exception error);
     }
 
-    private SSLSocketFactory getSSLSocketFactory() throws NoSuchAlgorithmException, KeyManagementException {
-        SSLContext context = SSLContext.getInstance("TLS");
-        context.init(null, sTrustManagers, null);
-        return context.getSocketFactory();
-    }
+	static public void setCustomSslFactory(org.apache.http.conn.ssl.SSLSocketFactory factory) {
+		sslFactory = factory;
+	}
+	
+	private Socket getSocket(String host, int port) throws IOException {
+		if ( mURI.getScheme().equals("wss") || mURI.getScheme().equals("https") ) {
+			// return sslFactory.connectSocket(null, host, port, null, 0, new BasicHttpParams());
+			return sslFactory2.createSocket(host, port);
+		}
+		else {
+			return SocketFactory.getDefault().createSocket(host, port);
+		}
+	}
+	
+	static org.apache.http.conn.ssl.SSLSocketFactory sslFactory = org.apache.http.conn.ssl.SSLSocketFactory.getSocketFactory();
+	static SocketFactory sslFactory2 = SSLSocketFactory.getDefault();
+
+	public static void setCustomSslFactory(SSLSocketFactory sslSocketFactory) {
+		sslFactory2 = sslSocketFactory;
+	}
 }

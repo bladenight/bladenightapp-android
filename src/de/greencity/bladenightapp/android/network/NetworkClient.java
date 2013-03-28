@@ -1,11 +1,24 @@
 package de.greencity.bladenightapp.android.network;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManagerFactory;
+
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.http.conn.ssl.SSLSocketFactory;
 
 import android.content.Context;
 import android.os.Handler;
@@ -14,6 +27,7 @@ import android.util.Log;
 
 import com.codebutler.android_websockets.WebSocketClient;
 
+import de.greencity.bladenightapp.android.R;
 import de.greencity.bladenightapp.android.tracker.GpsTrackerService;
 import de.greencity.bladenightapp.android.utils.AsyncDownloadTask;
 import de.greencity.bladenightapp.android.utils.DeviceId;
@@ -69,7 +83,17 @@ public class NetworkClient {
 		if ( server == null)
 			findServer();
 
-		URI uri = URI.create(getUrl("ws"));
+		String protocol = "ws";
+
+		if ( "wss".equals(protocol) ) {
+			try {
+				WebSocketClient.setCustomSslFactory(getSSLSocketFactory());
+			} catch (Exception e) {
+				Log.e(TAG, e.toString());
+			}
+		}
+
+		URI uri = URI.create(getUrl(protocol));
 		bladenightWampClient = new BladenightWampClient(uri);
 		bladenightWampClient.setWelcomeListener(new WelcomeListener() {
 			@Override
@@ -84,6 +108,34 @@ public class NetworkClient {
 		});
 		bladenightWampClient.connect();
 	}
+
+	private javax.net.ssl.SSLSocketFactory getSSLSocketFactory() throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException, UnrecoverableKeyException, KeyManagementException {
+		final InputStream trustStoreLocation = context.getResources().openRawResource(R.raw.client_truststore); 
+		final String trustStorePassword = "iosfe45047asdf";
+
+		final InputStream keyStoreLocation = context.getResources().openRawResource(R.raw.client_keystore); 
+		final String keyStorePassword = "iosfe45047asdf";
+
+		final KeyStore trustStore = KeyStore.getInstance("BKS");
+		trustStore.load(trustStoreLocation, trustStorePassword.toCharArray());
+
+		final KeyStore keyStore = KeyStore.getInstance("BKS");
+		keyStore.load(keyStoreLocation, keyStorePassword.toCharArray());
+
+		final TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+		tmf.init(trustStore);
+
+		final KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+		kmf.init(keyStore, keyStorePassword.toCharArray());
+
+		final SSLContext sslCtx = SSLContext.getInstance("TLS");
+		sslCtx.init(kmf.getKeyManagers(), tmf.getTrustManagers(), new SecureRandom());
+
+		return sslCtx.getSocketFactory();
+	}
+
+
+
 
 	public void getAllEvents(Handler successHandler, Handler errorHandler) {
 		BacklogItem item = new BacklogItem();
