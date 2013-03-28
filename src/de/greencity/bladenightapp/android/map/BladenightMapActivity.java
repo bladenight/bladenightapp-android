@@ -2,6 +2,7 @@ package de.greencity.bladenightapp.android.map;
 
 
 import java.io.File;
+import java.lang.ref.WeakReference;
 
 import org.apache.commons.io.FileUtils;
 import org.mapsforge.android.maps.MapActivity;
@@ -16,6 +17,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -31,7 +33,6 @@ import de.greencity.bladenightapp.android.utils.AsyncDownloadTask;
 import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
 import de.greencity.bladenightapp.network.messages.RealTimeUpdateData;
 import de.greencity.bladenightapp.network.messages.RouteMessage;
-import de.tavendo.autobahn.Wamp.CallHandler;
 
 public class BladenightMapActivity extends MapActivity {
 	@Override
@@ -39,7 +40,7 @@ public class BladenightMapActivity extends MapActivity {
 		super.onCreate(savedInstanceState);
 
 		networkClient = new NetworkClient(this);
-		
+
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_action);
 		configureActionBar();
@@ -58,9 +59,9 @@ public class BladenightMapActivity extends MapActivity {
 		configureActionBar();
 
 		getActivityParametersFromIntent(getIntent());
-		
+
 		requestRouteFromNetworkService();
-		
+
 		if ( isRealTime ) {
 			periodicTask = new Runnable() {
 				@Override
@@ -107,40 +108,38 @@ public class BladenightMapActivity extends MapActivity {
 		}
 	}
 
-
-	protected void getRealTimeDataFromServer() {
-		networkClient.getRealTimeData(new CallHandler() {
-			@Override
-			public void onResult(Object data) {
-				Log.i(TAG,this.toString() + " " + data);
-				RealTimeUpdateData realTimeUpdateData = (RealTimeUpdateData) data;
-				routeOverlay.update(realTimeUpdateData);
-				processionProgressBar.update(realTimeUpdateData);
-			}
-
-			@Override
-			public void onError(String arg0, String arg1) {
-				Log.e(TAG,this.toString() + " " + arg0 + " / "+ arg1);
-			}
-		});
+	static class GetRealTimeDataFromServerHandler extends Handler {
+		private WeakReference<BladenightMapActivity> reference;
+		GetRealTimeDataFromServerHandler(BladenightMapActivity activity) {
+			this.reference = new WeakReference<BladenightMapActivity>(activity);
+		}
+		@Override
+		public void handleMessage(Message msg) {
+			RealTimeUpdateData realTimeUpdateData = (RealTimeUpdateData)msg.obj;
+			reference.get().routeOverlay.update(realTimeUpdateData);
+			reference.get().processionProgressBar.update(realTimeUpdateData);
+		}
 	}
 
+	protected void getRealTimeDataFromServer() {
+		networkClient.getRealTimeData(new GetRealTimeDataFromServerHandler(this), null);
+	}
+
+	static class GetRouteFromServerHandler extends Handler {
+		private WeakReference<BladenightMapActivity> reference;
+		GetRouteFromServerHandler(BladenightMapActivity activity) {
+			this.reference = new WeakReference<BladenightMapActivity>(activity);
+		}
+		@Override
+		public void handleMessage(Message msg) {
+			reference.get().routeOverlay.update((RouteMessage) msg.obj);
+			reference.get().fitViewToRoute();
+		}
+	}
 
 	private void getRouteFromServer(String routeName) {
 		Log.i(TAG,"getRouteFromServer routeName="+routeName);
-		networkClient.getRoute(routeName, new CallHandler() {
-			@Override
-			public void onResult(Object routeMessage) {
-				Log.i(TAG,this.toString() + " " + routeMessage);
-				routeOverlay.update((RouteMessage) routeMessage);
-				fitViewToRoute();
-			}
-
-			@Override
-			public void onError(String arg0, String arg1) {
-				Log.e(TAG, this.toString() + " " + arg0 + " / "+ arg1);
-			}
-		});
+		networkClient.getRoute(routeName, new GetRouteFromServerHandler(this), null);
 	}
 
 	@Override

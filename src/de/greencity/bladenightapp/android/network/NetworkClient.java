@@ -1,12 +1,19 @@
 package de.greencity.bladenightapp.android.network;
 
+import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
+
+import com.codebutler.android_websockets.WebSocketClient;
+
 import de.greencity.bladenightapp.android.tracker.GpsTrackerService;
 import de.greencity.bladenightapp.android.utils.AsyncDownloadTask;
 import de.greencity.bladenightapp.android.utils.DeviceId;
@@ -17,9 +24,10 @@ import de.greencity.bladenightapp.network.messages.GpsInfo;
 import de.greencity.bladenightapp.network.messages.LatLong;
 import de.greencity.bladenightapp.network.messages.RealTimeUpdateData;
 import de.greencity.bladenightapp.network.messages.RouteMessage;
-import de.tavendo.autobahn.Wamp;
-import de.tavendo.autobahn.Wamp.CallHandler;
-import de.tavendo.autobahn.WampOptions;
+import fr.ocroquette.wampoc.client.RpcResultReceiver;
+import fr.ocroquette.wampoc.client.WelcomeListener;
+import fr.ocroquette.wampoc.common.Channel;
+import fr.ocroquette.wampoc.messages.CallResultMessage;
 
 public class NetworkClient {
 
@@ -46,88 +54,70 @@ public class NetworkClient {
 		return protocol + "://" + server + ":" + port;
 	}
 
-	public void connect() {
-		if ( wampConnection.isConnected() && wampConnection.isUsable() )
-			return;
+	static class WebSocketClientChannelAdapter implements Channel {
+		private WebSocketClient client;
+		public void setClient(WebSocketClient client) {
+			this.client = client;
+		}
+		@Override
+		public void handle(String message) throws IOException {
+			client.send(message);
+		}
+	}
 
+	private void connect() {
 		if ( server == null)
 			findServer();
 
-		final String uri = getUrl("ws");
-		Log.i(TAG, "Connecting to: " + uri);
-
-		Wamp.ConnectionHandler handler  = new Wamp.ConnectionHandler() {
+		URI uri = URI.create(getUrl("ws"));
+		bladenightWampClient = new BladenightWampClient(uri);
+		bladenightWampClient.setWelcomeListener(new WelcomeListener() {
 			@Override
-			public void onOpen() {
-				Log.d(TAG, "Status: Connected to " + uri);
-				wampConnection.isUsable(true);
+			public void onWelcome() {
+				Log.i(TAG, "onWelcome()");
 				while ( backlogItems.size() > 0 ) {
 					BacklogItem item = backlogItems.remove(0);
-					Log.d(TAG, "Emptying backlog: " + item);
-					call(item);
+					if ( System.currentTimeMillis() - item.timestamp < 5000)
+						call(item);
 				}
 			}
-
-			@Override
-			public void onClose(int code, String reason) {
-				Log.d(TAG, "Connection lost to " + uri);
-				Log.d(TAG, "Reason:" + reason);
-				wampConnection.isUsable(false);
-			}
-
-		};
-
-		WampOptions wampOptions = new WampOptions();
-
-		// Default options, copied from de/tavendo/autobahn/WampConnection.java
-		wampOptions.setReceiveTextMessagesRaw(true);
-		wampOptions.setMaxMessagePayloadSize(64*1024);
-		wampOptions.setMaxFramePayloadSize(64*1024);
-		wampOptions.setTcpNoDelay(true);
-
-		// Our own options:
-		wampOptions.setReconnectInterval(5000);
-		wampOptions.setSocketConnectTimeout(60*60*1000);
-
-		wampConnection.connect(uri, handler, wampOptions);
+		});
+		bladenightWampClient.connect();
 	}
 
-	//	private boolean ensureConnect() {
-	//		if ( ! wampConnection.isUsable() )
-	//			connect();
-	//		return wampConnection.isUsable();
-	//	}
-
-	public void getAllEvents(CallHandler callHandler) {
+	public void getAllEvents(Handler successHandler, Handler errorHandler) {
 		BacklogItem item = new BacklogItem();
 		item.url = BladenightUrl.GET_ALL_EVENTS.getText();
-		item.clazz = EventsListMessage.class;
-		item.handler = callHandler;
+		item.successHandler = successHandler;
+		item.errorHandler = errorHandler;
+		item.expectedReturnType = EventsListMessage.class;
 		callOrStore(item);
 	}
 
-	public void getActiveRoute(CallHandler callHandler) {
-		BacklogItem item = new BacklogItem();
-		item.url = BladenightUrl.GET_ACTIVE_ROUTE.getText();
-		item.clazz = RouteMessage.class;
-		item.handler = callHandler;
-		callOrStore(item);
-	}
-
-	public void getRoute(String routeName, CallHandler callHandler) {
+	public void getRoute(String routeName, Handler successHandler, Handler errorHandler) {
 		BacklogItem item = new BacklogItem();
 		item.url = BladenightUrl.GET_ROUTE.getText();
-		item.clazz = RouteMessage.class;
-		item.handler = callHandler;
-		item.parameters = new Object[] {routeName};
+		item.outgoingPayload = routeName;
+		item.successHandler = successHandler;
+		item.errorHandler = errorHandler;
+		item.expectedReturnType = RouteMessage.class;
 		callOrStore(item);
 	}
 
-	public void getRealTimeData(CallHandler callHandler) {
+	public void getActiveRoute(RpcResultReceiver rpcResultReceiver) {
+		BacklogItem item = new BacklogItem();
+		item.url = BladenightUrl.GET_ACTIVE_ROUTE.getText();
+		item.rpcResultReceiver = rpcResultReceiver;
+		callOrStore(item);
+	}
+
+
+	public void getRealTimeData(Handler successHandler, Handler errorHandler) {
 		BacklogItem item = new BacklogItem();
 		item.url = BladenightUrl.GET_REALTIME_UPDATE.getText();
-		item.clazz = RealTimeUpdateData.class;
-		item.handler = callHandler;
+		item.successHandler = successHandler;
+		item.errorHandler = errorHandler;
+		item.expectedReturnType = RealTimeUpdateData.class;
 
 		gpsInfo.isParticipating(ServiceUtils.isServiceRunning(context, GpsTrackerService.class));
 		if ( lastKnownPosition != null ) {
@@ -135,35 +125,58 @@ public class NetworkClient {
 			gpsInfo.setLongitude(lastKnownPosition.getLongitude());
 		}
 
-		item.parameters = new Object[]{gpsInfo};
+		item.outgoingPayload = gpsInfo;
 		callOrStore(item);
 	}
 
 	public void updateFromGpsTrackerService(LatLong lastKnownPosition) {
-		this.lastKnownPosition = lastKnownPosition;
-		getRealTimeData(new CallHandler() {
-			@Override
-			public void onResult(Object arg0) {
-			}
-
-			@Override
-			public void onError(String arg0, String arg1) {
-			}
-		});
+		NetworkClient.lastKnownPosition = lastKnownPosition;
+		getRealTimeData(null, null);
 	}
 
 	private void callOrStore(BacklogItem item) {
-		if ( wampConnection.isUsable() ) {
+		if ( bladenightWampClient.isConnectionUsable() ) {
+			Log.i(TAG, "callOrStore: calling");
 			call(item);
 		}
 		else {
+			Log.i(TAG, "callOrStore: storing");
 			item.timestamp = System.currentTimeMillis();
 			backlogItems.add(item);
+			bladenightWampClient.connect();
 		}
 	}
 
-	private void call(BacklogItem item) {
-		wampConnection.call(item.url, item.clazz, item.handler, item.parameters);
+	private void call(final BacklogItem item) {
+		try {
+			RpcResultReceiver rpcResultReceiver = new RpcResultReceiver() {
+				@Override
+				public void onSuccess() {
+					if ( item.successHandler == null )
+						return;
+					Message message = new Message();
+					if ( item.expectedReturnType == CallResultMessage.class )
+						message.obj = this.callResultMessage;
+					else if ( item.expectedReturnType != null )
+						message.obj = callResultMessage.getPayload(item.expectedReturnType);
+					item.successHandler.sendMessage(message);
+				}
+
+				@Override
+				public void onError() {
+					Log.e(TAG, callErrorMessage.toString());
+					if ( item.errorHandler == null )
+						return;
+					Message message = new Message();
+					message.obj = this.callResultMessage;
+					item.errorHandler.sendMessage(message);
+				}
+
+			};
+			bladenightWampClient.call(item.url, rpcResultReceiver, item.outgoingPayload);
+		} catch (IOException e) {
+			Log.e(TAG, e.toString());
+		}
 	}
 
 	public void downloadFile(String localPath, String remotePath, final AsyncDownloadTask.StatusHandler handler) {
@@ -174,27 +187,28 @@ public class NetworkClient {
 	}
 
 	static private Context context;
-	static private final String TAG = "NetworkClient";
-	static private BladenightWampConnection wampConnection = new BladenightWampConnection();
-	static private String server;
+	static private final String TAG = "NetworkClient2";
+	static private String server = "192.168.178.31";
 	final static private int port = 8081;
-	private final GpsInfo gpsInfo = new GpsInfo();
-	private LatLong lastKnownPosition;
+	final private GpsInfo gpsInfo = new GpsInfo();
+	static private LatLong lastKnownPosition;
+	private BladenightWampClient bladenightWampClient;
+
 
 
 	static class BacklogItem {
-		public long timestamp;
-		public String url;
-		public Class<?> clazz;
-		public CallHandler handler; 
-		public Object[] parameters = new Object[0];
+		public long 				timestamp;
+		public String 				url;
+		public Handler 				successHandler;
+		public Class<?> 			expectedReturnType;
+		public Handler 				errorHandler;
+		public RpcResultReceiver 	rpcResultReceiver; 
+		public Object 				outgoingPayload;
 		@Override
 		public String toString() {
-			// TODO Auto-generated method stub
 			return ToStringBuilder.reflectionToString(this);
 		}
 	};
-
 	private List<BacklogItem> backlogItems = new ArrayList<BacklogItem>();
 
 }

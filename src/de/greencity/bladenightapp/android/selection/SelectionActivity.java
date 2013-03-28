@@ -1,8 +1,12 @@
 
 package de.greencity.bladenightapp.android.selection;
 
+import java.lang.ref.WeakReference;
+
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -20,13 +24,12 @@ import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator.ActionItemType;
 import de.greencity.bladenightapp.android.actionbar.ActionMap;
 import de.greencity.bladenightapp.android.map.BladenightMapActivity;
-import de.greencity.bladenightapp.android.network.NetworkClient2;
+import de.greencity.bladenightapp.android.network.NetworkClient;
 import de.greencity.bladenightapp.android.statistics.StatisticsActivity;
 import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
 import de.greencity.bladenightapp.events.Event;
 import de.greencity.bladenightapp.events.EventsList;
 import de.greencity.bladenightapp.network.messages.EventsListMessage;
-import fr.ocroquette.wampoc.client.RpcResultReceiver;
 
 public class SelectionActivity extends FragmentActivity {
 	@Override
@@ -55,7 +58,7 @@ public class SelectionActivity extends FragmentActivity {
 			}
 		});
 
-		networkClient =  new NetworkClient2(this);
+		networkClient =  new NetworkClient(this);
 	}
 
 	@Override
@@ -143,22 +146,20 @@ public class SelectionActivity extends FragmentActivity {
 	}
 
 
+	static class GetEventsFromServerHandler extends Handler {
+		private WeakReference<SelectionActivity> reference;
+		GetEventsFromServerHandler(SelectionActivity activity) {
+			this.reference = new WeakReference<SelectionActivity>(activity);
+		}
+		@Override
+		public void handleMessage(Message msg) {
+			EventsListMessage eventsListMessage = (EventsListMessage)msg.obj;
+			reference.get().updateFragementsFromEventList((EventsListMessage)eventsListMessage);
+		}
+	}
+	
 	private void getEventsFromServer() {
-		networkClient.getAllEvents(new RpcResultReceiver() {
-			
-			@Override
-			public void onSuccess() {
-				EventsListMessage eventsListMessage = this.callResultMessage.getPayload(EventsListMessage.class);
-				Log.i(TAG,"getAllEvent: " + eventsListMessage);
-				updateFragementsFromEventList((EventsListMessage)eventsListMessage);
-			}
-			
-			@Override
-			public void onError() {
-				Log.e(TAG,"getAllEvent: " + this.callErrorMessage.toString());
-			}
-		});
-
+		networkClient.getAllEvents(new GetEventsFromServerHandler(this), null);
 	}
 
 
@@ -255,6 +256,6 @@ public class SelectionActivity extends FragmentActivity {
 	private static int posEventCurrent = -1;
 	private EventsList eventsList;
 	private ViewPager viewPager;
-	private NetworkClient2 networkClient;
+	private NetworkClient networkClient;
 
 } 
