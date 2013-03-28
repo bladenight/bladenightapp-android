@@ -12,5 +12,6 @@
 	<classpathentry exported="true" kind="lib" path="libs/jackson-core-asl-1.9.12.jar" sourcepath="/Volumes/DD500/ocroquette/Desktop/SVN/jackson/tags/1.9/1.9.10"/>
 	<classpathentry exported="true" kind="lib" path="libs/jackson-mapper-asl-1.9.12.jar" sourcepath="/Volumes/DD500/ocroquette/Desktop/SVN/jackson/tags/1.9/1.9.10"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/bladenightapp-common"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/wampoc"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

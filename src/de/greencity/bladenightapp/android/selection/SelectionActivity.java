@@ -20,13 +20,13 @@ import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator.ActionItemType;
 import de.greencity.bladenightapp.android.actionbar.ActionMap;
 import de.greencity.bladenightapp.android.map.BladenightMapActivity;
-import de.greencity.bladenightapp.android.network.NetworkClient;
+import de.greencity.bladenightapp.android.network.NetworkClient2;
 import de.greencity.bladenightapp.android.statistics.StatisticsActivity;
 import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
 import de.greencity.bladenightapp.events.Event;
 import de.greencity.bladenightapp.events.EventsList;
 import de.greencity.bladenightapp.network.messages.EventsListMessage;
-import de.tavendo.autobahn.Wamp.CallHandler;
+import fr.ocroquette.wampoc.client.RpcResultReceiver;
 
 public class SelectionActivity extends FragmentActivity {
 	@Override
@@ -55,7 +55,7 @@ public class SelectionActivity extends FragmentActivity {
 			}
 		});
 
-		networkClient =  new NetworkClient(this);
+		networkClient =  new NetworkClient2(this);
 	}
 
 	@Override
@@ -144,19 +144,21 @@ public class SelectionActivity extends FragmentActivity {
 
 
 	private void getEventsFromServer() {
-		networkClient.getAllEvents(new CallHandler() {
-
+		networkClient.getAllEvents(new RpcResultReceiver() {
+			
 			@Override
-			public void onResult(Object arg0) {
-				Log.i(TAG,"getAllEvent: " + arg0);
-				updateFragementsFromEventList((EventsListMessage)arg0);
+			public void onSuccess() {
+				EventsListMessage eventsListMessage = this.callResultMessage.getPayload(EventsListMessage.class);
+				Log.i(TAG,"getAllEvent: " + eventsListMessage);
+				updateFragementsFromEventList((EventsListMessage)eventsListMessage);
 			}
-
+			
 			@Override
-			public void onError(String arg0, String arg1) {
-				Log.e(TAG,"getAllEvent: " + arg0 + " / "+ arg1);
+			public void onError() {
+				Log.e(TAG,"getAllEvent: " + this.callErrorMessage.toString());
 			}
 		});
+
 	}
 
 
@@ -253,6 +255,6 @@ public class SelectionActivity extends FragmentActivity {
 	private static int posEventCurrent = -1;
 	private EventsList eventsList;
 	private ViewPager viewPager;
-	private NetworkClient networkClient;
+	private NetworkClient2 networkClient;
 
 } 
