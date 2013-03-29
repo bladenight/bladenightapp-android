@@ -1,11 +1,15 @@
 package de.greencity.bladenightapp.android.map;
 
 import org.mapsforge.android.maps.MapView;
+import org.mapsforge.android.maps.Projection;
+import org.mapsforge.android.maps.overlay.Circle;
 import org.mapsforge.android.maps.overlay.ListOverlay;
 import org.mapsforge.android.maps.overlay.Marker;
 import org.mapsforge.core.model.GeoPoint;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
@@ -22,10 +26,25 @@ public class UserPositionOverlay extends ListOverlay implements LocationListener
 	}
 
 	private void reinit() {
-		int resourceIdentifier = R.drawable.ic_map_userposition;
+		int resourceIdentifier = R.drawable.ic_map_user_location;
 		Drawable drawable = context.getResources().getDrawable(resourceIdentifier);
+		
+		externalCircle = createExternalCircle();
+		getOverlayItems().add(externalCircle);
+
 		userSymbol = new Marker(new GeoPoint(0, 0), Marker.boundCenter(drawable));
 		getOverlayItems().add(userSymbol);
+	}
+
+	private Circle createExternalCircle() {
+		Paint paintFill = new Paint();
+		paintFill.setColor(Color.argb(100, 150, 150, 255));
+		paintFill.setAntiAlias(true);
+
+		Paint paintStroke = new Paint();
+		paintStroke.setColor(Color.argb(200, 20, 20, 100));
+		paintStroke.setAntiAlias(true);
+		return new Circle(new GeoPoint(0,0), 0, paintFill, paintStroke);
 	}
 	
 	public void show() {
@@ -41,7 +60,11 @@ public class UserPositionOverlay extends ListOverlay implements LocationListener
 	@Override
 	public void onLocationChanged(Location location) {
 		Log.i(TAG, "onLocationChanged: " + location);
-		userSymbol.setGeoPoint(new GeoPoint(location.getLatitude(), location.getLongitude()));
+		GeoPoint gp = new GeoPoint(location.getLatitude(), location.getLongitude());
+		
+		userSymbol.setGeoPoint(gp);
+		externalCircle.setGeoPoint(gp);
+		externalCircle.setRadius(location.getAccuracy());
 		show();
 	}
 
@@ -66,6 +89,7 @@ public class UserPositionOverlay extends ListOverlay implements LocationListener
 	private final MapView mapView;
 	private Context context;
 	private Marker userSymbol;
+	private Circle externalCircle;
 
 	private final String TAG = "UserPositionOverlay";
 
