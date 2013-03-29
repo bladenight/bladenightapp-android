@@ -239,8 +239,8 @@ public class NetworkClient {
 	}
 
 	static private Context context;
-	static private final String TAG = "NetworkClient2";
-	static private String server = "192.168.178.31";
+	static private final String TAG = "NetworkClient";
+	static private String server;
 	final static private int port = 8081;
 	final private GpsInfo gpsInfo = new GpsInfo();
 	static private LatLong lastKnownPosition;
