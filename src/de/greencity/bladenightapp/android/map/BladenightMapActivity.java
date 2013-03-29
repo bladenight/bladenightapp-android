@@ -29,6 +29,7 @@ import de.greencity.bladenightapp.android.R;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator.ActionItemType;
 import de.greencity.bladenightapp.android.network.NetworkClient;
+import de.greencity.bladenightapp.android.tracker.GpsListener;
 import de.greencity.bladenightapp.android.utils.AsyncDownloadTask;
 import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
 import de.greencity.bladenightapp.network.messages.RealTimeUpdateData;
@@ -72,6 +73,8 @@ public class BladenightMapActivity extends MapActivity {
 				}
 			};
 			handler.postDelayed(periodicTask, updatePeriod);
+			gpsListener = new GpsListener(this, userPositionOverlay);
+			gpsListener.requestLocationUpdates(updatePeriod);
 		}
 		else {
 			processionProgressBar.setVisibility(View.GONE);
@@ -180,6 +183,8 @@ public class BladenightMapActivity extends MapActivity {
 		parent.addView(mapView);
 
 		routeOverlay = new RouteOverlay(mapView);
+
+		userPositionOverlay = new UserPositionOverlay(this, mapView);
 
 		TileCache fileSystemTileCache = mapView.getFileSystemTileCache();
 		fileSystemTileCache.setPersistent(true);
@@ -293,4 +298,6 @@ public class BladenightMapActivity extends MapActivity {
 	private final int updatePeriod = 2000;
 	private final Handler handler = new Handler();
 	private Runnable periodicTask;
+	private UserPositionOverlay userPositionOverlay;
+	private GpsListener gpsListener;
 } 
