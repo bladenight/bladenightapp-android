@@ -92,6 +92,7 @@ public class SelectionActivity extends FragmentActivity {
 		};
 		new ActionBarConfigurator(actionBar)
 		.hide(ActionItemType.EVENT_SELECTION)
+		.hide(ActionItemType.ADD_FRIEND)
 		.replaceAction(ActionItemType.MAP, mapActionWithParameters)
 		.setTitle(R.string.title_selection)
 		.configure();

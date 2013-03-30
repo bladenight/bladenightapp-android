@@ -11,41 +11,39 @@ import android.widget.Button;
 import android.widget.EditText;
 
 
-public class ConfirmFriendDialog extends DialogFragment  {
+public class InviteFriendDialog extends DialogFragment  {
 
-	public interface ConfirmFriendDialogListener {
-        void onFinishConfirmFriendDialog(String friendsName, String code);
+	public interface InviteFriendDialogListener {
+        void onFinishInviteFriendDialog(String inputText);
     }
 	
-    private EditText editCode;
-    private EditText editName;
+    private EditText mEditText;
 
-    public ConfirmFriendDialog() {
+    public InviteFriendDialog() {
         // Empty constructor required for DialogFragment
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.confirm_friend_dialog, container);
-        editName = (EditText) view.findViewById(R.id.confirm_friendsName);
-        editCode = (EditText) view.findViewById(R.id.confirm_code);
-        getDialog().setTitle("Confirm Friend");
+        View view = inflater.inflate(R.layout.invite_friend_dialog, container);
+        mEditText = (EditText) view.findViewById(R.id.txt_friends_name);
+        getDialog().setTitle("Invite Friend");
         
      // Show soft keyboard automatically
-        editName.requestFocus();
+        mEditText.requestFocus();
         getDialog().getWindow().setSoftInputMode(
                 LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         
-        Button confirmButton = (Button) view.findViewById(R.id.confirmFriend_confirm);
+        Button confirmButton = (Button) view.findViewById(R.id.inviteFriend_confirm);
         confirmButton.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
-            	ConfirmFriendDialogListener activity = (ConfirmFriendDialogListener) getActivity();
-                activity.onFinishConfirmFriendDialog(editName.getText().toString(),editCode.getText().toString());
+            	InviteFriendDialogListener activity = (InviteFriendDialogListener) getActivity();
+                activity.onFinishInviteFriendDialog(mEditText.getText().toString());
                 dismiss();
             }
         });
-        Button cancelButton = (Button) view.findViewById(R.id.confirmFriend_cancel);
+        Button cancelButton = (Button) view.findViewById(R.id.inviteFriend_cancel);
         cancelButton.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
             	dismiss();

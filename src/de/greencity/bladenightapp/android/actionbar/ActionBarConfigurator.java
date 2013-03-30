@@ -19,7 +19,8 @@ public class ActionBarConfigurator {
 		MAP,
 		FRIENDS,
 		RELOAD,
-		OPTIONS
+		OPTIONS,
+		ADD_FRIEND
 	}
 
 	public ActionBarConfigurator(ActionBar actionBar) {
@@ -29,6 +30,7 @@ public class ActionBarConfigurator {
 		typeToAction.put(ActionItemType.TRACKER_CONTROL, new ActionTrackerControl(actionBar.getContext()));
 		typeToAction.put(ActionItemType.MAP, new ActionMap());
 		typeToAction.put(ActionItemType.FRIENDS, new ActionFriends());
+		typeToAction.put(ActionItemType.ADD_FRIEND, new ActionAddFriend());
 		// typeToAction.put(ActionItemType.RELOAD, new ActionReload());
 		// typeToAction.put(ActionItemType.OPTIONS, new ActionOptions());
 

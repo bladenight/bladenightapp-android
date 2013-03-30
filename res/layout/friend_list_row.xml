@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="5dip" >
+ 
+    <!--  ListRow Left sied Color block -->
+    <LinearLayout android:id="@+id/row_friend_color"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="3dip"
+        android:layout_alignParentLeft="true"
+        android:layout_marginRight="5dip">
+ 
+        <ImageView
+            android:id="@+id/color_block"
+            android:layout_width="50dip"
+            android:layout_height="50dip"
+            android:background="@color/bn_green_light"
+            android:src="@drawable/color_field"/>
+ 
+    </LinearLayout>
+ 
+    <TextView
+        android:id="@+id/row_friend_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/row_friend_color"
+        android:layout_toRightOf="@+id/row_friend_color"
+        android:textColor="@color/bn_white"
+        android:typeface="sans"
+        android:textSize="18dip"
+        android:textStyle="bold"/>
+ 
+    <TextView
+        android:id="@+id/row_friend_status"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/row_friend_name"
+        android:textColor="@color/bn_white"
+        android:textSize="12dip"
+        android:layout_marginTop="1dip"
+        android:layout_toRightOf="@+id/row_friend_color"
+        android:text="activ" />
+ 
+    <TextView
+        android:id="@+id/bn_counter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@+id/row_friend_name"
+        android:gravity="right"
+        android:text="BN Counter: 5"
+        android:layout_marginRight="5dip"
+        android:textSize="12dip"
+        android:textColor="@color/bn_white"
+        android:textStyle="bold"/>
+ 
+     
+ 
+</RelativeLayout>

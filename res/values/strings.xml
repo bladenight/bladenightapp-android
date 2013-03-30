@@ -6,6 +6,7 @@
     <string name="button_action">Participate</string>
     <string name="button_addFriend">Add Friend</string>
     <string name="button_confirmFriend">Confirm Friend</string>
+    <string name="button_inviteFriend">Invite Friend</string>
     <string name="button_options">Options</string>
     <string name="button_social">Manage Friends</string>
     <string name="button_statistics">Statistics</string>
@@ -16,6 +17,7 @@
     <string name="msg_tracker_confirm_stop">Your friend will miss you, and track recording will stop. Are you sure ?</string>
     <string name="msg_tracking_running">Tracking is on</string>
     <string name="msg_yes">Yes</string>
+    <string name="social_explanation">Hint: To add a friend to your list you have to use a code. If you want to invite a friend, press \'Invite Friend\' and we will generate a code for you. If a friend gave you a code, press \'Confirm Friend\'.</string>
     <string name="title_map">Live</string>
     <string name="title_options">Options</string>
     <string name="title_selection">Events</string>

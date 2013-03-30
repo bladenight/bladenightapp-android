@@ -5,6 +5,11 @@
 	android:layout_height="fill_parent"
 	android:orientation="vertical"
 	xmlns:android="http://schemas.android.com/apk/res/android">
+	
+    <com.markupartist.android.widget.ActionBar
+        android:id="@+id/actionbar"
+        style="@style/ActionBar"
+        />
 
     <ListView
         android:id="@+id/listview"
@@ -15,32 +20,6 @@
         android:scrollbars="vertical" >
     </ListView>
     
-    <LinearLayout
-            android:id="@+id/social_bottom"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:layout_weight="5"  >   
-            
-            <Button
-                android:id="@+id/addFriend"
-                android:layout_weight="1"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="@string/button_addFriend" 
-                android:onClick="onClick"/>
     
-            <Button
-                android:id="@+id/confirmFriend"
-                android:layout_weight="1"
-                android:layout_height="match_parent"
-                android:layout_width="match_parent"
-                android:text="@string/button_confirmFriend" 
-                android:onClick="onClick"/>  
-        
-        
-       
-        
-    </LinearLayout>
  
 </LinearLayout>

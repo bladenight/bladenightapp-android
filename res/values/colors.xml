@@ -4,7 +4,11 @@
     <color name="bn_green2">#78009834</color>
     <color name="bn_orange">#FE6D00</color>
     <color name="bn_white">#FAFCFB</color>
+    <color name="bn_blue">#454DE7</color>
+    <color name="bn_green_light">#2BF233</color>
+    <color name="bn_red">#FE100D</color>
     <color name="black">#000000</color>
+    <color name="dialog_grey">#414141</color>
     
     <color name="actionbar_separator">#dddddd</color>
     <color name="actionbar_background_start">#009834</color>
