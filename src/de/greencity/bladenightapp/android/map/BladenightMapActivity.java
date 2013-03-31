@@ -68,10 +68,10 @@ public class BladenightMapActivity extends MapActivity {
 				public void run() {
 					Log.i(TAG, "periodic task");
 					getRealTimeDataFromServer();
-					handler.postDelayed(this, updatePeriod);
+					periodicHandler.postDelayed(this, updatePeriod);
 				}
 			};
-			handler.postDelayed(periodicTask, updatePeriod);
+			periodicHandler.postDelayed(periodicTask, updatePeriod);
 			gpsListener = new GpsListener(this, userPositionOverlay);
 			gpsListener.requestLocationUpdates(updatePeriod);
 		}
@@ -162,6 +162,7 @@ public class BladenightMapActivity extends MapActivity {
 	@Override
 	public void onStop() {
 		super.onStop();
+		periodicHandler.removeCallbacks(periodicTask);
 	}
 
 	public void createMapView() {
@@ -295,7 +296,7 @@ public class BladenightMapActivity extends MapActivity {
 	private ProcessionProgressBar processionProgressBar;
 	private NetworkClient networkClient;
 	private final int updatePeriod = 2000;
-	private final Handler handler = new Handler();
+	private final Handler periodicHandler = new Handler();
 	private Runnable periodicTask;
 	private UserPositionOverlay userPositionOverlay;
 	private GpsListener gpsListener;

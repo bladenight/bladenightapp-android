@@ -102,40 +102,6 @@ public class AdminActivity extends Activity {
 	}
 
 
-	//	static class GetRealTimeDataFromServerHandler extends Handler {
-	//		private WeakReference<AdminActivity> reference;
-	//		GetRealTimeDataFromServerHandler(AdminActivity activity) {
-	//			this.reference = new WeakReference<AdminActivity>(activity);
-	//		}
-	//		@Override
-	//		public void handleMessage(Message msg) {
-	//			RealTimeUpdateData realTimeUpdateData = (RealTimeUpdateData)msg.obj;
-	//			reference.get().routeOverlay.update(realTimeUpdateData);
-	//			reference.get().processionProgressBar.update(realTimeUpdateData);
-	//		}
-	//	}
-	//
-	//	protected void getRealTimeDataFromServer() {
-	//		networkClient.getRealTimeData(new GetRealTimeDataFromServerHandler(this), null);
-	//	}
-
-	//	static class GetRouteFromServerHandler extends Handler {
-	//		private WeakReference<AdminActivity> reference;
-	//		GetRouteFromServerHandler(AdminActivity activity) {
-	//			this.reference = new WeakReference<AdminActivity>(activity);
-	//		}
-	//		@Override
-	//		public void handleMessage(Message msg) {
-	//			reference.get().routeOverlay.update((RouteMessage) msg.obj);
-	//			reference.get().fitViewToRoute();
-	//		}
-	//	}
-	//
-	//	private void getRouteFromServer(String routeName) {
-	//		Log.i(TAG,"getRouteFromServer routeName="+routeName);
-	//		networkClient.getRoute(routeName, new GetRouteFromServerHandler(this), null);
-	//	}
-	//
 
 	@Override
 	public void onDestroy() {
