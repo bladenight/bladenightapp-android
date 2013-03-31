@@ -32,7 +32,7 @@ import de.greencity.bladenightapp.android.network.NetworkClient;
 import de.greencity.bladenightapp.android.statistics.StatisticsActivity;
 import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
 import de.greencity.bladenightapp.events.Event;
-import de.greencity.bladenightapp.events.EventsList;
+import de.greencity.bladenightapp.events.EventList;
 import de.greencity.bladenightapp.network.messages.EventsListMessage;
 
 public class SelectionActivity extends FragmentActivity {
@@ -207,7 +207,7 @@ public class SelectionActivity extends FragmentActivity {
 
 	private void updatePositionEventCurrent() {
 		posEventCurrent = -1;
-		Event nextEvent = eventsList.getNextEvent();
+		Event nextEvent = eventsList.getActiveEvent();
 		if ( nextEvent != null ) {
 			posEventCurrent = eventsList.indexOf(nextEvent);
 		}
@@ -218,7 +218,7 @@ public class SelectionActivity extends FragmentActivity {
 	}
 
 	private void showNextEvent() {
-		Event nextEvent = eventsList.getNextEvent();
+		Event nextEvent = eventsList.getActiveEvent();
 		if ( isValidFragmentPosition(posEventCurrent) ) {
 			int startFragment = eventsList.indexOf(nextEvent);
 			viewPager.setCurrentItem(startFragment);
@@ -275,7 +275,7 @@ public class SelectionActivity extends FragmentActivity {
 	private BroadcastReceiversRegister broadcastReceiversRegister = new BroadcastReceiversRegister(this);
 	private static int posEventShown = -1;
 	private static int posEventCurrent = -1;
-	private EventsList eventsList;
+	private EventList eventsList;
 	private ViewPager viewPager;
 	private NetworkClient networkClient;
 

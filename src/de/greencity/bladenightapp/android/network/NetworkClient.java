@@ -18,7 +18,6 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.http.conn.ssl.SSLSocketFactory;
 
 import android.content.Context;
 import android.os.Handler;
