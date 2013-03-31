@@ -9,6 +9,8 @@
     <string name="button_statistics">Statistiken</string>
     <string name="impressum">Impressum</string>
     <string name="menu_settings">Optionen</string>
+    <string name="msg_administration">Administration</string>
+    <string name="msg_about_app">Über die app</string>
     <string name="msg_failed_to_load_map">Laden der Karten ist fehlgeschlagen</string>
     <string name="msg_no">Nein</string>
     <string name="msg_tracker_confirm_stop">Deine Freunde werden Dich vermissen, und dein Track wird abgebrochen. Bist Du sicher ?</string>

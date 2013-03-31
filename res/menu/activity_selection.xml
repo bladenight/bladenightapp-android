@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/menu_item_admin"
+        android:icon="@drawable/ic_action_warning"
+        android:title="@string/msg_administration">
+    </item>
+    <item
+        android:id="@+id/menu_item_about"
+        android:icon="@drawable/ic_action_help"
+        android:title="@string/msg_about_app">
+    </item>
+</menu>

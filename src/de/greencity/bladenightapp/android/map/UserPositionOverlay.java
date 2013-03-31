@@ -1,7 +1,6 @@
 package de.greencity.bladenightapp.android.map;
 
 import org.mapsforge.android.maps.MapView;
-import org.mapsforge.android.maps.Projection;
 import org.mapsforge.android.maps.overlay.Circle;
 import org.mapsforge.android.maps.overlay.ListOverlay;
 import org.mapsforge.android.maps.overlay.Marker;
