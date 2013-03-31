@@ -33,6 +33,7 @@ import de.greencity.bladenightapp.android.utils.AsyncDownloadTask;
 import de.greencity.bladenightapp.android.utils.DeviceId;
 import de.greencity.bladenightapp.android.utils.ServiceUtils;
 import de.greencity.bladenightapp.network.BladenightUrl;
+import de.greencity.bladenightapp.network.messages.EventMessage;
 import de.greencity.bladenightapp.network.messages.EventsListMessage;
 import de.greencity.bladenightapp.network.messages.GpsInfo;
 import de.greencity.bladenightapp.network.messages.LatLong;
@@ -166,12 +167,24 @@ public class NetworkClient {
 		callOrStore(item);
 	}
 
-	public void getActiveRoute(RpcResultReceiver rpcResultReceiver) {
+	public void getActiveRoute(Handler successHandler, Handler errorHandler) {
 		BacklogItem item = new BacklogItem();
 		item.url = BladenightUrl.GET_ACTIVE_ROUTE.getText();
-		item.rpcResultReceiver = rpcResultReceiver;
+		item.successHandler = successHandler;
+		item.errorHandler = errorHandler;
+		item.expectedReturnType = String.class;
 		callOrStore(item);
 	}
+
+	public void getActiveEvent(Handler successHandler, Handler errorHandler) {
+		BacklogItem item = new BacklogItem();
+		item.url = BladenightUrl.GET_ACTIVE_EVENT.getText();
+		item.successHandler = successHandler;
+		item.errorHandler = errorHandler;
+		item.expectedReturnType = EventMessage.class;
+		callOrStore(item);
+	}
+
 
 
 	public void getRealTimeData(Handler successHandler, Handler errorHandler) {
@@ -273,5 +286,4 @@ public class NetworkClient {
 		}
 	};
 	private List<BacklogItem> backlogItems = new ArrayList<BacklogItem>();
-
 }

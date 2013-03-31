@@ -3,12 +3,11 @@ package de.greencity.bladenightapp.android.admin;
 
 import java.lang.ref.WeakReference;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
@@ -19,6 +18,7 @@ import de.greencity.bladenightapp.android.R;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
 import de.greencity.bladenightapp.android.network.NetworkClient;
 import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
+import de.greencity.bladenightapp.network.messages.EventMessage;
 import de.greencity.bladenightapp.network.messages.RouteNamesMessage;
 
 public class AdminActivity extends Activity {
@@ -38,7 +38,7 @@ public class AdminActivity extends Activity {
 
 		configureActionBar();
 
-		Spinner routeNameSpinner = (Spinner) findViewById(R.id.spinner_active_route);	    
+		routeNameSpinner = (Spinner) findViewById(R.id.spinner_active_route);	    
 		// Spinner eventStatusSpinner = (Spinner) findViewById(R.id.spinnerStatus);	    
 		spinnerRouteNameAdapter = new ArrayAdapter<CharSequence>(AdminActivity.this, android.R.layout.simple_spinner_item);
 		spinnerRouteNameAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);        
@@ -48,13 +48,6 @@ public class AdminActivity extends Activity {
 	}
 
 
-	protected void requestRouteFromNetworkService() {
-		//		getRouteFromServer(routeName);
-		//		if ( isRealTime ) {
-		//			getRealTimeDataFromServer();
-		//		}
-	}
-
 	static class GetAllRouteNamesFromServerHandler extends Handler {
 		private WeakReference<AdminActivity> reference;
 		GetAllRouteNamesFromServerHandler(AdminActivity activity) {
@@ -63,20 +56,49 @@ public class AdminActivity extends Activity {
 		@Override
 		public void handleMessage(Message msg) {
 			RouteNamesMessage routeNamesMessage = (RouteNamesMessage)msg.obj;
-			reference.get().update(routeNamesMessage);
+			reference.get().updateRouteList(routeNamesMessage);
 		}
 	}
 
-	public void update(RouteNamesMessage routeNamesMessage) {
+	public void updateRouteList(RouteNamesMessage routeNamesMessage) {
 		spinnerRouteNameAdapter.clear();
 		for(String name: routeNamesMessage.rna) {
 			spinnerRouteNameAdapter.add(name);
 		}
 		spinnerRouteNameAdapter.notifyDataSetChanged();
+		getNextEventFromServer();
 	}
 
 	protected void getRouteListFromServer() {
 		networkClient.getAllRouteNames(new GetAllRouteNamesFromServerHandler(this), null);
+	}
+
+	static class GetActiveEventFromServerHandler extends Handler {
+		private WeakReference<AdminActivity> reference;
+		GetActiveEventFromServerHandler(AdminActivity activity) {
+			this.reference = new WeakReference<AdminActivity>(activity);
+		}
+		@Override
+		public void handleMessage(Message msg) {
+			EventMessage eventMessage = (EventMessage)msg.obj;
+			if ( eventMessage.rou == null)
+				Log.e(TAG, "Server sent invalid route name:" + eventMessage.rou);
+			else
+				reference.get().updateRouteCurrent(eventMessage.rou);
+		}
+	}
+
+
+	protected void getNextEventFromServer() {
+		networkClient.getActiveEvent(new GetActiveEventFromServerHandler(this), null);
+	}
+
+
+	public void updateRouteCurrent(String currentRouteName) {
+		for(int i = 0 ; i < spinnerRouteNameAdapter.getCount() ; i ++) {
+			if ( currentRouteName.equals(spinnerRouteNameAdapter.getItem(i)) )
+				routeNameSpinner.setSelection(i);
+		}
 	}
 
 
@@ -136,8 +158,9 @@ public class AdminActivity extends Activity {
 
 
 
-	final String TAG = "BladenightMapActivity";
+	final static String TAG = "BladenightMapActivity";
 	private BroadcastReceiversRegister broadcastReceiversRegister = new BroadcastReceiversRegister(this); 
 	private NetworkClient networkClient;
 	private ArrayAdapter<CharSequence> spinnerRouteNameAdapter;
+	private Spinner routeNameSpinner;
 } 
