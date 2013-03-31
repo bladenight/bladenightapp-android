@@ -8,9 +8,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.View;
 import android.view.Window;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.markupartist.android.widget.ActionBar;
 
@@ -19,6 +23,7 @@ import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
 import de.greencity.bladenightapp.android.network.NetworkClient;
 import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
 import de.greencity.bladenightapp.network.messages.EventMessage;
+import de.greencity.bladenightapp.network.messages.EventMessage.EventStatus;
 import de.greencity.bladenightapp.network.messages.RouteNamesMessage;
 
 public class AdminActivity extends Activity {
@@ -44,6 +49,24 @@ public class AdminActivity extends Activity {
 		spinnerRouteNameAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);        
 		routeNameSpinner.setAdapter(spinnerRouteNameAdapter);
 		
+		routeNameSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+
+			@Override
+			public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+				String routeName = (String) routeNameSpinner.getSelectedItem();
+				setActiveRouteOnServer(routeName);
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> arg0) {
+			}
+		});
+
+		getRouteListFromServer();
+	}
+
+	protected void getAllInformationFromServer() {
+		getNextEventFromServer();
 		getRouteListFromServer();
 	}
 
@@ -56,11 +79,11 @@ public class AdminActivity extends Activity {
 		@Override
 		public void handleMessage(Message msg) {
 			RouteNamesMessage routeNamesMessage = (RouteNamesMessage)msg.obj;
-			reference.get().updateRouteList(routeNamesMessage);
+			reference.get().updateGuiRouteListFromServerResponse(routeNamesMessage);
 		}
 	}
 
-	public void updateRouteList(RouteNamesMessage routeNamesMessage) {
+	public void updateGuiRouteListFromServerResponse(RouteNamesMessage routeNamesMessage) {
 		spinnerRouteNameAdapter.clear();
 		for(String name: routeNamesMessage.rna) {
 			spinnerRouteNameAdapter.add(name);
@@ -84,7 +107,7 @@ public class AdminActivity extends Activity {
 			if ( eventMessage.rou == null)
 				Log.e(TAG, "Server sent invalid route name:" + eventMessage.rou);
 			else
-				reference.get().updateRouteCurrent(eventMessage.rou);
+				reference.get().updateGuiRouteCurrent(eventMessage.rou);
 		}
 	}
 
@@ -94,13 +117,46 @@ public class AdminActivity extends Activity {
 	}
 
 
-	public void updateRouteCurrent(String currentRouteName) {
+	public void updateGuiRouteCurrent(String currentRouteName) {
 		for(int i = 0 ; i < spinnerRouteNameAdapter.getCount() ; i ++) {
 			if ( currentRouteName.equals(spinnerRouteNameAdapter.getItem(i)) )
 				routeNameSpinner.setSelection(i);
 		}
 	}
 
+
+	static class SetActiveRouteOnServerHandler extends Handler {
+		private WeakReference<AdminActivity> reference;
+		SetActiveRouteOnServerHandler(AdminActivity activity) {
+			this.reference = new WeakReference<AdminActivity>(activity);
+		}
+		@Override
+		public void handleMessage(Message msg) {
+			Toast.makeText(this.reference.get(), "Route has been changed", Toast.LENGTH_SHORT).show();
+			reference.get().getAllInformationFromServer();
+		}
+	}
+
+
+	protected void setActiveRouteOnServer(String routeName) {
+		networkClient.setActiveRoute(routeName, new SetActiveStatusOnServerHandler(this), null);
+	}
+
+	static class SetActiveStatusOnServerHandler extends Handler {
+		private WeakReference<AdminActivity> reference;
+		SetActiveStatusOnServerHandler(AdminActivity activity) {
+			this.reference = new WeakReference<AdminActivity>(activity);
+		}
+		@Override
+		public void handleMessage(Message msg) {
+			reference.get().getAllInformationFromServer();
+		}
+	}
+
+
+	protected void setActiveStatusOnServer() {
+		networkClient.setActiveStatus(EventStatus.CAN, new SetActiveStatusOnServerHandler(this), null);
+	}
 
 
 	@Override

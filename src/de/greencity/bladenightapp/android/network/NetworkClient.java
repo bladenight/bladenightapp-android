@@ -33,6 +33,7 @@ import de.greencity.bladenightapp.android.utils.DeviceId;
 import de.greencity.bladenightapp.android.utils.ServiceUtils;
 import de.greencity.bladenightapp.network.BladenightUrl;
 import de.greencity.bladenightapp.network.messages.EventMessage;
+import de.greencity.bladenightapp.network.messages.EventMessage.EventStatus;
 import de.greencity.bladenightapp.network.messages.EventsListMessage;
 import de.greencity.bladenightapp.network.messages.GpsInfo;
 import de.greencity.bladenightapp.network.messages.LatLong;
@@ -200,6 +201,24 @@ public class NetworkClient {
 		}
 
 		item.outgoingPayload = gpsInfo;
+		callOrStore(item);
+	}
+
+	public void setActiveRoute(String routeName, Handler successHandler, Handler errorHandler) {
+		BacklogItem item = new BacklogItem();
+		item.url = BladenightUrl.SET_ACTIVE_ROUTE.getText();
+		item.successHandler = successHandler;
+		item.errorHandler = errorHandler;
+		item.outgoingPayload = routeName;
+		callOrStore(item);
+	}
+
+	public void setActiveStatus(EventStatus status, Handler successHandler, Handler errorHandler) {
+		BacklogItem item = new BacklogItem();
+		item.url = BladenightUrl.SET_ACTIVE_STATUS.getText();
+		item.successHandler = successHandler;
+		item.errorHandler = errorHandler;
+		item.outgoingPayload = status;
 		callOrStore(item);
 	}
 
