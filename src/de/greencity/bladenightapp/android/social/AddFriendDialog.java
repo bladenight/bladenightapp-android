@@ -3,21 +3,15 @@ package de.greencity.bladenightapp.android.social;
 import de.greencity.bladenightapp.android.R;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager.LayoutParams;
 import android.widget.Button;
-import android.widget.EditText;
 
 
 public class AddFriendDialog extends DialogFragment  {
 
-	public interface AddFriendDialogListener {
-        void onFinishAddFriendDialog(String inputText);
-    }
-	
-    private EditText mEditText;
 
     public AddFriendDialog() {
         // Empty constructor required for DialogFragment
@@ -26,27 +20,26 @@ public class AddFriendDialog extends DialogFragment  {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.add_friend_dialog, container);
-        mEditText = (EditText) view.findViewById(R.id.txt_friends_name);
+        View view = inflater.inflate(R.layout.add_friend_dialog, container);     
         getDialog().setTitle("Add Friend");
         
-     // Show soft keyboard automatically
-        mEditText.requestFocus();
-        getDialog().getWindow().setSoftInputMode(
-                LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         
-        Button confirmButton = (Button) view.findViewById(R.id.addFriend_confirm);
+        Button confirmButton = (Button) view.findViewById(R.id.addFriend);
         confirmButton.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
-            	AddFriendDialogListener activity = (AddFriendDialogListener) getActivity();
-                activity.onFinishAddFriendDialog(mEditText.getText().toString());
-                dismiss();
+            	FragmentManager fm = getFragmentManager();
+            	InviteFriendDialog inviteFriendDialog = new InviteFriendDialog();
+            	inviteFriendDialog.show(fm, "fragment_confirm_friend");
+            	dismiss();
             }
         });
-        Button cancelButton = (Button) view.findViewById(R.id.addFriend_cancel);
+        Button cancelButton = (Button) view.findViewById(R.id.confirmFriend);
         cancelButton.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
-            	dismiss();
+            	FragmentManager fm = getFragmentManager();    
+            	ConfirmFriendDialog confirmFriendDialog = new ConfirmFriendDialog();
+    			confirmFriendDialog.show(fm, "fragment_confirm_friend");
+    			dismiss();
             }
         });
         

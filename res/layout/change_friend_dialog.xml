@@ -1,22 +1,88 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/change_friend"
-    android:layout_width="wrap_content" android:layout_height="wrap_content"
-    android:layout_gravity="center" android:orientation="vertical"  >
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:orientation="vertical" >
 
     <TextView
-        android:text="Nickname of your Friend" 
-        android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:padding="5dp" />
-      
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:text="Nickname of your Friend" />
+
     <EditText
         android:id="@+id/change_friends_name"
-        android:layout_width="match_parent"  android:layout_height="wrap_content" 
-        android:inputType="text"
-        android:imeOptions="actionDone" />
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:imeOptions="actionDone"
+        android:inputType="text" />
+    
+     <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:text="Color" />
+    
+    <LinearLayout 
+        android:layout_width="match_parent" android:layout_height="50dp"
+        android:orientation="horizontal">
+        <ImageView
+		    android:id="@+id/color_orange"
+		    android:layout_height="match_parent"
+		    android:layout_weight="1"
+		    android:layout_width="match_parent"
+		    android:background="@color/bn_orange"
+		    android:src="@drawable/color_field_off" />
+
+        <ImageView
+            android:id="@+id/color_red"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:background="@color/bn_red"
+            android:src="@drawable/color_field_off"/>
+        <ImageView
+            android:id="@+id/color_blue"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:background="@color/bn_blue"
+            android:src="@drawable/color_field_off"/>
+        <ImageView
+            android:id="@+id/color_green"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:background="@color/bn_green"
+            android:src="@drawable/color_field_off"/>
+        <ImageView
+            android:id="@+id/color_greenlight"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:background="@color/bn_green_light"
+            android:src="@drawable/color_field" />
+    </LinearLayout>
+
+    <CheckBox
+        android:id="@+id/friend_active"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Active" />
     
     <LinearLayout 
         android:layout_width="match_parent" android:layout_height="wrap_content"
         android:orientation="horizontal">
+        
+        <Button
+            android:id="@+id/changeFriend_confirm"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:text="OK" 
+            android:onClick="onClick"/>
+
         
         <Button
             android:id="@+id/changeFriend_cancel"
@@ -26,13 +92,7 @@
             android:text="Cancel" 
             android:onClick="onClick"/>
     
-        <Button
-            android:id="@+id/changeFriend_confirm"
-            android:layout_weight="1"
-            android:layout_height="match_parent"
-            android:layout_width="match_parent"
-            android:text="OK" 
-            android:onClick="onClick"/>  
+          
         
     </LinearLayout>
 </LinearLayout>

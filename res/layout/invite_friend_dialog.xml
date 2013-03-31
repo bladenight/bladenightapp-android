@@ -4,23 +4,12 @@
     android:layout_gravity="center" android:orientation="vertical"  >
 
     <TextView
-        android:text="Nickname of your Friend" 
+        android:id="@+id/lbl_friends_name" android:text="Nickname of your Friend" 
         android:layout_width="wrap_content" android:layout_height="wrap_content"
         android:padding="5dp" />
       
     <EditText
-        android:id="@+id/confirm_friendsName"
-        android:layout_width="match_parent"  android:layout_height="wrap_content" 
-        android:inputType="text"
-        android:imeOptions="actionDone" />
-    
-    <TextView
-        android:text="Code" 
-        android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:padding="5dp" />
-      
-    <EditText
-        android:id="@+id/confirm_code"
+        android:id="@+id/txt_friends_name"
         android:layout_width="match_parent"  android:layout_height="wrap_content" 
         android:inputType="text"
         android:imeOptions="actionDone" />
@@ -30,7 +19,7 @@
         android:orientation="horizontal">
         
         <Button
-            android:id="@+id/confirmFriend_confirm"
+            android:id="@+id/inviteFriend_confirm"
             android:layout_weight="1"
             android:layout_height="match_parent"
             android:layout_width="match_parent"
@@ -38,14 +27,13 @@
             android:onClick="onClick"/>  
         
         <Button
-            android:id="@+id/confirmFriend_cancel"
+            android:id="@+id/inviteFriend_cancel"
             android:layout_weight="1"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:text="Cancel" 
             android:onClick="onClick"/>
-    
-        
+
         
     </LinearLayout>
 </LinearLayout>

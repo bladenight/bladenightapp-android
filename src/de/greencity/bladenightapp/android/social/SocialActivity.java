@@ -3,6 +3,8 @@ package de.greencity.bladenightapp.android.social;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.markupartist.android.widget.ActionBar;
+
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -12,89 +14,104 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
-import android.widget.ImageView;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 import de.greencity.bladenightapp.android.R;
-import de.greencity.bladenightapp.android.social.AddFriendDialog.AddFriendDialogListener;
+import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
+import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator.ActionItemType;
+import de.greencity.bladenightapp.android.social.Friend.FriendColor;
+import de.greencity.bladenightapp.android.social.InviteFriendDialog.InviteFriendDialogListener;
 import de.greencity.bladenightapp.android.social.ChangeFriendDialog.ChangeFriendDialogListener;
 import de.greencity.bladenightapp.android.social.ConfirmFriendDialog.ConfirmFriendDialogListener;
-import de.greencity.bladenightapp.android.tracker.GpsTrackerService;
-import de.greencity.bladenightapp.android.utils.ServiceUtils;
 
-public class SocialActivity extends FragmentActivity implements AddFriendDialogListener, 
+public class SocialActivity extends FragmentActivity implements InviteFriendDialogListener, 
 ConfirmFriendDialogListener, ChangeFriendDialogListener {
 
 
 	ListView list;
-	private List<String> List_file;
+	private List<Friend> friends;
 	private final String TAG = "SocialActivity"; 
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		Log.i(TAG, "onCreate");
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_social);
-		getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.titlebar);
-		ImageView titlebar = (ImageView)(findViewById(R.id.icon));
-		titlebar.setImageResource(R.drawable.ic_menu_settings);
-		TextView titletext = (TextView)findViewById(R.id.title);
-		titletext.setText(R.string.title_social);
+//		getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.titlebar);
+//		ImageView titlebar = (ImageView)(findViewById(R.id.icon));
+//		titlebar.setImageResource(R.drawable.ic_menu_settings);
+//		TextView titletext = (TextView)findViewById(R.id.title);
+//		titletext.setText(R.string.title_social);
 
-		List_file =new ArrayList<String>();
+		friends =new ArrayList<Friend>();
 		list = (ListView)findViewById(R.id.listview);
 		CreateListView();
 	}
+	
+	@Override
+	protected void onStart() {
+		super.onStart();
 
-	// Will be called via the onClick attribute
-	// of the buttons in main.xml
-	public void onClick(View view) {	  
-		FragmentManager fm = getSupportFragmentManager();
-		switch (view.getId()) {
-		case R.id.addFriend: 
-			AddFriendDialog addFriendDialog = new AddFriendDialog();
-			addFriendDialog.show(fm, "fragment_add_friend");
+		Log.i(TAG, "onStart");
 
-			break;
-		case R.id.confirmFriend: 
-			ConfirmFriendDialog confirmFriendDialog = new ConfirmFriendDialog();
-			confirmFriendDialog.show(fm, "fragment_confirm_friend");
-			break;
+		configureActionBar();
+	}
 
-		}
+	private void configureActionBar() {
+		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
+//		Action mapActionWithParameters = new ActionMap() {
+//			@Override
+//			public void performAction(View view) {
+//				Intent intent = new Intent(view.getContext(), BladenightMapActivity.class);
+//				Event event = getEventShown();
+//				if ( event == null ) {
+//					Log.e(TAG, "No event currently shown");
+//					return;
+//				}
+//				intent.putExtra("routeName", event.getRouteName());
+//				intent.putExtra("isRealTime", posEventCurrent == posEventShown);
+//				view.getContext().startActivity(intent);
+//			}
+//		};
+		new ActionBarConfigurator(actionBar)
+		.hide(ActionItemType.EVENT_SELECTION)
+		.hide(ActionItemType.FRIENDS)
+//		.replaceAction(ActionItemType.MAP, mapActionWithParameters)
+		.setTitle(R.string.title_social)
+		.configure();
+
 	}
 
 
 	private void CreateListView()
 	{
 		//dummy data to test
-		List_file.add("Hans");
-		List_file.add("Heinz");
-		List_file.add("Hubert");
+		friends.add(new Friend("Hans",FriendColor.ORANGE,true));
+		friends.add(new Friend("Heinz",FriendColor.RED,true));
+		friends.add(new Friend("Hubert",FriendColor.GREEN,true));
 
 		//Create an adapter for the listView and add the ArrayList to the adapter.
-		list.setAdapter(new ArrayAdapter<String>(SocialActivity.this, android.R.layout.simple_list_item_1,List_file));
-		list.setOnItemClickListener(new OnItemClickListener()
+		list.setAdapter(new FriendListAdapter(SocialActivity.this, friends));
+		list.setOnItemLongClickListener(new OnItemLongClickListener()
 		{
 			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,long arg3)
+			public boolean onItemLongClick(AdapterView<?> arg0, View arg1, int arg2,long arg3)
 			{
 				//args2 is the listViews Selected index
 				FragmentManager fm = getSupportFragmentManager();
-				ChangeFriendDialog changeFriendDialog = new ChangeFriendDialog(List_file.get(arg2), arg2);
+				ChangeFriendDialog changeFriendDialog = new ChangeFriendDialog(friends.get(arg2), arg2);
 				changeFriendDialog.show(fm, "fragment_change_friend");
+				return true;
 			}
 		});
 	}
 
 
 	@Override
-	public void onFinishAddFriendDialog(String friendName) { 
-		new AddFriendTask(friendName).execute();
+	public void onFinishInviteFriendDialog(String friendName) { 
+		new InviteFriendTask(friendName).execute();
 	}
 
 	@Override
@@ -103,20 +120,20 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 	}
 
 	@Override
-	public void onFinishChangeFriendDialog(String friendName, int index) { 
-		new ChangeFriendTask(friendName, index).execute();
+	public void onFinishChangeFriendDialog(Friend friend_update, int index) { 
+		new ChangeFriendTask(friend_update, index).execute();
 	}
 
 
 	/** Inner class for implementing progress bar before fetching data **/
-	private class AddFriendTask extends AsyncTask<Void, Void, Integer> 
+	private class InviteFriendTask extends AsyncTask<Void, Void, Integer> 
 	{
 		private ProgressDialog Dialog = new ProgressDialog(SocialActivity.this);
 
 		private String friendName;
 		private String code;
 
-		public AddFriendTask(String friendName){
+		public InviteFriendTask(String friendName){
 			this.friendName = friendName;
 		}
 		@Override
@@ -151,10 +168,11 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 				FragmentManager fm = getSupportFragmentManager();
 				ShowCodeDialog showCodeDialog = new ShowCodeDialog(friendName, code);
 				showCodeDialog.show(fm, "fragment_show_code");
-				SocialActivity.this.List_file.add(friendName + " ... pending");
+				SocialActivity.this.friends.add(new Friend(friendName + " ... pending", FriendColor.GREEN,true));
 			}
 			// after completed finished the progressbar
 			Dialog.dismiss();
+			SocialActivity.this.list.invalidateViews();
 		}
 	}
 
@@ -201,7 +219,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 
 			if(result==1)
 			{
-				SocialActivity.this.List_file.add(friendName);
+				SocialActivity.this.friends.add(new Friend(friendName, FriendColor.GREEN,true));
 				Toast.makeText(getApplicationContext(), friendName + " was added", Toast.LENGTH_LONG).show();
 			}
 			else{
@@ -218,11 +236,11 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 	{
 		private ProgressDialog Dialog = new ProgressDialog(SocialActivity.this);
 
-		private String friendName;
+		private Friend friend_update;
 		private int index;
 
-		public ChangeFriendTask(String friendName, int index){
-			this.friendName = friendName;
+		public ChangeFriendTask(Friend friend_update, int index){
+			this.friend_update = friend_update;
 			this.index = index;
 		}
 		@Override
@@ -252,10 +270,11 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 
 			if(result==0)
 			{
-				SocialActivity.this.List_file.set(index, friendName);
+				SocialActivity.this.friends.set(index, friend_update);
 			}
 			// after completed finished the progressbar
 			Dialog.dismiss();
+			SocialActivity.this.list.invalidateViews();
 		}
 	}
 } 

@@ -4,35 +4,35 @@
     android:layout_gravity="center" android:orientation="vertical"  >
 
     <TextView
-        android:id="@+id/lbl_friends_name" android:text="Nickname of your Friend" 
+        android:id="@+id/lbl_friends_name" android:text="@string/social_explanation" 
         android:layout_width="wrap_content" android:layout_height="wrap_content"
         android:padding="5dp" />
       
-    <EditText
-        android:id="@+id/txt_friends_name"
-        android:layout_width="match_parent"  android:layout_height="wrap_content" 
-        android:inputType="text"
-        android:imeOptions="actionDone" />
+    <LinearLayout
+            android:id="@+id/social_bottom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_weight="5"  >   
+            
+            <Button
+                android:id="@+id/addFriend"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/button_inviteFriend" 
+                android:onClick="onClick"/>
     
-    <LinearLayout 
-        android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:orientation="horizontal">
+            <Button
+                android:id="@+id/confirmFriend"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                android:text="@string/button_confirmFriend" 
+                android:onClick="onClick"/>  
         
-        <Button
-            android:id="@+id/addFriend_cancel"
-            android:layout_weight="1"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="Cancel" 
-            android:onClick="onClick"/>
-    
-        <Button
-            android:id="@+id/addFriend_confirm"
-            android:layout_weight="1"
-            android:layout_height="match_parent"
-            android:layout_width="match_parent"
-            android:text="Send" 
-            android:onClick="onClick"/>  
+        
+       
         
     </LinearLayout>
 </LinearLayout>
