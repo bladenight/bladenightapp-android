@@ -13,6 +13,9 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 
@@ -23,6 +26,7 @@ import de.greencity.bladenightapp.android.R;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator.ActionItemType;
 import de.greencity.bladenightapp.android.actionbar.ActionMap;
+import de.greencity.bladenightapp.android.admin.AdminActivity;
 import de.greencity.bladenightapp.android.map.BladenightMapActivity;
 import de.greencity.bladenightapp.android.network.NetworkClient;
 import de.greencity.bladenightapp.android.statistics.StatisticsActivity;
@@ -99,7 +103,6 @@ public class SelectionActivity extends FragmentActivity {
 
 	}
 
-
 	@Override
 	protected void onStop() {
 		Log.i(TAG, "onStop");
@@ -134,6 +137,24 @@ public class SelectionActivity extends FragmentActivity {
 			}
 			break;
 		}
+	}
+
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.activity_selection, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		if( item.getItemId() == R.id.menu_item_admin ){
+			Intent intent = new Intent(this, AdminActivity.class);
+			startActivity(intent);
+			return true;
+		}
+		return false;
 	}
 
 	private void goStatistics(){

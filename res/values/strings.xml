@@ -1,4 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <string name="app_name">AOK Blade Night</string>
     <string name="arrow_left">&lt;</string>
     <string name="arrow_no"></string>
@@ -12,15 +14,21 @@
     <string name="button_statistics">Statistics</string>
     <string name="impressum">Impressum</string>
     <string name="menu_settings">Settings</string>
+    <string name="msg_administration">Administration</string>
+    <string name="msg_about_app">About the app</string>
     <string name="msg_failed_to_load_map">Failed to load the map</string>
     <string name="msg_no">No</string>
     <string name="msg_tracker_confirm_stop">Your friend will miss you, and track recording will stop. Are you sure ?</string>
     <string name="msg_tracking_running">Tracking is on</string>
     <string name="msg_yes">Yes</string>
     <string name="social_explanation">Hint: To add a friend to your list you have to use a code. If you want to invite a friend, press \'Invite Friend\' and we will generate a code for you. If a friend gave you a code, press \'Confirm Friend\'.</string>
+    <string name="title_admin">Admin</string>
     <string name="title_map">Live</string>
     <string name="title_options">Options</string>
     <string name="title_selection">Events</string>
     <string name="title_social">Social</string>
     <string name="title_statistics">Statistics</string>
+    <string name="title_activity_admin">AdminActivity</string>
+    <string name="hello_world">Hello world!</string>
+
 </resources>

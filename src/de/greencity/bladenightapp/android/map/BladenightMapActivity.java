@@ -44,7 +44,6 @@ public class BladenightMapActivity extends MapActivity {
 
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_action);
-		configureActionBar();
 		createMapView();
 
 		downloadProgressDialog = new ProgressDialog(this);
@@ -104,13 +103,6 @@ public class BladenightMapActivity extends MapActivity {
 		}
 	}
 
-	protected void requestRouteFromNetworkService() {
-		getRouteFromServer(routeName);
-		if ( isRealTime ) {
-			getRealTimeDataFromServer();
-		}
-	}
-
 	static class GetRealTimeDataFromServerHandler extends Handler {
 		private WeakReference<BladenightMapActivity> reference;
 		GetRealTimeDataFromServerHandler(BladenightMapActivity activity) {
@@ -126,6 +118,13 @@ public class BladenightMapActivity extends MapActivity {
 
 	protected void getRealTimeDataFromServer() {
 		networkClient.getRealTimeData(new GetRealTimeDataFromServerHandler(this), null);
+	}
+
+	protected void requestRouteFromNetworkService() {
+		getRouteFromServer(routeName);
+		if ( isRealTime ) {
+			getRealTimeDataFromServer();
+		}
 	}
 
 	static class GetRouteFromServerHandler extends Handler {

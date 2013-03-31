@@ -38,6 +38,7 @@ import de.greencity.bladenightapp.network.messages.GpsInfo;
 import de.greencity.bladenightapp.network.messages.LatLong;
 import de.greencity.bladenightapp.network.messages.RealTimeUpdateData;
 import de.greencity.bladenightapp.network.messages.RouteMessage;
+import de.greencity.bladenightapp.network.messages.RouteNamesMessage;
 import fr.ocroquette.wampoc.client.RpcResultReceiver;
 import fr.ocroquette.wampoc.client.WelcomeListener;
 import fr.ocroquette.wampoc.common.Channel;
@@ -146,6 +147,15 @@ public class NetworkClient {
 		callOrStore(item);
 	}
 
+	public void getAllRouteNames(Handler successHandler, Handler errorHandler) {
+		BacklogItem item = new BacklogItem();
+		item.url = BladenightUrl.GET_ALL_ROUTE_NAMES.getText();
+		item.successHandler = successHandler;
+		item.errorHandler = errorHandler;
+		item.expectedReturnType = RouteNamesMessage.class;
+		callOrStore(item);
+	}
+
 	public void getRoute(String routeName, Handler successHandler, Handler errorHandler) {
 		BacklogItem item = new BacklogItem();
 		item.url = BladenightUrl.GET_ROUTE.getText();
@@ -200,6 +210,7 @@ public class NetworkClient {
 	}
 
 	private void call(final BacklogItem item) {
+		Log.i(TAG, ToStringBuilder.reflectionToString(this));
 		try {
 			RpcResultReceiver rpcResultReceiver = new RpcResultReceiver() {
 				@Override
