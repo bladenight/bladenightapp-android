@@ -56,14 +56,17 @@ public class NetworkClient {
 	private void findServer() {
 		Log.i(TAG, "Looking for server...");
 
-		ServerFinder serverFinder = new ServerFinder(context, port);
-		try {
-			server = serverFinder.findServer();
-		} catch (InterruptedException e) {
-			Log.w(TAG, e);
-			return;
-		}
-		Log.i(TAG, "Server="+server);
+		ServerFinderAsyncTask task = new ServerFinderAsyncTask(context) {
+			@Override
+			protected void onPostExecute(String foundServer) {
+				Log.i(TAG, "Found server="+server);
+				if ( foundServer != null ) {
+					server = foundServer;
+					connect();
+				}
+			}
+		};
+		task.execute(port);
 	}
 
 	private String getUrl(String protocol) {
@@ -82,9 +85,11 @@ public class NetworkClient {
 	}
 
 	private void connect() {
-		if ( server == null)
+		if ( server == null) {
 			findServer();
-
+			return;
+		}
+		
 		String protocol = "ws";
 
 		if ( "wss".equals(protocol) ) {
@@ -101,16 +106,12 @@ public class NetworkClient {
 			@Override
 			public void onWelcome() {
 				Log.i(TAG, "onWelcome()");
-				while ( backlogItems.size() > 0 ) {
-					BacklogItem item = backlogItems.remove(0);
-					if ( System.currentTimeMillis() - item.timestamp < 5000)
-						call(item);
-				}
+				NetworkClient.this.processBacklog();
 			}
 		});
 		bladenightWampClient.connect();
 	}
-
+	
 	private javax.net.ssl.SSLSocketFactory getSSLSocketFactory() throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException, UnrecoverableKeyException, KeyManagementException {
 		final InputStream trustStoreLocation = context.getResources().openRawResource(R.raw.client_truststore); 
 		final String trustStorePassword = "iosfe45047asdf";
@@ -228,7 +229,7 @@ public class NetworkClient {
 	}
 
 	private void callOrStore(BacklogItem item) {
-		if ( bladenightWampClient.isConnectionUsable() ) {
+		if ( isConnectionUsable() ) {
 			Log.i(TAG, "callOrStore: calling");
 			call(item);
 		}
@@ -236,7 +237,21 @@ public class NetworkClient {
 			Log.i(TAG, "callOrStore: storing");
 			item.timestamp = System.currentTimeMillis();
 			backlogItems.add(item);
-			bladenightWampClient.connect();
+			connect();
+		}
+	}
+
+	private boolean isConnectionUsable() {
+		if ( bladenightWampClient == null )
+			return false;
+		return bladenightWampClient.isConnectionUsable();
+	}
+	
+	private void processBacklog() {
+		while ( backlogItems.size() > 0 ) {
+			BacklogItem item = backlogItems.remove(0);
+			if ( System.currentTimeMillis() - item.timestamp < 5000)
+				call(item);
 		}
 	}
 

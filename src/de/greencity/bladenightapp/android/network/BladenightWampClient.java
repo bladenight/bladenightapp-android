@@ -58,7 +58,7 @@ public class BladenightWampClient {
 	}
 
 	public boolean isConnectionUsable() {
-		return isConnected && wampClient.hasBeenWelcomed();
+		return isConnected && wampClient != null && wampClient.hasBeenWelcomed();
 	}
 	
 	public void setWelcomeListener(WelcomeListener welcomeListener) {

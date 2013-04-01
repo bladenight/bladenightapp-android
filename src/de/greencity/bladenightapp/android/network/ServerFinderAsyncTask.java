@@ -1,20 +1,21 @@
 package de.greencity.bladenightapp.android.network;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.util.Log;
 import de.greencity.bladenightapp.network.scanner.PortScanner;
 
-public class ServerFinder {
-	public ServerFinder(Context context, int port) {
+public class ServerFinderAsyncTask extends AsyncTask<Integer, Integer, String> {
+	ServerFinderAsyncTask(Context context) {
 		this.context = context;
-		this.port = port;
 	}
-
-	public String findServer() throws InterruptedException {
-		PortScanner scanner = new PortScanner(port);
+	
+	protected String doInBackground(Integer... ports) {
+		PortScanner scanner = new PortScanner(ports[0]);
 
 		scanner.setTimeout(1000);
 
@@ -29,11 +30,26 @@ public class ServerFinder {
 		if ( wifiSubnet != null )
 			scanner.addIpRange(wifiSubnet, 1, 254);
 
-		scanner.scan();
+		try {
+			scanner.scan();
+		} catch (InterruptedException e) {
+			Log.e("TAG", "While scanning: ",e);
+		}
+
+		Log.i(TAG, "doInBackground result=" + scanner.getFoundHost());
 
 		return scanner.getFoundHost();
 	}
 
+	@Override
+	protected void onProgressUpdate(Integer... progress) {
+		// setProgressPercent(progress[0]);
+	}
+
+	@Override
+	protected void onPostExecute(String result) {
+		// showDialog("Downloaded " + result + " bytes");
+	}
 
 	protected int getWifiIp() {
 		WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
@@ -41,6 +57,7 @@ public class ServerFinder {
 		return wifiInfo.getIpAddress();
 	}
 
+	@SuppressLint("DefaultLocale")
 	protected String getWifiSubnetAsString() {
 		int ip = getWifiIp();
 
@@ -56,8 +73,6 @@ public class ServerFinder {
 		return ipString;
 	}
 
-	private final Context context;
-	private final int port;
-	final static String TAG = "ServerFinder"; 
-
+	private Context context;
+	final static String TAG = "ServerFinderAsyncTask";
 }

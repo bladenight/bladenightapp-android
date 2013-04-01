@@ -19,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 
+import com.google.gson.Gson;
 import com.markupartist.android.widget.ActionBar;
 import com.markupartist.android.widget.ActionBar.Action;
 
@@ -31,6 +32,7 @@ import de.greencity.bladenightapp.android.map.BladenightMapActivity;
 import de.greencity.bladenightapp.android.network.NetworkClient;
 import de.greencity.bladenightapp.android.statistics.StatisticsActivity;
 import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
+import de.greencity.bladenightapp.android.utils.InternalStorageFile;
 import de.greencity.bladenightapp.events.Event;
 import de.greencity.bladenightapp.events.EventList;
 import de.greencity.bladenightapp.network.messages.EventsListMessage;
@@ -75,6 +77,7 @@ public class SelectionActivity extends FragmentActivity {
 
 		tryToRestorePreviouslyShownEvent();
 
+		getEventsFromCache();
 		getEventsFromServer();
 	}
 
@@ -177,9 +180,33 @@ public class SelectionActivity extends FragmentActivity {
 		public void handleMessage(Message msg) {
 			EventsListMessage eventsListMessage = (EventsListMessage)msg.obj;
 			reference.get().updateFragementsFromEventList((EventsListMessage)eventsListMessage);
+			reference.get().saveEventsToCache(eventsListMessage);
 		}
 	}
-	
+
+	private void getEventsFromCache() {
+		String data = eventListCacheFile.read();
+		if (data == null)
+			return;
+		EventsListMessage eventsListMessage = null;
+		try {
+			eventsListMessage = gson.fromJson(data, EventsListMessage.class);
+		}
+		catch(Exception e) {
+		}
+		if ( eventsListMessage != null) {
+			Log.i(TAG, "Updating events fragment from cached data");
+			updateFragementsFromEventList(eventsListMessage);
+		}
+		else {
+			Log.e(TAG, "getEventsFromCache: failed to parse: " + data);
+		}
+	}
+
+	private void saveEventsToCache(EventsListMessage eventsListMessage) {
+		eventListCacheFile.write(gson.toJson(eventsListMessage));
+	}
+
 	private void getEventsFromServer() {
 		networkClient.getAllEvents(new GetEventsFromServerHandler(this), null);
 	}
@@ -279,5 +306,7 @@ public class SelectionActivity extends FragmentActivity {
 	private EventList eventsList;
 	private ViewPager viewPager;
 	private NetworkClient networkClient;
+	private InternalStorageFile eventListCacheFile = new InternalStorageFile(this, "event-list.json");
+	private Gson gson = new Gson();
 
 } 
