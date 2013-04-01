@@ -80,6 +80,15 @@ public class BladenightMapActivity extends MapActivity {
 		}
 	}
 
+	@Override
+	public void onStop() {
+		super.onStop();
+		if ( periodicTask != null )
+			periodicHandler.removeCallbacks(periodicTask);
+		if ( gpsListener != null)
+			gpsListener.cancelLocationUpdates();
+	}
+
 
 	private void getActivityParametersFromIntent(Intent intent) {
 		if ( intent != null) {
@@ -158,12 +167,6 @@ public class BladenightMapActivity extends MapActivity {
 		.configure();
 	}
 
-
-	@Override
-	public void onStop() {
-		super.onStop();
-		periodicHandler.removeCallbacks(periodicTask);
-	}
 
 	public void createMapView() {
 		// TODO to remove !

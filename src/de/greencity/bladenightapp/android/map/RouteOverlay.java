@@ -12,6 +12,7 @@ import org.mapsforge.core.model.GeoPoint;
 
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Paint.Cap;
 import android.location.Location;
 import android.util.Log;
 import de.greencity.bladenightapp.network.messages.LatLong;
@@ -42,8 +43,9 @@ public class RouteOverlay extends ListOverlay {
 		Paint paintStroke = new Paint(Paint.ANTI_ALIAS_FLAG);
 		paintStroke.setStyle(Paint.Style.STROKE);
 		paintStroke.setColor(Color.BLUE);
-		paintStroke.setAlpha(50);
-		paintStroke.setStrokeWidth(9);
+		paintStroke.setAlpha(100);
+		paintStroke.setStrokeWidth(12);
+		paintStroke.setStrokeCap(Cap.ROUND);
 
 		return new Polyline(polygonalChain, paintStroke);
 	}
@@ -53,8 +55,9 @@ public class RouteOverlay extends ListOverlay {
 
 		Paint paintStroke = new Paint(Paint.ANTI_ALIAS_FLAG);
 		paintStroke.setStyle(Paint.Style.STROKE);
-		paintStroke.setColor(Color.rgb(0, 200, 90));
-		paintStroke.setStrokeWidth(5);
+		paintStroke.setColor(Color.argb(200, 0, 140, 40));
+		paintStroke.setStrokeWidth(12);
+		paintStroke.setStrokeCap(Cap.ROUND);
 
 		return new Polyline(polygonalChain, paintStroke);
 	}

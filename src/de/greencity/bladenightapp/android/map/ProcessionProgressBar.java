@@ -36,20 +36,7 @@ public class ProcessionProgressBar extends ProgressBar {
 		textPaint.setAntiAlias(true);
 		textPaint.setTextSize(20);
 
-		processionOutlinePaint = new Paint();
-		processionOutlinePaint.setStyle(Paint.Style.STROKE);
-		processionOutlinePaint.setColor(Color.rgb(0, 0, 0));
-
-		processionInfillPaint = new Paint();
-		processionInfillPaint.setColor(Color.rgb(0, 140, 40));
-
-
-		userRectPaint = new Paint();
-		userRectPaint.setColor(Color.rgb(255, 0, 0));
-
 		routeLength  = -1;
-
-		// setDemoData();
 	}
 
 	public void update(RealTimeUpdateData realTimeUpdateData) {
@@ -216,9 +203,6 @@ public class ProcessionProgressBar extends ProgressBar {
 	protected NetMovingPoint headPoint = new NetMovingPoint();
 	protected NetMovingPoint userPoint = new NetMovingPoint();
 	protected double routeLength;
-	protected Paint processionInfillPaint;
-	protected Paint processionOutlinePaint;
-	protected Paint userRectPaint;
 	final static String TAG = "ProcessionProgressBar";
 	private Drawable processionDrawable;
 	private Drawable backgroundDrawable;
