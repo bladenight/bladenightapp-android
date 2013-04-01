@@ -12,12 +12,12 @@ import fr.ocroquette.wampoc.client.WampClient;
 import fr.ocroquette.wampoc.client.WelcomeListener;
 
 public class BladenightWampClient {
-	BladenightWampClient(URI serverUri) {
-		NetworkClient.WebSocketClientChannelAdapter adapter = new NetworkClient.WebSocketClientChannelAdapter();
+	BladenightWampClient() {
+		adapter = new NetworkClient.WebSocketClientChannelAdapter();
 		final WampClient wampClient = new WampClient(adapter);
 		this.wampClient = wampClient;
 
-		WebSocketClient.Listener listener = new WebSocketClient.Listener() {
+		listener = new WebSocketClient.Listener() {
 			@Override
 			public void onConnect() {
 				Log.d(TAG, "Connected!");
@@ -47,12 +47,12 @@ public class BladenightWampClient {
 				Log.e(TAG, "Error!", error);
 			}
 		};
-		webSocketClient = new WebSocketClient(serverUri, listener, null);
-		adapter.setClient(webSocketClient);
 
 	}
 	
-	public void connect() {
+	public void connect(URI serverUri) {
+		webSocketClient = new WebSocketClient(serverUri, listener, null);
+		adapter.setClient(webSocketClient);
 		wampClient.reset();
 		webSocketClient.connect();
 	}
@@ -76,6 +76,9 @@ public class BladenightWampClient {
 	private WampClient wampClient;
 	private WebSocketClient webSocketClient;
 	private boolean isConnected;
+	private NetworkClient.WebSocketClientChannelAdapter adapter;
+
+	WebSocketClient.Listener listener;
 
 	final static private String TAG = "BladenightWampClient"; 
 }

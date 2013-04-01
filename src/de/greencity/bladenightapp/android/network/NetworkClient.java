@@ -50,26 +50,36 @@ public class NetworkClient {
 	public NetworkClient(Context context) {
 		NetworkClient.context = context;
 		gpsInfo.setDeviceId(DeviceId.getDeviceId(context));
-		connect();
 	}
 
-	private void findServer() {
-		Log.i(TAG, "Looking for server...");
+	private static synchronized void findServer() {
+		if ( System.currentTimeMillis() - lookingForServerTimestamp < 10000) {
+			Log.i(TAG, "Already looking for server ("+lookingForServerTimestamp+")");
+			return;
+		}
+			
+		Log.i(TAG, " Looking for server...");
+		lookingForServerTimestamp = System.currentTimeMillis();
 
 		ServerFinderAsyncTask task = new ServerFinderAsyncTask(context) {
 			@Override
 			protected void onPostExecute(String foundServer) {
-				Log.i(TAG, "Found server="+server);
+				Log.i(TAG, "Found server="+foundServer);
 				if ( foundServer != null ) {
 					server = foundServer;
-					connect();
+					onServerFound();
 				}
+				lookingForServerTimestamp = 0;
 			}
 		};
 		task.execute(port);
 	}
 
-	private String getUrl(String protocol) {
+	protected static void onServerFound() {
+		connect();
+	}
+
+	private static String getUrl(String protocol) {
 		return protocol + "://" + server + ":" + port;
 	}
 
@@ -84,7 +94,8 @@ public class NetworkClient {
 		}
 	}
 
-	private void connect() {
+	private static synchronized void connect() {
+		Log.i(TAG, "connect()");
 		if ( server == null) {
 			findServer();
 			return;
@@ -101,18 +112,17 @@ public class NetworkClient {
 		}
 
 		URI uri = URI.create(getUrl(protocol));
-		bladenightWampClient = new BladenightWampClient(uri);
 		bladenightWampClient.setWelcomeListener(new WelcomeListener() {
 			@Override
 			public void onWelcome() {
 				Log.i(TAG, "onWelcome()");
-				NetworkClient.this.processBacklog();
+				NetworkClient.processBacklog();
 			}
 		});
-		bladenightWampClient.connect();
+		bladenightWampClient.connect(uri);
 	}
 	
-	private javax.net.ssl.SSLSocketFactory getSSLSocketFactory() throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException, UnrecoverableKeyException, KeyManagementException {
+	private static javax.net.ssl.SSLSocketFactory getSSLSocketFactory() throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException, UnrecoverableKeyException, KeyManagementException {
 		final InputStream trustStoreLocation = context.getResources().openRawResource(R.raw.client_truststore); 
 		final String trustStorePassword = "iosfe45047asdf";
 
@@ -242,21 +252,19 @@ public class NetworkClient {
 	}
 
 	private boolean isConnectionUsable() {
-		if ( bladenightWampClient == null )
-			return false;
 		return bladenightWampClient.isConnectionUsable();
 	}
 	
-	private void processBacklog() {
+	private static void processBacklog() {
+		Log.i(TAG, "processBacklog: " + backlogItems.size() + " items");
 		while ( backlogItems.size() > 0 ) {
 			BacklogItem item = backlogItems.remove(0);
-			if ( System.currentTimeMillis() - item.timestamp < 5000)
+			if ( System.currentTimeMillis() - item.timestamp < 10000)
 				call(item);
 		}
 	}
 
-	private void call(final BacklogItem item) {
-		Log.i(TAG, ToStringBuilder.reflectionToString(this));
+	private static void call(final BacklogItem item) {
 		try {
 			RpcResultReceiver rpcResultReceiver = new RpcResultReceiver() {
 				@Override
@@ -298,10 +306,11 @@ public class NetworkClient {
 	static private Context context;
 	static private final String TAG = "NetworkClient";
 	static private String server;
-	final static private int port = 8081;
-	final private GpsInfo gpsInfo = new GpsInfo();
+	static final private int port = 8081;
+	static final private GpsInfo gpsInfo = new GpsInfo();
 	static private LatLong lastKnownPosition;
-	private BladenightWampClient bladenightWampClient;
+	static private BladenightWampClient bladenightWampClient = new BladenightWampClient();
+	static private long lookingForServerTimestamp = 0;
 
 
 
@@ -318,5 +327,5 @@ public class NetworkClient {
 			return ToStringBuilder.reflectionToString(this);
 		}
 	};
-	private List<BacklogItem> backlogItems = new ArrayList<BacklogItem>();
+	static private List<BacklogItem> backlogItems = new ArrayList<BacklogItem>();
 }

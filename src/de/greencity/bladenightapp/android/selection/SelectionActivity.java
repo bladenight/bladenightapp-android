@@ -10,7 +10,7 @@ import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Menu;
@@ -63,6 +63,8 @@ public class SelectionActivity extends FragmentActivity {
 			public void onPageScrollStateChanged(int arg0) {
 			}
 		});
+		viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
+		viewPager.setAdapter(viewPagerAdapter);
 
 		networkClient =  new NetworkClient(this);
 	}
@@ -179,7 +181,8 @@ public class SelectionActivity extends FragmentActivity {
 		@Override
 		public void handleMessage(Message msg) {
 			EventsListMessage eventsListMessage = (EventsListMessage)msg.obj;
-			reference.get().updateFragementsFromEventList((EventsListMessage)eventsListMessage);
+			Log.i(TAG, "Updating event fragments from server data");
+			reference.get().updateFragmentsFromEventList((EventsListMessage)eventsListMessage);
 			reference.get().saveEventsToCache(eventsListMessage);
 		}
 	}
@@ -195,8 +198,8 @@ public class SelectionActivity extends FragmentActivity {
 		catch(Exception e) {
 		}
 		if ( eventsListMessage != null) {
-			Log.i(TAG, "Updating events fragment from cached data");
-			updateFragementsFromEventList(eventsListMessage);
+			Log.i(TAG, "Updating event fragments from cached data");
+			updateFragmentsFromEventList(eventsListMessage);
 		}
 		else {
 			Log.e(TAG, "getEventsFromCache: failed to parse: " + data);
@@ -212,10 +215,12 @@ public class SelectionActivity extends FragmentActivity {
 	}
 
 
-	private void updateFragementsFromEventList(EventsListMessage eventsListMessage) {
-		mAdapter = new MyAdapter(getSupportFragmentManager(), eventsListMessage);
-		viewPager.setAdapter(mAdapter);
-		eventsList = eventsListMessage.convertToEventsList();
+	private void updateFragmentsFromEventList(EventsListMessage eventListMessage) {
+		Log.i(TAG, "updateFragementsFromEventList " + eventListMessage);
+		viewPager.setAdapter(null) ;
+		viewPagerAdapter.setEventListMessage(eventListMessage);
+		viewPager.setAdapter(viewPagerAdapter) ;
+		eventsList = eventListMessage.convertToEventsList();
 		updatePositionEventCurrent();
 		if ( ! tryToRestorePreviouslyShownEvent() ) {
 			showNextEvent();
@@ -265,41 +270,46 @@ public class SelectionActivity extends FragmentActivity {
 		return eventsList.get(posEventShown);
 	}
 
-	public static class MyAdapter extends FragmentPagerAdapter {
-		@SuppressWarnings("unused")
-		final private String TAG = "SelectionActivity.MyAdapter"; 
-
-		public EventsListMessage eventsListMessage;
-
-		public MyAdapter(FragmentManager fm, EventsListMessage eventsListMessage) {
+	public static class ViewPagerAdapter extends FragmentStatePagerAdapter {
+		public ViewPagerAdapter(FragmentManager fm) {
 			super(fm);
-			this.eventsListMessage = eventsListMessage;
+		}
+
+		public void setEventListMessage(EventsListMessage eventListMessage) {
+			this.eventListMessage = eventListMessage;
 		}
 
 		@Override
 		public int getCount() {
-			// Log.d(TAG, "getCount");
-			return eventsListMessage.size();
+			//			Log.d(TAG, "getCount");
+			return eventListMessage.size();
 		}
 
 		@Override
 		public int getItemPosition(Object object) {
-			// Log.d(TAG, "getItemPosition");
+			//			Log.d(TAG, "getItemPosition " + object);
 			return POSITION_NONE;
 		}
 
 		@Override
 		public Fragment getItem(int position) {
-			// Log.d(TAG, "getItem("+position+")");
+			//			Log.d(TAG, "getItem("+position+")");
+			//			Log.d(TAG, eventListMessage.get(position).toString());
 			boolean hasRight = position < getCount()-1;
 			boolean hasLeft = position > 0;
-			Fragment fragment = new EventFragment(eventsListMessage.get(position), hasLeft, hasRight);
+			Fragment fragment = new EventFragment(eventListMessage.get(position), hasLeft, hasRight);
 			return fragment;      
 		}
+
+		@SuppressWarnings("unused")
+		final private String TAG = "SelectionActivity.MyAdapter"; 
+
+		public EventsListMessage eventListMessage = new EventsListMessage();
+
 	}
 
-	private MyAdapter mAdapter;
-	private final String TAG = "SelectionActivity"; 
+	private ViewPagerAdapter viewPagerAdapter;
+	private final static String TAG = "SelectionActivity"; 
 	private BroadcastReceiversRegister broadcastReceiversRegister = new BroadcastReceiversRegister(this);
 	private static int posEventShown = -1;
 	private static int posEventCurrent = -1;
