@@ -37,11 +37,11 @@ public class UserPositionOverlay extends ListOverlay implements LocationListener
 
 	private Circle createExternalCircle() {
 		Paint paintFill = new Paint();
-		paintFill.setColor(Color.argb(100, 150, 150, 255));
+		paintFill.setColor(Color.argb(50, 150, 150, 255));
 		paintFill.setAntiAlias(true);
 
 		Paint paintStroke = new Paint();
-		paintStroke.setColor(Color.argb(200, 20, 20, 100));
+		paintStroke.setColor(Color.argb(50, 20, 20, 100));
 		paintStroke.setAntiAlias(true);
 		return new Circle(new GeoPoint(0,0), 0, paintFill, paintStroke);
 	}

@@ -20,7 +20,7 @@
             android:layout_height="match_parent"
             android:layout_weight="2.5"
             android:gravity="center"
-            android:textColor="@color/black"
+            android:textColor="#ffffff"
             android:textSize="25dip"
             android:textStyle="bold" />
 
@@ -30,7 +30,7 @@
             android:layout_height="match_parent"
             android:layout_weight="2.5"
             android:gravity="center"
-            android:textColor="@color/black"
+            android:textColor="#ffffff"
             android:textSize="25dip"
             android:textStyle="bold" />
 

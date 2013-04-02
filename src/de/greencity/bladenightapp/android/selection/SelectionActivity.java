@@ -297,7 +297,8 @@ public class SelectionActivity extends FragmentActivity {
 			//			Log.d(TAG, eventListMessage.get(position).toString());
 			boolean hasRight = position < getCount()-1;
 			boolean hasLeft = position > 0;
-			Fragment fragment = new EventFragment(eventListMessage.get(position), hasLeft, hasRight);
+			EventFragment fragment = new EventFragment();
+			fragment.setParameters(eventListMessage.get(position), hasLeft, hasRight);
 			return fragment;      
 		}
 

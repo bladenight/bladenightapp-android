@@ -8,7 +8,6 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -21,27 +20,22 @@ import android.widget.TextView;
 import de.greencity.bladenightapp.android.R;
 import de.greencity.bladenightapp.network.messages.EventMessage;
 
-@SuppressLint("ValidFragment")
 public class EventFragment extends Fragment {
-	private EventMessage event;
-	private DateTime startDateTime;
-	private View view;
-	private boolean hasRight;
-	private boolean hasLeft;
-	private DateTimeFormatter fromDateFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm");
-	private static DateTimeFormatter toDateFormat = getDestinationDateFormatter(Locale.getDefault());
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-	}
-
-	public EventFragment(EventMessage event, boolean hasLeft, boolean hasRight){
+	public EventFragment(){
 		super();
+	}
+	
+	public void setParameters(EventMessage event, boolean hasLeft, boolean hasRight) {
 		this.event = event;
 		this.hasLeft = hasLeft;
 		this.hasRight = hasRight;
 		this.startDateTime = fromDateFormat.parseDateTime(event.getStartDate()); 
+	}
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
 	}
 
 	@Override
@@ -94,11 +88,13 @@ public class EventFragment extends Fragment {
 	private void updateSchedule(){
 		LinearLayout topgroup = (LinearLayout) view.findViewById(R.id.group_top);
 		if(isUpcoming()){
-			topgroup.setBackgroundResource(R.drawable.border_green);
+			// topgroup.setBackgroundResource(R.drawable.border_green);
+			topgroup.setBackgroundResource(R.drawable.border_white);
 			topgroup.setTag("upcoming");
 		}
 		else{
-			topgroup.setBackgroundResource(R.drawable.border_orange);
+			// topgroup.setBackgroundResource(R.drawable.border_orange);
+			topgroup.setBackgroundResource(R.drawable.border_white);
 			topgroup.setTag("old");
 		}
 	}
@@ -125,5 +121,12 @@ public class EventFragment extends Fragment {
 		}
 	}
 	
+	private EventMessage event;
+	private DateTime startDateTime;
+	private View view;
+	private boolean hasRight;
+	private boolean hasLeft;
+	private DateTimeFormatter fromDateFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm");
+	private static DateTimeFormatter toDateFormat = getDestinationDateFormatter(Locale.getDefault());
 	final static String TAG = "EventFragment";
 }

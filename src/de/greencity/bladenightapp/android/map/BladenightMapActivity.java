@@ -67,6 +67,8 @@ public class BladenightMapActivity extends MapActivity {
 				@Override
 				public void run() {
 					Log.i(TAG, "periodic task");
+					if ( ! isRouteInfoAvailable )
+						requestRouteFromNetworkService();
 					getRealTimeDataFromServer();
 					periodicHandler.postDelayed(this, updatePeriod);
 				}
@@ -131,9 +133,6 @@ public class BladenightMapActivity extends MapActivity {
 
 	protected void requestRouteFromNetworkService() {
 		getRouteFromServer(routeName);
-		if ( isRealTime ) {
-			getRealTimeDataFromServer();
-		}
 	}
 
 	static class GetRouteFromServerHandler extends Handler {
@@ -143,6 +142,7 @@ public class BladenightMapActivity extends MapActivity {
 		}
 		@Override
 		public void handleMessage(Message msg) {
+			reference.get().isRouteInfoAvailable = true;;
 			reference.get().routeOverlay.update((RouteMessage) msg.obj);
 			reference.get().fitViewToRoute();
 		}
@@ -303,4 +303,5 @@ public class BladenightMapActivity extends MapActivity {
 	private Runnable periodicTask;
 	private UserPositionOverlay userPositionOverlay;
 	private GpsListener gpsListener;
+	private boolean isRouteInfoAvailable = false;
 } 
