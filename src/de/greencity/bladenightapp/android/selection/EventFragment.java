@@ -72,13 +72,13 @@ public class EventFragment extends Fragment {
 		ImageView imageViewStatus = (ImageView)view.findViewById(R.id.status);
 		switch (event.getStatus()) {
 		case CAN:
-			imageViewStatus.setImageResource(R.drawable.icon_no);
+			imageViewStatus.setImageResource(R.drawable.traffic_light_red);
 			break;
 		case CON:
-			imageViewStatus.setImageResource(R.drawable.icon_ok);
+			imageViewStatus.setImageResource(R.drawable.traffic_light_green);
 			break;
 		case PEN:
-			imageViewStatus.setImageResource(R.drawable.icon_pending);
+			imageViewStatus.setImageResource(R.drawable.traffic_light_orange);
 			break;
 		default:
 			throw new Error("This status is not valid");
