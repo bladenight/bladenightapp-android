@@ -1,81 +1,107 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/RelativeLayout01"
+<LinearLayout  xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/group_top"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:onClick="onClick"
+    android:tag="empty" >
 
-    <LinearLayout
-        android:id="@+id/group_top"
+    <TextView
+        android:id="@+id/date"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/border_orange"
-        android:gravity="center_horizontal"
-        android:onClick="onClick"
-        android:orientation="vertical"
-        android:tag="empty" >
+        android:layout_weight="2.5"
+        android:gravity="center"
+        android:textColor="#ffffff"
+        android:textSize="25dip"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/course"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="2.5"
+        android:gravity="center"
+        android:textColor="#ffffff"
+        android:textSize="25dip"
+        android:textStyle="bold" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="2" >
 
         <TextView
-            android:id="@+id/date"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="2.5"
+            android:id="@+id/arrow_left"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_centerVertical="true"
             android:gravity="center"
-            android:textColor="#ffffff"
-            android:textSize="25dip"
+            android:text="@string/arrow_left"
+            android:textColor="@color/bn_green2"
+            android:textSize="75dip"
             android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/status"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_centerInParent="true"
+            android:gravity="center_vertical"
+            android:paddingTop="10dip" />
 
         <TextView
-            android:id="@+id/course"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="2.5"
+            android:id="@+id/arrow_right"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
             android:gravity="center"
-            android:textColor="#ffffff"
-            android:textSize="25dip"
+            android:text="@string/arrow_right"
+            android:textColor="@color/bn_green2"
+            android:textSize="75sp"
             android:textStyle="bold" />
+    </RelativeLayout>
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="2" >
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginTop="10dp"
+        android:layout_weight="2"
+            android:gravity="center_vertical"
+        android:orientation="horizontal" >
 
-            <TextView
-                android:id="@+id/arrow_left"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:layout_centerVertical="true"
-                android:gravity="center"
-                android:text="@string/arrow_left"
-                android:textColor="@color/bn_green2"
-                android:textSize="75dip"
-                android:textStyle="bold" />
+        <ImageView
+            android:id="@+id/image_event_observe"
+            android:layout_width="75dp"
+            android:layout_height="75dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:src="@drawable/ic_action_glasses"
+            android:gravity="center_vertical"
+            android:paddingTop="10dip" />
 
-            <ImageView
-                android:id="@+id/status"
-                android:layout_width="200dp"
-                android:layout_height="200dp"
-                android:layout_centerInParent="true"
-                android:gravity="center_vertical"
-                android:paddingTop="10dip" />
+        <ImageView
+            android:id="@+id/image_event_participate"
+            android:layout_width="75dp"
+            android:layout_height="75dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:src="@drawable/skater"
+            android:gravity="center_vertical"
+            android:paddingTop="10dip" />
 
-            <TextView
-                android:id="@+id/arrow_right"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:gravity="center"
-                android:text="@string/arrow_right"
-                android:textColor="@color/bn_green2"
-                android:textSize="75dip"
-                android:textStyle="bold" />
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="2" >
-        </RelativeLayout>
+        <ImageView
+            android:id="@+id/image_event_statistics"
+            android:layout_width="75dp"
+            android:layout_height="75dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:src="@drawable/ic_action_bargraph"
+            android:gravity="center_vertical"
+            android:paddingTop="10dip" />
     </LinearLayout>
 
-</RelativeLayout>
+</LinearLayout>

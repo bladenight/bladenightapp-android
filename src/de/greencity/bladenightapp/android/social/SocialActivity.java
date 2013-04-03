@@ -73,24 +73,8 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 
 	private void configureActionBar() {
 		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
-//		Action mapActionWithParameters = new ActionMap() {
-//			@Override
-//			public void performAction(View view) {
-//				Intent intent = new Intent(view.getContext(), BladenightMapActivity.class);
-//				Event event = getEventShown();
-//				if ( event == null ) {
-//					Log.e(TAG, "No event currently shown");
-//					return;
-//				}
-//				intent.putExtra("routeName", event.getRouteName());
-//				intent.putExtra("isRealTime", posEventCurrent == posEventShown);
-//				view.getContext().startActivity(intent);
-//			}
-//		};
-		
 		new ActionBarConfigurator(actionBar)
-		.hide(ActionItemType.EVENT_SELECTION)
-		.hide(ActionItemType.FRIENDS)
+		.show(ActionItemType.ADD_FRIEND)
 		.setTitle(R.string.title_social)
 		.configure();
 

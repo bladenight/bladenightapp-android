@@ -14,6 +14,7 @@ import com.markupartist.android.widget.ActionBar.Action;
 public class ActionBarConfigurator {
 
 	public enum ActionItemType {
+		HOME,
 		EVENT_SELECTION,
 		TRACKER_CONTROL,
 		MAP,
@@ -25,21 +26,27 @@ public class ActionBarConfigurator {
 
 	public ActionBarConfigurator(ActionBar actionBar) {
 		this.actionBar = actionBar;
-		typeToAction = new HashMap<ActionItemType, Action>();
-		typeToAction.put(ActionItemType.EVENT_SELECTION, new ActionEventSelection());
-		typeToAction.put(ActionItemType.TRACKER_CONTROL, new ActionTrackerControl(actionBar.getContext()));
-		typeToAction.put(ActionItemType.MAP, new ActionMap());
-		typeToAction.put(ActionItemType.FRIENDS, new ActionFriends());
-		typeToAction.put(ActionItemType.ADD_FRIEND, new ActionAddFriend());
-		// typeToAction.put(ActionItemType.RELOAD, new ActionReload());
-		// typeToAction.put(ActionItemType.OPTIONS, new ActionOptions());
+		typeToActionAll.put(ActionItemType.HOME, new ActionEventSelection());
+		typeToActionAll.put(ActionItemType.EVENT_SELECTION, new ActionEventSelection());
+		typeToActionAll.put(ActionItemType.TRACKER_CONTROL, new ActionTrackerControl(actionBar.getContext()));
+		typeToActionAll.put(ActionItemType.MAP, new ActionMap());
+		typeToActionAll.put(ActionItemType.FRIENDS, new ActionFriends());
+		typeToActionAll.put(ActionItemType.ADD_FRIEND, new ActionAddFriend());
+		typeToActionAll.put(ActionItemType.RELOAD, new ActionReload());
+		typeToActionAll.put(ActionItemType.OPTIONS, new ActionOptions());
+		show(ActionItemType.HOME);
+	}
 
+	public ActionBarConfigurator show(ActionItemType type) {
+		typeToActionSelected.put(type, typeToActionAll.get(type));
+		return this;
 	}
 
 	public ActionBarConfigurator hide(ActionItemType type) {
-		typesToShow.remove(type);
+		typeToActionSelected.remove(type);
 		return this;
 	}
+
 
 	public ActionBarConfigurator setTitle(int title) {
 		this.title = title;
@@ -47,7 +54,7 @@ public class ActionBarConfigurator {
 	}
 
 	public ActionBarConfigurator replaceAction(ActionItemType type, Action action) {
-		typeToAction.put(type, action);
+		typeToActionAll.put(type, action);
 		return this;
 	}
 
@@ -58,16 +65,21 @@ public class ActionBarConfigurator {
 		}
 		actionBar.removeAllActions();
 		for ( ActionItemType type: typesToShow) {
-			Action action = typeToAction.get(type);
-			if ( action != null )
-				actionBar.addAction(action);
+			Action action = typeToActionSelected.get(type);
+			if ( action != null ) {
+				if ( type != ActionItemType.HOME ) 
+					actionBar.addAction(action);
+				else
+					actionBar.setHomeAction(action);
+			}
 		}
 		actionBar.setTitle(title);
 	}
 
 	private ActionBar actionBar;
 	private List<ActionItemType> typesToShow = new LinkedList<ActionItemType>(Arrays.asList(ActionItemType.values()));
-	private Map<ActionItemType, Action> typeToAction;
+	private Map<ActionItemType, Action> typeToActionAll = new HashMap<ActionItemType, Action>();
+	private Map<ActionItemType, Action> typeToActionSelected = new HashMap<ActionItemType, Action>();
 	private int title = -1;
 	private static final String TAG = "ActionBarConfigurator";
 }

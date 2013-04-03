@@ -30,7 +30,6 @@ import de.greencity.bladenightapp.android.actionbar.ActionMap;
 import de.greencity.bladenightapp.android.admin.AdminActivity;
 import de.greencity.bladenightapp.android.map.BladenightMapActivity;
 import de.greencity.bladenightapp.android.network.NetworkClient;
-import de.greencity.bladenightapp.android.statistics.StatisticsActivity;
 import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
 import de.greencity.bladenightapp.android.utils.InternalStorageFile;
 import de.greencity.bladenightapp.events.Event;
@@ -63,7 +62,7 @@ public class SelectionActivity extends FragmentActivity {
 			public void onPageScrollStateChanged(int arg0) {
 			}
 		});
-		viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
+		viewPagerAdapter = new ViewPagerAdapter(viewPager, getSupportFragmentManager());
 		viewPager.setAdapter(viewPagerAdapter);
 
 		networkClient =  new NetworkClient(this);
@@ -100,9 +99,8 @@ public class SelectionActivity extends FragmentActivity {
 			}
 		};
 		new ActionBarConfigurator(actionBar)
-		.hide(ActionItemType.EVENT_SELECTION)
-		.hide(ActionItemType.ADD_FRIEND)
-		.replaceAction(ActionItemType.MAP, mapActionWithParameters)
+		.show(ActionItemType.FRIENDS)
+		.show(ActionItemType.TRACKER_CONTROL)
 		.setTitle(R.string.title_selection)
 		.configure();
 
@@ -132,14 +130,11 @@ public class SelectionActivity extends FragmentActivity {
 	public void onClick(View view) {
 
 		switch (view.getId()) {
-		case R.id.group_top: 
-			System.out.println(view.getTag());
-			if(view.getTag().equals("old")){
-				goStatistics();
-			}
-			else if(view.getTag().equals("upcoming")){
-				goAction();
-			}
+		case R.id.arrow_left:
+			viewPager.setCurrentItem(viewPager.getCurrentItem()-1, true);
+			break;
+		case R.id.arrow_right:
+			viewPager.setCurrentItem(viewPager.getCurrentItem()+1, true);
 			break;
 		}
 	}
@@ -162,16 +157,16 @@ public class SelectionActivity extends FragmentActivity {
 		return false;
 	}
 
-	private void goStatistics(){
-		Intent intent = new Intent(SelectionActivity.this, StatisticsActivity.class);
-		startActivity(intent);
-	}
-
-	private void goAction(){
-		Intent intent = new Intent(SelectionActivity.this, BladenightMapActivity.class);
-		startActivity(intent);
-	}
-
+//	private void goStatistics(){
+//		Intent intent = new Intent(SelectionActivity.this, StatisticsActivity.class);
+//		startActivity(intent);
+//	}
+//
+//	private void goAction(){
+//		Intent intent = new Intent(SelectionActivity.this, BladenightMapActivity.class);
+//		startActivity(intent);
+//	}
+//
 
 	static class GetEventsFromServerHandler extends Handler {
 		private WeakReference<SelectionActivity> reference;
@@ -271,8 +266,9 @@ public class SelectionActivity extends FragmentActivity {
 	}
 
 	public static class ViewPagerAdapter extends FragmentStatePagerAdapter {
-		public ViewPagerAdapter(FragmentManager fm) {
+		public ViewPagerAdapter(ViewPager viewPager, FragmentManager fm) {
 			super(fm);
+			this.viewPager = viewPager;
 		}
 
 		public void setEventListMessage(EventsListMessage eventListMessage) {
@@ -298,7 +294,15 @@ public class SelectionActivity extends FragmentActivity {
 			boolean hasRight = position < getCount()-1;
 			boolean hasLeft = position > 0;
 			EventFragment fragment = new EventFragment();
-			fragment.setParameters(eventListMessage.get(position), hasLeft, hasRight);
+			fragment.setParameters(viewPager, eventListMessage.get(position), hasLeft, hasRight);
+			fragment.setViewPager(viewPager);
+			fragment.setEventMessage(eventListMessage.get(position));
+			fragment.hasLeft(hasLeft);
+			fragment.hasRight(hasRight);
+			Log.i(TAG, "posEventCurrent="+posEventCurrent);
+			Log.i(TAG, "posEventShown="+posEventShown);
+			fragment.isCurrent(posEventCurrent == position);
+			fragment.hasStatistics(position < posEventCurrent);
 			return fragment;      
 		}
 
@@ -306,6 +310,7 @@ public class SelectionActivity extends FragmentActivity {
 		final private String TAG = "SelectionActivity.MyAdapter"; 
 
 		public EventsListMessage eventListMessage = new EventsListMessage();
+		private ViewPager viewPager;
 
 	}
 

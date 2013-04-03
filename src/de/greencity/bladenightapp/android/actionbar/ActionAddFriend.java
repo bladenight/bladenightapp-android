@@ -12,7 +12,7 @@ import de.greencity.bladenightapp.android.social.SocialActivity;
 public class ActionAddFriend implements Action {
     @Override
     public int getDrawable() {
-        return R.drawable.ic_action_users;
+        return R.drawable.ic_action_add;
     }
 
 	@Override

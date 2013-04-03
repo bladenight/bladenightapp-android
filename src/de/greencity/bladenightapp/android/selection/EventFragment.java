@@ -8,16 +8,24 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import android.content.Intent;
+import android.graphics.PorterDuff.Mode;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import de.greencity.bladenightapp.android.R;
+import de.greencity.bladenightapp.android.map.BladenightMapActivity;
+import de.greencity.bladenightapp.android.network.NetworkClient;
+import de.greencity.bladenightapp.android.tracker.GpsTrackerService;
+import de.greencity.bladenightapp.android.utils.ServiceUtils;
 import de.greencity.bladenightapp.network.messages.EventMessage;
 
 public class EventFragment extends Fragment {
@@ -25,13 +33,38 @@ public class EventFragment extends Fragment {
 	public EventFragment(){
 		super();
 	}
-	
-	public void setParameters(EventMessage event, boolean hasLeft, boolean hasRight) {
+
+	public void setParameters(ViewPager viewPager, EventMessage event, boolean hasLeft, boolean hasRight) {
 		this.event = event;
 		this.hasLeft = hasLeft;
 		this.hasRight = hasRight;
 		this.startDateTime = fromDateFormat.parseDateTime(event.getStartDate()); 
 	}
+
+	public void setViewPager(ViewPager viewPager) {
+		this.viewPager = viewPager;
+	}
+
+	public void setEventMessage(EventMessage eventMessage) {
+		this.event = eventMessage;
+	}
+
+	public void hasLeft(boolean hasLeft) {
+		this.hasLeft = hasLeft;
+	}
+
+	public void hasRight(boolean hasRight) {
+		this.hasRight = hasRight;
+	}
+
+	public void isCurrent(boolean isCurrent) {
+		this.isCurrent = isCurrent;
+	}
+
+	public void hasStatistics(boolean hasStatistics) {
+		this.hasStatistics = hasStatistics;
+	}
+
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -48,9 +81,70 @@ public class EventFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		this.view = inflater.inflate(R.layout.event_view, container, false); 
+
+		//		setColor(R.id.image_event_observe, getResources().getColor(R.color.bn_green));
+		//		setColor(R.id.image_event_participate, getResources().getColor(R.color.bn_green));
+		//		setColor(R.id.image_event_statistics, getResources().getColor(R.color.bn_green));
+
+		View leftArrowView = view.findViewById(R.id.arrow_left);
+		leftArrowView.setClickable(true);
+		leftArrowView.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				viewPager.setCurrentItem(viewPager.getCurrentItem()-1, true);
+			}
+		});
+
+		View rightArrowView = view.findViewById(R.id.arrow_right);
+		rightArrowView.setClickable(true);
+		rightArrowView.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				viewPager.setCurrentItem(viewPager.getCurrentItem()+1, true);
+			}
+		});
+
+		View observeImage = view.findViewById(R.id.image_event_observe);
+		observeImage.setClickable(true);
+		observeImage.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				startMapActivity();
+			}
+		});
+
+		View participateImage = view.findViewById(R.id.image_event_participate);
+		participateImage.setClickable(true);
+		participateImage.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				ServiceUtils.startService(getActivity(), GpsTrackerService.class);
+				startMapActivity();
+			}
+		});
+
+
+		if ( ! hasStatistics )
+			view.findViewById(R.id.image_event_statistics).setVisibility(View.INVISIBLE);
+
+		if ( ! isCurrent )
+			view.findViewById(R.id.image_event_participate).setVisibility(View.INVISIBLE);
+
 		updateEvent();
 		return view;
 	}
+
+	protected void setColor(int imageId, int color) {
+		Log.i(TAG, "imageId="+imageId);
+		Log.i(TAG, "color="+color);
+		ImageView imageView = (ImageView)view.findViewById(imageId);
+		if (imageView == null) {
+			Log.e(TAG, "Failed to get " + imageId + " has ImageView");
+			return;
+		}
+		imageView.setColorFilter(color, Mode.MULTIPLY);
+	}
+
 
 	private void updateEvent(){
 
@@ -67,6 +161,16 @@ public class EventFragment extends Fragment {
 		updateSchedule(); 
 	}
 
+	private void startMapActivity() {
+		Intent intent = new Intent(view.getContext(), BladenightMapActivity.class);
+		if ( event == null ) {
+			Log.e(TAG, "No event currently shown");
+			return;
+		}
+		intent.putExtra("routeName", event.getRouteName());
+		intent.putExtra("isRealTime", isCurrent);
+		view.getContext().startActivity(intent);
+	}
 
 	private void updateStatus(){
 		ImageView imageViewStatus = (ImageView)view.findViewById(R.id.status);
@@ -120,12 +224,15 @@ public class EventFragment extends Fragment {
 			return DateTimeFormat.forStyle("MS").withLocale(locale);
 		}
 	}
-	
+
 	private EventMessage event;
 	private DateTime startDateTime;
 	private View view;
 	private boolean hasRight;
 	private boolean hasLeft;
+	private boolean isCurrent;
+	private boolean hasStatistics;
+	private ViewPager viewPager;
 	private DateTimeFormatter fromDateFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm");
 	private static DateTimeFormatter toDateFormat = getDestinationDateFormatter(Locale.getDefault());
 	final static String TAG = "EventFragment";

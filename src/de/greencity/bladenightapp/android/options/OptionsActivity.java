@@ -10,7 +10,6 @@ import com.markupartist.android.widget.ActionBar;
 
 import de.greencity.bladenightapp.android.R;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
-import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator.ActionItemType;
 
 public class OptionsActivity extends Activity {
 
@@ -31,9 +30,6 @@ public class OptionsActivity extends Activity {
 	private void configureActionBar() {
 		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
 		new ActionBarConfigurator(actionBar)
-			.hide(ActionItemType.OPTIONS)
-			.hide(ActionItemType.RELOAD)
-			.hide(ActionItemType.TRACKER_CONTROL)
 			.setTitle(R.string.title_options)
 			.configure();
 	}

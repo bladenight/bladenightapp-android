@@ -11,7 +11,7 @@ import de.greencity.bladenightapp.android.selection.SelectionActivity;
 public class ActionEventSelection implements Action {
     @Override
     public int getDrawable() {
-        return R.drawable.ic_action_calendar_month;
+        return R.drawable.ic_action_home;
     }
 
 	@Override

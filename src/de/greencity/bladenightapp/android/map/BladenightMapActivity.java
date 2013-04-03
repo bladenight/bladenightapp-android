@@ -162,7 +162,8 @@ public class BladenightMapActivity extends MapActivity {
 	private void configureActionBar() {
 		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
 		new ActionBarConfigurator(actionBar)
-		.hide(ActionItemType.MAP)
+		.show(ActionItemType.FRIENDS)
+		.show(ActionItemType.TRACKER_CONTROL)
 		.setTitle(R.string.title_map)
 		.configure();
 	}
