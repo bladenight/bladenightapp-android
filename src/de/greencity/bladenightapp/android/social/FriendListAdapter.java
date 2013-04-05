@@ -1,10 +1,5 @@
 package de.greencity.bladenightapp.android.social;
 
-import java.util.List;
-
-import de.greencity.bladenightapp.android.R;
-import de.greencity.bladenightapp.android.social.Friend.FriendColor;
- 
 import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -14,6 +9,8 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import de.greencity.bladenightapp.android.R;
+import de.greencity.bladenightapp.android.social.Friend.FriendColor;
 
 public class FriendListAdapter extends BaseAdapter {
     private static LayoutInflater inflater=null;

@@ -26,10 +26,11 @@ import com.markupartist.android.widget.ActionBar.Action;
 import de.greencity.bladenightapp.android.R;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator.ActionItemType;
-import de.greencity.bladenightapp.android.actionbar.ActionMap;
+import de.greencity.bladenightapp.android.actionbar.ActionEventSelection;
 import de.greencity.bladenightapp.android.admin.AdminActivity;
-import de.greencity.bladenightapp.android.map.BladenightMapActivity;
 import de.greencity.bladenightapp.android.network.NetworkClient;
+import de.greencity.bladenightapp.android.social.AddFriendDialog;
+import de.greencity.bladenightapp.android.social.SocialActivity;
 import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
 import de.greencity.bladenightapp.android.utils.InternalStorageFile;
 import de.greencity.bladenightapp.events.Event;
@@ -43,8 +44,6 @@ public class SelectionActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		//		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-		//				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
 		setContentView(R.layout.activity_selection);
 
@@ -84,21 +83,14 @@ public class SelectionActivity extends FragmentActivity {
 
 	private void configureActionBar() {
 		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
-		Action mapActionWithParameters = new ActionMap() {
+		Action actionGoToCurrentEvent = new ActionEventSelection() {
 			@Override
 			public void performAction(View view) {
-				Intent intent = new Intent(view.getContext(), BladenightMapActivity.class);
-				Event event = getEventShown();
-				if ( event == null ) {
-					Log.e(TAG, "No event currently shown");
-					return;
-				}
-				intent.putExtra("routeName", event.getRouteName());
-				intent.putExtra("isRealTime", posEventCurrent == posEventShown);
-				view.getContext().startActivity(intent);
+				showNextEvent();
 			}
 		};
 		new ActionBarConfigurator(actionBar)
+		.setAction(ActionItemType.HOME, actionGoToCurrentEvent)
 		.show(ActionItemType.FRIENDS)
 		.show(ActionItemType.TRACKER_CONTROL)
 		.setTitle(R.string.title_selection)
@@ -299,8 +291,6 @@ public class SelectionActivity extends FragmentActivity {
 			fragment.setEventMessage(eventListMessage.get(position));
 			fragment.hasLeft(hasLeft);
 			fragment.hasRight(hasRight);
-			Log.i(TAG, "posEventCurrent="+posEventCurrent);
-			Log.i(TAG, "posEventShown="+posEventShown);
 			fragment.isCurrent(posEventCurrent == position);
 			fragment.hasStatistics(position < posEventCurrent);
 			return fragment;      

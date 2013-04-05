@@ -23,7 +23,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import de.greencity.bladenightapp.android.R;
 import de.greencity.bladenightapp.android.map.BladenightMapActivity;
-import de.greencity.bladenightapp.android.network.NetworkClient;
 import de.greencity.bladenightapp.android.tracker.GpsTrackerService;
 import de.greencity.bladenightapp.android.utils.ServiceUtils;
 import de.greencity.bladenightapp.network.messages.EventMessage;

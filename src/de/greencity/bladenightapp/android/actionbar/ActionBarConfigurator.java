@@ -53,8 +53,8 @@ public class ActionBarConfigurator {
 		return this;
 	}
 
-	public ActionBarConfigurator replaceAction(ActionItemType type, Action action) {
-		typeToActionAll.put(type, action);
+	public ActionBarConfigurator setAction(ActionItemType type, Action action) {
+		typeToActionSelected.put(type, action);
 		return this;
 	}
 

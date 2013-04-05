@@ -1,15 +1,13 @@
 package de.greencity.bladenightapp.android.social;
 
-import de.greencity.bladenightapp.android.R;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager.LayoutParams;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
+import de.greencity.bladenightapp.android.R;
 
 
 public class ShowCodeDialog extends DialogFragment  {

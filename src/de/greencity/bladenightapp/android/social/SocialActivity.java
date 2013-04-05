@@ -6,8 +6,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
-import com.markupartist.android.widget.ActionBar;
-
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -21,13 +19,16 @@ import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import com.markupartist.android.widget.ActionBar;
+
 import de.greencity.bladenightapp.android.R;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator.ActionItemType;
-import de.greencity.bladenightapp.android.social.Friend.FriendColor;
-import de.greencity.bladenightapp.android.social.InviteFriendDialog.InviteFriendDialogListener;
 import de.greencity.bladenightapp.android.social.ChangeFriendDialog.ChangeFriendDialogListener;
 import de.greencity.bladenightapp.android.social.ConfirmFriendDialog.ConfirmFriendDialogListener;
+import de.greencity.bladenightapp.android.social.Friend.FriendColor;
+import de.greencity.bladenightapp.android.social.InviteFriendDialog.InviteFriendDialogListener;
 import de.greencity.bladenightapp.android.tracker.GpsTrackerService;
 import de.greencity.bladenightapp.android.utils.ServiceUtils;
 
@@ -57,7 +58,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 //		TextView titletext = (TextView)findViewById(R.id.title);
 //		titletext.setText(R.string.title_social);
 
-		friends =new HashMap<Integer,Friend>();
+//		friends =new HashMap<Integer,Friend>();
 		list = (ListView)findViewById(R.id.listview);
 		CreateListView();
 	}
