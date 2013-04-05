@@ -146,7 +146,10 @@ public class EventFragment extends Fragment {
 
 
 	private void updateEvent(){
-
+		if ( event == null ) {
+			Log.e(TAG, "updateEvent: event=" + event);
+			return;
+		}
 		TextView textViewCourse = (TextView)view.findViewById(R.id.course);
 		textViewCourse.setText(event.getRouteName());
 		TextView textViewDate = (TextView)view.findViewById(R.id.date);

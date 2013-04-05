@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -45,31 +46,32 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 	final static Integer ID_HEAD = -1;
 	final static Integer ID_TAIL = -2;
 	final static Integer ID_ME = -3;
-	
+
+	@SuppressLint("UseSparseArrays")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		Log.i(TAG, "onCreate");
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_social);
-//		getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.titlebar);
-//		ImageView titlebar = (ImageView)(findViewById(R.id.icon));
-//		titlebar.setImageResource(R.drawable.ic_menu_settings);
-//		TextView titletext = (TextView)findViewById(R.id.title);
-//		titletext.setText(R.string.title_social);
+		//		getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.titlebar);
+		//		ImageView titlebar = (ImageView)(findViewById(R.id.icon));
+		//		titlebar.setImageResource(R.drawable.ic_menu_settings);
+		//		TextView titletext = (TextView)findViewById(R.id.title);
+		//		titletext.setText(R.string.title_social);
 
-//		friends =new HashMap<Integer,Friend>();
+		friends = new HashMap<Integer,Friend>();
 		list = (ListView)findViewById(R.id.listview);
-		CreateListView();
+		createListView();
 	}
-	
+
 	@Override
 	protected void onStart() {
 		super.onStart();
 
 		Log.i(TAG, "onStart");
 		configureActionBar();
-		
+
 	}
 
 	private void configureActionBar() {
@@ -82,18 +84,16 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 	}
 
 
-	private void CreateListView()
-	{
+	private void createListView() {
+		Friend head = new Friend("Head",FriendColor.BLACK,true);
+		Friend tail = new Friend("Tail",FriendColor.BLACK,true);
+		Friend myself = new Friend("Me",FriendColor.BLACK,true);
+		friends.put(ID_HEAD, head);
+		friends.put(ID_TAIL, tail);
+		friends.put(ID_ME, myself);
 
-	    Friend head = new Friend("Head",FriendColor.BLACK,true);
-	    Friend tail = new Friend("Tail",FriendColor.BLACK,true);
-	    Friend myself = new Friend("Me",FriendColor.BLACK,true);
-	    friends.put(ID_HEAD, head);
-	    friends.put(ID_TAIL, tail);
-	    friends.put(ID_ME, myself);
-	    
 		createDummyData();
-		
+
 		updateList();
 
 		//Create an adapter for the listView and add the ArrayList to the adapter.
@@ -129,7 +129,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 	public void onFinishChangeFriendDialog(Friend friend_update, int index) { 
 		new ChangeFriendTask(friend_update, index).execute();
 	}
-	
+
 	private void createDummyData(){
 		//dummy data to test
 		Friend friend1 = new Friend("Hans",FriendColor.ORANGE,true);
@@ -141,29 +141,27 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 		Friend friend3 = new Friend("Hubert",FriendColor.GREEN,true);
 		friend3.setActionData(138, 240, 2346, 5452);
 		friends.put(id_counter++,friend3);
-		
+
 		friends.get(ID_HEAD).setActionData(0, 0, 2208, 5212);
 		friends.get(ID_TAIL).setActionData(213, 450, 2415, 5662);
 		friends.get(ID_ME).setActionData(130, 215, 2338, 5427);
 	}
-	
+
 	public void updateList(){
 		is_in_action = ServiceUtils.isServiceRunning(SocialActivity.this, GpsTrackerService.class);
 		list.invalidateViews();
-		
+
 		if(is_in_action){
 			id_order = new ArrayList<Integer>();
 			for(int id : friends.keySet()){
 				if(friends.get(id).getActive()) id_order.add(id);
 			}
 			Collections.sort(id_order, new Comparator<Integer>() {
-		          public int compare(Integer id1, Integer id2) {
-		               return ((Integer)friends.get(id1).getDistanceRel()).compareTo(
-		            		   (Integer)friends.get(id2).getDistanceRel());
-		          }
-		     });
-			
-			
+				public int compare(Integer id1, Integer id2) {
+					return ((Integer)friends.get(id1).getDistanceRel()).compareTo(
+							(Integer)friends.get(id2).getDistanceRel());
+				}
+			});
 		}
 		else{
 			id_order = new ArrayList<Integer>(friends.keySet());
@@ -171,13 +169,11 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 			id_order.remove(ID_TAIL);
 			id_order.remove(ID_ME);
 			Collections.sort(id_order, new Comparator<Integer>() {
-		          public int compare(Integer id1, Integer id2) {
-		               return friends.get(id1).compareTo(friends.get(id2));
-		          }
-		     });
-			
+				public int compare(Integer id1, Integer id2) {
+					return friends.get(id1).compareTo(friends.get(id2));
+				}
+			});
 		}
-		
 	}
 
 
@@ -215,14 +211,14 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 		}
 
 		@Override
-		protected void onPostExecute(Integer result)
-		{
-
-			if(result==0)
-			{
-
+		protected void onPostExecute(Integer result) {
+			if(result==0) {
 				FragmentManager fm = getSupportFragmentManager();
-				ShowCodeDialog showCodeDialog = new ShowCodeDialog(friendName, code);
+				Bundle arguments = new Bundle();
+				arguments.putString("friendName", friendName);
+				arguments.putString("code", code);
+				ShowCodeDialog showCodeDialog = new ShowCodeDialog();
+				showCodeDialog.setArguments(arguments);
 				showCodeDialog.show(fm, "fragment_show_code");
 				Friend newFriend = new Friend(friendName + " ...pending", FriendColor.GREEN,true);
 				newFriend.setActionData(138, 240, 2346, 5452);
@@ -280,7 +276,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 				Friend newFriend = new Friend(friendName, FriendColor.GREEN,true);
 				newFriend.setActionData(138, 240, 2346, 5452);
 				SocialActivity.this.friends.put(id_counter++,newFriend);
-				
+
 				Toast.makeText(getApplicationContext(), friendName + " was added", Toast.LENGTH_LONG).show();
 			}
 			else{

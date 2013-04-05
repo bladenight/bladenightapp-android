@@ -16,14 +16,11 @@ public class ShowCodeDialog extends DialogFragment  {
 	private String code;
 	
     public ShowCodeDialog() {
-        // Empty constructor required for DialogFragment
+    	Bundle arguments = getArguments();
+    	this.friendName = arguments.getString("friendName");
+    	this.code = arguments.getString("code");
     }
     
-    public ShowCodeDialog(String friendName, String code) {
-        this.friendName = friendName;
-        this.code = code;
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
