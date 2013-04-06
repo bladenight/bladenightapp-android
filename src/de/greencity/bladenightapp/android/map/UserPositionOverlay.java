@@ -1,5 +1,7 @@
 package de.greencity.bladenightapp.android.map;
 
+import java.util.HashMap;
+
 import org.mapsforge.android.maps.MapView;
 import org.mapsforge.android.maps.overlay.Circle;
 import org.mapsforge.android.maps.overlay.ListOverlay;
@@ -9,12 +11,15 @@ import org.mapsforge.core.model.GeoPoint;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PorterDuff.Mode;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
 import android.util.Log;
 import de.greencity.bladenightapp.android.R;
+import de.greencity.bladenightapp.network.messages.NetMovingPoint;
+import de.greencity.bladenightapp.network.messages.RealTimeUpdateData;
 
 public class UserPositionOverlay extends ListOverlay implements LocationListener {
 
@@ -25,8 +30,9 @@ public class UserPositionOverlay extends ListOverlay implements LocationListener
 	}
 
 	private void reinit() {
-		int resourceIdentifier = R.drawable.ic_map_user_location;
+		int resourceIdentifier = R.drawable.user_symbol;
 		Drawable drawable = context.getResources().getDrawable(resourceIdentifier);
+		drawable.setColorFilter(context.getResources().getColor(R.color.user_position_own), Mode.MULTIPLY);
 		
 		externalCircle = createExternalCircle();
 		getOverlayItems().add(externalCircle);
@@ -83,11 +89,35 @@ public class UserPositionOverlay extends ListOverlay implements LocationListener
 	public void onStatusChanged(String provider, int status, Bundle extras) {
 		Log.i(TAG, "onStatusChanged: " + provider + " status="+status);
 	}
+	
+	public void update(RealTimeUpdateData data) {
+		for ( Long friendId : data.fri.keySet() ) {
+			NetMovingPoint nvp = data.fri.get(friendId);
+			Marker marker = getFriendMarker(friendId);
+			marker.setGeoPoint(new GeoPoint(nvp.getLatitude(), nvp.getLongitude()));
+		}
+	}
+	
+	public Marker getFriendMarker(Long friendId) {
+		if ( friendSymbols.get(friendId) != null )
+			return friendSymbols.get(friendId);
+
+		int resourceIdentifier = R.drawable.user_symbol;
+		Drawable drawable = context.getResources().getDrawable(resourceIdentifier);
+		drawable.setColorFilter(Color.RED, Mode.MULTIPLY);
+		
+		Marker marker = friendSymbols.get(friendId);
+		marker = new Marker(new GeoPoint(0, 0), Marker.boundCenter(drawable));
+		friendSymbols.put(friendId, marker);
+		getOverlayItems().add(marker);
+		return marker;
+	}
 
 	
 	private final MapView mapView;
 	private Context context;
 	private Marker userSymbol;
+	private HashMap<Long, Marker> friendSymbols = new HashMap<Long, Marker>();
 	private Circle externalCircle;
 
 	private final String TAG = "UserPositionOverlay";

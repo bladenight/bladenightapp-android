@@ -30,13 +30,10 @@ public class ProcessionProgressBar extends ProgressBar {
 	}
 
 	private void init() {
-
 		textPaint = new Paint();  
 		textPaint.setColor(Color.WHITE);
 		textPaint.setAntiAlias(true);
 		textPaint.setTextSize(20);
-
-		routeLength  = -1;
 	}
 
 	public void update(RealTimeUpdateData realTimeUpdateData) {
@@ -45,19 +42,16 @@ public class ProcessionProgressBar extends ProgressBar {
 		if ( realTimeUpdateData == null )
 			return;
 
-		setRouteLength(realTimeUpdateData.getRouteLength());
-		setHeadPoint(realTimeUpdateData.getHead());
-		setTailPoint(realTimeUpdateData.getTail());
-		setUserPoint(realTimeUpdateData.getUser());
+		this.realTimeUpdateData = realTimeUpdateData;
 	}
 
 
 	@SuppressWarnings("unused")
 	private void setDemoData() {
-		routeLength = 20000;
-		tailPoint = new NetMovingPoint(5000, 0, true);
-		headPoint = new NetMovingPoint(14000, 0, true);
-		userPoint = new NetMovingPoint(7000, 0, true);
+		realTimeUpdateData.setRouteLength(20000);
+//		tailPoint = new NetMovingPoint(5000, 0, true);
+//		headPoint = new NetMovingPoint(14000, 0, true);
+//		userPoint = new NetMovingPoint(7000, 0, true);
 	}
 
 	@Override  
@@ -66,14 +60,16 @@ public class ProcessionProgressBar extends ProgressBar {
 		drawProcession(canvas);
 		drawUser(canvas);
 		drawTexts(canvas);
+		drawFriends(canvas);
 	} 
+
 
 	protected void drawProcession(Canvas canvas) {
 		int margin = 2;
-		if ( ! isPointOnRoute(headPoint) || ! isPointOnRoute(tailPoint) )
+		if ( ! isPointOnRoute(realTimeUpdateData.getHead()) || ! isPointOnRoute(realTimeUpdateData.getTail()) )
 			return;
-		int x1 = convertDistanceToPixels(tailPoint.getPosition());
-		int x2 = convertDistanceToPixels(headPoint.getPosition());
+		int x1 = convertDistanceToPixels(realTimeUpdateData.getTailPosition());
+		int x2 = convertDistanceToPixels(realTimeUpdateData.getHeadPosition());
 		if ( x2 - x1 < 2 ) {
 			x1 -= 2;
 			x2 += 2;
@@ -91,9 +87,9 @@ public class ProcessionProgressBar extends ProgressBar {
 	protected void drawUser(Canvas canvas) {
 		int width = 6;
 		int margin = 4;
-		if ( ! isPointOnRoute(userPoint))
+		if ( ! isPointOnRoute(realTimeUpdateData.getUser()))
 			return;
-		double userPosition = userPoint.getPosition();
+		double userPosition = realTimeUpdateData.getUserPosition();
 		int userPositionPx = convertDistanceToPixels(userPosition);
 		int halfWidth = Math.min(width/2, 1);
 		getUserDrawable().setBounds(userPositionPx-halfWidth, margin, convertDistanceToPixels(userPositionPx)+halfWidth, getHeight()-margin);
@@ -102,10 +98,10 @@ public class ProcessionProgressBar extends ProgressBar {
 
 
 	protected void drawTexts(Canvas canvas) {
-		if ( routeLength < 0.0 )
+		if ( realTimeUpdateData.getRouteLength() <= 0.0 )
 			return;
 
-		String routeLengthString = DistanceFormatting.getDistanceAsString(routeLength, true);
+		String routeLengthString = DistanceFormatting.getDistanceAsString(realTimeUpdateData.getRouteLength(), true);
 		Rect routeLengthBounds = new Rect();  
 		textPaint.getTextBounds(routeLengthString, 0, routeLengthString.length(), routeLengthBounds);
 		int routeLenghtLeftPosition = getWidth() - routeLengthBounds.width(); 
@@ -116,8 +112,8 @@ public class ProcessionProgressBar extends ProgressBar {
 				textPaint);  
 
 		int headPositionLeftPosition = routeLenghtLeftPosition;
-		if ( isPointOnRoute(headPoint) ) {
-			double headPosition = headPoint.getPosition();
+		if ( isPointOnRoute(realTimeUpdateData.getHead()) ) {
+			double headPosition = realTimeUpdateData.getHeadPosition();
 			String headPositionString = DistanceFormatting.getDistanceAsString(headPosition, true);
 			Rect headPositionBounds = new Rect();  
 			textPaint.getTextBounds(headPositionString, 0, headPositionString.length(), headPositionBounds);
@@ -134,8 +130,8 @@ public class ProcessionProgressBar extends ProgressBar {
 		}
 
 
-		if ( isPointOnRoute(tailPoint) ) {
-			double tailPosition = headPoint.getPosition();
+		if ( isPointOnRoute(realTimeUpdateData.getTail()) ) {
+			double tailPosition = realTimeUpdateData.getTailPosition();
 			String tailPositionString = DistanceFormatting.getDistanceAsString(tailPosition, true);
 			Rect tailPositionBounds = new Rect();  
 			textPaint.getTextBounds(tailPositionString, 0, tailPositionString.length(), tailPositionBounds);
@@ -150,28 +146,18 @@ public class ProcessionProgressBar extends ProgressBar {
 		}
 	}
 
+	private void drawFriends(Canvas canvas) {
+		Paint paint = new Paint();
+		paint.setColor(Color.RED);
+		for ( Long friendId : realTimeUpdateData.fri.keySet() ) {
+			NetMovingPoint nvp = realTimeUpdateData.fri.get(friendId);
+			int x1 = convertDistanceToPixels(nvp.getPosition());
+			canvas.drawRect(new Rect(x1, 0, x1+2, getHeight()), paint);
+		}
+	}
+
 	protected int convertDistanceToPixels(double distance) {
-		return (int)(getWidth() * distance / routeLength);
-	}
-
-	private void setTailPoint(NetMovingPoint tailPoint) {
-		this.tailPoint = tailPoint;
-	}
-
-	private void setUserPoint(NetMovingPoint userPoint) {
-		this.userPoint = userPoint;
-	}
-
-	private  void setHeadPoint(NetMovingPoint headPoint) {
-		this.headPoint = headPoint;
-	}
-
-	public double getRouteLength() {
-		return routeLength;
-	}
-
-	public void setRouteLength(double routeLength) {
-		this.routeLength = routeLength;
+		return (int)(getWidth() * distance / realTimeUpdateData.getRouteLength());
 	}
 
 	private Drawable getBackgroundDrawable() {
@@ -199,12 +185,9 @@ public class ProcessionProgressBar extends ProgressBar {
 	}
 
 	private Paint textPaint;
-	protected NetMovingPoint tailPoint = new NetMovingPoint();
-	protected NetMovingPoint headPoint = new NetMovingPoint();
-	protected NetMovingPoint userPoint = new NetMovingPoint();
-	protected double routeLength;
 	final static String TAG = "ProcessionProgressBar";
 	private Drawable processionDrawable;
 	private Drawable backgroundDrawable;
 	private Drawable userDrawable;
+	private RealTimeUpdateData realTimeUpdateData = new RealTimeUpdateData();
 }

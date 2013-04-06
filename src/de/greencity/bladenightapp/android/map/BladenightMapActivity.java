@@ -124,6 +124,7 @@ public class BladenightMapActivity extends MapActivity {
 			RealTimeUpdateData realTimeUpdateData = (RealTimeUpdateData)msg.obj;
 			reference.get().routeOverlay.update(realTimeUpdateData);
 			reference.get().processionProgressBar.update(realTimeUpdateData);
+			reference.get().userPositionOverlay.update(realTimeUpdateData);
 		}
 	}
 
