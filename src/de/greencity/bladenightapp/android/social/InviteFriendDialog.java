@@ -12,49 +12,44 @@ import android.widget.EditText;
 
 
 public class InviteFriendDialog extends DialogFragment  {
+	public InviteFriendDialog() {
+		// Empty constructor required for DialogFragment
+	}
+
 
 	public interface InviteFriendDialogListener {
-        void onFinishInviteFriendDialog(String inputText);
-    }
-	
-    private EditText mEditText;
+		void onFinishInviteFriendDialog(String inputText);
+	}
 
-    public InviteFriendDialog() {
-        // Empty constructor required for DialogFragment
-    }
+	private EditText mEditText;
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.invite_friend_dialog, container);
-        mEditText = (EditText) view.findViewById(R.id.txt_friends_name);
-        getDialog().setTitle("Invite Friend");
-        
-     // Show soft keyboard automatically
-        mEditText.requestFocus();
-        getDialog().getWindow().setSoftInputMode(
-                LayoutParams.SOFT_INPUT_STATE_VISIBLE);
-        
-        Button confirmButton = (Button) view.findViewById(R.id.inviteFriend_confirm);
-        confirmButton.setOnClickListener(new Button.OnClickListener() {
-            public void onClick(View v) {
-            	InviteFriendDialogListener activity = (InviteFriendDialogListener) getActivity();
-                activity.onFinishInviteFriendDialog(mEditText.getText().toString());
-                dismiss();
-            }
-        });
-        Button cancelButton = (Button) view.findViewById(R.id.inviteFriend_cancel);
-        cancelButton.setOnClickListener(new Button.OnClickListener() {
-            public void onClick(View v) {
-            	dismiss();
-            }
-        });
-        
-        return view;
-    }
-    
-  
-    
-   
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		View view = inflater.inflate(R.layout.invite_friend_dialog, container);
+		mEditText = (EditText) view.findViewById(R.id.txt_friends_name);
+		getDialog().setTitle("Invite Friend");
 
+		// Show soft keyboard automatically
+		mEditText.requestFocus();
+		getDialog().getWindow().setSoftInputMode(
+				LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+
+		Button confirmButton = (Button) view.findViewById(R.id.inviteFriend_confirm);
+		confirmButton.setOnClickListener(new Button.OnClickListener() {
+			public void onClick(View v) {
+				InviteFriendDialogListener activity = (InviteFriendDialogListener) getActivity();
+				activity.onFinishInviteFriendDialog(mEditText.getText().toString());
+				dismiss();
+			}
+		});
+		Button cancelButton = (Button) view.findViewById(R.id.inviteFriend_cancel);
+		cancelButton.setOnClickListener(new Button.OnClickListener() {
+			public void onClick(View v) {
+				dismiss();
+			}
+		});
+
+		return view;
+	}
 }

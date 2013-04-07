@@ -38,6 +38,8 @@ import de.greencity.bladenightapp.network.messages.EventsListMessage;
 import de.greencity.bladenightapp.network.messages.GpsInfo;
 import de.greencity.bladenightapp.network.messages.LatLong;
 import de.greencity.bladenightapp.network.messages.RealTimeUpdateData;
+import de.greencity.bladenightapp.network.messages.RelationshipInputMessage;
+import de.greencity.bladenightapp.network.messages.RelationshipOutputMessage;
 import de.greencity.bladenightapp.network.messages.RouteMessage;
 import de.greencity.bladenightapp.network.messages.RouteNamesMessage;
 import fr.ocroquette.wampoc.client.RpcResultReceiver;
@@ -49,7 +51,6 @@ public class NetworkClient {
 
 	public NetworkClient(Context context) {
 		NetworkClient.context = context;
-		gpsInfo.setDeviceId(DeviceId.getDeviceId(context));
 	}
 
 	private static synchronized void findServer() {
@@ -205,6 +206,7 @@ public class NetworkClient {
 		item.errorHandler = errorHandler;
 		item.expectedReturnType = RealTimeUpdateData.class;
 
+		gpsInfo.setDeviceId(getDeviceId());
 		gpsInfo.isParticipating(ServiceUtils.isServiceRunning(context, GpsTrackerService.class));
 		if ( lastKnownPosition != null ) {
 			gpsInfo.setLatitude(lastKnownPosition.getLatitude());
@@ -230,6 +232,16 @@ public class NetworkClient {
 		item.successHandler = successHandler;
 		item.errorHandler = errorHandler;
 		item.outgoingPayload = status;
+		callOrStore(item);
+	}
+
+	public void createRelationship(long friendId, Handler successHandler, Handler errorHandler) {
+		BacklogItem item = new BacklogItem();
+		item.url = BladenightUrl.CREATE_RELATIONSHIP.getText();
+		item.successHandler = successHandler;
+		item.errorHandler = errorHandler;
+		item.expectedReturnType = RelationshipOutputMessage.class;
+		item.outgoingPayload = new RelationshipInputMessage(getDeviceId(), friendId, 0);
 		callOrStore(item);
 	}
 
@@ -303,6 +315,12 @@ public class NetworkClient {
 		asyncDownloadTask.execute(url, localPath);
 	}
 
+	private String getDeviceId() {
+		if (deviceId != null)
+			deviceId = DeviceId.getDeviceId(context);
+		return deviceId;
+	}
+	
 	static private Context context;
 	static private final String TAG = "NetworkClient";
 	static private String server;
@@ -311,6 +329,7 @@ public class NetworkClient {
 	static private LatLong lastKnownPosition;
 	static private BladenightWampClient bladenightWampClient = new BladenightWampClient();
 	static private long lookingForServerTimestamp = 0;
+	static private String deviceId = "UNDEFINED-DEVICEID";
 
 
 

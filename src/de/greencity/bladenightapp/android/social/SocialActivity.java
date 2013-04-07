@@ -1,5 +1,6 @@
 package de.greencity.bladenightapp.android.social;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -7,9 +8,12 @@ import java.util.HashMap;
 import java.util.List;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
@@ -26,26 +30,21 @@ import com.markupartist.android.widget.ActionBar;
 import de.greencity.bladenightapp.android.R;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator.ActionItemType;
+import de.greencity.bladenightapp.android.network.NetworkClient;
+import de.greencity.bladenightapp.android.selection.SelectionActivity;
 import de.greencity.bladenightapp.android.social.ChangeFriendDialog.ChangeFriendDialogListener;
 import de.greencity.bladenightapp.android.social.ConfirmFriendDialog.ConfirmFriendDialogListener;
 import de.greencity.bladenightapp.android.social.Friend.FriendColor;
 import de.greencity.bladenightapp.android.social.InviteFriendDialog.InviteFriendDialogListener;
 import de.greencity.bladenightapp.android.tracker.GpsTrackerService;
 import de.greencity.bladenightapp.android.utils.ServiceUtils;
+import de.greencity.bladenightapp.network.messages.EventsListMessage;
+import de.greencity.bladenightapp.network.messages.RelationshipOutputMessage;
+import de.greencity.bladenightapp.relationships.HandshakeInfo;
+import de.greencity.bladenightapp.relationships.Relationship;
 
 public class SocialActivity extends FragmentActivity implements InviteFriendDialogListener, 
 ConfirmFriendDialogListener, ChangeFriendDialogListener {
-
-	private int id_counter = 0;
-	ListView list;
-	protected HashMap<Integer,Friend> friends;
-	protected List<Integer> id_order;
-	private final String TAG = "SocialActivity"; 
-	public boolean is_in_action = false;
-
-	final static Integer ID_HEAD = -1;
-	final static Integer ID_TAIL = -2;
-	final static Integer ID_ME = -3;
 
 	@SuppressLint("UseSparseArrays")
 	@Override
@@ -114,10 +113,48 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 		});
 	}
 
+	static class CreateNewRequestHandler extends Handler {
+		CreateNewRequestHandler(SocialActivity activity, String friendName, ProgressDialog progressDialog) {
+			this.reference = new WeakReference<SocialActivity>(activity);
+			this.friendName = friendName;
+			this.progressDialog = progressDialog;
+		}
+		@Override
+		public void handleMessage(Message msg) {
+			RelationshipOutputMessage relMsg = (RelationshipOutputMessage)msg.obj;
+			Log.i("CreateNewRequestHandler", "Got answer from server:" + relMsg);
+			if (relMsg != null ) {
+				FragmentManager fm = reference.get().getSupportFragmentManager();
+				Bundle arguments = new Bundle();
+				Log.i("CreateNewRequestHandler", "Got: " + relMsg);
+				arguments.putString(ShowCodeDialog.ARG_NICKNAME, friendName);
+				arguments.putString(ShowCodeDialog.ARG_CODE, Long.toString(relMsg.getRequestId()));
+				ShowCodeDialog showCodeDialog = new ShowCodeDialog();
+				showCodeDialog.setArguments(arguments);
+				showCodeDialog.show(fm, "fragment_show_code");
+				Friend newFriend = new Friend(friendName + " ...pending", FriendColor.GREEN,true);
+				newFriend.setActionData(138, 240, 2346, 5452);
+				reference.get().friends.put(reference.get().id_counter++,newFriend);
+				// after completed finished the progressbar
+				reference.get().updateList();
+				progressDialog.dismiss();
+				
+			}
+		}
+		private WeakReference<SocialActivity> reference;
+		private String friendName;
+		private ProgressDialog progressDialog;
+	}
 
 	@Override
 	public void onFinishInviteFriendDialog(String friendName) { 
-		new InviteFriendTask(friendName).execute();
+		ProgressDialog dialog = new ProgressDialog(SocialActivity.this);
+
+		dialog.setMessage("Loading add-friend code...");
+		dialog.show();
+
+		CreateNewRequestHandler handler = new CreateNewRequestHandler(this, friendName, dialog);
+		networkClient.createRelationship(id_counter++, handler, null);
 	}
 
 	@Override
@@ -177,58 +214,6 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 	}
 
 
-	/** Inner class for implementing progress bar before fetching data **/
-	private class InviteFriendTask extends AsyncTask<Void, Void, Integer> 
-	{
-		private ProgressDialog Dialog = new ProgressDialog(SocialActivity.this);
-
-		private String friendName;
-		private String code;
-
-		public InviteFriendTask(String friendName){
-			this.friendName = friendName;
-		}
-		@Override
-		protected void onPreExecute()
-		{
-			Dialog.setMessage("Loading add-friend code...");
-			Dialog.show();
-		}
-
-		@Override
-		protected Integer doInBackground(Void... params) 
-		{
-			//load code from server
-			try {
-				Thread.sleep(4000); 
-				code = "FGH46H"; //dummy example to test layout
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-			return 0;
-		}
-
-		@Override
-		protected void onPostExecute(Integer result) {
-			if(result==0) {
-				FragmentManager fm = getSupportFragmentManager();
-				Bundle arguments = new Bundle();
-				arguments.putString("friendName", friendName);
-				arguments.putString("code", code);
-				ShowCodeDialog showCodeDialog = new ShowCodeDialog();
-				showCodeDialog.setArguments(arguments);
-				showCodeDialog.show(fm, "fragment_show_code");
-				Friend newFriend = new Friend(friendName + " ...pending", FriendColor.GREEN,true);
-				newFriend.setActionData(138, 240, 2346, 5452);
-				SocialActivity.this.friends.put(id_counter++,newFriend);
-			}
-			// after completed finished the progressbar
-			Dialog.dismiss();
-			SocialActivity.this.updateList();
-		}
-	}
 
 	/** Inner class for implementing progress bar before fetching data **/
 	private class ConfirmFriendTask extends AsyncTask<Void, Void, Integer> 
@@ -334,4 +319,17 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 			SocialActivity.this.updateList();
 		}
 	}
+
+	private int id_counter = 0;
+	private ListView list;
+	HashMap<Integer,Friend> friends;
+	List<Integer> id_order;
+	private final String TAG = "SocialActivity"; 
+	public boolean is_in_action = false;
+	private NetworkClient networkClient = new NetworkClient(this);
+
+	final static Integer ID_HEAD = -1;
+	final static Integer ID_TAIL = -2;
+	final static Integer ID_ME = -3;
+
 } 
