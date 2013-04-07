@@ -34,14 +34,4 @@
                 android:color="#ffffff" />
         </shape>
     </item>
-    <item>
-        <!-- User shape -->
-        <shape>
-            <gradient
-                android:angle="90"
-                android:endColor="#f00000"
-                android:startColor="#c00000" />
-        </shape>
-    </item>
-    
 </layer-list>

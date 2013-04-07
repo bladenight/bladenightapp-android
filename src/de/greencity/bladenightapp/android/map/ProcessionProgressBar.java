@@ -6,6 +6,8 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.GradientDrawable.Orientation;
 import android.graphics.drawable.LayerDrawable;
 import android.util.AttributeSet;
 import android.widget.ProgressBar;
@@ -34,6 +36,11 @@ public class ProcessionProgressBar extends ProgressBar {
 		textPaint.setColor(Color.WHITE);
 		textPaint.setAntiAlias(true);
 		textPaint.setTextSize(20);
+		realTimeUpdateData = new RealTimeUpdateData();
+		if ( isInEditMode() ) {
+			setDemoData();
+		}
+
 	}
 
 	public void update(RealTimeUpdateData realTimeUpdateData) {
@@ -46,21 +53,22 @@ public class ProcessionProgressBar extends ProgressBar {
 	}
 
 
-	@SuppressWarnings("unused")
 	private void setDemoData() {
 		realTimeUpdateData.setRouteLength(20000);
-//		tailPoint = new NetMovingPoint(5000, 0, true);
-//		headPoint = new NetMovingPoint(14000, 0, true);
-//		userPoint = new NetMovingPoint(7000, 0, true);
+		realTimeUpdateData.setTail(new NetMovingPoint(5000, 0, true));
+		realTimeUpdateData.setHead(new NetMovingPoint(14000, 0, true));
+		realTimeUpdateData.setUser(new NetMovingPoint(9000, 0, true));
+		NetMovingPoint friend = new NetMovingPoint(10000, 0, true);
+		realTimeUpdateData.fri.put(new Long(1), friend);
 	}
 
 	@Override  
 	protected synchronized void onDraw(Canvas canvas) {
 		getBackgroundDrawable().draw(canvas);
 		drawProcession(canvas);
+		drawFriends(canvas);
 		drawUser(canvas);
 		drawTexts(canvas);
-		drawFriends(canvas);
 	} 
 
 
@@ -85,15 +93,25 @@ public class ProcessionProgressBar extends ProgressBar {
 
 
 	protected void drawUser(Canvas canvas) {
+		drawMovingPoint(canvas, getUserDrawable(), realTimeUpdateData.getUser());
+	}
+
+	protected void drawFriends(Canvas canvas) {
+		for (Long friendId: realTimeUpdateData.fri.keySet()) {
+			drawMovingPoint(canvas, getFriendDrawable(), realTimeUpdateData.fri.get(friendId));
+		}
+	}
+
+	protected void drawMovingPoint(Canvas canvas, Drawable drawable, NetMovingPoint mp) {
 		int width = 6;
 		int margin = 4;
-		if ( ! isPointOnRoute(realTimeUpdateData.getUser()))
+		if ( ! isPointOnRoute(mp) )
 			return;
-		double userPosition = realTimeUpdateData.getUserPosition();
-		int userPositionPx = convertDistanceToPixels(userPosition);
+		double position = mp.getPosition();
+		int positionPx = convertDistanceToPixels(position);
 		int halfWidth = Math.min(width/2, 1);
-		getUserDrawable().setBounds(userPositionPx-halfWidth, margin, convertDistanceToPixels(userPositionPx)+halfWidth, getHeight()-margin);
-		getUserDrawable().draw(canvas);
+		drawable.setBounds(positionPx-halfWidth, margin, positionPx+halfWidth, getHeight()-margin);
+		drawable.draw(canvas);
 	}
 
 
@@ -146,15 +164,6 @@ public class ProcessionProgressBar extends ProgressBar {
 		}
 	}
 
-	private void drawFriends(Canvas canvas) {
-		Paint paint = new Paint();
-		paint.setColor(Color.RED);
-		for ( Long friendId : realTimeUpdateData.fri.keySet() ) {
-			NetMovingPoint nvp = realTimeUpdateData.fri.get(friendId);
-			int x1 = convertDistanceToPixels(nvp.getPosition());
-			canvas.drawRect(new Rect(x1, 0, x1+2, getHeight()), paint);
-		}
-	}
 
 	protected int convertDistanceToPixels(double distance) {
 		return (int)(getWidth() * distance / realTimeUpdateData.getRouteLength());
@@ -179,9 +188,27 @@ public class ProcessionProgressBar extends ProgressBar {
 	private Drawable getUserDrawable() {
 		if ( userDrawable != null)
 			return userDrawable;
-		LayerDrawable layerDrawable = (LayerDrawable)getProgressDrawable();
-		userDrawable = layerDrawable.getDrawable(2);
+
+		int[] colors = new int[2];
+		//		colors[0] = getResources().getColor();
+		colors[0] = Color.rgb(255, 0, 0);
+		colors[1] = Color.rgb(230, 0, 0);
+
+		userDrawable = new GradientDrawable(Orientation.TOP_BOTTOM, colors);
 		return userDrawable;
+	}
+
+	private Drawable getFriendDrawable() {
+		if ( friendDrawable != null)
+			return friendDrawable;
+
+		int[] colors = new int[2];
+		//		colors[0] = getResources().getColor();
+		colors[0] = Color.rgb(255, 200, 20);
+		colors[1] = Color.rgb(255, 200, 20);
+
+		friendDrawable = new GradientDrawable(Orientation.TOP_BOTTOM, colors);
+		return friendDrawable;
 	}
 
 	private Paint textPaint;
@@ -189,5 +216,6 @@ public class ProcessionProgressBar extends ProgressBar {
 	private Drawable processionDrawable;
 	private Drawable backgroundDrawable;
 	private Drawable userDrawable;
-	private RealTimeUpdateData realTimeUpdateData = new RealTimeUpdateData();
+	private Drawable friendDrawable;
+	private RealTimeUpdateData realTimeUpdateData;
 }
