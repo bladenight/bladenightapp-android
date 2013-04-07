@@ -138,7 +138,6 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 				// after completed finished the progressbar
 				reference.get().updateList();
 				progressDialog.dismiss();
-				
 			}
 		}
 		private WeakReference<SocialActivity> reference;
@@ -157,9 +156,53 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 		networkClient.createRelationship(id_counter++, handler, null);
 	}
 
+	static class ConfirmRequestHandler extends Handler {
+		ConfirmRequestHandler(SocialActivity activity, String friendName, ProgressDialog progressDialog) {
+			this.reference = new WeakReference<SocialActivity>(activity);
+			this.friendName = friendName;
+			this.progressDialog = progressDialog;
+		}
+		@Override
+		public void handleMessage(Message msg) {
+			RelationshipOutputMessage relMsg = (RelationshipOutputMessage)msg.obj;
+			Log.i("CreateNewRequestHandler", "Got answer from server:" + relMsg);
+			if (relMsg != null ) {
+				Friend newFriend = new Friend(friendName, FriendColor.GREEN,true);
+				newFriend.setActionData(138, 240, 2346, 5452);
+				reference.get().friends.put(reference.get().id_counter++,newFriend);
+				progressDialog.dismiss();
+				Toast.makeText(reference.get(), friendName + " was added", Toast.LENGTH_LONG).show();
+			}
+			else{
+				Toast.makeText(reference.get(), "Code is not valid", Toast.LENGTH_LONG).show();
+			}
+		}
+		private WeakReference<SocialActivity> reference;
+		private String friendName;
+		private ProgressDialog progressDialog;
+	}
+
+	static class ConfirmRequestErrorHandler extends Handler {
+		ConfirmRequestErrorHandler(SocialActivity activity, ProgressDialog progressDialog) {
+			this.reference = new WeakReference<SocialActivity>(activity);
+			this.progressDialog = progressDialog;
+		}
+		@Override
+		public void handleMessage(Message msg) {
+			Toast.makeText(reference.get(), "Code is not valid", Toast.LENGTH_LONG).show();
+			progressDialog.dismiss();
+		}
+		private WeakReference<SocialActivity> reference;
+		private ProgressDialog progressDialog;
+	}
+
+	
 	@Override
 	public void onFinishConfirmFriendDialog(String friendName, String code) { 
-		new ConfirmFriendTask(friendName,code).execute();
+		ProgressDialog dialog = new ProgressDialog(SocialActivity.this);
+		dialog.setMessage("Validating friend code...");
+		dialog.show();
+		networkClient.finalizeRelationship(Long.parseLong(code), id_counter++, new ConfirmRequestHandler(this, friendName, dialog), new ConfirmRequestErrorHandler(this, dialog));
 	}
 
 	@Override

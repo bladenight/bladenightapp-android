@@ -245,6 +245,16 @@ public class NetworkClient {
 		callOrStore(item);
 	}
 
+	public void finalizeRelationship(long requestId, long friendId, Handler successHandler, Handler errorHandler) {
+		BacklogItem item = new BacklogItem();
+		item.url = BladenightUrl.CREATE_RELATIONSHIP.getText();
+		item.successHandler = successHandler;
+		item.errorHandler = errorHandler;
+		item.expectedReturnType = RelationshipOutputMessage.class;
+		item.outgoingPayload = new RelationshipInputMessage(getDeviceId(), friendId, requestId);
+		callOrStore(item);
+	}
+
 	public void updateFromGpsTrackerService(LatLong lastKnownPosition) {
 		NetworkClient.lastKnownPosition = lastKnownPosition;
 		getRealTimeData(null, null);
