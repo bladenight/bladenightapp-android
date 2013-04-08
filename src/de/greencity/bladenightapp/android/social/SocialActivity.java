@@ -4,11 +4,9 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 
 import android.annotation.SuppressLint;
-import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -31,17 +29,13 @@ import de.greencity.bladenightapp.android.R;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator.ActionItemType;
 import de.greencity.bladenightapp.android.network.NetworkClient;
-import de.greencity.bladenightapp.android.selection.SelectionActivity;
 import de.greencity.bladenightapp.android.social.ChangeFriendDialog.ChangeFriendDialogListener;
 import de.greencity.bladenightapp.android.social.ConfirmFriendDialog.ConfirmFriendDialogListener;
 import de.greencity.bladenightapp.android.social.Friend.FriendColor;
 import de.greencity.bladenightapp.android.social.InviteFriendDialog.InviteFriendDialogListener;
 import de.greencity.bladenightapp.android.tracker.GpsTrackerService;
 import de.greencity.bladenightapp.android.utils.ServiceUtils;
-import de.greencity.bladenightapp.network.messages.EventsListMessage;
 import de.greencity.bladenightapp.network.messages.RelationshipOutputMessage;
-import de.greencity.bladenightapp.relationships.HandshakeInfo;
-import de.greencity.bladenightapp.relationships.Relationship;
 
 public class SocialActivity extends FragmentActivity implements InviteFriendDialogListener, 
 ConfirmFriendDialogListener, ChangeFriendDialogListener {
@@ -59,7 +53,9 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 		//		TextView titletext = (TextView)findViewById(R.id.title);
 		//		titletext.setText(R.string.title_social);
 
-		friends = new HashMap<Integer,Friend>();
+		friends = new Friends(this);
+		friends.load();
+		
 		list = (ListView)findViewById(R.id.listview);
 		createListView();
 	}
@@ -84,14 +80,6 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 
 
 	private void createListView() {
-		Friend head = new Friend("Head",FriendColor.BLACK,true);
-		Friend tail = new Friend("Tail",FriendColor.BLACK,true);
-		Friend myself = new Friend("Me",FriendColor.BLACK,true);
-		friends.put(ID_HEAD, head);
-		friends.put(ID_TAIL, tail);
-		friends.put(ID_ME, myself);
-
-		createDummyData();
 
 		updateList();
 
@@ -210,21 +198,28 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 		new ChangeFriendTask(friend_update, index).execute();
 	}
 
-	private void createDummyData(){
+	private void getFriendsFromStorage(){
 		//dummy data to test
-		Friend friend1 = new Friend("Hans",FriendColor.ORANGE,true);
-		friend1.setActionData(125, 211, 2333, 5423);
-		friends.put(id_counter++,friend1);
-		Friend friend2 = new Friend("Heinz",FriendColor.RED,true);
-		friend2.setActionData(120, 205, 2328, 5417);
-		friends.put(id_counter++,friend2);
-		Friend friend3 = new Friend("Hubert",FriendColor.GREEN,true);
-		friend3.setActionData(138, 240, 2346, 5452);
-		friends.put(id_counter++,friend3);
-
-		friends.get(ID_HEAD).setActionData(0, 0, 2208, 5212);
-		friends.get(ID_TAIL).setActionData(213, 450, 2415, 5662);
-		friends.get(ID_ME).setActionData(130, 215, 2338, 5427);
+		//		Friend friend1 = new Friend("Hans",FriendColor.ORANGE,true);
+		//		friend1.setActionData(125, 211, 2333, 5423);
+		//		friends.put(id_counter++,friend1);
+		//		Friend friend2 = new Friend("Heinz",FriendColor.RED,true);
+		//		friend2.setActionData(120, 205, 2328, 5417);
+		//		friends.put(id_counter++,friend2);
+		//		Friend friend3 = new Friend("Hubert",FriendColor.GREEN,true);
+		//		friend3.setActionData(138, 240, 2346, 5452);
+		//		friends.put(id_counter++,friend3);
+		//
+		//		friends.get(ID_HEAD).setActionData(0, 0, 2208, 5212);
+		//		friends.get(ID_TAIL).setActionData(213, 450, 2415, 5662);
+		//		friends.get(ID_ME).setActionData(130, 215, 2338, 5427);
+		friends.load();
+		Friend head = new Friend("Head",FriendColor.BLACK,true);
+		Friend tail = new Friend("Tail",FriendColor.BLACK,true);
+		Friend myself = new Friend("Me",FriendColor.BLACK,true);
+		friends.put(ID_HEAD, head);
+		friends.put(ID_TAIL, tail);
+		friends.put(ID_ME, myself);
 	}
 
 	public void updateList(){
@@ -258,63 +253,6 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 
 
 
-	/** Inner class for implementing progress bar before fetching data **/
-	private class ConfirmFriendTask extends AsyncTask<Void, Void, Integer> 
-	{
-		private ProgressDialog Dialog = new ProgressDialog(SocialActivity.this);
-
-		private String friendName;
-		private String code;
-
-		public ConfirmFriendTask(String friendName, String code){
-			this.friendName = friendName;
-			this.code = code;
-		}
-		@Override
-		protected void onPreExecute()
-		{
-			Dialog.setMessage("Validating friend code...");
-			Dialog.show();
-		}
-
-		@Override
-		protected Integer doInBackground(Void... params) 
-		{
-			int exit = 0;
-			//send code to server and get friend data
-			try {
-				Thread.sleep(4000); 
-				if(code.equals("aaa")){ 
-					exit = 1;
-				}
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-			return exit;
-		}
-
-		@Override
-		protected void onPostExecute(Integer result)
-		{
-
-			if(result==1)
-			{
-				Friend newFriend = new Friend(friendName, FriendColor.GREEN,true);
-				newFriend.setActionData(138, 240, 2346, 5452);
-				SocialActivity.this.friends.put(id_counter++,newFriend);
-
-				Toast.makeText(getApplicationContext(), friendName + " was added", Toast.LENGTH_LONG).show();
-			}
-			else{
-				Toast.makeText(getApplicationContext(), "Code is not valid", Toast.LENGTH_LONG).show();
-			}
-			// after completed finished the progressbar
-			Dialog.dismiss();
-			SocialActivity.this.updateList();
-		}
-	}
 
 	/** Inner class for implementing progress bar before fetching data **/
 	private class ChangeFriendTask extends AsyncTask<Void, Void, Integer> 
@@ -365,7 +303,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 
 	private int id_counter = 0;
 	private ListView list;
-	HashMap<Integer,Friend> friends;
+	Friends friends;
 	List<Integer> id_order;
 	private final String TAG = "SocialActivity"; 
 	public boolean is_in_action = false;
