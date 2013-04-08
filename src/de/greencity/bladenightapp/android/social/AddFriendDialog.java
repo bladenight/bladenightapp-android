@@ -12,7 +12,6 @@ import android.widget.Button;
 
 public class AddFriendDialog extends DialogFragment  {
 
-
     public AddFriendDialog() {
         // Empty constructor required for DialogFragment
     }
@@ -45,9 +44,4 @@ public class AddFriendDialog extends DialogFragment  {
         
         return view;
     }
-    
-  
-    
-   
-
 }

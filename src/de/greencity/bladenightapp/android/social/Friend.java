@@ -1,5 +1,7 @@
 package de.greencity.bladenightapp.android.social;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 public class Friend implements Comparable<Friend> {
 
 	public enum FriendColor {
@@ -73,7 +75,7 @@ public class Friend implements Comparable<Friend> {
 	}
 	
 	public String toString(){
-		return name;
+		return ToStringBuilder.reflectionToString(this);
 	}
 
 	@Override

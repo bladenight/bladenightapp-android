@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -55,7 +56,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 
 		friends = new Friends(this);
 		friends.load();
-		
+
 		list = (ListView)findViewById(R.id.listview);
 		createListView();
 	}
@@ -85,17 +86,25 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 
 		//Create an adapter for the listView and add the ArrayList to the adapter.
 		list.setAdapter(new FriendListAdapter(SocialActivity.this));
-		list.setOnItemLongClickListener(new OnItemLongClickListener()
+		list.setOnItemClickListener(new OnItemClickListener()
 		{
 			@Override
-			public boolean onItemLongClick(AdapterView<?> arg0, View view, int arg2,long arg3)
-			{
-				//args2 is the listViews Selected index
+			public void onItemClick(AdapterView<?> adapterView, View view, int selectedIndex, long arg3) {
 				FragmentManager fm = getSupportFragmentManager();
 				LinearLayout row = (LinearLayout)view.findViewById(R.id.row_friend);
 				int id = (Integer) row.getTag();
 				ChangeFriendDialog changeFriendDialog = new ChangeFriendDialog(friends.get(id), id);
 				changeFriendDialog.show(fm, "fragment_change_friend");
+			}
+		});
+		list.setOnItemLongClickListener(new OnItemLongClickListener()
+		{
+			@Override
+			public boolean onItemLongClick(AdapterView<?> adapterView, View view, int selectedIndex, long arg3) {
+				LinearLayout row = (LinearLayout)view.findViewById(R.id.row_friend);
+				int id = (Integer) row.getTag();
+				friends.remove(id);
+				updateList();
 				return true;
 			}
 		});
@@ -112,7 +121,8 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 			RelationshipOutputMessage relMsg = (RelationshipOutputMessage)msg.obj;
 			Log.i("CreateNewRequestHandler", "Got answer from server:" + relMsg);
 			if (relMsg != null ) {
-				FragmentManager fm = reference.get().getSupportFragmentManager();
+				final SocialActivity socialActivity = reference.get();
+				FragmentManager fm = socialActivity.getSupportFragmentManager();
 				Bundle arguments = new Bundle();
 				Log.i("CreateNewRequestHandler", "Got: " + relMsg);
 				arguments.putString(ShowCodeDialog.ARG_NICKNAME, friendName);
@@ -122,9 +132,8 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 				showCodeDialog.show(fm, "fragment_show_code");
 				Friend newFriend = new Friend(friendName + " ...pending", FriendColor.GREEN,true);
 				newFriend.setActionData(138, 240, 2346, 5452);
-				reference.get().friends.put(reference.get().id_counter++,newFriend);
-				// after completed finished the progressbar
-				reference.get().updateList();
+				socialActivity.friends.put((int)relMsg.fid,newFriend);
+				socialActivity.updateList();
 				progressDialog.dismiss();
 			}
 		}
@@ -141,7 +150,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 		dialog.show();
 
 		CreateNewRequestHandler handler = new CreateNewRequestHandler(this, friendName, dialog);
-		networkClient.createRelationship(id_counter++, handler, null);
+		networkClient.createRelationship(friends.generateId(), handler, null);
 	}
 
 	static class ConfirmRequestHandler extends Handler {
@@ -152,17 +161,19 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 		}
 		@Override
 		public void handleMessage(Message msg) {
+			SocialActivity socialActivity = reference.get();
 			RelationshipOutputMessage relMsg = (RelationshipOutputMessage)msg.obj;
 			Log.i("CreateNewRequestHandler", "Got answer from server:" + relMsg);
 			if (relMsg != null ) {
 				Friend newFriend = new Friend(friendName, FriendColor.GREEN,true);
 				newFriend.setActionData(138, 240, 2346, 5452);
-				reference.get().friends.put(reference.get().id_counter++,newFriend);
+				socialActivity.friends.put((int)relMsg.fid, newFriend);
+				socialActivity.updateList();
 				progressDialog.dismiss();
-				Toast.makeText(reference.get(), friendName + " was added", Toast.LENGTH_LONG).show();
+				Toast.makeText(socialActivity, friendName + " was added", Toast.LENGTH_LONG).show();
 			}
 			else{
-				Toast.makeText(reference.get(), "Code is not valid", Toast.LENGTH_LONG).show();
+				Toast.makeText(socialActivity, "Code is not valid", Toast.LENGTH_LONG).show();
 			}
 		}
 		private WeakReference<SocialActivity> reference;
@@ -184,18 +195,19 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 		private ProgressDialog progressDialog;
 	}
 
-	
+
 	@Override
 	public void onFinishConfirmFriendDialog(String friendName, String code) { 
 		ProgressDialog dialog = new ProgressDialog(SocialActivity.this);
 		dialog.setMessage("Validating friend code...");
 		dialog.show();
-		networkClient.finalizeRelationship(Long.parseLong(code), id_counter++, new ConfirmRequestHandler(this, friendName, dialog), new ConfirmRequestErrorHandler(this, dialog));
+		networkClient.finalizeRelationship(Long.parseLong(code), friends.generateId(), new ConfirmRequestHandler(this, friendName, dialog), new ConfirmRequestErrorHandler(this, dialog));
 	}
 
 	@Override
-	public void onFinishChangeFriendDialog(Friend friend_update, int index) { 
-		new ChangeFriendTask(friend_update, index).execute();
+	public void onFinishChangeFriendDialog(Friend friend, int friendId) { 
+		friends.put(friendId, friend);
+		updateList();
 	}
 
 	private void getFriendsFromStorage(){
@@ -301,7 +313,6 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 		}
 	}
 
-	private int id_counter = 0;
 	private ListView list;
 	Friends friends;
 	List<Integer> id_order;
