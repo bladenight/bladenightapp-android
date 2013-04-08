@@ -17,9 +17,6 @@ public class ConfirmFriendDialog extends DialogFragment  {
         void onFinishConfirmFriendDialog(String friendsName, String code);
     }
 	
-    private EditText editCode;
-    private EditText editName;
-
     public ConfirmFriendDialog() {
         // Empty constructor required for DialogFragment
     }
@@ -31,6 +28,8 @@ public class ConfirmFriendDialog extends DialogFragment  {
         editName = (EditText) view.findViewById(R.id.confirm_friendsName);
         editCode = (EditText) view.findViewById(R.id.confirm_code);
         getDialog().setTitle("Confirm Friend");
+        
+        setDefaultName();
         
      // Show soft keyboard automatically
         editName.requestFocus();
@@ -55,8 +54,12 @@ public class ConfirmFriendDialog extends DialogFragment  {
         return view;
     }
     
-  
-    
-   
+	public void setDefaultName() {
+		int friendId = Friends.generateId(getActivity());
+		if ( friendId > 0)
+			editName.setText("Freund-"+friendId);
+	}
 
+	private EditText editCode;
+    private EditText editName;
 }

@@ -24,13 +24,13 @@ public class InviteFriendDialog extends DialogFragment  {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.invite_friend_dialog, container);
-		mEditText = (EditText) view.findViewById(R.id.txt_friends_name);
+		editText = (EditText) view.findViewById(R.id.txt_friends_name);
 		getDialog().setTitle("Invite Friend");
 
 		setDefaultName();
 		
 		// Show soft keyboard automatically
-		mEditText.requestFocus();
+		editText.requestFocus();
 		getDialog().getWindow().setSoftInputMode(
 				LayoutParams.SOFT_INPUT_STATE_VISIBLE);
 
@@ -38,7 +38,7 @@ public class InviteFriendDialog extends DialogFragment  {
 		confirmButton.setOnClickListener(new Button.OnClickListener() {
 			public void onClick(View v) {
 				InviteFriendDialogListener activity = (InviteFriendDialogListener) getActivity();
-				activity.onFinishInviteFriendDialog(mEditText.getText().toString());
+				activity.onFinishInviteFriendDialog(editText.getText().toString());
 				dismiss();
 			}
 		});
@@ -55,9 +55,9 @@ public class InviteFriendDialog extends DialogFragment  {
 	public void setDefaultName() {
 		int friendId = Friends.generateId(getActivity());
 		if ( friendId > 0)
-			mEditText.setText("Freund-"+friendId);
+			editText.setText("Freund-"+friendId);
 	}
 
-	private EditText mEditText;
+	private EditText editText;
 	final static public String ARG_PLAUSIBLE_FRIEND_ID = "plausibleFriendId";
 }
