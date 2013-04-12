@@ -180,7 +180,7 @@ public class AdminActivity extends Activity {
 
 
 
-	final static String TAG = "BladenightMapActivity";
+	final static String TAG = "BladenightAdminActivity";
 	private BroadcastReceiversRegister broadcastReceiversRegister = new BroadcastReceiversRegister(this); 
 	private NetworkClient networkClient;
 	private ArrayAdapter<CharSequence> spinnerRouteNameAdapter;

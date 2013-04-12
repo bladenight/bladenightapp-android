@@ -24,6 +24,7 @@ import com.markupartist.android.widget.ActionBar;
 import com.markupartist.android.widget.ActionBar.Action;
 
 import de.greencity.bladenightapp.android.R;
+import de.greencity.bladenightapp.android.about.AboutActivity;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator.ActionItemType;
 import de.greencity.bladenightapp.android.actionbar.ActionEventSelection;
@@ -141,6 +142,11 @@ public class SelectionActivity extends FragmentActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if( item.getItemId() == R.id.menu_item_admin ){
 			Intent intent = new Intent(this, AdminActivity.class);
+			startActivity(intent);
+			return true;
+		}
+		else if( item.getItemId() == R.id.menu_item_about ){
+			Intent intent = new Intent(this, AboutActivity.class);
 			startActivity(intent);
 			return true;
 		}

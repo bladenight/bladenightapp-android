@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="about_android_application">Android Applikation</string>
+    <string name="about_server_application">Server Applikation</string>
+    <string name="about_more_info">Mehr Information</string>
     <string name="app_name">AOK Blade Night App</string>
     <string name="button_action">Teilnehmen</string>
     <string name="button_addFriend">Freund einladen</string>
@@ -10,12 +13,13 @@
     <string name="impressum">Impressum</string>
     <string name="menu_settings">Optionen</string>
     <string name="msg_administration">Administration</string>
-    <string name="msg_about_app">Über die app</string>
+    <string name="msg_about_app">Über die App</string>
     <string name="msg_failed_to_load_map">Laden der Karten ist fehlgeschlagen</string>
     <string name="msg_no">Nein</string>
     <string name="msg_tracker_confirm_stop">Deine Freunde werden Dich vermissen, und dein Track wird abgebrochen. Bist Du sicher ?</string>
     <string name="msg_tracking_running">Tracking läuft</string>
     <string name="msg_yes">Ja</string>
+    <string name="title_about">Über diese Applikation</string>
     <string name="title_map">Live</string>
     <string name="title_options">Optionen</string>
     <string name="title_selection">Termine</string>
