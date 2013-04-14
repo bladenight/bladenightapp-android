@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    <item>
+    <!--  <item>
         <bitmap android:src="@drawable/background_action" />
-    </item>
+    </item>-->
     <item>
         <shape
             xmlns:android="http://schemas.android.com/apk/res/android"
             android:padding="10dp"
             android:shape="rectangle" >
             <stroke
-                android:width="7dp"
+                android:width="3dp"
                 android:color="@color/bn_green" />
 
             <solid android:color="#00000000" />
 
-            <corners android:radius="2dp" />
+            <corners android:radius="3dp" />
             <!-- <solid android:color="@color/bn_green" /> -->
         </shape>
     </item>

@@ -122,12 +122,12 @@ public class EventFragment extends Fragment {
 			}
 		});
 
-
-		if ( ! hasStatistics )
-			view.findViewById(R.id.image_event_statistics).setVisibility(View.INVISIBLE);
+		//tmp till statistics implemented
+		//if ( ! hasStatistics )
+			view.findViewById(R.id.image_event_statistics).setEnabled(false);
 
 		if ( ! isCurrent )
-			view.findViewById(R.id.image_event_participate).setVisibility(View.INVISIBLE);
+			view.findViewById(R.id.image_event_participate).setEnabled(false);
 
 		updateEvent();
 		return view;
@@ -194,13 +194,11 @@ public class EventFragment extends Fragment {
 	private void updateSchedule(){
 		LinearLayout topgroup = (LinearLayout) view.findViewById(R.id.group_top);
 		if(isUpcoming()){
-			// topgroup.setBackgroundResource(R.drawable.border_green);
-			topgroup.setBackgroundResource(R.drawable.border_white);
+			topgroup.setBackgroundResource(R.drawable.border_green);
 			topgroup.setTag("upcoming");
 		}
 		else{
-			// topgroup.setBackgroundResource(R.drawable.border_orange);
-			topgroup.setBackgroundResource(R.drawable.border_white);
+			topgroup.setBackgroundResource(R.drawable.border_green);
 			topgroup.setTag("old");
 		}
 	}
