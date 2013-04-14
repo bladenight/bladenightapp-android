@@ -36,14 +36,15 @@
         <TextView
             android:id="@+id/arrow_left"
             android:layout_width="80dp"
-            android:layout_height="80dp"
+            android:layout_height="match_parent"
             android:layout_centerVertical="true"
-            android:gravity="center"
+            android:gravity="fill_vertical|center"
             android:text="@string/arrow_left"
-            android:typeface="serif"
             android:textColor="@color/bn_green"
-            android:textSize="75dip"
-            android:textStyle="bold" />
+            android:textScaleX="0.3"
+            android:textSize="120dip"
+            android:textStyle="bold"
+            android:typeface="serif" />
 
         <ImageView
             android:id="@+id/status"
@@ -56,15 +57,17 @@
         <TextView
             android:id="@+id/arrow_right"
             android:layout_width="80dp"
-            android:layout_height="80dp"
+            android:layout_height="match_parent"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:gravity="center"
+            android:gravity="fill_vertical|center"
             android:text="@string/arrow_right"
-            android:typeface="serif"
             android:textColor="@color/bn_green"
-            android:textSize="75sp"
-            android:textStyle="bold" />
+            android:textScaleX="0.3"
+            android:textSize="120dip"
+            android:textStyle="bold"
+            android:typeface="serif" />
+
     </RelativeLayout>
 
     <LinearLayout
