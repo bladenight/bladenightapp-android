@@ -27,11 +27,14 @@ import android.util.Log;
 import com.codebutler.android_websockets.WebSocketClient;
 
 import de.greencity.bladenightapp.android.R;
+import de.greencity.bladenightapp.android.admin.AdminUtilities;
+import de.greencity.bladenightapp.android.network.BladenightWampClient.State;
 import de.greencity.bladenightapp.android.tracker.GpsTrackerService;
 import de.greencity.bladenightapp.android.utils.AsyncDownloadTask;
 import de.greencity.bladenightapp.android.utils.DeviceId;
 import de.greencity.bladenightapp.android.utils.ServiceUtils;
 import de.greencity.bladenightapp.network.BladenightUrl;
+import de.greencity.bladenightapp.network.messages.AdminMessage;
 import de.greencity.bladenightapp.network.messages.EventMessage;
 import de.greencity.bladenightapp.network.messages.EventMessage.EventStatus;
 import de.greencity.bladenightapp.network.messages.EventsListMessage;
@@ -42,6 +45,8 @@ import de.greencity.bladenightapp.network.messages.RelationshipInputMessage;
 import de.greencity.bladenightapp.network.messages.RelationshipOutputMessage;
 import de.greencity.bladenightapp.network.messages.RouteMessage;
 import de.greencity.bladenightapp.network.messages.RouteNamesMessage;
+import de.greencity.bladenightapp.network.messages.SetActiveRouteMessage;
+import de.greencity.bladenightapp.network.messages.SetActiveStatusMessage;
 import fr.ocroquette.wampoc.client.RpcResultReceiver;
 import fr.ocroquette.wampoc.client.WelcomeListener;
 import fr.ocroquette.wampoc.common.Channel;
@@ -97,6 +102,13 @@ public class NetworkClient {
 
 	private static synchronized void connect() {
 		Log.i(TAG, "connect()");
+		if ( bladenightWampClient.getState() == State.CONNECTING ||  bladenightWampClient.getState() == State.SHAKING_HANDS ) {
+			Log.i(TAG, "Already connecting");
+			if ( System.currentTimeMillis() - connectingSinceTimestamp > CONNECT_TIMEOUT)
+				Log.i(TAG, "Connection request timed out");
+			else
+				return;
+		}
 		if ( server == null) {
 			findServer();
 			return;
@@ -120,6 +132,7 @@ public class NetworkClient {
 				NetworkClient.processBacklog();
 			}
 		});
+		connectingSinceTimestamp = System.currentTimeMillis();
 		bladenightWampClient.connect(uri);
 	}
 	
@@ -222,7 +235,7 @@ public class NetworkClient {
 		item.url = BladenightUrl.SET_ACTIVE_ROUTE.getText();
 		item.successHandler = successHandler;
 		item.errorHandler = errorHandler;
-		item.outgoingPayload = routeName;
+		item.outgoingPayload = new SetActiveRouteMessage(routeName, AdminUtilities.getAdminPassword(context));
 		callOrStore(item);
 	}
 
@@ -231,7 +244,7 @@ public class NetworkClient {
 		item.url = BladenightUrl.SET_ACTIVE_STATUS.getText();
 		item.successHandler = successHandler;
 		item.errorHandler = errorHandler;
-		item.outgoingPayload = status;
+		item.outgoingPayload = new SetActiveStatusMessage(status, AdminUtilities.getAdminPassword(context));
 		callOrStore(item);
 	}
 
@@ -255,6 +268,16 @@ public class NetworkClient {
 		callOrStore(item);
 	}
 
+	public void verifyAdminPassword(String password, Handler successHandler, Handler errorHandler) {
+		BacklogItem item = new BacklogItem();
+		item.url = BladenightUrl.VERIFY_ADMIN_PASSWORD.getText();
+		item.successHandler = successHandler;
+		item.errorHandler = errorHandler;
+		item.expectedReturnType = String.class;
+		item.outgoingPayload = new AdminMessage(password);
+		callOrStore(item);
+	}
+
 	public void updateFromGpsTrackerService(LatLong lastKnownPosition) {
 		NetworkClient.lastKnownPosition = lastKnownPosition;
 		getRealTimeData(null, null);
@@ -274,7 +297,7 @@ public class NetworkClient {
 	}
 
 	private boolean isConnectionUsable() {
-		return bladenightWampClient.isConnectionUsable();
+		return bladenightWampClient.getState() == State.USUABLE;
 	}
 	
 	private static void processBacklog() {
@@ -340,7 +363,8 @@ public class NetworkClient {
 	static private BladenightWampClient bladenightWampClient = new BladenightWampClient();
 	static private long lookingForServerTimestamp = 0;
 	static private String deviceId = "UNDEFINED-DEVICEID";
-
+	static private long connectingSinceTimestamp;
+	static public final long CONNECT_TIMEOUT = 6000; 
 
 
 	static class BacklogItem {

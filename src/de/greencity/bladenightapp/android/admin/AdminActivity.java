@@ -17,9 +17,12 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.markupartist.android.widget.ActionBar;
+import com.markupartist.android.widget.ActionBar.Action;
 
 import de.greencity.bladenightapp.android.R;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
+import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator.ActionItemType;
+import de.greencity.bladenightapp.android.actionbar.ActionReload;
 import de.greencity.bladenightapp.android.network.NetworkClient;
 import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
 import de.greencity.bladenightapp.network.messages.EventMessage;
@@ -42,27 +45,55 @@ public class AdminActivity extends Activity {
 		super.onStart();
 
 		configureActionBar();
+		configureRouteNameSpinner();
+		configureStatusSpinner();	    
 
-		routeNameSpinner = (Spinner) findViewById(R.id.spinner_active_route);	    
-		// Spinner eventStatusSpinner = (Spinner) findViewById(R.id.spinnerStatus);	    
-		spinnerRouteNameAdapter = new ArrayAdapter<CharSequence>(AdminActivity.this, android.R.layout.simple_spinner_item);
-		spinnerRouteNameAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);        
-		routeNameSpinner.setAdapter(spinnerRouteNameAdapter);
-		
-		routeNameSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+		getRouteListFromServer();
+	}
 
+	private void configureStatusSpinner() {
+		statusSpinner = (Spinner) findViewById(R.id.spinner_current_status);
+		spinnerStatusAdapter = new ArrayAdapter<CharSequence>(AdminActivity.this, android.R.layout.simple_spinner_item);
+		spinnerStatusAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);        
+		statusSpinner.setAdapter(spinnerStatusAdapter);
+
+		statusSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-				String routeName = (String) routeNameSpinner.getSelectedItem();
-				setActiveRouteOnServer(routeName);
+				Log.i(TAG,"statusSpinner.setOnItemSelectedListener");
+				// Silly Android might fire the listener even before we are ready, hence this check
+				if ( isStatusSpinnerInitialized ) {
+					String status = (String) statusSpinner.getSelectedItem();
+					setActiveStatusOnServer(status);
+				}
 			}
 
 			@Override
 			public void onNothingSelected(AdapterView<?> arg0) {
 			}
 		});
+	}
 
-		getRouteListFromServer();
+	private void configureRouteNameSpinner() {
+		routeNameSpinner = (Spinner) findViewById(R.id.spinner_current_route);	    
+		spinnerRouteNameAdapter = new ArrayAdapter<CharSequence>(AdminActivity.this, android.R.layout.simple_spinner_item);
+		spinnerRouteNameAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);        
+		routeNameSpinner.setAdapter(spinnerRouteNameAdapter);
+
+		routeNameSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+				// Silly Android might fire the listener even before we are ready
+				if (isRouteNameSpinnerInitialized) {
+					String routeName = (String) routeNameSpinner.getSelectedItem();
+					setActiveRouteOnServer(routeName);
+				}
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> arg0) {
+			}
+		});
 	}
 
 	protected void getAllInformationFromServer() {
@@ -104,10 +135,14 @@ public class AdminActivity extends Activity {
 		@Override
 		public void handleMessage(Message msg) {
 			EventMessage eventMessage = (EventMessage)msg.obj;
-			if ( eventMessage.rou == null)
-				Log.e(TAG, "Server sent invalid route name:" + eventMessage.rou);
+			if ( eventMessage.getRouteName() == null)
+				Log.e(TAG, "Server sent invalid route name:" + eventMessage.toString());
 			else
-				reference.get().updateGuiRouteCurrent(eventMessage.rou);
+				reference.get().updateGuiRouteCurrent(eventMessage.getRouteName());
+			if ( eventMessage.getStatus() == null )
+				Log.e(TAG, "Server sent invalid status:" + eventMessage.toString());
+			else
+				reference.get().updateGuiStatus(eventMessage.getStatus().toString());
 		}
 	}
 
@@ -120,42 +155,45 @@ public class AdminActivity extends Activity {
 	public void updateGuiRouteCurrent(String currentRouteName) {
 		for(int i = 0 ; i < spinnerRouteNameAdapter.getCount() ; i ++) {
 			if ( currentRouteName.equals(spinnerRouteNameAdapter.getItem(i)) )
-				routeNameSpinner.setSelection(i);
+				setSpinnerSelectionWithoutCallingListener(routeNameSpinner, i);
 		}
+		isRouteNameSpinnerInitialized = true;
+	}
+
+	public void updateGuiStatus(String status) {
+		spinnerStatusAdapter.clear();
+		spinnerStatusAdapter.add("CAN");
+		spinnerStatusAdapter.add("CON");
+		spinnerStatusAdapter.add("PEN");
+		for(int i = 0 ; i < spinnerStatusAdapter.getCount() ; i ++) {
+			if ( status.equals(spinnerStatusAdapter.getItem(i)) )
+				setSpinnerSelectionWithoutCallingListener(statusSpinner, i);
+		}
+		isStatusSpinnerInitialized = true;
 	}
 
 
-	static class SetActiveRouteOnServerHandler extends Handler {
+	static private class NetworkResultHandler extends Handler {
 		private WeakReference<AdminActivity> reference;
-		SetActiveRouteOnServerHandler(AdminActivity activity) {
+		NetworkResultHandler(AdminActivity activity) {
 			this.reference = new WeakReference<AdminActivity>(activity);
 		}
 		@Override
 		public void handleMessage(Message msg) {
-			Toast.makeText(this.reference.get(), "Route has been changed", Toast.LENGTH_SHORT).show();
+			Toast.makeText(this.reference.get(), "OK", Toast.LENGTH_SHORT).show();
 			reference.get().getAllInformationFromServer();
 		}
 	}
 
 
 	protected void setActiveRouteOnServer(String routeName) {
-		networkClient.setActiveRoute(routeName, new SetActiveStatusOnServerHandler(this), null);
+		Log.i(TAG, "setActiveRouteOnServer");
+		networkClient.setActiveRoute(routeName, new NetworkResultHandler(this), null);
 	}
 
-	static class SetActiveStatusOnServerHandler extends Handler {
-		private WeakReference<AdminActivity> reference;
-		SetActiveStatusOnServerHandler(AdminActivity activity) {
-			this.reference = new WeakReference<AdminActivity>(activity);
-		}
-		@Override
-		public void handleMessage(Message msg) {
-			reference.get().getAllInformationFromServer();
-		}
-	}
-
-
-	protected void setActiveStatusOnServer() {
-		networkClient.setActiveStatus(EventStatus.CAN, new SetActiveStatusOnServerHandler(this), null);
+	protected void setActiveStatusOnServer(String status) {
+		Log.i(TAG, "setActiveStatusOnServer");
+		networkClient.setActiveStatus(EventStatus.valueOf(status), new NetworkResultHandler(this), null);
 	}
 
 
@@ -167,7 +205,14 @@ public class AdminActivity extends Activity {
 
 	private void configureActionBar() {
 		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
+		Action reloadAction = new ActionReload() {
+			@Override
+			public void performAction(View view) {
+				getAllInformationFromServer();
+			}
+		};
 		new ActionBarConfigurator(actionBar)
+		.setAction(ActionItemType.RELOAD, reloadAction)
 		.setTitle(R.string.title_admin)
 		.configure();
 	}
@@ -178,11 +223,30 @@ public class AdminActivity extends Activity {
 		super.onStop();
 	}
 
+	private void setSpinnerSelectionWithoutCallingListener(final Spinner spinner, final int selection) {
+		final OnItemSelectedListener l = spinner.getOnItemSelectedListener();
+		spinner.setOnItemSelectedListener(null);
+		spinner.post(new Runnable() {
+			@Override
+			public void run() {
+				spinner.setSelection(selection);
+				spinner.post(new Runnable() {
+					@Override
+					public void run() {
+						spinner.setOnItemSelectedListener(l);
+					}
+				});
+			}
+		});
+	}
 
-
-	final static String TAG = "BladenightAdminActivity";
+	final static String TAG = "AdminActivity";
 	private BroadcastReceiversRegister broadcastReceiversRegister = new BroadcastReceiversRegister(this); 
 	private NetworkClient networkClient;
 	private ArrayAdapter<CharSequence> spinnerRouteNameAdapter;
+	private ArrayAdapter<CharSequence> spinnerStatusAdapter;
 	private Spinner routeNameSpinner;
+	private Spinner statusSpinner;
+	private boolean isStatusSpinnerInitialized = false;
+	private boolean isRouteNameSpinnerInitialized = false;
 } 

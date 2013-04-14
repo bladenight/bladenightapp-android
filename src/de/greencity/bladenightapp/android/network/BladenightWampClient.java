@@ -12,6 +12,12 @@ import fr.ocroquette.wampoc.client.WampClient;
 import fr.ocroquette.wampoc.client.WelcomeListener;
 
 public class BladenightWampClient {
+	enum State {
+		DISCONNECTED,
+		CONNECTING,
+		SHAKING_HANDS,
+		USUABLE
+	};
 	BladenightWampClient() {
 		adapter = new NetworkClient.WebSocketClientChannelAdapter();
 		final WampClient wampClient = new WampClient(adapter);
@@ -21,13 +27,15 @@ public class BladenightWampClient {
 			@Override
 			public void onConnect() {
 				Log.d(TAG, "Connected!");
-				isConnected = true;
+				state = State.SHAKING_HANDS;
 			}
 
 			@Override
 			public void onMessage(String message) {
 				Log.d(TAG, String.format("Got string message! %s", message));
 				wampClient.handleIncomingMessage(message);
+				if ( wampClient.hasBeenWelcomed())
+					state = State.USUABLE;
 			}
 
 			@Override
@@ -37,28 +45,32 @@ public class BladenightWampClient {
 
 			@Override
 			public void onDisconnect(int code, String reason) {
-				Log.d(TAG, String.format("Disconnected! Code: %d Reason: %s", code, reason));
-				isConnected = false;
+				Log.e(TAG, String.format("Disconnected! Code: %d Reason: %s", code, reason));
 				wampClient.reset();
+				state = State.DISCONNECTED;
 			}
 
 			@Override
 			public void onError(Exception error) {
-				Log.e(TAG, "Error!", error);
+				Log.e(TAG, "Error:" + error);
+				webSocketClient.disconnect();
+				wampClient.reset();
+				state = State.DISCONNECTED;
 			}
 		};
 
 	}
 	
 	public void connect(URI serverUri) {
+		state = State.CONNECTING;
 		webSocketClient = new WebSocketClient(serverUri, listener, null);
 		adapter.setClient(webSocketClient);
 		wampClient.reset();
 		webSocketClient.connect();
 	}
 
-	public boolean isConnectionUsable() {
-		return isConnected && wampClient != null && wampClient.hasBeenWelcomed();
+	public State getState() {
+		return state;
 	}
 	
 	public void setWelcomeListener(WelcomeListener welcomeListener) {
@@ -75,8 +87,8 @@ public class BladenightWampClient {
 	
 	private WampClient wampClient;
 	private WebSocketClient webSocketClient;
-	private boolean isConnected;
 	private NetworkClient.WebSocketClientChannelAdapter adapter;
+	private State state = State.DISCONNECTED;
 
 	WebSocketClient.Listener listener;
 

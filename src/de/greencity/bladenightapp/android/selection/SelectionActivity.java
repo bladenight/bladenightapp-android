@@ -29,6 +29,7 @@ import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator.ActionItemType;
 import de.greencity.bladenightapp.android.actionbar.ActionEventSelection;
 import de.greencity.bladenightapp.android.admin.AdminActivity;
+import de.greencity.bladenightapp.android.admin.AdminUtilities;
 import de.greencity.bladenightapp.android.network.NetworkClient;
 import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
 import de.greencity.bladenightapp.android.utils.InternalStorageFile;
@@ -135,6 +136,8 @@ public class SelectionActivity extends FragmentActivity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.activity_selection, menu);
+		if ( AdminUtilities.getAdminPassword(this) == null )
+			menu.findItem(R.id.menu_item_admin).setVisible(false);
 		return true;
 	}
 
@@ -153,16 +156,16 @@ public class SelectionActivity extends FragmentActivity {
 		return false;
 	}
 
-//	private void goStatistics(){
-//		Intent intent = new Intent(SelectionActivity.this, StatisticsActivity.class);
-//		startActivity(intent);
-//	}
-//
-//	private void goAction(){
-//		Intent intent = new Intent(SelectionActivity.this, BladenightMapActivity.class);
-//		startActivity(intent);
-//	}
-//
+	//	private void goStatistics(){
+	//		Intent intent = new Intent(SelectionActivity.this, StatisticsActivity.class);
+	//		startActivity(intent);
+	//	}
+	//
+	//	private void goAction(){
+	//		Intent intent = new Intent(SelectionActivity.this, BladenightMapActivity.class);
+	//		startActivity(intent);
+	//	}
+	//
 
 	static class GetEventsFromServerHandler extends Handler {
 		private WeakReference<SelectionActivity> reference;
