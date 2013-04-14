@@ -36,13 +36,15 @@
         <TextView
             android:id="@+id/arrow_left"
             android:layout_width="80dp"
-            android:layout_height="80dp"
+            android:layout_height="match_parent"
             android:layout_centerVertical="true"
-            android:gravity="center"
+            android:gravity="fill_vertical|center"
             android:text="@string/arrow_left"
-            android:textColor="@color/bn_green2"
-            android:textSize="75dip"
-            android:textStyle="bold" />
+            android:textColor="@color/bn_green"
+            android:textScaleX="0.3"
+            android:textSize="120dip"
+            android:textStyle="bold"
+            android:typeface="serif" />
 
         <ImageView
             android:id="@+id/status"
@@ -55,14 +57,17 @@
         <TextView
             android:id="@+id/arrow_right"
             android:layout_width="80dp"
-            android:layout_height="80dp"
+            android:layout_height="match_parent"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:gravity="center"
+            android:gravity="fill_vertical|center"
             android:text="@string/arrow_right"
-            android:textColor="@color/bn_green2"
-            android:textSize="75sp"
-            android:textStyle="bold" />
+            android:textColor="@color/bn_green"
+            android:textScaleX="0.3"
+            android:textSize="120dip"
+            android:textStyle="bold"
+            android:typeface="serif" />
+
     </RelativeLayout>
 
     <LinearLayout
@@ -77,9 +82,10 @@
             android:id="@+id/image_event_observe"
             android:layout_width="75dp"
             android:layout_height="75dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
             android:src="@drawable/ic_action_glasses"
+            android:background="@drawable/custom_button"
             android:gravity="center_vertical"
             android:paddingTop="10dip" />
 
@@ -87,9 +93,10 @@
             android:id="@+id/image_event_participate"
             android:layout_width="75dp"
             android:layout_height="75dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
             android:src="@drawable/skater"
+            android:background="@drawable/custom_button"
             android:gravity="center_vertical"
             android:paddingTop="10dip" />
 
@@ -97,9 +104,10 @@
             android:id="@+id/image_event_statistics"
             android:layout_width="75dp"
             android:layout_height="75dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
             android:src="@drawable/ic_action_bargraph"
+            android:background="@drawable/custom_button"
             android:gravity="center_vertical"
             android:paddingTop="10dip" />
     </LinearLayout>
