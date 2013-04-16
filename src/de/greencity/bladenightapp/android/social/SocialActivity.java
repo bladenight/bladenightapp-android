@@ -174,7 +174,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 		dialog.show();
 
 		CreateNewRequestHandler handler = new CreateNewRequestHandler(this, friendName, dialog);
-		networkClient.createRelationship(friends.generateId(), handler, null);
+		networkClient.createRelationship(Friends.generateId(this), handler, null);
 	}
 
 	static class ConfirmRequestHandler extends Handler {
@@ -225,7 +225,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 		ProgressDialog dialog = new ProgressDialog(SocialActivity.this);
 		dialog.setMessage("Validating friend code...");
 		dialog.show();
-		networkClient.finalizeRelationship(Long.parseLong(code), friends.generateId(), new ConfirmRequestHandler(this, friendName, dialog), new ConfirmRequestErrorHandler(this, dialog));
+		networkClient.finalizeRelationship(Long.parseLong(code), Friends.generateId(this), new ConfirmRequestHandler(this, friendName, dialog), new ConfirmRequestErrorHandler(this, dialog));
 	}
 
 	@Override

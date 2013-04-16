@@ -53,17 +53,6 @@ public class Friends {
 		return friends.keySet();
 	}
 
-	public int generateId() {
-		int i = 1;
-		Log.i(TAG, "generateId: friends="+friends);
-		while ( friends.get(i) != null && i < Integer.MAX_VALUE) {
-			i++;
-		}
-		if ( i == Integer.MAX_VALUE)
-			return 0;
-		return i;
-	}
-	
 	public static int generateId(Context context) {
 		Friends friends = new Friends(context);
 		friends.load();
