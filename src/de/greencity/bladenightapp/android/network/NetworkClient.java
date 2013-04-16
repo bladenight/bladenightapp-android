@@ -248,7 +248,7 @@ public class NetworkClient {
 		callOrStore(item);
 	}
 
-	public void createRelationship(long friendId, Handler successHandler, Handler errorHandler) {
+	public void createRelationship(int friendId, Handler successHandler, Handler errorHandler) {
 		BacklogItem item = new BacklogItem();
 		item.url = BladenightUrl.CREATE_RELATIONSHIP.getText();
 		item.successHandler = successHandler;
@@ -258,7 +258,7 @@ public class NetworkClient {
 		callOrStore(item);
 	}
 
-	public void finalizeRelationship(long requestId, long friendId, Handler successHandler, Handler errorHandler) {
+	public void finalizeRelationship(long requestId, int friendId, Handler successHandler, Handler errorHandler) {
 		BacklogItem item = new BacklogItem();
 		item.url = BladenightUrl.CREATE_RELATIONSHIP.getText();
 		item.successHandler = successHandler;

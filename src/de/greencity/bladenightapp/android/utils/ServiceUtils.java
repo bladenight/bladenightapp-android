@@ -12,7 +12,7 @@ public class ServiceUtils {
 		ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
 		for (RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
 			if ( serviceClass.getName().equals(service.service.getClassName())) {
-				Log.i(TAG, "Service " + serviceClass.getCanonicalName() + " is running");
+				// Log.i(TAG, "Service " + serviceClass.getCanonicalName() + " is running");
 				return true;
 			}
 		}
@@ -26,6 +26,7 @@ public class ServiceUtils {
 		}
 	}
 	public static void stopService(Context context, Class<?> serviceClass) {
+		Log.i(TAG, "stopService " + serviceClass.getCanonicalName());
 		if ( isServiceRunning(context, serviceClass)) {
 			Intent intent = new Intent(context.getApplicationContext(), serviceClass);
 			context.stopService(intent);

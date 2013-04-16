@@ -2,6 +2,7 @@ package de.greencity.bladenightapp.android.social;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import de.greencity.bladenightapp.android.R;
 import de.greencity.bladenightapp.android.social.Friend.FriendColor;
+import de.greencity.bladenightapp.android.tracker.GpsTrackerService;
+import de.greencity.bladenightapp.android.utils.ServiceUtils;
 
 public class FriendListAdapter extends BaseAdapter {
     private static LayoutInflater inflater=null;
@@ -22,7 +25,7 @@ public class FriendListAdapter extends BaseAdapter {
     }
  
     public int getCount() {
-    	return activity.id_order.size();
+    	return activity.idOrder.size();
     }
  
     public Object getItem(int position) {
@@ -35,10 +38,10 @@ public class FriendListAdapter extends BaseAdapter {
  
     public View getView(int position, View convertView, ViewGroup parent) {
         View vi=convertView;
-        int id = activity.id_order.get(position);
+        int id = activity.idOrder.get(position);
         Friend friend = activity.friends.get(id);
         
-        if(activity.is_in_action){
+        if( ServiceUtils.isServiceRunning(activity, GpsTrackerService.class) ){
         	vi = inflateActionRow(friend);
         }
         else{
@@ -108,18 +111,19 @@ public class FriendListAdapter extends BaseAdapter {
         return vi;
     }
     
-    private String secondsToTime(int secs){
-    	String sec = Integer.toString(secs%60);
+    private String secondsToTime(long secs){
+    	String sec = Long.toString(secs%60);
     	if (sec.length()==1) sec = "0" + sec;
-    	String time = Integer.toString(secs/60) + ":" + sec;
+    	String time = Long.toString(secs/60) + ":" + sec;
     	return time;
     }
     
-    private String metersToDistance(int meters){
-    	String distance = Integer.toString(meters) + "m";
+    private String metersToDistance(long meters){
+    	String distance = Long.toString(meters) + "m";
     	return distance;
     }
     
+    private static final String TAG = "FriendListAdapter"; 
 
 }
 

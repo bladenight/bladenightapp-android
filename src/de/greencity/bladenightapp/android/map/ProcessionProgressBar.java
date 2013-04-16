@@ -59,7 +59,7 @@ public class ProcessionProgressBar extends ProgressBar {
 		realTimeUpdateData.setHead(new NetMovingPoint(14000, 0, true));
 		realTimeUpdateData.setUser(new NetMovingPoint(9000, 0, true));
 		NetMovingPoint friend = new NetMovingPoint(10000, 0, true);
-		realTimeUpdateData.fri.put(new Long(1), friend);
+		realTimeUpdateData.fri.put(1, friend);
 	}
 
 	@Override  
@@ -97,7 +97,7 @@ public class ProcessionProgressBar extends ProgressBar {
 	}
 
 	protected void drawFriends(Canvas canvas) {
-		for (Long friendId: realTimeUpdateData.fri.keySet()) {
+		for (Integer friendId: realTimeUpdateData.fri.keySet()) {
 			drawMovingPoint(canvas, getFriendDrawable(), realTimeUpdateData.fri.get(friendId));
 		}
 	}

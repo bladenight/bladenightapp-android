@@ -91,14 +91,14 @@ public class UserPositionOverlay extends ListOverlay implements LocationListener
 	}
 	
 	public void update(RealTimeUpdateData data) {
-		for ( Long friendId : data.fri.keySet() ) {
+		for ( Integer friendId : data.fri.keySet() ) {
 			NetMovingPoint nvp = data.fri.get(friendId);
 			Marker marker = getFriendMarker(friendId);
 			marker.setGeoPoint(new GeoPoint(nvp.getLatitude(), nvp.getLongitude()));
 		}
 	}
 	
-	public Marker getFriendMarker(Long friendId) {
+	public Marker getFriendMarker(Integer friendId) {
 		if ( friendSymbols.get(friendId) != null )
 			return friendSymbols.get(friendId);
 
@@ -117,7 +117,7 @@ public class UserPositionOverlay extends ListOverlay implements LocationListener
 	private final MapView mapView;
 	private Context context;
 	private Marker userSymbol;
-	private HashMap<Long, Marker> friendSymbols = new HashMap<Long, Marker>();
+	private HashMap<Integer, Marker> friendSymbols = new HashMap<Integer, Marker>();
 	private Circle externalCircle;
 
 	private final String TAG = "UserPositionOverlay";

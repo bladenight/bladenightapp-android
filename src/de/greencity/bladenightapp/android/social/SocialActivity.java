@@ -4,11 +4,13 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -25,10 +27,12 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.markupartist.android.widget.ActionBar;
+import com.markupartist.android.widget.ActionBar.Action;
 
 import de.greencity.bladenightapp.android.R;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator.ActionItemType;
+import de.greencity.bladenightapp.android.actionbar.ActionReload;
 import de.greencity.bladenightapp.android.network.NetworkClient;
 import de.greencity.bladenightapp.android.social.ChangeFriendDialog.ChangeFriendDialogListener;
 import de.greencity.bladenightapp.android.social.ConfirmFriendDialog.ConfirmFriendDialogListener;
@@ -36,6 +40,8 @@ import de.greencity.bladenightapp.android.social.Friend.FriendColor;
 import de.greencity.bladenightapp.android.social.InviteFriendDialog.InviteFriendDialogListener;
 import de.greencity.bladenightapp.android.tracker.GpsTrackerService;
 import de.greencity.bladenightapp.android.utils.ServiceUtils;
+import de.greencity.bladenightapp.network.messages.NetMovingPoint;
+import de.greencity.bladenightapp.network.messages.RealTimeUpdateData;
 import de.greencity.bladenightapp.network.messages.RelationshipOutputMessage;
 
 public class SocialActivity extends FragmentActivity implements InviteFriendDialogListener, 
@@ -54,11 +60,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 		//		TextView titletext = (TextView)findViewById(R.id.title);
 		//		titletext.setText(R.string.title_social);
 
-		friends = new Friends(this);
-		friends.load();
-
 		list = (ListView)findViewById(R.id.listview);
-		createListView();
 	}
 
 	@Override
@@ -68,12 +70,34 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 		Log.i(TAG, "onStart");
 		configureActionBar();
 
+		getFriendsFromStorage();
+		getFriendsFromServer();
+		createListView();
+
+		if ( ServiceUtils.isServiceRunning(SocialActivity.this, GpsTrackerService.class) )
+			schedulePeriodicTask();
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+		cancelPeriodicTask();
 	}
 
 	private void configureActionBar() {
 		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
+
+		Action reloadAction = new ActionReload() {
+			@Override
+			public void performAction(View view) {
+				getFriendsFromStorage();
+				getFriendsFromServer();
+			}
+		};
+
 		new ActionBarConfigurator(actionBar)
 		.show(ActionItemType.ADD_FRIEND)
+		.setAction(ActionItemType.RELOAD, reloadAction)
 		.setTitle(R.string.title_social)
 		.configure();
 
@@ -210,115 +234,133 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 		updateList();
 	}
 
+	static class GetRealTimeDataFromServerHandler extends Handler {
+		private WeakReference<SocialActivity> reference;
+		GetRealTimeDataFromServerHandler(SocialActivity activity) {
+			this.reference = new WeakReference<SocialActivity>(activity);
+		}
+		@Override
+		public void handleMessage(Message msg) {
+			RealTimeUpdateData realTimeUpdateData = (RealTimeUpdateData)msg.obj;
+			reference.get().updateFromRealTimeUpdateData(realTimeUpdateData);
+		}
+	}
+
+	private void getFriendsFromServer(){
+		networkClient.getRealTimeData(new GetRealTimeDataFromServerHandler(this), null);
+	}
+
 	private void getFriendsFromStorage(){
-		//dummy data to test
-		//		Friend friend1 = new Friend("Hans",FriendColor.ORANGE,true);
-		//		friend1.setActionData(125, 211, 2333, 5423);
-		//		friends.put(id_counter++,friend1);
-		//		Friend friend2 = new Friend("Heinz",FriendColor.RED,true);
-		//		friend2.setActionData(120, 205, 2328, 5417);
-		//		friends.put(id_counter++,friend2);
-		//		Friend friend3 = new Friend("Hubert",FriendColor.GREEN,true);
-		//		friend3.setActionData(138, 240, 2346, 5452);
-		//		friends.put(id_counter++,friend3);
-		//
-		//		friends.get(ID_HEAD).setActionData(0, 0, 2208, 5212);
-		//		friends.get(ID_TAIL).setActionData(213, 450, 2415, 5662);
-		//		friends.get(ID_ME).setActionData(130, 215, 2338, 5427);
+		friends = new Friends(this);
 		friends.load();
-		Friend head = new Friend("Head",FriendColor.BLACK,true);
-		Friend tail = new Friend("Tail",FriendColor.BLACK,true);
-		Friend myself = new Friend("Me",FriendColor.BLACK,true);
+
+		Friend head = new Friend("Head", FriendColor.BLACK, true);
+		Friend tail = new Friend("Tail", FriendColor.BLACK, true);
+		Friend myself = new Friend("Me", FriendColor.BLACK, true);
 		friends.put(ID_HEAD, head);
 		friends.put(ID_TAIL, tail);
 		friends.put(ID_ME, myself);
 	}
 
-	public void updateList(){
-		is_in_action = ServiceUtils.isServiceRunning(SocialActivity.this, GpsTrackerService.class);
-		list.invalidateViews();
+	private void updateFromRealTimeUpdateData(RealTimeUpdateData realTimeUpdateData) {
+		Map<Integer, NetMovingPoint> friendsMap = realTimeUpdateData.getFriendsMap();
+		
+		Set<Integer> combinedFriendIds = new HashSet<Integer>();
+		combinedFriendIds.addAll(friendsMap.keySet());
+		combinedFriendIds.addAll(friends.keySet());
 
-		if(is_in_action){
-			id_order = new ArrayList<Integer>();
-			for(int id : friends.keySet()){
-				if(friends.get(id).getActive()) id_order.add(id);
+		for ( int friendId : combinedFriendIds) {
+			if ( friendId == ID_ME )
+				continue;
+			Friend friend = friends.get(friendId);
+			NetMovingPoint friendLocation;
+			if ( friendId == ID_HEAD ) {
+				friendLocation =  realTimeUpdateData.getHead();
 			}
-			Collections.sort(id_order, new Comparator<Integer>() {
-				public int compare(Integer id1, Integer id2) {
-					return ((Integer)friends.get(id1).getDistanceRel()).compareTo(
-							(Integer)friends.get(id2).getDistanceRel());
+			else if ( friendId == ID_TAIL ) {
+				friendLocation =  realTimeUpdateData.getTail();
+			}
+			else {
+				friendLocation =  friendsMap.get(friendId);
+				if ( friends.get(friendId) == null ) {
+					// for one reason the server knows about this friend but we don't
+					friend = new Friend("?", FriendColor.BLACK, true);
+					friends.put(friendId, friend);
 				}
-			});
+			}
+			if ( friendLocation != null )
+				friend.setActionData(0, friendLocation.getPosition() - realTimeUpdateData.getUserPosition(), 0, friendLocation.getPosition());
+			else {
+				// TODO the server didn't send us any information about this friend
+			}
+			
 		}
-		else{
-			id_order = new ArrayList<Integer>(friends.keySet());
-			id_order.remove(ID_HEAD);
-			id_order.remove(ID_TAIL);
-			id_order.remove(ID_ME);
-			Collections.sort(id_order, new Comparator<Integer>() {
-				public int compare(Integer id1, Integer id2) {
-					return friends.get(id1).compareTo(friends.get(id2));
-				}
-			});
-		}
+		updateList();
 	}
 
 
+	public void updateList(){
+		boolean isInAction = ServiceUtils.isServiceRunning(SocialActivity.this, GpsTrackerService.class);
+		list.invalidateViews();
 
-
-	/** Inner class for implementing progress bar before fetching data **/
-	private class ChangeFriendTask extends AsyncTask<Void, Void, Integer> 
-	{
-		private ProgressDialog Dialog = new ProgressDialog(SocialActivity.this);
-
-		private Friend friend_update;
-		private int id;
-
-		public ChangeFriendTask(Friend friend_update, int id){
-			this.friend_update = friend_update;
-			this.id = id;
+		if(isInAction){
+			updateListWhileInAction();
 		}
-		@Override
-		protected void onPreExecute()
-		{
-			Dialog.setMessage("Change friend list");
-			Dialog.show();
+		else{
+			updateListWhileNotInAction();
 		}
+	}
 
-		@Override
-		protected Integer doInBackground(Void... params) 
-		{
-			//load code from server
-			try {
-				Thread.sleep(1000); 
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+	private void updateListWhileNotInAction() {
+		idOrder = new ArrayList<Integer>(friends.keySet());
+		idOrder.remove(ID_HEAD);
+		idOrder.remove(ID_TAIL);
+		idOrder.remove(ID_ME);
+		Collections.sort(idOrder, new Comparator<Integer>() {
+			public int compare(Integer id1, Integer id2) {
+				return friends.get(id1).compareTo(friends.get(id2));
 			}
+		});
+	}
 
-			return 0;
+	private void updateListWhileInAction() {
+		idOrder = new ArrayList<Integer>();
+		for(int id : friends.keySet()){
+			if(friends.get(id).getActive())
+				idOrder.add(id);
 		}
-
-		@Override
-		protected void onPostExecute(Integer result)
-		{
-
-			if(result==0)
-			{
-				SocialActivity.this.friends.put(id, friend_update);
+		Collections.sort(idOrder, new Comparator<Integer>() {
+			public int compare(Integer id1, Integer id2) {
+				return ((Long)friends.get(id2).getDistanceRel()).compareTo(
+						(Long)friends.get(id1).getDistanceRel());
 			}
-			// after completed finished the progressbar
-			Dialog.dismiss();
-			SocialActivity.this.updateList();
-		}
+		});
+	}
+
+	private void schedulePeriodicTask() {
+		periodicTask = new Runnable() {
+			@Override
+			public void run() {
+				getFriendsFromServer();
+				periodicHandler.postDelayed(this, updatePeriod);
+			}
+		};
+		periodicHandler.postDelayed(periodicTask, updatePeriod);
+	}
+
+	private void cancelPeriodicTask() {
+		if ( periodicTask != null )
+			periodicHandler.removeCallbacks(periodicTask);
 	}
 
 	private ListView list;
 	Friends friends;
-	List<Integer> id_order;
+	List<Integer> idOrder;
 	private final String TAG = "SocialActivity"; 
-	public boolean is_in_action = false;
 	private NetworkClient networkClient = new NetworkClient(this);
+	private final Handler periodicHandler = new Handler();
+	private Runnable periodicTask;
+	private long updatePeriod = 2000;
 
 	final static Integer ID_HEAD = -1;
 	final static Integer ID_TAIL = -2;

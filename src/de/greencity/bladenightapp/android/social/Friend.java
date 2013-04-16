@@ -16,10 +16,10 @@ public class Friend implements Comparable<Friend> {
 	private String name;
 	private boolean active;
 	private FriendColor color;
-	private int time_rel;
-	private int distance_rel;
-	private int time_abs;
-	private int distance_abs;
+	private long time_rel;
+	private long distance_rel;
+	private long time_abs;
+	private long distance_abs;
 	
 	public Friend(String name, FriendColor color, boolean active){
 		this.name = name;
@@ -27,26 +27,26 @@ public class Friend implements Comparable<Friend> {
 		this.active = active;
 	}
 	
-	public void setActionData(int time_rel, int distance_rel, int time_abs, int distance_abs){
+	public void setActionData(long time_rel, long distance_rel, long time_abs, long distance_abs){
 		this.time_rel = time_rel;
 		this.distance_rel = distance_rel;
 		this.time_abs = time_abs;
 		this.distance_abs = distance_abs;
 	}
 	
-	public int getTimeRel(){
+	public long getTimeRel(){
 		return time_rel;
 	}
 	
-	public int getDistanceRel(){
+	public long getDistanceRel(){
 		return distance_rel;
 	}
 	
-	public int getTimeAbs(){
+	public long getTimeAbs(){
 		return time_abs;
 	}
 	
-	public int getDistanceAbs(){
+	public long getDistanceAbs(){
 		return distance_abs;
 	}
 	
