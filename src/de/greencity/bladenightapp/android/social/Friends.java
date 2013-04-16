@@ -24,19 +24,19 @@ public class Friends {
 	}
 	
 	public void load() {
-		SharedPreferences settings = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-		String friendsJson = settings.getString(PREF_NAME, "{}");
+		SharedPreferences settings = context.getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE);
+		String friendsJson = settings.getString(PREF_FRIENDS_JSON, "{}");
 		Log.i(TAG, "load: " + friendsJson);
 		Type type = new TypeToken<Map<Integer, Friend>>() {}.getType();
 		friends = gson.fromJson(friendsJson, type);
 	}
 
 	public void save() {
-		SharedPreferences settings = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+		SharedPreferences settings = context.getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = settings.edit();
 		String json = gson.toJson(friends);
 		Log.i(TAG, "save: " + json);
-		editor.putString(PREF_NAME, json);
+		editor.putString(PREF_FRIENDS_JSON, json);
 		editor.commit();
 	}
 
@@ -67,7 +67,15 @@ public class Friends {
 	public static int generateId(Context context) {
 		Friends friends = new Friends(context);
 		friends.load();
-		return friends.generateId();
+		
+		SharedPreferences settings = context.getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE);
+		int id = 1 + settings.getInt(PREF_FRIENDS_LASTID, 1);
+		while ( friends.get(id) != null)
+			id++;
+		SharedPreferences.Editor editor = settings.edit();
+		editor.putInt(PREF_FRIENDS_LASTID, id);
+		editor.commit();
+		return id;
 	}
 
 	public void remove(int id) {
@@ -77,8 +85,9 @@ public class Friends {
 
 	@SuppressLint("UseSparseArrays")
 	private Map<Integer, Friend> friends = new HashMap<Integer, Friend>();
-	public static final String PREFS_NAME = "Bladenight_social";
-	public static final String PREF_NAME = "friends.json";
+	public static final String SHARED_PREFS_NAME = "Bladenight_social";
+	public static final String PREF_FRIENDS_JSON = "friends.json";
+	public static final String PREF_FRIENDS_LASTID = "nextfriendid.int";
 	private final Gson gson = new Gson();
 	private Context context;
 	static private final String TAG = "Friends"; 
