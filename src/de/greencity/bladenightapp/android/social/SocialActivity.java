@@ -60,7 +60,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 		//		TextView titletext = (TextView)findViewById(R.id.title);
 		//		titletext.setText(R.string.title_social);
 
-		list = (ListView)findViewById(R.id.listview);
+		listView = (ListView)findViewById(R.id.listview);
 	}
 
 	@Override
@@ -106,29 +106,29 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 
 	private void createListView() {
 
-		updateList();
+		updateGui();
 
 		//Create an adapter for the listView and add the ArrayList to the adapter.
-		list.setAdapter(new FriendListAdapter(SocialActivity.this));
-		list.setOnItemClickListener(new OnItemClickListener()
+		listView.setAdapter(new FriendListAdapter(SocialActivity.this));
+		listView.setOnItemClickListener(new OnItemClickListener()
 		{
 			@Override
-			public void onItemClick(AdapterView<?> adapterView, View view, int selectedIndex, long arg3) {
+			public void onItemClick(AdapterView<?> adapterView, View view, int selectedIndex, long rowId) {
 				FragmentManager fm = getSupportFragmentManager();
 				LinearLayout row = (LinearLayout)view.findViewById(R.id.row_friend);
-				int id = (Integer) row.getTag();
-				ChangeFriendDialog changeFriendDialog = new ChangeFriendDialog(friends.get(id), id);
+				int friendId = (Integer) row.getTag();
+				ChangeFriendDialog changeFriendDialog = new ChangeFriendDialog(friends.get(friendId), friendId);
 				changeFriendDialog.show(fm, "fragment_change_friend");
 			}
 		});
-		list.setOnItemLongClickListener(new OnItemLongClickListener()
+		listView.setOnItemLongClickListener(new OnItemLongClickListener()
 		{
 			@Override
-			public boolean onItemLongClick(AdapterView<?> adapterView, View view, int selectedIndex, long arg3) {
+			public boolean onItemLongClick(AdapterView<?> adapterView, View view, int selectedIndex, long rowId) {
 				LinearLayout row = (LinearLayout)view.findViewById(R.id.row_friend);
-				int id = (Integer) row.getTag();
-				friends.remove(id);
-				updateList();
+				int friendId = (Integer) row.getTag();
+				friends.remove(friendId);
+				updateGui();
 				return true;
 			}
 		});
@@ -157,7 +157,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 				Friend newFriend = new Friend(friendName + " ...pending", FriendColor.GREEN,true);
 				newFriend.setActionData(138, 240, 2346, 5452);
 				socialActivity.friends.put((int)relMsg.fid,newFriend);
-				socialActivity.updateList();
+				socialActivity.updateGui();
 				progressDialog.dismiss();
 			}
 		}
@@ -192,7 +192,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 				Friend newFriend = new Friend(friendName, FriendColor.GREEN,true);
 				newFriend.setActionData(138, 240, 2346, 5452);
 				socialActivity.friends.put((int)relMsg.fid, newFriend);
-				socialActivity.updateList();
+				socialActivity.updateGui();
 				progressDialog.dismiss();
 				Toast.makeText(socialActivity, friendName + " was added", Toast.LENGTH_LONG).show();
 			}
@@ -231,7 +231,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 	@Override
 	public void onFinishChangeFriendDialog(Friend friend, int friendId) { 
 		friends.put(friendId, friend);
-		updateList();
+		updateGui();
 	}
 
 	static class GetRealTimeDataFromServerHandler extends Handler {
@@ -242,7 +242,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 		@Override
 		public void handleMessage(Message msg) {
 			RealTimeUpdateData realTimeUpdateData = (RealTimeUpdateData)msg.obj;
-			reference.get().updateFromRealTimeUpdateData(realTimeUpdateData);
+			reference.get().updateGuiFromRealTimeUpdateData(realTimeUpdateData);
 		}
 	}
 
@@ -262,9 +262,9 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 		friends.put(ID_ME, myself);
 	}
 
-	private void updateFromRealTimeUpdateData(RealTimeUpdateData realTimeUpdateData) {
+	private void updateGuiFromRealTimeUpdateData(RealTimeUpdateData realTimeUpdateData) {
 		Map<Integer, NetMovingPoint> friendsMap = realTimeUpdateData.getFriendsMap();
-		
+
 		Set<Integer> combinedFriendIds = new HashSet<Integer>();
 		combinedFriendIds.addAll(friendsMap.keySet());
 		combinedFriendIds.addAll(friends.keySet());
@@ -280,6 +280,9 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 			else if ( friendId == ID_TAIL ) {
 				friendLocation =  realTimeUpdateData.getTail();
 			}
+			else if ( friendId == ID_ME ) {
+				friendLocation =  realTimeUpdateData.getUser();
+			}
 			else {
 				friendLocation =  friendsMap.get(friendId);
 				if ( friends.get(friendId) == null ) {
@@ -293,25 +296,26 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 			else {
 				// TODO the server didn't send us any information about this friend
 			}
-			
+
 		}
-		updateList();
+		updateGui();
 	}
 
 
-	public void updateList(){
+	public void updateGui(){
 		boolean isInAction = ServiceUtils.isServiceRunning(SocialActivity.this, GpsTrackerService.class);
-		list.invalidateViews();
 
-		if(isInAction){
-			updateListWhileInAction();
+		if( isInAction ){
+			sortListViewWhileInAction();
 		}
 		else{
-			updateListWhileNotInAction();
+			sortListViewWhileNotInAction();
 		}
+
+		listView.invalidateViews();
 	}
 
-	private void updateListWhileNotInAction() {
+	private void sortListViewWhileNotInAction() {
 		idOrder = new ArrayList<Integer>(friends.keySet());
 		idOrder.remove(ID_HEAD);
 		idOrder.remove(ID_TAIL);
@@ -323,7 +327,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 		});
 	}
 
-	private void updateListWhileInAction() {
+	private void sortListViewWhileInAction() {
 		idOrder = new ArrayList<Integer>();
 		for(int id : friends.keySet()){
 			if(friends.get(id).getActive())
@@ -353,7 +357,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 			periodicHandler.removeCallbacks(periodicTask);
 	}
 
-	private ListView list;
+	private ListView listView;
 	Friends friends;
 	List<Integer> idOrder;
 	private final String TAG = "SocialActivity"; 

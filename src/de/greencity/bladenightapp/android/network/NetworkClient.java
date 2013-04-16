@@ -63,7 +63,7 @@ public class NetworkClient {
 			Log.i(TAG, "Already looking for server ("+lookingForServerTimestamp+")");
 			return;
 		}
-			
+
 		Log.i(TAG, " Looking for server...");
 		lookingForServerTimestamp = System.currentTimeMillis();
 
@@ -113,7 +113,7 @@ public class NetworkClient {
 			findServer();
 			return;
 		}
-		
+
 		String protocol = "ws";
 
 		if ( "wss".equals(protocol) ) {
@@ -135,7 +135,7 @@ public class NetworkClient {
 		connectingSinceTimestamp = System.currentTimeMillis();
 		bladenightWampClient.connect(uri);
 	}
-	
+
 	private static javax.net.ssl.SSLSocketFactory getSSLSocketFactory() throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException, UnrecoverableKeyException, KeyManagementException {
 		final InputStream trustStoreLocation = context.getResources().openRawResource(R.raw.client_truststore); 
 		final String trustStorePassword = "iosfe45047asdf";
@@ -224,6 +224,10 @@ public class NetworkClient {
 		if ( lastKnownPosition != null ) {
 			gpsInfo.setLatitude(lastKnownPosition.getLatitude());
 			gpsInfo.setLongitude(lastKnownPosition.getLongitude());
+
+			//			// remove test coordinates
+			//			gpsInfo.setLatitude(48.154249);
+			//			gpsInfo.setLongitude(11.554098);
 		}
 
 		item.outgoingPayload = gpsInfo;
@@ -299,7 +303,7 @@ public class NetworkClient {
 	private boolean isConnectionUsable() {
 		return bladenightWampClient.getState() == State.USUABLE;
 	}
-	
+
 	private static void processBacklog() {
 		Log.i(TAG, "processBacklog: " + backlogItems.size() + " items");
 		while ( backlogItems.size() > 0 ) {
@@ -353,7 +357,7 @@ public class NetworkClient {
 			deviceId = DeviceId.getDeviceId(context);
 		return deviceId;
 	}
-	
+
 	static private Context context;
 	static private final String TAG = "NetworkClient";
 	static private String server;
