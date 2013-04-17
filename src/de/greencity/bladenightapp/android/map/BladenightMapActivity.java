@@ -62,7 +62,7 @@ public class BladenightMapActivity extends MapActivity {
 
 		requestRouteFromNetworkService();
 
-		if ( isRealTime ) {
+		if ( isShowingActiveEvent ) {
 			periodicTask = new Runnable() {
 				@Override
 				public void run() {
@@ -93,17 +93,16 @@ public class BladenightMapActivity extends MapActivity {
 
 
 	private void getActivityParametersFromIntent(Intent intent) {
+		isShowingActiveEvent = true;
 		if ( intent != null) {
 			Bundle bundle = intent.getExtras();
 			if ( bundle != null ) {
 				String routeNameFromBundle = bundle.getString(PARAM_ROUTENAME);
-				if ( routeNameFromBundle != null)
+				if ( routeNameFromBundle != null) {
 					routeName = routeNameFromBundle;
-				Log.i(TAG, "routeName="+routeName);
-				Boolean isRealTimeFromBundle = bundle.getBoolean(PARAM_ISREALTIME);
-				if ( isRealTimeFromBundle != null)
-					isRealTime = isRealTimeFromBundle;
-				Log.i(TAG, "isRealTime="+isRealTime);
+					isShowingActiveEvent = false;
+				}
+				Log.i(TAG, "isShowingActiveEvent="+isShowingActiveEvent);
 			}
 			else {
 				Log.w(TAG, "bundle="+bundle);
@@ -133,7 +132,10 @@ public class BladenightMapActivity extends MapActivity {
 	}
 
 	protected void requestRouteFromNetworkService() {
-		getRouteFromServer(routeName);
+		if ( routeName.length() > 0 )
+			getSpecificRouteFromServer(routeName);
+		else
+			getActiveRouteFromServer();
 	}
 
 	static class GetRouteFromServerHandler extends Handler {
@@ -143,16 +145,24 @@ public class BladenightMapActivity extends MapActivity {
 		}
 		@Override
 		public void handleMessage(Message msg) {
+			RouteMessage routeMessage = (RouteMessage) msg.obj;
 			reference.get().isRouteInfoAvailable = true;;
-			reference.get().routeOverlay.update((RouteMessage) msg.obj);
+			reference.get().routeName = routeMessage.getRouteName();
+			reference.get().routeOverlay.update(routeMessage);
 			reference.get().fitViewToRoute();
 		}
 	}
 
-	private void getRouteFromServer(String routeName) {
-		Log.i(TAG,"getRouteFromServer routeName="+routeName);
+	private void getSpecificRouteFromServer(String routeName) {
+		Log.i(TAG,"getSpecificRouteFromServer routeName="+routeName);
 		networkClient.getRoute(routeName, new GetRouteFromServerHandler(this), null);
 	}
+
+	private void getActiveRouteFromServer() {
+		Log.i(TAG,"getActiveRouteFromServer");
+		networkClient.getActiveRoute(new GetRouteFromServerHandler(this), null);
+	}
+
 
 	@Override
 	public void onDestroy() {
@@ -295,7 +305,7 @@ public class BladenightMapActivity extends MapActivity {
 	private final String mapRemotePath = "maps/munich.map";
 	private ProgressDialog downloadProgressDialog;
 	private String routeName = "";
-	private boolean isRealTime = false;
+	private boolean isShowingActiveEvent = false;
 	private RouteOverlay routeOverlay;
 	private BladenightMapView mapView;
 	private ProcessionProgressBar processionProgressBar;
@@ -306,7 +316,6 @@ public class BladenightMapActivity extends MapActivity {
 	private UserPositionOverlay userPositionOverlay;
 	private GpsListener gpsListener;
 	private boolean isRouteInfoAvailable = false;
-	static public final String PARAM_ISREALTIME = "isRealTime";
 	static public final String PARAM_ROUTENAME = "routeName";
 	
 } 

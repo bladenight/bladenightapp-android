@@ -197,7 +197,7 @@ public class NetworkClient {
 		item.url = BladenightUrl.GET_ACTIVE_ROUTE.getText();
 		item.successHandler = successHandler;
 		item.errorHandler = errorHandler;
-		item.expectedReturnType = String.class;
+		item.expectedReturnType = RouteMessage.class;
 		callOrStore(item);
 	}
 

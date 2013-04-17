@@ -82,20 +82,28 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 	private void configureActionBar() {
 		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
 
-		Action reloadAction = new ActionReload() {
-			@Override
-			public void performAction(View view) {
-				getFriendsFromStorage();
-				getFriendsFromServer();
-			}
-		};
-
-		new ActionBarConfigurator(actionBar)
+		ActionBarConfigurator actionBarConfigurator = new ActionBarConfigurator(actionBar)
 		.show(ActionItemType.ADD_FRIEND)
-		.setAction(ActionItemType.RELOAD, reloadAction)
-		.showMapAction("Nord - kurz", ServiceUtils.isServiceRunning(this, GpsTrackerService.class))
-		.setTitle(R.string.title_social)
-		.configure();
+		.setTitle(R.string.title_social);
+
+		if ( ServiceUtils.isServiceRunning(this, GpsTrackerService.class)) {
+			actionBarConfigurator
+			.show(ActionItemType.MAP);
+		}
+		else {
+			Action reloadAction = new ActionReload() {
+				@Override
+				public void performAction(View view) {
+					getFriendsFromStorage();
+					getFriendsFromServer();
+				}
+			};
+
+			actionBarConfigurator
+			.setAction(ActionItemType.RELOAD, reloadAction);
+		}
+
+		actionBarConfigurator.configure();
 
 	}
 

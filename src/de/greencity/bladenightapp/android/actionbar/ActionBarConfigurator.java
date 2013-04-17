@@ -48,21 +48,6 @@ public class ActionBarConfigurator {
 		return this;
 	}
 
-	public ActionBarConfigurator showMapAction(final String routeName, final boolean isActive) {
-		Action action = new ActionMap() {
-			@Override
-			public void performAction(View view) {
-			    Intent intent = new Intent(view.getContext(), BladenightMapActivity.class);
-				intent.putExtra(BladenightMapActivity.PARAM_ROUTENAME, routeName);
-				intent.putExtra(BladenightMapActivity.PARAM_ISREALTIME, isActive);
-			    view.getContext().startActivity(intent);
-			}
-		};
-		typeToActionSelected.put(ActionItemType.MAP, action);
-		return this;
-	}
-
-
 	public ActionBarConfigurator hide(ActionItemType type) {
 		typeToActionSelected.remove(type);
 		return this;

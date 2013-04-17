@@ -3,6 +3,8 @@ package de.greencity.bladenightapp.android.network;
 import java.io.IOException;
 import java.net.URI;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
+
 import android.util.Log;
 
 import com.codebutler.android_websockets.WebSocketClient;
@@ -53,6 +55,7 @@ public class BladenightWampClient {
 			@Override
 			public void onError(Exception error) {
 				Log.e(TAG, "Error:" + error);
+				Log.i(TAG, "Trace: " + ExceptionUtils.getStackTrace( new Throwable()));
 				webSocketClient.disconnect();
 				wampClient.reset();
 				state = State.DISCONNECTED;

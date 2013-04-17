@@ -169,8 +169,9 @@ public class EventFragment extends Fragment {
 			Log.e(TAG, "No event currently shown");
 			return;
 		}
-		intent.putExtra(BladenightMapActivity.PARAM_ROUTENAME, event.getRouteName());
-		intent.putExtra(BladenightMapActivity.PARAM_ISREALTIME, isCurrent);
+		if ( ! isCurrent )
+			// BladenightMapActivity will assume the current route if not specified
+			intent.putExtra(BladenightMapActivity.PARAM_ROUTENAME, event.getRouteName());
 		view.getContext().startActivity(intent);
 	}
 
