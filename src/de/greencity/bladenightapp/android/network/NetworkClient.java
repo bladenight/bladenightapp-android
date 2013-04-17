@@ -225,9 +225,9 @@ public class NetworkClient {
 			gpsInfo.setLatitude(lastKnownPosition.getLatitude());
 			gpsInfo.setLongitude(lastKnownPosition.getLongitude());
 
-			//			// remove test coordinates
-			//			gpsInfo.setLatitude(48.154249);
-			//			gpsInfo.setLongitude(11.554098);
+			// remove test coordinates
+			gpsInfo.setLatitude(48.154249);
+			gpsInfo.setLongitude(11.554098);
 		}
 
 		item.outgoingPayload = gpsInfo;

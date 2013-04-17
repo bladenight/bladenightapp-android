@@ -6,10 +6,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 
 import com.markupartist.android.widget.ActionBar;
 import com.markupartist.android.widget.ActionBar.Action;
+
+import de.greencity.bladenightapp.android.map.BladenightMapActivity;
+import de.greencity.bladenightapp.android.utils.ServiceUtils;
 
 public class ActionBarConfigurator {
 
@@ -41,6 +47,21 @@ public class ActionBarConfigurator {
 		typeToActionSelected.put(type, typeToActionAll.get(type));
 		return this;
 	}
+
+	public ActionBarConfigurator showMapAction(final String routeName, final boolean isActive) {
+		Action action = new ActionMap() {
+			@Override
+			public void performAction(View view) {
+			    Intent intent = new Intent(view.getContext(), BladenightMapActivity.class);
+				intent.putExtra(BladenightMapActivity.PARAM_ROUTENAME, routeName);
+				intent.putExtra(BladenightMapActivity.PARAM_ISREALTIME, isActive);
+			    view.getContext().startActivity(intent);
+			}
+		};
+		typeToActionSelected.put(ActionItemType.MAP, action);
+		return this;
+	}
+
 
 	public ActionBarConfigurator hide(ActionItemType type) {
 		typeToActionSelected.remove(type);

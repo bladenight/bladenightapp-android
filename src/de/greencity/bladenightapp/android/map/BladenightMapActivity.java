@@ -96,13 +96,13 @@ public class BladenightMapActivity extends MapActivity {
 		if ( intent != null) {
 			Bundle bundle = intent.getExtras();
 			if ( bundle != null ) {
-				String s = bundle.getString("routeName");
-				if ( s != null)
-					routeName = s;
+				String routeNameFromBundle = bundle.getString(PARAM_ROUTENAME);
+				if ( routeNameFromBundle != null)
+					routeName = routeNameFromBundle;
 				Log.i(TAG, "routeName="+routeName);
-				Boolean b = bundle.getBoolean("isRealTime");
-				if ( b != null)
-					isRealTime = b;
+				Boolean isRealTimeFromBundle = bundle.getBoolean(PARAM_ISREALTIME);
+				if ( isRealTimeFromBundle != null)
+					isRealTime = isRealTimeFromBundle;
 				Log.i(TAG, "isRealTime="+isRealTime);
 			}
 			else {
@@ -306,4 +306,7 @@ public class BladenightMapActivity extends MapActivity {
 	private UserPositionOverlay userPositionOverlay;
 	private GpsListener gpsListener;
 	private boolean isRouteInfoAvailable = false;
+	static public final String PARAM_ISREALTIME = "isRealTime";
+	static public final String PARAM_ROUTENAME = "routeName";
+	
 } 

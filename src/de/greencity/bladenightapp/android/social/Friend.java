@@ -16,64 +16,72 @@ public class Friend implements Comparable<Friend> {
 	private String name;
 	private boolean active;
 	private FriendColor color;
-	private long time_rel;
-	private long distance_rel;
-	private long time_abs;
-	private long distance_abs;
+	private Long relativeTime = null;
+	private Long relativeDistance  = null;
+	private Long absolutePosition  = null;
 	
 	public Friend(String name, FriendColor color, boolean active){
 		this.name = name;
 		this.color = color;
 		this.active = active;
+		resetDynamicData();
 	}
 	
-	public void setActionData(long time_rel, long distance_rel, long time_abs, long distance_abs){
-		this.time_rel = time_rel;
-		this.distance_rel = distance_rel;
-		this.time_abs = time_abs;
-		this.distance_abs = distance_abs;
+	public void resetDynamicData() {
+		relativeTime = null;
+		relativeDistance  = null;
+		absolutePosition  = null;
 	}
-	
-	public long getTimeRel(){
-		return time_rel;
-	}
-	
-	public long getDistanceRel(){
-		return distance_rel;
-	}
-	
-	public long getTimeAbs(){
-		return time_abs;
-	}
-	
-	public long getDistanceAbs(){
-		return distance_abs;
-	}
-	
+
 	public void setName(String name){
 		this.name = name;
 	}
-	
-	public void setColor(FriendColor color){
-		this.color = color;
-	}
-	
-	public void setActive(boolean active){
-		this.active = active;
-	}
-	
+
 	public String getName(){
 		return name;
 	}
-	
+		
+	public void setColor(FriendColor color){
+		this.color = color;
+	}
+
 	public FriendColor getColor(){
 		return color;
+	}
+	
+
+	public void setActive(boolean active){
+		this.active = active;
 	}
 	
 	public boolean getActive(){
 		return active;
 	}
 	
+	public Long getRelativeTime() {
+		return relativeTime;
+	}
+
+	public void setRelativeTime(Long relativeTime) {
+		this.relativeTime = relativeTime;
+	}
+
+	public Long getRelativeDistance() {
+		return relativeDistance;
+	}
+
+	public void setRelativeDistance(Long relativeDistance) {
+		this.relativeDistance = relativeDistance;
+	}
+
+	public Long getAbsolutePosition() {
+		return absolutePosition;
+	}
+
+	public void setAbsolutePosition(Long absolutePosition) {
+		this.absolutePosition = absolutePosition;
+	}
+
 	public String toString(){
 		return ToStringBuilder.reflectionToString(this);
 	}
@@ -82,4 +90,5 @@ public class Friend implements Comparable<Friend> {
 	public int compareTo(Friend another) {
 		return  name.toLowerCase().compareTo(another.getName().toLowerCase());
 	}
+
 }

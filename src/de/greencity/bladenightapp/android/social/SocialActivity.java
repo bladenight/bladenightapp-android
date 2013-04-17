@@ -54,11 +54,6 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_social);
-		//		getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.titlebar);
-		//		ImageView titlebar = (ImageView)(findViewById(R.id.icon));
-		//		titlebar.setImageResource(R.drawable.ic_menu_settings);
-		//		TextView titletext = (TextView)findViewById(R.id.title);
-		//		titletext.setText(R.string.title_social);
 
 		listView = (ListView)findViewById(R.id.listview);
 	}
@@ -98,6 +93,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 		new ActionBarConfigurator(actionBar)
 		.show(ActionItemType.ADD_FRIEND)
 		.setAction(ActionItemType.RELOAD, reloadAction)
+		.showMapAction("Nord - kurz", ServiceUtils.isServiceRunning(this, GpsTrackerService.class))
 		.setTitle(R.string.title_social)
 		.configure();
 
@@ -155,7 +151,6 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 				showCodeDialog.setArguments(arguments);
 				showCodeDialog.show(fm, "fragment_show_code");
 				Friend newFriend = new Friend(friendName + " ...pending", FriendColor.GREEN,true);
-				newFriend.setActionData(138, 240, 2346, 5452);
 				socialActivity.friends.put((int)relMsg.fid,newFriend);
 				socialActivity.updateGui();
 				progressDialog.dismiss();
@@ -190,7 +185,6 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 			Log.i("CreateNewRequestHandler", "Got answer from server:" + relMsg);
 			if (relMsg != null ) {
 				Friend newFriend = new Friend(friendName, FriendColor.GREEN,true);
-				newFriend.setActionData(138, 240, 2346, 5452);
 				socialActivity.friends.put((int)relMsg.fid, newFriend);
 				socialActivity.updateGui();
 				progressDialog.dismiss();
@@ -262,7 +256,19 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 		friends.put(ID_ME, myself);
 	}
 
+	private void updateFriendDynamicData(RealTimeUpdateData realTimeUpdateData, NetMovingPoint nmp, Friend friend) {
+		friend.resetDynamicData();
+		if ( nmp.isOnRoute() ) {
+			friend.setAbsolutePosition(nmp.getPosition());
+			NetMovingPoint me = realTimeUpdateData.getUser();
+			if ( me.isOnRoute() ) {
+				friend.setRelativeDistance(nmp.getPosition()-me.getPosition());
+				friend.setRelativeTime(me.getEstimatedTimeToArrival()-nmp.getEstimatedTimeToArrival());
+			}
+		}
+	}
 	private void updateGuiFromRealTimeUpdateData(RealTimeUpdateData realTimeUpdateData) {
+
 		Map<Integer, NetMovingPoint> friendsMap = realTimeUpdateData.getFriendsMap();
 
 		Set<Integer> combinedFriendIds = new HashSet<Integer>();
@@ -270,8 +276,6 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 		combinedFriendIds.addAll(friends.keySet());
 
 		for ( int friendId : combinedFriendIds) {
-			if ( friendId == ID_ME )
-				continue;
 			Friend friend = friends.get(friendId);
 			NetMovingPoint friendLocation;
 			if ( friendId == ID_HEAD ) {
@@ -291,13 +295,16 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 					friends.put(friendId, friend);
 				}
 			}
-			if ( friendLocation != null )
-				friend.setActionData(0, friendLocation.getPosition() - realTimeUpdateData.getUserPosition(), 0, friendLocation.getPosition());
+			if ( friendLocation != null ) {
+				updateFriendDynamicData(realTimeUpdateData, friendLocation, friend);
+			}
 			else {
 				// TODO the server didn't send us any information about this friend
 			}
-
 		}
+		// This relative values are relative to me, don't display them for me (otherwise it would just display 0)
+		friends.get(ID_ME).setRelativeDistance(null);
+		friends.get(ID_ME).setRelativeTime(null);
 		updateGui();
 	}
 
@@ -335,8 +342,15 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 		}
 		Collections.sort(idOrder, new Comparator<Integer>() {
 			public int compare(Integer id1, Integer id2) {
-				return ((Long)friends.get(id2).getDistanceRel()).compareTo(
-						(Long)friends.get(id1).getDistanceRel());
+				Long d1 = friends.get(id1).getAbsolutePosition();
+				Long d2 = friends.get(id2).getAbsolutePosition();
+				if ( d1 == null && d2 == null)
+					return 0;
+				if ( d1 == null )
+					return 1;
+				if ( d2 == null )
+					return -1;
+				return (d2.compareTo(d1));
 			}
 		});
 	}
