@@ -12,7 +12,8 @@ import android.graphics.drawable.LayerDrawable;
 import android.util.AttributeSet;
 import android.widget.ProgressBar;
 import de.greencity.bladenightapp.android.utils.DistanceFormatting;
-import de.greencity.bladenightapp.network.messages.NetMovingPoint;
+import de.greencity.bladenightapp.network.messages.FriendMessage;
+import de.greencity.bladenightapp.network.messages.MovingPointMessage;
 import de.greencity.bladenightapp.network.messages.RealTimeUpdateData;
 
 public class ProcessionProgressBar extends ProgressBar {
@@ -55,11 +56,13 @@ public class ProcessionProgressBar extends ProgressBar {
 
 	private void setDemoData() {
 		realTimeUpdateData.setRouteLength(20000);
-		realTimeUpdateData.setTail(new NetMovingPoint(5000, 0, true));
-		realTimeUpdateData.setHead(new NetMovingPoint(14000, 0, true));
-		realTimeUpdateData.setUser(new NetMovingPoint(9000, 0, true));
-		NetMovingPoint friend = new NetMovingPoint(10000, 0, true);
-		realTimeUpdateData.fri.put(1, friend);
+		realTimeUpdateData.setTail(new MovingPointMessage(5000, 0, true));
+		realTimeUpdateData.setHead(new MovingPointMessage(14000, 0, true));
+		realTimeUpdateData.setUser(new MovingPointMessage(9000, 0, true));
+		FriendMessage friendMessage = new FriendMessage();
+		friendMessage.setPosition(10000);
+		friendMessage.isInProcession(true);
+		realTimeUpdateData.fri.put(1, friendMessage);
 	}
 
 	@Override  
@@ -87,7 +90,7 @@ public class ProcessionProgressBar extends ProgressBar {
 		getProcessionDrawable().draw(canvas);
 	}
 
-	protected boolean isPointOnRoute(NetMovingPoint point) {
+	protected boolean isPointOnRoute(MovingPointMessage point) {
 		return point.isOnRoute() && point.getPosition() >= 0;
 	}
 
@@ -102,7 +105,7 @@ public class ProcessionProgressBar extends ProgressBar {
 		}
 	}
 
-	protected void drawMovingPoint(Canvas canvas, Drawable drawable, NetMovingPoint mp) {
+	protected void drawMovingPoint(Canvas canvas, Drawable drawable, MovingPointMessage mp) {
 		int width = 6;
 		int margin = 4;
 		if ( ! isPointOnRoute(mp) )

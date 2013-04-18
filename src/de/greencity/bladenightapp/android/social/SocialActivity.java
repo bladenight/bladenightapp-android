@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import android.annotation.SuppressLint;
@@ -40,7 +39,8 @@ import de.greencity.bladenightapp.android.social.Friend.FriendColor;
 import de.greencity.bladenightapp.android.social.InviteFriendDialog.InviteFriendDialogListener;
 import de.greencity.bladenightapp.android.tracker.GpsTrackerService;
 import de.greencity.bladenightapp.android.utils.ServiceUtils;
-import de.greencity.bladenightapp.network.messages.NetMovingPoint;
+import de.greencity.bladenightapp.network.messages.FriendsMessage;
+import de.greencity.bladenightapp.network.messages.MovingPointMessage;
 import de.greencity.bladenightapp.network.messages.RealTimeUpdateData;
 import de.greencity.bladenightapp.network.messages.RelationshipOutputMessage;
 
@@ -264,11 +264,11 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 		friends.put(ID_ME, myself);
 	}
 
-	private void updateFriendDynamicData(RealTimeUpdateData realTimeUpdateData, NetMovingPoint nmp, Friend friend) {
+	private void updateFriendDynamicData(RealTimeUpdateData realTimeUpdateData, MovingPointMessage nmp, Friend friend) {
 		friend.resetDynamicData();
 		if ( nmp.isOnRoute() ) {
 			friend.setAbsolutePosition(nmp.getPosition());
-			NetMovingPoint me = realTimeUpdateData.getUser();
+			MovingPointMessage me = realTimeUpdateData.getUser();
 			if ( me.isOnRoute() ) {
 				friend.setRelativeDistance(nmp.getPosition()-me.getPosition());
 				friend.setRelativeTime(me.getEstimatedTimeToArrival()-nmp.getEstimatedTimeToArrival());
@@ -277,15 +277,15 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 	}
 	private void updateGuiFromRealTimeUpdateData(RealTimeUpdateData realTimeUpdateData) {
 
-		Map<Integer, NetMovingPoint> friendsMap = realTimeUpdateData.getFriendsMap();
+		FriendsMessage friendsMessage = realTimeUpdateData.getFriends();
 
 		Set<Integer> combinedFriendIds = new HashSet<Integer>();
-		combinedFriendIds.addAll(friendsMap.keySet());
+		combinedFriendIds.addAll(friendsMessage.keySet());
 		combinedFriendIds.addAll(friends.keySet());
 
 		for ( int friendId : combinedFriendIds) {
 			Friend friend = friends.get(friendId);
-			NetMovingPoint friendLocation;
+			MovingPointMessage friendLocation;
 			if ( friendId == ID_HEAD ) {
 				friendLocation =  realTimeUpdateData.getHead();
 			}
@@ -296,7 +296,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 				friendLocation =  realTimeUpdateData.getUser();
 			}
 			else {
-				friendLocation =  friendsMap.get(friendId);
+				friendLocation =  friendsMessage.get(friendId);
 				if ( friends.get(friendId) == null ) {
 					// for one reason the server knows about this friend but we don't
 					friend = new Friend("?", FriendColor.BLACK, true);
@@ -358,7 +358,9 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 					return 1;
 				if ( d2 == null )
 					return -1;
-				return (d2.compareTo(d1));
+				if ( d2.compareTo(d1) != 0)
+					return d2.compareTo(d1);
+				return id2.compareTo(id1);
 			}
 		});
 	}
@@ -388,8 +390,8 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 	private Runnable periodicTask;
 	private long updatePeriod = 2000;
 
-	final static Integer ID_HEAD = -1;
-	final static Integer ID_TAIL = -2;
-	final static Integer ID_ME = -3;
+	final static Integer ID_HEAD 	= -1;
+	final static Integer ID_ME 		= -2;
+	final static Integer ID_TAIL 	= -3;
 
 } 

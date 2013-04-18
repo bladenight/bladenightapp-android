@@ -18,7 +18,7 @@ import android.location.LocationListener;
 import android.os.Bundle;
 import android.util.Log;
 import de.greencity.bladenightapp.android.R;
-import de.greencity.bladenightapp.network.messages.NetMovingPoint;
+import de.greencity.bladenightapp.network.messages.MovingPointMessage;
 import de.greencity.bladenightapp.network.messages.RealTimeUpdateData;
 
 public class UserPositionOverlay extends ListOverlay implements LocationListener {
@@ -92,7 +92,7 @@ public class UserPositionOverlay extends ListOverlay implements LocationListener
 	
 	public void update(RealTimeUpdateData data) {
 		for ( Integer friendId : data.fri.keySet() ) {
-			NetMovingPoint nvp = data.fri.get(friendId);
+			MovingPointMessage nvp = data.fri.get(friendId);
 			Marker marker = getFriendMarker(friendId);
 			marker.setGeoPoint(new GeoPoint(nvp.getLatitude(), nvp.getLongitude()));
 		}
