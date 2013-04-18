@@ -37,4 +37,6 @@
     <string name="title_statistics">Statistics</string>
     <string name="title_activity_admin">AdminActivity</string>
     <string name="hello_world">Hello world!</string>
+    <string name="msg_color_of_this_friend">Color of this friend</string>
+    <string name="msg_friend_active">activ</string>
 </resources>

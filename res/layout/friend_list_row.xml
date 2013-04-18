@@ -19,8 +19,8 @@
             android:layout_width="50dip"
             android:layout_height="50dip"
             android:background="@color/bn_green_light"
-            android:src="@drawable/color_field"/>
- 
+            android:src="@drawable/color_field"
+            android:contentDescription="@string/msg_color_of_this_friend"/>
     </LinearLayout>
  
     <TextView
@@ -30,8 +30,9 @@
         android:layout_alignTop="@+id/row_friend"
         android:layout_toRightOf="@+id/row_friend"
         android:textColor="@color/bn_white"
+        android:textIsSelectable="true"
         android:typeface="sans"
-        android:textSize="18dip"
+        android:textSize="18sp"
         android:textStyle="bold"/>
  
     <TextView
@@ -40,24 +41,9 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/row_friend_name"
         android:textColor="@color/bn_white"
-        android:textSize="12dip"
+        android:textSize="12sp"
         android:layout_marginTop="1dip"
         android:layout_toRightOf="@+id/row_friend"
-        android:text="activ" />
- 
-    <TextView
-        android:id="@+id/bn_counter"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignTop="@+id/row_friend_name"
-        android:gravity="right"
-        android:text="BN Counter: 5"
-        android:layout_marginRight="5dip"
-        android:textSize="12dip"
-        android:textColor="@color/bn_white"
-        android:textStyle="bold"/>
- 
-     
- 
+        android:text="@string/msg_friend_active" />
+
 </RelativeLayout>
