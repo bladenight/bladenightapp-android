@@ -1,8 +1,12 @@
 package de.greencity.bladenightapp.android.social;
 
+import java.io.Serializable;
+
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-public class Friend implements Comparable<Friend> {
+public class Friend implements Comparable<Friend>, Serializable {
+
+	private static final long serialVersionUID = 3261795661099426411L;
 
 	public enum FriendColor {
 		ORANGE,
@@ -14,20 +18,23 @@ public class Friend implements Comparable<Friend> {
 	}
 	
 	private String name;
-	private boolean active;
+	private boolean isActive;
 	private FriendColor color;
 	private Long relativeTime = null;
 	private Long relativeDistance  = null;
 	private Long absolutePosition  = null;
+	private boolean isOnline = false;
+	private boolean isValid = false;
+	private long requestId;
 	
-	public Friend(String name, FriendColor color, boolean active){
+	public Friend(String name, FriendColor color){
 		this.name = name;
 		this.color = color;
-		this.active = active;
-		resetDynamicData();
+		this.isActive = true;
+		resetPositionData();
 	}
 	
-	public void resetDynamicData() {
+	public void resetPositionData() {
 		relativeTime = null;
 		relativeDistance  = null;
 		absolutePosition  = null;
@@ -50,14 +57,6 @@ public class Friend implements Comparable<Friend> {
 	}
 	
 
-	public void setActive(boolean active){
-		this.active = active;
-	}
-	
-	public boolean getActive(){
-		return active;
-	}
-	
 	public Long getRelativeTime() {
 		return relativeTime;
 	}
@@ -81,6 +80,39 @@ public class Friend implements Comparable<Friend> {
 	public void setAbsolutePosition(Long absolutePosition) {
 		this.absolutePosition = absolutePosition;
 	}
+
+	public void setRequestId(long requestId) {
+		this.requestId = requestId;
+	}
+
+	public long getRequestId() {
+		return requestId;
+	}
+
+	public boolean isActive() {
+		return isActive;
+	}
+
+	public void isActive(boolean isActive) {
+		this.isActive = isActive;
+	}
+
+	public boolean isOnline() {
+		return isOnline;
+	}
+
+	public void isOnline(boolean isOnline) {
+		this.isOnline = isOnline;
+	}
+
+	public boolean isValid() {
+		return isValid;
+	}
+
+	public void isValid(boolean isValid) {
+		this.isValid = isValid;
+	}
+
 
 	public String toString(){
 		return ToStringBuilder.reflectionToString(this);

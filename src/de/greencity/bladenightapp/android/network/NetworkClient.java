@@ -38,6 +38,7 @@ import de.greencity.bladenightapp.network.messages.AdminMessage;
 import de.greencity.bladenightapp.network.messages.EventMessage;
 import de.greencity.bladenightapp.network.messages.EventMessage.EventStatus;
 import de.greencity.bladenightapp.network.messages.EventsListMessage;
+import de.greencity.bladenightapp.network.messages.FriendsMessage;
 import de.greencity.bladenightapp.network.messages.GpsInfo;
 import de.greencity.bladenightapp.network.messages.LatLong;
 import de.greencity.bladenightapp.network.messages.RealTimeUpdateData;
@@ -282,6 +283,16 @@ public class NetworkClient {
 		callOrStore(item);
 	}
 
+	public void getFriendsList(Handler successHandler, Handler errorHandler) {
+		BacklogItem item = new BacklogItem();
+		item.url = BladenightUrl.GET_FRIENDS.getText();
+		item.successHandler = successHandler;
+		item.errorHandler = errorHandler;
+		item.expectedReturnType = FriendsMessage.class;
+		item.outgoingPayload = getDeviceId();
+		callOrStore(item);
+	}
+
 	public void updateFromGpsTrackerService(LatLong lastKnownPosition) {
 		NetworkClient.lastKnownPosition = lastKnownPosition;
 		getRealTimeData(null, null);
@@ -353,7 +364,7 @@ public class NetworkClient {
 	}
 
 	private String getDeviceId() {
-		if (deviceId != null)
+		if (deviceId == null)
 			deviceId = DeviceId.getDeviceId(context);
 		return deviceId;
 	}
@@ -366,7 +377,7 @@ public class NetworkClient {
 	static private LatLong lastKnownPosition;
 	static private BladenightWampClient bladenightWampClient = new BladenightWampClient();
 	static private long lookingForServerTimestamp = 0;
-	static private String deviceId = "UNDEFINED-DEVICEID";
+	static private String deviceId = null;
 	static private long connectingSinceTimestamp;
 	static public final long CONNECT_TIMEOUT = 6000; 
 

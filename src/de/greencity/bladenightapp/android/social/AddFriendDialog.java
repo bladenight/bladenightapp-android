@@ -17,11 +17,11 @@ public class AddFriendDialog extends DialogFragment  {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.add_friend_dialog, container);     
-        getDialog().setTitle("Add Friend");
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+    	View view = inflater.inflate(R.layout.add_friend_dialog, container);     
         
+    	getDialog().setTitle("Add Friend");
         
         Button confirmButton = (Button) view.findViewById(R.id.addFriend);
         confirmButton.setOnClickListener(new Button.OnClickListener() {

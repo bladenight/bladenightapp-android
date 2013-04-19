@@ -1,7 +1,5 @@
 package de.greencity.bladenightapp.android.social;
 
-import de.greencity.bladenightapp.android.R;
-import de.greencity.bladenightapp.android.social.Friend.FriendColor;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
@@ -11,6 +9,8 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+import de.greencity.bladenightapp.android.R;
+import de.greencity.bladenightapp.android.social.Friend.FriendColor;
 
 
 public class ChangeFriendDialog extends DialogFragment  {
@@ -30,18 +30,20 @@ public class ChangeFriendDialog extends DialogFragment  {
     private ImageView color_green;
     private ImageView color_greenlight;
 
+    public static final String KEY_FRIENDOBJ = "friend";
+    public static final String KEY_FRIENDID = "index";
+    
     public ChangeFriendDialog() {
         // Empty constructor required for DialogFragment
     }
     
-    public ChangeFriendDialog(Friend friend, int index) {
-        this.friend = friend;
-        this.index = index;
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
+    	
+    	this.friend = (Friend)getArguments().getSerializable(KEY_FRIENDOBJ);
+    	this.index = getArguments().getInt(KEY_FRIENDID);
+    	
         View view = inflater.inflate(R.layout.change_friend_dialog, container);
         
         getDialog().setTitle("Change name and color of friend");
@@ -56,7 +58,7 @@ public class ChangeFriendDialog extends DialogFragment  {
     	color_greenlight = (ImageView) view.findViewById(R.id.color_greenlight);
         
         mEditText.setText(friend.getName());
-        activeBox.setChecked(friend.getActive()); 
+        activeBox.setChecked(friend.isActive()); 
         setColor();
 
         setButtonListeners(view);
@@ -71,7 +73,7 @@ public class ChangeFriendDialog extends DialogFragment  {
             public void onClick(View v) {
             	ChangeFriendDialogListener activity = (ChangeFriendDialogListener) getActivity();
             	friend.setName(mEditText.getText().toString());
-            	friend.setActive(activeBox.isChecked());
+            	friend.isActive(activeBox.isChecked());
                 activity.onFinishChangeFriendDialog(friend,index);
                 dismiss();
             }

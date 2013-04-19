@@ -18,6 +18,7 @@ import de.greencity.bladenightapp.android.utils.ServiceUtils;
 public class FriendListAdapter extends BaseAdapter {
 	private static LayoutInflater inflater=null;
 	private SocialActivity activity;
+	private boolean isServiceRunning;
 
 	public FriendListAdapter(Activity activity) {
 		this.activity = (SocialActivity) activity;
@@ -41,7 +42,8 @@ public class FriendListAdapter extends BaseAdapter {
 		int id = activity.idOrder.get(position);
 		Friend friend = activity.friends.get(id);
 
-		if( ServiceUtils.isServiceRunning(activity, GpsTrackerService.class) ){
+		isServiceRunning = ServiceUtils.isServiceRunning(activity, GpsTrackerService.class);
+		if( isServiceRunning ){
 			view = inflateActionRow(friend);
 		}
 		else{
@@ -51,7 +53,7 @@ public class FriendListAdapter extends BaseAdapter {
 		LinearLayout row = (LinearLayout)view.findViewById(R.id.row_friend);
 		row.setTag(id);
 
-		if(id==SocialActivity.ID_ME){
+		if( id == SocialActivity.ID_ME ){
 			row.setBackgroundColor(view.getResources().getColor(R.color.bn_orange2));
 		}
 
@@ -100,17 +102,27 @@ public class FriendListAdapter extends BaseAdapter {
 
 		View view = inflater.inflate(R.layout.friend_list_row, null);
 
-		TextView name = (TextView)view.findViewById(R.id.row_friend_name); 
-		TextView status = (TextView)view.findViewById(R.id.row_friend_status); 
-		ImageView color_block=(ImageView)view.findViewById(R.id.color_block); 
+		TextView textViewName = (TextView)view.findViewById(R.id.row_friend_name); 
+		TextView textViewStatus = (TextView)view.findViewById(R.id.row_friend_status); 
+		ImageView colorBlockImageView = (ImageView)view.findViewById(R.id.color_block); 
 
 		// Setting all values in listview
-		name.setText(friend.getName());
-		String statustext = "active";
-		if(!friend.getActive()) statustext = "inactive";
-		status.setText(statustext);
-		color_block.setBackgroundColor(view.getResources().getColor(ColorToInt(friend.getColor())));
+		textViewName.setText(friend.getName());
+		updateStatus(friend, textViewStatus );
+		colorBlockImageView.setBackgroundColor(view.getResources().getColor(ColorToInt(friend.getColor())));
 		return view;
+	}
+	
+	private void updateStatus(Friend friend, TextView textViewStatus) {
+		String statustext = "active";
+		if ( friend.getRequestId() > 0 ) {
+			statustext = "pending (" + friend.getRequestId() + ")";
+		}
+		else if ( friend.isOnline() )
+			statustext = "online";
+		else
+			statustext = "offline";
+		textViewStatus.setText(statustext);
 	}
 
 	private String formatTime(long timeInMilliseconds){

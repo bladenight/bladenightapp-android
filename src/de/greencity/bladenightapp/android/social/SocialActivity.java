@@ -39,6 +39,7 @@ import de.greencity.bladenightapp.android.social.Friend.FriendColor;
 import de.greencity.bladenightapp.android.social.InviteFriendDialog.InviteFriendDialogListener;
 import de.greencity.bladenightapp.android.tracker.GpsTrackerService;
 import de.greencity.bladenightapp.android.utils.ServiceUtils;
+import de.greencity.bladenightapp.network.messages.FriendMessage;
 import de.greencity.bladenightapp.network.messages.FriendsMessage;
 import de.greencity.bladenightapp.network.messages.MovingPointMessage;
 import de.greencity.bladenightapp.network.messages.RealTimeUpdateData;
@@ -66,11 +67,13 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 		configureActionBar();
 
 		getFriendsFromStorage();
-		getFriendsFromServer();
+		getFriendsListFromServer();
 		createListView();
 
-		if ( ServiceUtils.isServiceRunning(SocialActivity.this, GpsTrackerService.class) )
+		if ( ServiceUtils.isServiceRunning(SocialActivity.this, GpsTrackerService.class) ) {
+			getRealTimeDataFromServer();
 			schedulePeriodicTask();
+		}
 	}
 
 	@Override
@@ -95,7 +98,8 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 				@Override
 				public void performAction(View view) {
 					getFriendsFromStorage();
-					getFriendsFromServer();
+					getRealTimeDataFromServer();
+					getFriendsListFromServer();
 				}
 			};
 
@@ -121,7 +125,11 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 				FragmentManager fm = getSupportFragmentManager();
 				LinearLayout row = (LinearLayout)view.findViewById(R.id.row_friend);
 				int friendId = (Integer) row.getTag();
-				ChangeFriendDialog changeFriendDialog = new ChangeFriendDialog(friends.get(friendId), friendId);
+				ChangeFriendDialog changeFriendDialog = new ChangeFriendDialog();
+				Bundle arguments = new Bundle();
+				arguments.putSerializable(ChangeFriendDialog.KEY_FRIENDOBJ, friends.get(friendId));
+				arguments.putInt(ChangeFriendDialog.KEY_FRIENDID, friendId);
+				changeFriendDialog.setArguments(arguments);
 				changeFriendDialog.show(fm, "fragment_change_friend");
 			}
 		});
@@ -158,10 +166,12 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 				ShowCodeDialog showCodeDialog = new ShowCodeDialog();
 				showCodeDialog.setArguments(arguments);
 				showCodeDialog.show(fm, "fragment_show_code");
-				Friend newFriend = new Friend(friendName + " ...pending", FriendColor.GREEN,true);
+				Friend newFriend = new Friend(friendName, FriendColor.GREEN);
+				newFriend.setRequestId(relMsg.getRequestId());
 				socialActivity.friends.put((int)relMsg.fid,newFriend);
 				socialActivity.updateGui();
 				progressDialog.dismiss();
+				socialActivity.getFriendsListFromServer();
 			}
 		}
 		private WeakReference<SocialActivity> reference;
@@ -192,7 +202,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 			RelationshipOutputMessage relMsg = (RelationshipOutputMessage)msg.obj;
 			Log.i("CreateNewRequestHandler", "Got answer from server:" + relMsg);
 			if (relMsg != null ) {
-				Friend newFriend = new Friend(friendName, FriendColor.GREEN,true);
+				Friend newFriend = new Friend(friendName, FriendColor.GREEN);
 				socialActivity.friends.put((int)relMsg.fid, newFriend);
 				socialActivity.updateGui();
 				progressDialog.dismiss();
@@ -201,6 +211,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 			else{
 				Toast.makeText(socialActivity, "Code is not valid", Toast.LENGTH_LONG).show();
 			}
+			socialActivity.getFriendsListFromServer();
 		}
 		private WeakReference<SocialActivity> reference;
 		private String friendName;
@@ -234,6 +245,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 	public void onFinishChangeFriendDialog(Friend friend, int friendId) { 
 		friends.put(friendId, friend);
 		updateGui();
+		getFriendsListFromServer();
 	}
 
 	static class GetRealTimeDataFromServerHandler extends Handler {
@@ -248,24 +260,75 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 		}
 	}
 
-	private void getFriendsFromServer(){
+	private void getRealTimeDataFromServer(){
 		networkClient.getRealTimeData(new GetRealTimeDataFromServerHandler(this), null);
+	}
+
+	static class GetFriendsListFromServerHandler extends Handler {
+		private WeakReference<SocialActivity> reference;
+		GetFriendsListFromServerHandler(SocialActivity activity) {
+			this.reference = new WeakReference<SocialActivity>(activity);
+		}
+		@Override
+		public void handleMessage(Message msg) {
+			FriendsMessage friendsMessage = (FriendsMessage)msg.obj;
+			Log.i(TAG, "friendsMessage="+friendsMessage);
+			reference.get().updateGuiFromFriendsMessage(friendsMessage);
+		}
+	}
+
+	public void getFriendsListFromServer(){
+		networkClient.getFriendsList(new GetFriendsListFromServerHandler(this), null);
+	}
+
+
+	private void updateGuiFromFriendsMessage(FriendsMessage friendsMessage) {
+		Set<Integer> combinedFriendIds = new HashSet<Integer>();
+		combinedFriendIds.addAll(friendsMessage.keySet());
+		combinedFriendIds.addAll(friends.keySet());
+
+		for ( int friendId : combinedFriendIds) {
+			if ( friendId < 0)
+				continue;
+
+			Friend friend = friends.get(friendId);
+			if ( friend == null ) {
+				// for one reason the server knows about this friend but we don't
+				friend = new Friend("?", FriendColor.BLACK);
+				friends.put(friendId, friend);
+			}
+
+			FriendMessage friendMessage = friendsMessage.get(friendId);
+			
+			Log.i(TAG, "friendMessage="+friendMessage);
+			if ( friendMessage == null ) {
+				friend.isValid(false);
+			}
+			else {
+				friend.isValid(true);
+				friend.setRequestId(friendMessage.getRequestId());
+			}
+		}
+		friends.save();
+		updateGui();
 	}
 
 	private void getFriendsFromStorage(){
 		friends = new Friends(this);
 		friends.load();
 
-		Friend head = new Friend("Head", FriendColor.BLACK, true);
-		Friend tail = new Friend("Tail", FriendColor.BLACK, true);
-		Friend myself = new Friend("Me", FriendColor.BLACK, true);
+		Friend head = new Friend("Head", FriendColor.BLACK);
+		Friend tail = new Friend("Tail", FriendColor.BLACK);
+		Friend myself = new Friend("Me", FriendColor.BLACK);
 		friends.put(ID_HEAD, head);
 		friends.put(ID_TAIL, tail);
 		friends.put(ID_ME, myself);
 	}
 
 	private void updateFriendDynamicData(RealTimeUpdateData realTimeUpdateData, MovingPointMessage nmp, Friend friend) {
-		friend.resetDynamicData();
+		friend.resetPositionData();
+		friend.isOnline(true); // TODO
+		friend.isActive(true); // TODO
 		if ( nmp.isOnRoute() ) {
 			friend.setAbsolutePosition(nmp.getPosition());
 			MovingPointMessage me = realTimeUpdateData.getUser();
@@ -284,6 +347,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 		combinedFriendIds.addAll(friends.keySet());
 
 		for ( int friendId : combinedFriendIds) {
+			Log.i(TAG, "FriendId="+friendId);
 			Friend friend = friends.get(friendId);
 			MovingPointMessage friendLocation;
 			if ( friendId == ID_HEAD ) {
@@ -299,7 +363,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 				friendLocation =  friendsMessage.get(friendId);
 				if ( friends.get(friendId) == null ) {
 					// for one reason the server knows about this friend but we don't
-					friend = new Friend("?", FriendColor.BLACK, true);
+					friend = new Friend("?", FriendColor.BLACK);
 					friends.put(friendId, friend);
 				}
 			}
@@ -345,7 +409,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 	private void sortListViewWhileInAction() {
 		idOrder = new ArrayList<Integer>();
 		for(int id : friends.keySet()){
-			if(friends.get(id).getActive())
+			if(friends.get(id).isActive())
 				idOrder.add(id);
 		}
 		Collections.sort(idOrder, new Comparator<Integer>() {
@@ -369,7 +433,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 		periodicTask = new Runnable() {
 			@Override
 			public void run() {
-				getFriendsFromServer();
+				getRealTimeDataFromServer();
 				periodicHandler.postDelayed(this, updatePeriod);
 			}
 		};
@@ -384,7 +448,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 	private ListView listView;
 	Friends friends;
 	List<Integer> idOrder;
-	private final String TAG = "SocialActivity"; 
+	private final static String TAG = "SocialActivity"; 
 	private NetworkClient networkClient = new NetworkClient(this);
 	private final Handler periodicHandler = new Handler();
 	private Runnable periodicTask;

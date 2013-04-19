@@ -89,6 +89,7 @@ public class BladenightMapActivity extends MapActivity {
 			processionProgressBar.setVisibility(View.GONE);
 		}
 
+		// The auto-zooming of the fetched route requires to have the layout 
 		if (mapView.getWidth() == 0 || mapView.getHeight() == 0 ) {
 			Log.i(TAG, "scheduling triggerInitialRouteDataFetch");
 			ViewTreeObserver vto = mapView.getViewTreeObserver(); 
