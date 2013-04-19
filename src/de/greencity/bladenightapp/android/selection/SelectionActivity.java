@@ -19,7 +19,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 
-import com.google.gson.Gson;
 import com.markupartist.android.widget.ActionBar;
 import com.markupartist.android.widget.ActionBar.Action;
 
@@ -32,7 +31,7 @@ import de.greencity.bladenightapp.android.admin.AdminActivity;
 import de.greencity.bladenightapp.android.admin.AdminUtilities;
 import de.greencity.bladenightapp.android.network.NetworkClient;
 import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
-import de.greencity.bladenightapp.android.utils.InternalStorageFile;
+import de.greencity.bladenightapp.android.utils.JsonCacheAccess;
 import de.greencity.bladenightapp.events.Event;
 import de.greencity.bladenightapp.events.EventList;
 import de.greencity.bladenightapp.network.messages.EventsListMessage;
@@ -46,6 +45,8 @@ public class SelectionActivity extends FragmentActivity {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 
 		setContentView(R.layout.activity_selection);
+
+		eventsCache = new JsonCacheAccess<EventsListMessage>(this, EventsListMessage.class, JsonCacheAccess.FILE_EVENTS);
 
 		viewPager = (ViewPager) findViewById(R.id.pager);
 		viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -182,26 +183,15 @@ public class SelectionActivity extends FragmentActivity {
 	}
 
 	private void getEventsFromCache() {
-		String data = eventListCacheFile.read();
-		if (data == null)
-			return;
-		EventsListMessage eventsListMessage = null;
-		try {
-			eventsListMessage = gson.fromJson(data, EventsListMessage.class);
-		}
-		catch(Exception e) {
-		}
+		EventsListMessage eventsListMessage = eventsCache.get();
 		if ( eventsListMessage != null) {
 			Log.i(TAG, "Updating event fragments from cached data");
 			updateFragmentsFromEventList(eventsListMessage);
 		}
-		else {
-			Log.e(TAG, "getEventsFromCache: failed to parse: " + data);
-		}
 	}
 
 	private void saveEventsToCache(EventsListMessage eventsListMessage) {
-		eventListCacheFile.write(gson.toJson(eventsListMessage));
+		eventsCache.set(eventsListMessage);
 	}
 
 	private void getEventsFromServer() {
@@ -320,7 +310,5 @@ public class SelectionActivity extends FragmentActivity {
 	private EventList eventsList;
 	private ViewPager viewPager;
 	private NetworkClient networkClient;
-	private InternalStorageFile eventListCacheFile = new InternalStorageFile(this, "event-list.json");
-	private Gson gson = new Gson();
-
+	private JsonCacheAccess<EventsListMessage> eventsCache;
 } 

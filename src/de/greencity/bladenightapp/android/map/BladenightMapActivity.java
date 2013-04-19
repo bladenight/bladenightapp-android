@@ -20,6 +20,9 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewTreeObserver;
+import android.view.ViewTreeObserver.OnGlobalFocusChangeListener;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.Window;
 import android.widget.LinearLayout;
 
@@ -32,6 +35,7 @@ import de.greencity.bladenightapp.android.network.NetworkClient;
 import de.greencity.bladenightapp.android.tracker.GpsListener;
 import de.greencity.bladenightapp.android.utils.AsyncDownloadTask;
 import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
+import de.greencity.bladenightapp.android.utils.JsonCacheAccess;
 import de.greencity.bladenightapp.network.messages.RealTimeUpdateData;
 import de.greencity.bladenightapp.network.messages.RouteMessage;
 
@@ -39,6 +43,8 @@ public class BladenightMapActivity extends MapActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		Log.i(TAG, "onCreate");
 
 		networkClient = new NetworkClient(this);
 
@@ -54,13 +60,15 @@ public class BladenightMapActivity extends MapActivity {
 	public void onStart() {
 		super.onStart();
 
+		Log.i(TAG, "onStart");
+
 		verifyMapFile();
 
 		configureActionBar();
 
 		getActivityParametersFromIntent(getIntent());
 
-		requestRouteFromNetworkService();
+		routeCache = new JsonCacheAccess<RouteMessage>(this, RouteMessage.class, JsonCacheAccess.getNameForRoute(routeName));
 
 		if ( isShowingActiveEvent ) {
 			periodicTask = new Runnable() {
@@ -80,6 +88,27 @@ public class BladenightMapActivity extends MapActivity {
 		else {
 			processionProgressBar.setVisibility(View.GONE);
 		}
+
+		if (mapView.getWidth() == 0 || mapView.getHeight() == 0 ) {
+			Log.i(TAG, "scheduling triggerInitialRouteDataFetch");
+			ViewTreeObserver vto = mapView.getViewTreeObserver(); 
+			vto.addOnGlobalLayoutListener(new OnGlobalLayoutListener() { 
+				@Override 
+				public void onGlobalLayout() { 
+					triggerInitialRouteDataFetch();
+					mapView.getViewTreeObserver().removeGlobalOnLayoutListener(this); 
+				} 
+			}); 
+		}
+		else {
+			triggerInitialRouteDataFetch();
+		}
+	}
+
+	private void triggerInitialRouteDataFetch() {
+		Log.i(TAG, "triggerInitialRouteDataFetch");
+		updateRouteFromCache();
+		requestRouteFromNetworkService();
 	}
 
 	@Override
@@ -101,6 +130,8 @@ public class BladenightMapActivity extends MapActivity {
 				if ( routeNameFromBundle != null) {
 					routeName = routeNameFromBundle;
 					isShowingActiveEvent = false;
+					if ( ! routeNameFromBundle.equals(routeName))
+						isRouteInfoAvailable = false;
 				}
 				Log.i(TAG, "isShowingActiveEvent="+isShowingActiveEvent);
 			}
@@ -146,10 +177,8 @@ public class BladenightMapActivity extends MapActivity {
 		@Override
 		public void handleMessage(Message msg) {
 			RouteMessage routeMessage = (RouteMessage) msg.obj;
-			reference.get().isRouteInfoAvailable = true;;
-			reference.get().routeName = routeMessage.getRouteName();
-			reference.get().routeOverlay.update(routeMessage);
-			reference.get().fitViewToRoute();
+			reference.get().updateRouteFromRouteMessage(routeMessage);
+			reference.get().routeCache.set(routeMessage);
 		}
 	}
 
@@ -163,6 +192,19 @@ public class BladenightMapActivity extends MapActivity {
 		networkClient.getActiveRoute(new GetRouteFromServerHandler(this), null);
 	}
 
+	private void updateRouteFromRouteMessage(RouteMessage routeMessage) {
+		isRouteInfoAvailable = true;;
+		routeName = routeMessage.getRouteName();
+		routeOverlay.update(routeMessage);
+		fitViewToRoute();
+	}
+
+	private void updateRouteFromCache() {
+		RouteMessage message = routeCache.get();
+		if ( message != null ) {
+			updateRouteFromRouteMessage(message);
+		}
+	}
 
 	@Override
 	public void onDestroy() {
@@ -181,14 +223,11 @@ public class BladenightMapActivity extends MapActivity {
 
 
 	public void createMapView() {
-		// TODO to remove !
-		// clearTileCache();
 
 		mapView = new BladenightMapView(this);
 		mapView.setClickable(true);
 		mapView.setBuiltInZoomControls(true);
 		mapView.setRenderTheme(CustomRenderTheme.CUSTOM_RENDER);
-
 
 		setMapFile();
 
@@ -204,6 +243,8 @@ public class BladenightMapActivity extends MapActivity {
 		TileCache fileSystemTileCache = mapView.getFileSystemTileCache();
 		fileSystemTileCache.setPersistent(true);
 		fileSystemTileCache.setCapacity(20000);
+
+		centerViewOnCoordinates(new GeoPoint(48.132491, 11.543474), (byte)13);
 	}
 
 	// Will be called via the onClick attribute
@@ -316,6 +357,7 @@ public class BladenightMapActivity extends MapActivity {
 	private UserPositionOverlay userPositionOverlay;
 	private GpsListener gpsListener;
 	private boolean isRouteInfoAvailable = false;
+	private JsonCacheAccess<RouteMessage> routeCache;
 	static public final String PARAM_ROUTENAME = "routeName";
-	
+
 } 

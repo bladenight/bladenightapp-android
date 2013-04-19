@@ -1,5 +1,6 @@
 package de.greencity.bladenightapp.android.map;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.mapsforge.android.maps.MapView;
 import org.mapsforge.android.maps.Projection;
 import org.mapsforge.core.model.BoundingBox;
@@ -19,7 +20,9 @@ public class BladenightMapView extends MapView {
 		int width = getWidth();
 		int height = getHeight();
 		if (width <= 0 || height <= 0) {
-			Log.w(TAG, "Invalid dimension");
+			Log.w(TAG, "Invalid dimension " + width + "/" + height);
+			Log.i(TAG, "Invalid dimension " + boundingBox.toString());
+			Log.i(TAG, "Trace: " + ExceptionUtils.getStackTrace( new Throwable()));
 			return;
 		}
 		Projection projection1 = getProjection();
