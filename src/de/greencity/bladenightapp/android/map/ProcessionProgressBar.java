@@ -15,6 +15,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.GradientDrawable.Orientation;
 import android.graphics.drawable.LayerDrawable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.widget.ProgressBar;
 import de.greencity.bladenightapp.android.R;
 import de.greencity.bladenightapp.android.social.Friends;
@@ -120,13 +121,13 @@ public class ProcessionProgressBar extends ProgressBar {
 	}
 
 	protected void drawMovingPoint(Canvas canvas, Drawable drawable, MovingPointMessage mp) {
-		int width = 8;
+		int width = 4;
 		int margin = 4;
 		if ( ! isPointOnRoute(mp) )
 			return;
 		double position = mp.getPosition();
 		int positionPx = convertDistanceToPixels(position);
-		int halfWidth = Math.min(width/2, 1);
+		int halfWidth = Math.max(width/2, 1);
 		drawable.setBounds(positionPx-halfWidth, margin, positionPx+halfWidth, getHeight()-margin);
 		drawable.draw(canvas);
 	}
