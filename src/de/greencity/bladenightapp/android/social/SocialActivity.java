@@ -165,7 +165,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 				ShowCodeDialog showCodeDialog = new ShowCodeDialog();
 				showCodeDialog.setArguments(arguments);
 				showCodeDialog.show(fm, "fragment_show_code");
-				Friend newFriend = new Friend(friendName, FriendColor.GREEN);
+				Friend newFriend = new Friend(friendName, FriendColor.COLOR1);
 				newFriend.setRequestId(relMsg.getRequestId());
 				socialActivity.friends.put((int)relMsg.fid,newFriend);
 				socialActivity.updateGui();
@@ -201,7 +201,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 			RelationshipOutputMessage relMsg = (RelationshipOutputMessage)msg.obj;
 			Log.i("CreateNewRequestHandler", "Got answer from server:" + relMsg);
 			if (relMsg != null ) {
-				Friend newFriend = new Friend(friendName, FriendColor.GREEN);
+				Friend newFriend = new Friend(friendName, FriendColor.COLOR1);
 				socialActivity.friends.put((int)relMsg.fid, newFriend);
 				socialActivity.updateGui();
 				progressDialog.dismiss();

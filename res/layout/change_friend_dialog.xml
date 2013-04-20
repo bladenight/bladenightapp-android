@@ -28,40 +28,40 @@
         android:layout_width="match_parent" android:layout_height="50dp"
         android:orientation="horizontal">
         <ImageView
-		    android:id="@+id/color_orange"
+		    android:id="@+id/color_friend1"
 		    android:layout_height="match_parent"
 		    android:layout_weight="1"
 		    android:layout_width="match_parent"
-		    android:background="@color/bn_orange"
+		    android:background="@color/new_friend1"
 		    android:src="@drawable/color_field_off" />
 
         <ImageView
-            android:id="@+id/color_red"
+            android:id="@+id/color_friend2"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:layout_width="match_parent"
-            android:background="@color/bn_red"
+            android:background="@color/new_friend2"
             android:src="@drawable/color_field_off"/>
         <ImageView
-            android:id="@+id/color_blue"
+            android:id="@+id/color_friend3"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:layout_width="match_parent"
-            android:background="@color/bn_blue"
+            android:background="@color/new_friend3"
             android:src="@drawable/color_field_off"/>
         <ImageView
-            android:id="@+id/color_green"
+            android:id="@+id/color_friend4"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:layout_width="match_parent"
-            android:background="@color/bn_green"
+            android:background="@color/new_friend4"
             android:src="@drawable/color_field_off"/>
         <ImageView
-            android:id="@+id/color_greenlight"
+            android:id="@+id/color_friend5"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:layout_width="match_parent"
-            android:background="@color/bn_green_light"
+            android:background="@color/new_friend5"
             android:src="@drawable/color_field" />
     </LinearLayout>
 

@@ -15,6 +15,7 @@ import android.graphics.Paint;
 import android.graphics.Paint.Cap;
 import android.location.Location;
 import android.util.Log;
+import de.greencity.bladenightapp.android.R;
 import de.greencity.bladenightapp.network.messages.LatLong;
 import de.greencity.bladenightapp.network.messages.RealTimeUpdateData;
 import de.greencity.bladenightapp.network.messages.RouteMessage;
@@ -42,8 +43,8 @@ public class RouteOverlay extends ListOverlay {
 
 		Paint paintStroke = new Paint(Paint.ANTI_ALIAS_FLAG);
 		paintStroke.setStyle(Paint.Style.STROKE);
-		paintStroke.setColor(Color.BLUE);
-		paintStroke.setAlpha(100);
+		paintStroke.setColor(mapView.getResources().getColor(R.color.new_route));
+		//>paintStroke.setAlpha(100);
 		paintStroke.setStrokeWidth(12);
 		paintStroke.setStrokeCap(Cap.ROUND);
 
@@ -55,7 +56,7 @@ public class RouteOverlay extends ListOverlay {
 
 		Paint paintStroke = new Paint(Paint.ANTI_ALIAS_FLAG);
 		paintStroke.setStyle(Paint.Style.STROKE);
-		paintStroke.setColor(Color.argb(200, 0, 140, 40));
+		paintStroke.setColor(mapView.getResources().getColor(R.color.new_procession));
 		paintStroke.setStrokeWidth(12);
 		paintStroke.setStrokeCap(Cap.ROUND);
 

@@ -24,11 +24,11 @@ public class ChangeFriendDialog extends DialogFragment  {
     private Friend friend;
     private int index;
     
-    private ImageView color_orange;
-    private ImageView color_red;
-    private ImageView color_blue;
-    private ImageView color_green;
-    private ImageView color_greenlight;
+    private ImageView color_friend1;
+    private ImageView color_friend2;
+    private ImageView color_friend3;
+    private ImageView color_friend4;
+    private ImageView color_friend5;
 
     public static final String KEY_FRIENDOBJ = "friend";
     public static final String KEY_FRIENDID = "index";
@@ -51,11 +51,11 @@ public class ChangeFriendDialog extends DialogFragment  {
         mEditText = (EditText) view.findViewById(R.id.change_friends_name);
         activeBox = (CheckBox) view.findViewById(R.id.friend_active);
         
-        color_orange = (ImageView) view.findViewById(R.id.color_orange);
-    	color_red = (ImageView) view.findViewById(R.id.color_red);
-    	color_blue = (ImageView) view.findViewById(R.id.color_blue);
-    	color_green = (ImageView) view.findViewById(R.id.color_green);
-    	color_greenlight = (ImageView) view.findViewById(R.id.color_greenlight);
+        color_friend1 = (ImageView) view.findViewById(R.id.color_friend1);
+    	color_friend2 = (ImageView) view.findViewById(R.id.color_friend2);
+    	color_friend3 = (ImageView) view.findViewById(R.id.color_friend3);
+    	color_friend4 = (ImageView) view.findViewById(R.id.color_friend4);
+    	color_friend5 = (ImageView) view.findViewById(R.id.color_friend5);
         
         mEditText.setText(friend.getName());
         activeBox.setChecked(friend.isActive()); 
@@ -89,37 +89,37 @@ public class ChangeFriendDialog extends DialogFragment  {
   
     private void setColorListeners(View view){
     	
-        color_orange.setOnClickListener(new ImageView.OnClickListener() {
+        color_friend1.setOnClickListener(new ImageView.OnClickListener() {
             public void onClick(View v) {
-            	friend.setColor(FriendColor.ORANGE);
+            	friend.setColor(FriendColor.COLOR1);
             	setColor();
             }
         });
         
-        color_red.setOnClickListener(new ImageView.OnClickListener() {
+        color_friend2.setOnClickListener(new ImageView.OnClickListener() {
             public void onClick(View v) {
-            	friend.setColor(FriendColor.RED);
+            	friend.setColor(FriendColor.COLOR2);
             	setColor();
             }
         });
         
-        color_blue.setOnClickListener(new ImageView.OnClickListener() {
+        color_friend3.setOnClickListener(new ImageView.OnClickListener() {
             public void onClick(View v) {
-            	friend.setColor(FriendColor.BLUE);
+            	friend.setColor(FriendColor.COLOR3);
             	setColor();
             }
         });
         
-        color_green.setOnClickListener(new ImageView.OnClickListener() {
+        color_friend4.setOnClickListener(new ImageView.OnClickListener() {
             public void onClick(View v) {
-            	friend.setColor(FriendColor.GREEN);
+            	friend.setColor(FriendColor.COLOR4);
             	setColor();
             }
         });
         
-        color_greenlight.setOnClickListener(new ImageView.OnClickListener() {
+        color_friend5.setOnClickListener(new ImageView.OnClickListener() {
             public void onClick(View v) {
-            	friend.setColor(FriendColor.GREEN_LIGHT);
+            	friend.setColor(FriendColor.COLOR5);
             	setColor();
             }
         });
@@ -127,25 +127,25 @@ public class ChangeFriendDialog extends DialogFragment  {
     
     private void setColor(){
     	FriendColor color = friend.getColor();
-    	color_orange.setImageResource(R.drawable.color_field_off);
-    	color_red.setImageResource(R.drawable.color_field_off);
-    	color_blue.setImageResource(R.drawable.color_field_off);
-    	color_green.setImageResource(R.drawable.color_field_off);
-    	color_greenlight.setImageResource(R.drawable.color_field_off);
-    	if(color.equals(FriendColor.ORANGE)){
-    		color_orange.setImageResource(R.drawable.color_field);
+    	color_friend1.setImageResource(R.drawable.color_field_off);
+    	color_friend2.setImageResource(R.drawable.color_field_off);
+    	color_friend3.setImageResource(R.drawable.color_field_off);
+    	color_friend4.setImageResource(R.drawable.color_field_off);
+    	color_friend5.setImageResource(R.drawable.color_field_off);
+    	if(color.equals(FriendColor.COLOR1)){
+    		color_friend1.setImageResource(R.drawable.color_field);
     	}
-    	if(color.equals(FriendColor.RED)){
-    		color_red.setImageResource(R.drawable.color_field);
+    	if(color.equals(FriendColor.COLOR2)){
+    		color_friend2.setImageResource(R.drawable.color_field);
     	}
-    	if(color.equals(FriendColor.BLUE)){
-    		color_blue.setImageResource(R.drawable.color_field);
+    	if(color.equals(FriendColor.COLOR3)){
+    		color_friend3.setImageResource(R.drawable.color_field);
     	}
-    	if(color.equals(FriendColor.GREEN)){
-    		color_green.setImageResource(R.drawable.color_field);
+    	if(color.equals(FriendColor.COLOR4)){
+    		color_friend4.setImageResource(R.drawable.color_field);
     	}
-    	if(color.equals(FriendColor.GREEN_LIGHT)){
-    		color_greenlight.setImageResource(R.drawable.color_field);
+    	if(color.equals(FriendColor.COLOR5)){
+    		color_friend5.setImageResource(R.drawable.color_field);
     	}
     }
    

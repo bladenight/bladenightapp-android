@@ -11,11 +11,11 @@ public class Friend implements Comparable<Friend>, Serializable {
 	private static final long serialVersionUID = 3261795661099426411L;
 
 	public enum FriendColor {
-		ORANGE,
-		RED,
-		BLUE,
-		GREEN,
-		GREEN_LIGHT,
+		COLOR1,
+		COLOR2,
+		COLOR3,
+		COLOR4,
+		COLOR5,
 		BLACK
 	}
 	
@@ -131,11 +131,11 @@ public class Friend implements Comparable<Friend>, Serializable {
 	
 	public int colorToInt(FriendColor color){
 		int exit = 0;
-		if(color.equals(FriendColor.ORANGE)) exit = R.color.bn_orange;
-		if(color.equals(FriendColor.RED)) exit = R.color.bn_red;
-		if(color.equals(FriendColor.BLUE)) exit = R.color.bn_blue;
-		if(color.equals(FriendColor.GREEN)) exit = R.color.bn_green;
-		if(color.equals(FriendColor.GREEN_LIGHT)) exit = R.color.bn_green_light;
+		if(color.equals(FriendColor.COLOR1)) exit = R.color.new_friend1;
+		if(color.equals(FriendColor.COLOR2)) exit = R.color.new_friend2;
+		if(color.equals(FriendColor.COLOR3)) exit = R.color.new_friend3;
+		if(color.equals(FriendColor.COLOR4)) exit = R.color.new_friend4;
+		if(color.equals(FriendColor.COLOR5)) exit = R.color.new_friend5;
 		if(color.equals(FriendColor.BLACK)) exit = R.color.black;
 		return exit;
 	}

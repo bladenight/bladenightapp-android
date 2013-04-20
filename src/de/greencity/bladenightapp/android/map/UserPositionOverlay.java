@@ -34,7 +34,7 @@ public class UserPositionOverlay extends ListOverlay implements LocationListener
 	private void reinit() {
 		int resourceIdentifier = R.drawable.user_symbol;
 		Drawable drawable = context.getResources().getDrawable(resourceIdentifier);
-		drawable.setColorFilter(context.getResources().getColor(R.color.user_position_own), Mode.MULTIPLY);
+		drawable.setColorFilter(context.getResources().getColor(R.color.new_myself), Mode.MULTIPLY);
 		
 		externalCircle = createExternalCircle();
 		getOverlayItems().add(externalCircle);

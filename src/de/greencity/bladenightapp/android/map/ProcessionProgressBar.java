@@ -15,6 +15,7 @@ import android.graphics.drawable.GradientDrawable.Orientation;
 import android.graphics.drawable.LayerDrawable;
 import android.util.AttributeSet;
 import android.widget.ProgressBar;
+import de.greencity.bladenightapp.android.R;
 import de.greencity.bladenightapp.android.social.Friends;
 import de.greencity.bladenightapp.android.utils.DistanceFormatting;
 import de.greencity.bladenightapp.network.messages.FriendMessage;
@@ -40,7 +41,7 @@ public class ProcessionProgressBar extends ProgressBar {
 	private void init(Context context) {
 		this.context = context;
 		textPaint = new Paint();  
-		textPaint.setColor(Color.WHITE);
+		textPaint.setColor(Color.BLACK);
 		textPaint.setAntiAlias(true);
 		textPaint.setTextSize(20);
 		realTimeUpdateData = new RealTimeUpdateData();
@@ -113,7 +114,7 @@ public class ProcessionProgressBar extends ProgressBar {
 	}
 
 	protected void drawMovingPoint(Canvas canvas, Drawable drawable, MovingPointMessage mp) {
-		int width = 6;
+		int width = 8;
 		int margin = 4;
 		if ( ! isPointOnRoute(mp) )
 			return;
@@ -200,9 +201,9 @@ public class ProcessionProgressBar extends ProgressBar {
 			return userDrawable;
 
 		int[] colors = new int[2];
-		//		colors[0] = getResources().getColor();
-		colors[0] = Color.rgb(255, 0, 0);
-		colors[1] = Color.rgb(230, 0, 0);
+		int color = context.getResources().getColor(R.color.new_myself);
+		colors[0] = color;
+		colors[1] = color;
 
 		userDrawable = new GradientDrawable(Orientation.TOP_BOTTOM, colors);
 		return userDrawable;
