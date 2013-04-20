@@ -11,6 +11,7 @@ import java.util.Set;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -36,7 +37,6 @@ import de.greencity.bladenightapp.android.actionbar.ActionReload;
 import de.greencity.bladenightapp.android.network.NetworkClient;
 import de.greencity.bladenightapp.android.social.ChangeFriendDialog.ChangeFriendDialogListener;
 import de.greencity.bladenightapp.android.social.ConfirmFriendDialog.ConfirmFriendDialogListener;
-import de.greencity.bladenightapp.android.social.Friend.FriendColor;
 import de.greencity.bladenightapp.android.social.InviteFriendDialog.InviteFriendDialogListener;
 import de.greencity.bladenightapp.android.tracker.GpsTrackerService;
 import de.greencity.bladenightapp.android.utils.ServiceUtils;
@@ -166,7 +166,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 				ShowCodeDialog showCodeDialog = new ShowCodeDialog();
 				showCodeDialog.setArguments(arguments);
 				showCodeDialog.show(fm, "fragment_show_code");
-				Friend newFriend = new Friend(friendName, FriendColor.COLOR1);
+				Friend newFriend = new Friend(friendName);
 				newFriend.setRequestId(relMsg.getRequestId());
 				socialActivity.friends.put((int)relMsg.fid,newFriend);
 				socialActivity.updateGui();
@@ -202,7 +202,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 			RelationshipOutputMessage relMsg = (RelationshipOutputMessage)msg.obj;
 			Log.i("CreateNewRequestHandler", "Got answer from server:" + relMsg);
 			if (relMsg != null ) {
-				Friend newFriend = new Friend(friendName, FriendColor.COLOR1);
+				Friend newFriend = new Friend(friendName);
 				socialActivity.friends.put((int)relMsg.fid, newFriend);
 				socialActivity.updateGui();
 				progressDialog.dismiss();
@@ -316,7 +316,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 			Friend friend = friends.get(friendId);
 			if ( friend == null ) {
 				// for some reason the server knows about this friend but we don't
-				friend = new Friend("?", FriendColor.BLACK);
+				friend = new Friend("?");
 				friends.put(friendId, friend);
 			}
 
@@ -339,9 +339,9 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 		friends = new Friends(this);
 		friends.load();
 
-		Friend head = new Friend("Head", FriendColor.BLACK);
-		Friend tail = new Friend("Tail", FriendColor.BLACK);
-		Friend myself = new Friend("Me", FriendColor.BLACK);
+		Friend head = new Friend("Head");
+		Friend tail = new Friend("Tail");
+		Friend myself = new Friend("Me");
 		friends.put(ID_HEAD, head);
 		friends.put(ID_TAIL, tail);
 		friends.put(ID_ME, myself);
@@ -385,7 +385,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 				friendLocation =  friendsMessage.get(friendId);
 				if ( friends.get(friendId) == null ) {
 					// for one reason the server knows about this friend but we don't
-					friend = new Friend("?", FriendColor.BLACK);
+					friend = new Friend("?");
 					friends.put(friendId, friend);
 				}
 			}

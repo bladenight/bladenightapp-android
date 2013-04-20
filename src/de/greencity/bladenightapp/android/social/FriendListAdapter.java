@@ -10,7 +10,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import de.greencity.bladenightapp.android.R;
-import de.greencity.bladenightapp.android.social.Friend.FriendColor;
 import de.greencity.bladenightapp.android.tracker.GpsTrackerService;
 import de.greencity.bladenightapp.android.utils.ServiceUtils;
 
@@ -70,7 +69,7 @@ public class FriendListAdapter extends BaseAdapter {
 		TextView textViewAbsolutePosition = (TextView)view.findViewById(R.id.action_row_distance_abs); 
 
 		// Setting all values in listview
-		color_block.setBackgroundColor(view.getResources().getColor(friend.getColorInt()));
+		color_block.setBackgroundColor(friend.getColor());
 		name.setText(friend.getName());
 		if ( friend.getRelativeTime() != null)
 			textViewRelativeTime.setText(formatTime(friend.getRelativeTime()));
@@ -98,7 +97,7 @@ public class FriendListAdapter extends BaseAdapter {
 		// Setting all values in listview
 		textViewName.setText(friend.getName());
 		updateStatus(friend, textViewStatus );
-		colorBlockImageView.setBackgroundColor(view.getResources().getColor(friend.getColorInt()));
+		colorBlockImageView.setBackgroundColor(friend.getColor());
 		return view;
 	}
 	
