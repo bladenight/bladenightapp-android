@@ -9,9 +9,8 @@
 
     <ImageView
         android:id="@+id/action_color_block"
-        android:layout_width="wrap_content"
+        android:layout_width="30dip"
         android:layout_height="30dip"
-        android:layout_weight="0.08"
         android:background="@color/bn_green_light"
         android:src="@drawable/color_field" />
 
@@ -19,7 +18,7 @@
         android:id="@+id/action_row_friend_name"
         android:layout_width="0dp"
         android:layout_height="fill_parent"
-        android:layout_weight="0.2"
+        android:layout_weight="0.5"
         android:gravity="left|center_vertical"
         android:paddingLeft="5dip"
         android:text="Heinz"
@@ -32,7 +31,7 @@
         android:id="@+id/action_row_distance_abs"
         android:layout_width="0dp"
         android:layout_height="fill_parent"
-        android:layout_weight="0.15"
+        android:layout_weight="0.2"
         android:gravity="right|center_vertical"
         android:text="5254m"
         android:textColor="@color/bn_white"
@@ -44,7 +43,7 @@
         android:id="@+id/action_row_distance_rel"
         android:layout_width="0dp"
         android:layout_height="fill_parent"
-        android:layout_weight="0.15"
+        android:layout_weight="0.2"
         android:gravity="right|center_vertical"
         android:text="+254m"
         android:textColor="@color/bn_white"
@@ -56,7 +55,7 @@
         android:id="@+id/action_row_time_rel"
         android:layout_width="0dp"
         android:layout_height="fill_parent"
-        android:layout_weight="0.15"
+        android:layout_weight="0.2"
         android:gravity="right|center_vertical"
         android:text="+01:24"
         android:textColor="@color/bn_white"

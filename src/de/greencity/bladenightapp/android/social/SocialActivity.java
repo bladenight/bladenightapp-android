@@ -1,6 +1,5 @@
 package de.greencity.bladenightapp.android.social;
 
-import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,13 +38,11 @@ import de.greencity.bladenightapp.android.social.ConfirmFriendDialog.ConfirmFrie
 import de.greencity.bladenightapp.android.social.Friend.FriendColor;
 import de.greencity.bladenightapp.android.social.InviteFriendDialog.InviteFriendDialogListener;
 import de.greencity.bladenightapp.android.tracker.GpsTrackerService;
-import de.greencity.bladenightapp.android.utils.DeviceId;
 import de.greencity.bladenightapp.android.utils.ServiceUtils;
 import de.greencity.bladenightapp.network.messages.FriendMessage;
 import de.greencity.bladenightapp.network.messages.FriendsMessage;
 import de.greencity.bladenightapp.network.messages.MovingPointMessage;
 import de.greencity.bladenightapp.network.messages.RealTimeUpdateData;
-import de.greencity.bladenightapp.network.messages.RelationshipInputMessage;
 import de.greencity.bladenightapp.network.messages.RelationshipOutputMessage;
 
 public class SocialActivity extends FragmentActivity implements InviteFriendDialogListener, 
@@ -351,8 +348,8 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 
 	private void updateFriendDynamicData(RealTimeUpdateData realTimeUpdateData, MovingPointMessage nmp, Friend friend) {
 		friend.resetPositionData();
-		friend.isOnline(true); // TODO
-		friend.isActive(true); // TODO
+		// RealTimeUpdateData contains only online friends by convention
+		friend.isOnline(true);
 		if ( nmp.isOnRoute() ) {
 			friend.setAbsolutePosition(nmp.getPosition());
 			MovingPointMessage me = realTimeUpdateData.getUser();
@@ -371,7 +368,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 		combinedFriendIds.addAll(friends.keySet());
 
 		for ( int friendId : combinedFriendIds) {
-			Log.i(TAG, "FriendId="+friendId);
+			// Log.i(TAG, "updateGuiFromRealTimeUpdateData: FriendId="+friendId);
 			Friend friend = friends.get(friendId);
 			MovingPointMessage friendLocation;
 			if ( friendId == ID_HEAD ) {
@@ -395,7 +392,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 				updateFriendDynamicData(realTimeUpdateData, friendLocation, friend);
 			}
 			else {
-				// TODO the server didn't send us any information about this friend
+				friend.isOnline(false);
 			}
 		}
 		// This relative values are relative to me, don't display them for me (otherwise it would just display 0)
@@ -419,11 +416,11 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 	}
 
 	private void sortListViewWhileNotInAction() {
-		idOrder = new ArrayList<Integer>(friends.keySet());
-		idOrder.remove(ID_HEAD);
-		idOrder.remove(ID_TAIL);
-		idOrder.remove(ID_ME);
-		Collections.sort(idOrder, new Comparator<Integer>() {
+		sortedFriendIdsToDisplay = new ArrayList<Integer>(friends.keySet());
+		sortedFriendIdsToDisplay.remove(ID_HEAD);
+		sortedFriendIdsToDisplay.remove(ID_TAIL);
+		sortedFriendIdsToDisplay.remove(ID_ME);
+		Collections.sort(sortedFriendIdsToDisplay, new Comparator<Integer>() {
 			public int compare(Integer id1, Integer id2) {
 				return friends.get(id1).compareTo(friends.get(id2));
 			}
@@ -431,12 +428,15 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 	}
 
 	private void sortListViewWhileInAction() {
-		idOrder = new ArrayList<Integer>();
-		for(int id : friends.keySet()){
-			if(friends.get(id).isActive())
-				idOrder.add(id);
+		sortedFriendIdsToDisplay = new ArrayList<Integer>();
+		for(int friendId : friends.keySet()){
+			Friend friend = friends.get(friendId);
+			Log.i(TAG, "sortListViewWhileInAction: id="+friendId);
+			Log.i(TAG, "sortListViewWhileInAction: friend="+friend);
+			if( friend.isActive() && friend.isOnline() )
+				sortedFriendIdsToDisplay.add(friendId);
 		}
-		Collections.sort(idOrder, new Comparator<Integer>() {
+		Collections.sort(sortedFriendIdsToDisplay, new Comparator<Integer>() {
 			public int compare(Integer id1, Integer id2) {
 				Long d1 = friends.get(id1).getAbsolutePosition();
 				Long d2 = friends.get(id2).getAbsolutePosition();
@@ -471,7 +471,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 
 	private ListView listView;
 	Friends friends;
-	List<Integer> idOrder;
+	List<Integer> sortedFriendIdsToDisplay;
 	private final static String TAG = "SocialActivity"; 
 	private NetworkClient networkClient = new NetworkClient(this);
 	private final Handler periodicHandler = new Handler();

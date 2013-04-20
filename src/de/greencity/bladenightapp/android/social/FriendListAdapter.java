@@ -2,7 +2,6 @@ package de.greencity.bladenightapp.android.social;
 
 import android.app.Activity;
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,7 +25,7 @@ public class FriendListAdapter extends BaseAdapter {
 	}
 
 	public int getCount() {
-		return activity.idOrder.size();
+		return activity.sortedFriendIdsToDisplay.size();
 	}
 
 	public Object getItem(int position) {
@@ -39,7 +38,7 @@ public class FriendListAdapter extends BaseAdapter {
 
 	public View getView(int position, View convertView, ViewGroup parent) {
 		View view=convertView;
-		int id = activity.idOrder.get(position);
+		int id = activity.sortedFriendIdsToDisplay.get(position);
 		Friend friend = activity.friends.get(id);
 
 		isServiceRunning = ServiceUtils.isServiceRunning(activity, GpsTrackerService.class);
