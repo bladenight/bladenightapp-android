@@ -1,5 +1,6 @@
 package de.greencity.bladenightapp.android.social;
 
+import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,11 +39,13 @@ import de.greencity.bladenightapp.android.social.ConfirmFriendDialog.ConfirmFrie
 import de.greencity.bladenightapp.android.social.Friend.FriendColor;
 import de.greencity.bladenightapp.android.social.InviteFriendDialog.InviteFriendDialogListener;
 import de.greencity.bladenightapp.android.tracker.GpsTrackerService;
+import de.greencity.bladenightapp.android.utils.DeviceId;
 import de.greencity.bladenightapp.android.utils.ServiceUtils;
 import de.greencity.bladenightapp.network.messages.FriendMessage;
 import de.greencity.bladenightapp.network.messages.FriendsMessage;
 import de.greencity.bladenightapp.network.messages.MovingPointMessage;
 import de.greencity.bladenightapp.network.messages.RealTimeUpdateData;
+import de.greencity.bladenightapp.network.messages.RelationshipInputMessage;
 import de.greencity.bladenightapp.network.messages.RelationshipOutputMessage;
 
 public class SocialActivity extends FragmentActivity implements InviteFriendDialogListener, 
@@ -139,8 +142,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 			public boolean onItemLongClick(AdapterView<?> adapterView, View view, int selectedIndex, long rowId) {
 				LinearLayout row = (LinearLayout)view.findViewById(R.id.row_friend);
 				int friendId = (Integer) row.getTag();
-				friends.remove(friendId);
-				updateGui();
+				removeFriendOnServer(friendId);
 				return true;
 			}
 		});
@@ -263,6 +265,27 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 	private void getRealTimeDataFromServer(){
 		networkClient.getRealTimeData(new GetRealTimeDataFromServerHandler(this), null);
 	}
+
+	static class DeleteFriendOnServerHandler extends Handler {
+		private WeakReference<SocialActivity> reference;
+		private int friendId;
+		DeleteFriendOnServerHandler(SocialActivity activity, int friendId) {
+			this.reference = new WeakReference<SocialActivity>(activity);
+			this.friendId = friendId;
+		}
+		@Override
+		public void handleMessage(Message msg) {
+			Toast.makeText(reference.get(), "Friend has been removed", Toast.LENGTH_SHORT).show();
+			reference.get().friends.remove(friendId);
+			reference.get().updateGui();
+			reference.get().getFriendsListFromServer();
+		}
+	}
+
+	private void removeFriendOnServer(int friendId){
+		networkClient.deleteRelationship(friendId, new DeleteFriendOnServerHandler(this, friendId), null);
+	}
+
 
 	static class GetFriendsListFromServerHandler extends Handler {
 		private WeakReference<SocialActivity> reference;

@@ -273,6 +273,16 @@ public class NetworkClient {
 		callOrStore(item);
 	}
 
+	public void deleteRelationship(int friendId, Handler successHandler, Handler errorHandler) {
+		BacklogItem item = new BacklogItem();
+		item.url = BladenightUrl.DELETE_RELATIONSHIP.getText();
+		item.successHandler = successHandler;
+		item.errorHandler = errorHandler;
+		item.outgoingPayload = new RelationshipInputMessage(getDeviceId(), friendId, 0);
+		callOrStore(item);
+	}
+
+
 	public void verifyAdminPassword(String password, Handler successHandler, Handler errorHandler) {
 		BacklogItem item = new BacklogItem();
 		item.url = BladenightUrl.VERIFY_ADMIN_PASSWORD.getText();
