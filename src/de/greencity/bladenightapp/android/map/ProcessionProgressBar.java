@@ -1,5 +1,9 @@
 package de.greencity.bladenightapp.android.map;
 
+import java.util.HashMap;
+
+import org.mapsforge.android.maps.overlay.Marker;
+
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -11,6 +15,7 @@ import android.graphics.drawable.GradientDrawable.Orientation;
 import android.graphics.drawable.LayerDrawable;
 import android.util.AttributeSet;
 import android.widget.ProgressBar;
+import de.greencity.bladenightapp.android.social.Friends;
 import de.greencity.bladenightapp.android.utils.DistanceFormatting;
 import de.greencity.bladenightapp.network.messages.FriendMessage;
 import de.greencity.bladenightapp.network.messages.MovingPointMessage;
@@ -19,20 +24,21 @@ import de.greencity.bladenightapp.network.messages.RealTimeUpdateData;
 public class ProcessionProgressBar extends ProgressBar {
 	public ProcessionProgressBar(Context context) {
 		super(context);
-		init();
+		init(context);
 	}
 
 	public ProcessionProgressBar(Context context, AttributeSet attrs) {  
 		super(context, attrs);  
-		init();
+		init(context);
 	}  
 
 	public ProcessionProgressBar(Context context, AttributeSet attrs, int defStyle) {  
 		super(context, attrs, defStyle);
-		init();
+		init(context);
 	}
 
-	private void init() {
+	private void init(Context context) {
+		this.context = context;
 		textPaint = new Paint();  
 		textPaint.setColor(Color.WHITE);
 		textPaint.setAntiAlias(true);
@@ -41,7 +47,8 @@ public class ProcessionProgressBar extends ProgressBar {
 		if ( isInEditMode() ) {
 			setDemoData();
 		}
-
+		friends = new Friends(context);
+		friends.load();
 	}
 
 	public void update(RealTimeUpdateData realTimeUpdateData) {
@@ -101,7 +108,7 @@ public class ProcessionProgressBar extends ProgressBar {
 
 	protected void drawFriends(Canvas canvas) {
 		for (Integer friendId: realTimeUpdateData.fri.keySet()) {
-			drawMovingPoint(canvas, getFriendDrawable(), realTimeUpdateData.fri.get(friendId));
+			drawMovingPoint(canvas, getFriendDrawable(friendId), realTimeUpdateData.fri.get(friendId));
 		}
 	}
 
@@ -201,24 +208,29 @@ public class ProcessionProgressBar extends ProgressBar {
 		return userDrawable;
 	}
 
-	private Drawable getFriendDrawable() {
-		if ( friendDrawable != null)
-			return friendDrawable;
+	private Drawable getFriendDrawable(int friendId) {
+		if ( friendDrawables.get(friendId) != null)
+			return friendDrawables.get(friendId);
+		
+		int color = context.getResources().getColor(friends.get(friendId).getColorInt());
 
 		int[] colors = new int[2];
 		//		colors[0] = getResources().getColor();
-		colors[0] = Color.rgb(255, 200, 20);
-		colors[1] = Color.rgb(255, 200, 20);
-
-		friendDrawable = new GradientDrawable(Orientation.TOP_BOTTOM, colors);
+		colors[0] = color;
+		colors[1] = color;
+		
+		Drawable friendDrawable = new GradientDrawable(Orientation.TOP_BOTTOM, colors);
+		friendDrawables.put(friendId, friendDrawable);
 		return friendDrawable;
 	}
 
+	private Context context;
 	private Paint textPaint;
 	final static String TAG = "ProcessionProgressBar";
 	private Drawable processionDrawable;
 	private Drawable backgroundDrawable;
 	private Drawable userDrawable;
-	private Drawable friendDrawable;
+	private HashMap<Integer, Drawable> friendDrawables = new HashMap<Integer, Drawable>();
 	private RealTimeUpdateData realTimeUpdateData;
+	private Friends friends;
 }
