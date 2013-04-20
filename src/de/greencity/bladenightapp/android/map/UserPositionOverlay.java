@@ -109,7 +109,7 @@ public class UserPositionOverlay extends ListOverlay implements LocationListener
 
 		int resourceIdentifier = R.drawable.user_symbol;
 		Drawable drawable = context.getResources().getDrawable(resourceIdentifier);
-		int color = context.getResources().getColor(friends.get(friendId).getColorInt());
+		int color = friends.get(friendId).getColor();
 		
 		drawable.mutate().setColorFilter(color, Mode.MULTIPLY);
 		

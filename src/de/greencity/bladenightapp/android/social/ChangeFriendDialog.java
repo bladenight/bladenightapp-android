@@ -10,7 +10,6 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import de.greencity.bladenightapp.android.R;
-import de.greencity.bladenightapp.android.social.Friend.FriendColor;
 
 
 public class ChangeFriendDialog extends DialogFragment  {
@@ -18,6 +17,8 @@ public class ChangeFriendDialog extends DialogFragment  {
 	public interface ChangeFriendDialogListener {
         void onFinishChangeFriendDialog(Friend friend, int index);
     }
+	
+	private View rootView;
 	
     private EditText mEditText;
     private CheckBox activeBox;
@@ -38,39 +39,38 @@ public class ChangeFriendDialog extends DialogFragment  {
     }
     
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     	
     	this.friend = (Friend)getArguments().getSerializable(KEY_FRIENDOBJ);
     	this.index = getArguments().getInt(KEY_FRIENDID);
     	
-        View view = inflater.inflate(R.layout.change_friend_dialog, container);
+        rootView = inflater.inflate(R.layout.change_friend_dialog, container);
         
         getDialog().setTitle("Change name and color of friend");
         
-        mEditText = (EditText) view.findViewById(R.id.change_friends_name);
-        activeBox = (CheckBox) view.findViewById(R.id.friend_active);
+        mEditText = (EditText) rootView.findViewById(R.id.change_friends_name);
+        activeBox = (CheckBox) rootView.findViewById(R.id.friend_active);
         
-        color_friend1 = (ImageView) view.findViewById(R.id.color_friend1);
-    	color_friend2 = (ImageView) view.findViewById(R.id.color_friend2);
-    	color_friend3 = (ImageView) view.findViewById(R.id.color_friend3);
-    	color_friend4 = (ImageView) view.findViewById(R.id.color_friend4);
-    	color_friend5 = (ImageView) view.findViewById(R.id.color_friend5);
+        color_friend1 = (ImageView) rootView.findViewById(R.id.color_friend1);
+    	color_friend2 = (ImageView) rootView.findViewById(R.id.color_friend2);
+    	color_friend3 = (ImageView) rootView.findViewById(R.id.color_friend3);
+    	color_friend4 = (ImageView) rootView.findViewById(R.id.color_friend4);
+    	color_friend5 = (ImageView) rootView.findViewById(R.id.color_friend5);
         
         mEditText.setText(friend.getName());
         activeBox.setChecked(friend.isActive()); 
         setColor();
 
-        setButtonListeners(view);
-        setColorListeners(view);
+        setButtonListeners(rootView);
+        setColorListeners(rootView);
         
-        return view;
+        return rootView;
     }
     
     private void setButtonListeners(View view){
     	Button confirmButton = (Button) view.findViewById(R.id.changeFriend_confirm);
         confirmButton.setOnClickListener(new Button.OnClickListener() {
-            public void onClick(View v) {
+            public void onClick(View view) {
             	ChangeFriendDialogListener activity = (ChangeFriendDialogListener) getActivity();
             	friend.setName(mEditText.getText().toString());
             	friend.isActive(activeBox.isChecked());
@@ -80,7 +80,7 @@ public class ChangeFriendDialog extends DialogFragment  {
         });
         Button cancelButton = (Button) view.findViewById(R.id.changeFriend_cancel);
         cancelButton.setOnClickListener(new Button.OnClickListener() {
-            public void onClick(View v) {
+            public void onClick(View view) {
             	dismiss();
             }
         });
@@ -90,61 +90,63 @@ public class ChangeFriendDialog extends DialogFragment  {
     private void setColorListeners(View view){
     	
         color_friend1.setOnClickListener(new ImageView.OnClickListener() {
-            public void onClick(View v) {
-            	friend.setColor(FriendColor.COLOR1);
+            public void onClick(View view) {
+            	friend.setColor(view.getResources().getColor(R.color.new_friend1));
             	setColor();
             }
         });
         
         color_friend2.setOnClickListener(new ImageView.OnClickListener() {
-            public void onClick(View v) {
-            	friend.setColor(FriendColor.COLOR2);
+            public void onClick(View view) {
+            	friend.setColor(view.getResources().getColor(R.color.new_friend2));
             	setColor();
             }
         });
         
         color_friend3.setOnClickListener(new ImageView.OnClickListener() {
-            public void onClick(View v) {
-            	friend.setColor(FriendColor.COLOR3);
+            public void onClick(View view) {
+            	friend.setColor(view.getResources().getColor(R.color.new_friend3));
             	setColor();
             }
         });
         
         color_friend4.setOnClickListener(new ImageView.OnClickListener() {
-            public void onClick(View v) {
-            	friend.setColor(FriendColor.COLOR4);
+            public void onClick(View view) {
+            	friend.setColor(view.getResources().getColor(R.color.new_friend4));
             	setColor();
             }
         });
         
         color_friend5.setOnClickListener(new ImageView.OnClickListener() {
-            public void onClick(View v) {
-            	friend.setColor(FriendColor.COLOR5);
+            public void onClick(View view) {
+            	friend.setColor(view.getResources().getColor(R.color.new_friend5));
             	setColor();
             }
         });
     }
     
-    private void setColor(){
-    	FriendColor color = friend.getColor();
+    private void setColor() {
+    	int currentColor = friend.getColor();
+    	
     	color_friend1.setImageResource(R.drawable.color_field_off);
     	color_friend2.setImageResource(R.drawable.color_field_off);
     	color_friend3.setImageResource(R.drawable.color_field_off);
     	color_friend4.setImageResource(R.drawable.color_field_off);
     	color_friend5.setImageResource(R.drawable.color_field_off);
-    	if(color.equals(FriendColor.COLOR1)){
+    	
+    	if(currentColor == rootView.getResources().getColor(R.color.new_friend1)){
     		color_friend1.setImageResource(R.drawable.color_field);
     	}
-    	if(color.equals(FriendColor.COLOR2)){
+    	if(currentColor == rootView.getResources().getColor(R.color.new_friend2)){
     		color_friend2.setImageResource(R.drawable.color_field);
     	}
-    	if(color.equals(FriendColor.COLOR3)){
+    	if(currentColor == rootView.getResources().getColor(R.color.new_friend3)){
     		color_friend3.setImageResource(R.drawable.color_field);
     	}
-    	if(color.equals(FriendColor.COLOR4)){
+    	if(currentColor == rootView.getResources().getColor(R.color.new_friend4)){
     		color_friend4.setImageResource(R.drawable.color_field);
     	}
-    	if(color.equals(FriendColor.COLOR5)){
+    	if(currentColor == rootView.getResources().getColor(R.color.new_friend5)){
     		color_friend5.setImageResource(R.drawable.color_field);
     	}
     }

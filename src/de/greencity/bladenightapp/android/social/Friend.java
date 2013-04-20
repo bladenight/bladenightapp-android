@@ -4,24 +4,15 @@ import java.io.Serializable;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-import de.greencity.bladenightapp.android.R;
+import android.graphics.Color;
 
 public class Friend implements Comparable<Friend>, Serializable {
 
 	private static final long serialVersionUID = 3261795661099426411L;
 
-	public enum FriendColor {
-		COLOR1,
-		COLOR2,
-		COLOR3,
-		COLOR4,
-		COLOR5,
-		BLACK
-	}
-	
 	private String name;
 	private boolean isActive;
-	private FriendColor color;
+	private int color;
 	private Long relativeTime = null;
 	private Long relativeDistance  = null;
 	private Long absolutePosition  = null;
@@ -29,9 +20,9 @@ public class Friend implements Comparable<Friend>, Serializable {
 	private boolean isValid = false;
 	private long requestId;
 	
-	public Friend(String name, FriendColor color){
+	public Friend(String name){
 		this.name = name;
-		this.color = color;
+		this.color = Color.BLACK;
 		this.isActive = true;
 		resetPositionData();
 	}
@@ -50,19 +41,14 @@ public class Friend implements Comparable<Friend>, Serializable {
 		return name;
 	}
 		
-	public void setColor(FriendColor color){
+	public void setColor(int color){
 		this.color = color;
 	}
 
-	public int getColorInt(){
-		return colorToInt(color);
-	}
-	
-	public FriendColor getColor(){
+	public int getColor(){
 		return color;
 	}
 	
-
 	public Long getRelativeTime() {
 		return relativeTime;
 	}
@@ -129,15 +115,4 @@ public class Friend implements Comparable<Friend>, Serializable {
 		return  name.toLowerCase().compareTo(another.getName().toLowerCase());
 	}
 	
-	public int colorToInt(FriendColor color){
-		int exit = 0;
-		if(color.equals(FriendColor.COLOR1)) exit = R.color.new_friend1;
-		if(color.equals(FriendColor.COLOR2)) exit = R.color.new_friend2;
-		if(color.equals(FriendColor.COLOR3)) exit = R.color.new_friend3;
-		if(color.equals(FriendColor.COLOR4)) exit = R.color.new_friend4;
-		if(color.equals(FriendColor.COLOR5)) exit = R.color.new_friend5;
-		if(color.equals(FriendColor.BLACK)) exit = R.color.black;
-		return exit;
-	}
-
 }

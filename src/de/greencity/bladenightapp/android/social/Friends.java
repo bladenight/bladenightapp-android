@@ -28,7 +28,14 @@ public class Friends {
 		String friendsJson = settings.getString(PREF_FRIENDS_JSON, "{}");
 		Log.i(TAG, "load: " + friendsJson);
 		Type type = new TypeToken<Map<Integer, Friend>>() {}.getType();
-		friends = gson.fromJson(friendsJson, type);
+		try {
+			friends = gson.fromJson(friendsJson, type);
+		}
+		catch (Exception e) {
+			// Catch exception to avoid the crash
+			// However, all the local friend data (names, colors...) will be lost
+			Log.e(TAG, "Failed to read friends: " + e);
+		}
 	}
 
 	public void save() {

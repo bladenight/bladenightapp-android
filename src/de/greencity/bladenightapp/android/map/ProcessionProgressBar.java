@@ -213,7 +213,7 @@ public class ProcessionProgressBar extends ProgressBar {
 		if ( friendDrawables.get(friendId) != null)
 			return friendDrawables.get(friendId);
 		
-		int color = context.getResources().getColor(friends.get(friendId).getColorInt());
+		int color = friends.get(friendId).getColor();
 
 		int[] colors = new int[2];
 		//		colors[0] = getResources().getColor();
