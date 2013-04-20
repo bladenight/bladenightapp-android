@@ -15,7 +15,7 @@ import android.util.Log;
 
 public class Friends {
 
-	Friends(Context context) {
+	public Friends(Context context) {
 		this.context = context;
 	}
 

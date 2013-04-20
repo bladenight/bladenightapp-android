@@ -60,16 +60,6 @@ public class FriendListAdapter extends BaseAdapter {
 		return view;
 	}
 
-	private int ColorToInt(FriendColor color){
-		int exit = 0;
-		if(color.equals(FriendColor.ORANGE)) exit = R.color.bn_orange;
-		if(color.equals(FriendColor.RED)) exit = R.color.bn_red;
-		if(color.equals(FriendColor.BLUE)) exit = R.color.bn_blue;
-		if(color.equals(FriendColor.GREEN)) exit = R.color.bn_green;
-		if(color.equals(FriendColor.GREEN_LIGHT)) exit = R.color.bn_green_light;
-		if(color.equals(FriendColor.BLACK)) exit = R.color.black;
-		return exit;
-	}
 
 	private View inflateActionRow(Friend friend){
 		View view = inflater.inflate(R.layout.friend_list_row_action, null);
@@ -81,7 +71,7 @@ public class FriendListAdapter extends BaseAdapter {
 		TextView textViewAbsolutePosition = (TextView)view.findViewById(R.id.action_row_distance_abs); 
 
 		// Setting all values in listview
-		color_block.setBackgroundColor(view.getResources().getColor(ColorToInt(friend.getColor())));
+		color_block.setBackgroundColor(view.getResources().getColor(friend.getColorInt()));
 		name.setText(friend.getName());
 		if ( friend.getRelativeTime() != null)
 			textViewRelativeTime.setText(formatTime(friend.getRelativeTime()));
@@ -109,7 +99,7 @@ public class FriendListAdapter extends BaseAdapter {
 		// Setting all values in listview
 		textViewName.setText(friend.getName());
 		updateStatus(friend, textViewStatus );
-		colorBlockImageView.setBackgroundColor(view.getResources().getColor(ColorToInt(friend.getColor())));
+		colorBlockImageView.setBackgroundColor(view.getResources().getColor(friend.getColorInt()));
 		return view;
 	}
 	
