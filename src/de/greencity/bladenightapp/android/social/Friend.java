@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import de.greencity.bladenightapp.android.R;
+
 public class Friend implements Comparable<Friend>, Serializable {
 
 	private static final long serialVersionUID = 3261795661099426411L;
@@ -52,6 +54,10 @@ public class Friend implements Comparable<Friend>, Serializable {
 		this.color = color;
 	}
 
+	public int getColorInt(){
+		return colorToInt(color);
+	}
+	
 	public FriendColor getColor(){
 		return color;
 	}
@@ -121,6 +127,17 @@ public class Friend implements Comparable<Friend>, Serializable {
 	@Override
 	public int compareTo(Friend another) {
 		return  name.toLowerCase().compareTo(another.getName().toLowerCase());
+	}
+	
+	public int colorToInt(FriendColor color){
+		int exit = 0;
+		if(color.equals(FriendColor.ORANGE)) exit = R.color.bn_orange;
+		if(color.equals(FriendColor.RED)) exit = R.color.bn_red;
+		if(color.equals(FriendColor.BLUE)) exit = R.color.bn_blue;
+		if(color.equals(FriendColor.GREEN)) exit = R.color.bn_green;
+		if(color.equals(FriendColor.GREEN_LIGHT)) exit = R.color.bn_green_light;
+		if(color.equals(FriendColor.BLACK)) exit = R.color.black;
+		return exit;
 	}
 
 }

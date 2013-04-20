@@ -18,6 +18,8 @@ import android.location.LocationListener;
 import android.os.Bundle;
 import android.util.Log;
 import de.greencity.bladenightapp.android.R;
+import de.greencity.bladenightapp.android.social.Friend.FriendColor;
+import de.greencity.bladenightapp.android.social.Friends;
 import de.greencity.bladenightapp.network.messages.MovingPointMessage;
 import de.greencity.bladenightapp.network.messages.RealTimeUpdateData;
 
@@ -26,7 +28,8 @@ public class UserPositionOverlay extends ListOverlay implements LocationListener
 	public UserPositionOverlay(Context context, MapView mapView) {
 		this.mapView = mapView;
 		this.context = context;
-		reinit();
+		friends = new Friends(context);
+		reinit();	
 	}
 
 	private void reinit() {
@@ -39,6 +42,9 @@ public class UserPositionOverlay extends ListOverlay implements LocationListener
 
 		userSymbol = new Marker(new GeoPoint(0, 0), Marker.boundCenter(drawable));
 		getOverlayItems().add(userSymbol);
+		
+		friends.load();
+		
 	}
 
 	private Circle createExternalCircle() {
@@ -104,7 +110,9 @@ public class UserPositionOverlay extends ListOverlay implements LocationListener
 
 		int resourceIdentifier = R.drawable.user_symbol;
 		Drawable drawable = context.getResources().getDrawable(resourceIdentifier);
-		drawable.setColorFilter(Color.RED, Mode.MULTIPLY);
+		int color = context.getResources().getColor(friends.get(friendId).getColorInt());
+		
+		drawable.setColorFilter(color, Mode.MULTIPLY);
 		
 		Marker marker = friendSymbols.get(friendId);
 		marker = new Marker(new GeoPoint(0, 0), Marker.boundCenter(drawable));
@@ -119,6 +127,7 @@ public class UserPositionOverlay extends ListOverlay implements LocationListener
 	private Marker userSymbol;
 	private HashMap<Integer, Marker> friendSymbols = new HashMap<Integer, Marker>();
 	private Circle externalCircle;
+	private Friends friends;
 
 	private final String TAG = "UserPositionOverlay";
 
