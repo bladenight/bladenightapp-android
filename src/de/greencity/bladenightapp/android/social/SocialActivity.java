@@ -1,6 +1,7 @@
 package de.greencity.bladenightapp.android.social;
 
 import java.lang.ref.WeakReference;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -161,7 +162,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 				Bundle arguments = new Bundle();
 				Log.i("CreateNewRequestHandler", "Got: " + relMsg);
 				arguments.putString(ShowCodeDialog.ARG_NICKNAME, friendName);
-				arguments.putString(ShowCodeDialog.ARG_CODE, Long.toString(relMsg.getRequestId()));
+				arguments.putString(ShowCodeDialog.ARG_CODE, formatRequestId(relMsg.getRequestId()));
 				ShowCodeDialog showCodeDialog = new ShowCodeDialog();
 				showCodeDialog.setArguments(arguments);
 				showCodeDialog.show(fm, "fragment_show_code");
@@ -467,6 +468,10 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 	private void cancelPeriodicTask() {
 		if ( periodicTask != null )
 			periodicHandler.removeCallbacks(periodicTask);
+	}
+	
+	public static String formatRequestId(long requestId) {
+		return MessageFormat.format("{0,number,#,00}", requestId).replace(",", " ");
 	}
 
 	private ListView listView;
