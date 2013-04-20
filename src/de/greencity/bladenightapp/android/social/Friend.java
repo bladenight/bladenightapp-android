@@ -13,9 +13,9 @@ public class Friend implements Comparable<Friend>, Serializable {
 	private String name;
 	private boolean isActive;
 	private int color;
-	private Long relativeTime = null;
-	private Long relativeDistance  = null;
-	private Long absolutePosition  = null;
+	transient private Long relativeTime = null;
+	transient private Long relativeDistance  = null;
+	transient private Long absolutePosition  = null;
 	private boolean isOnline = false;
 	private boolean isValid = false;
 	private long requestId;

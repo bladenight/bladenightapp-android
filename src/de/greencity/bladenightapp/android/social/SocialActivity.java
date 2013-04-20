@@ -11,7 +11,6 @@ import java.util.Set;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -61,10 +60,10 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 	}
 
 	@Override
-	protected void onStart() {
+	protected void onResume() {
 		super.onStart();
 
-		Log.i(TAG, "onStart");
+		Log.i(TAG, "onResume");
 		configureActionBar();
 
 		getFriendsFromStorage();
@@ -78,7 +77,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 	}
 
 	@Override
-	protected void onStop() {
+	protected void onPause() {
 		super.onStop();
 		cancelPeriodicTask();
 	}
@@ -339,12 +338,10 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 		friends = new Friends(this);
 		friends.load();
 
-		Friend head = new Friend("Head");
-		Friend tail = new Friend("Tail");
-		Friend myself = new Friend("Me");
-		friends.put(ID_HEAD, head);
-		friends.put(ID_TAIL, tail);
-		friends.put(ID_ME, myself);
+		friends.put(ID_HEAD, new Friend("Head"));
+		friends.put(ID_TAIL, new Friend("Tail"));
+		if ( friends.get(ID_ME) == null )
+			friends.put(ID_ME, new Friend("Me"));
 	}
 
 	private void updateFriendDynamicData(RealTimeUpdateData realTimeUpdateData, MovingPointMessage nmp, Friend friend) {
@@ -483,8 +480,8 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 	private Runnable periodicTask;
 	private long updatePeriod = 2000;
 
-	final static Integer ID_HEAD 	= -1;
-	final static Integer ID_ME 		= -2;
-	final static Integer ID_TAIL 	= -3;
+	public final static Integer ID_HEAD 	= -1;
+	public final static Integer ID_ME 		= -2;
+	public final static Integer ID_TAIL 	= -3;
 
 } 

@@ -50,6 +50,7 @@ public class BladenightMapActivity extends MapActivity {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_action);
 		createMapView();
+		createOverlays();
 
 		downloadProgressDialog = new ProgressDialog(this);
 		processionProgressBar = (ProcessionProgressBar) findViewById(R.id.progress_procession);
@@ -103,6 +104,15 @@ public class BladenightMapActivity extends MapActivity {
 		else {
 			triggerInitialRouteDataFetch();
 		}
+	}
+	
+	@Override
+	public void onResume() {
+		super.onResume();
+		
+		// Friend colors and stuff like that could have been changed in the meantime, so re-create the overlays
+		userPositionOverlay.onResume();
+		processionProgressBar.onResume();
 	}
 
 	private void triggerInitialRouteDataFetch() {
@@ -236,15 +246,20 @@ public class BladenightMapActivity extends MapActivity {
 
 		parent.addView(mapView);
 
-		routeOverlay = new RouteOverlay(mapView);
-
-		userPositionOverlay = new UserPositionOverlay(this, mapView);
-
 		TileCache fileSystemTileCache = mapView.getFileSystemTileCache();
 		fileSystemTileCache.setPersistent(true);
 		fileSystemTileCache.setCapacity(20000);
 
 		centerViewOnCoordinates(new GeoPoint(48.132491, 11.543474), (byte)13);
+	}
+	
+	public void createOverlays() {
+		if ( routeOverlay != null )
+			mapView.getOverlays().remove(routeOverlay);
+		routeOverlay = new RouteOverlay(mapView);
+		if ( userPositionOverlay != null )
+			mapView.getOverlays().remove(userPositionOverlay);
+		userPositionOverlay = new UserPositionOverlay(this, mapView);
 	}
 
 	// Will be called via the onClick attribute

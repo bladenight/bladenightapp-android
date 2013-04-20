@@ -37,39 +37,36 @@ public class FriendListAdapter extends BaseAdapter {
 
 	public View getView(int position, View convertView, ViewGroup parent) {
 		View view=convertView;
-		int id = activity.sortedFriendIdsToDisplay.get(position);
-		Friend friend = activity.friends.get(id);
+		int friendId = activity.sortedFriendIdsToDisplay.get(position);
+		Friend friend = activity.friends.get(friendId);
 
 		isServiceRunning = ServiceUtils.isServiceRunning(activity, GpsTrackerService.class);
 		if( isServiceRunning ){
-			view = inflateActionRow(friend);
+			view = inflateActionRow(friendId, friend);
 		}
 		else{
-			view = inflateOfflineRow(friend);
+			view = inflateOfflineRow(friendId, friend);
 		}
 
 		LinearLayout row = (LinearLayout)view.findViewById(R.id.row_friend);
-		row.setTag(id);
-
-		if( id == SocialActivity.ID_ME ){
-			row.setBackgroundColor(view.getResources().getColor(R.color.bn_orange2));
-		}
+		row.setTag(friendId);
 
 		return view;
 	}
 
 
-	private View inflateActionRow(Friend friend){
+	private View inflateActionRow(int friendId, Friend friend){
 		View view = inflater.inflate(R.layout.friend_list_row_action, null);
 
-		ImageView color_block=(ImageView)view.findViewById(R.id.action_color_block);
+		ImageView colorBlockImageView = (ImageView)view.findViewById(R.id.action_color_block);
+		setColorForBlock(colorBlockImageView, friendId, friend);
+		
 		TextView name = (TextView)view.findViewById(R.id.action_row_friend_name); 
 		TextView textViewRelativeTime = (TextView)view.findViewById(R.id.action_row_time_rel); 
 		TextView textViewRelativeDistance = (TextView)view.findViewById(R.id.action_row_distance_rel); 
 		TextView textViewAbsolutePosition = (TextView)view.findViewById(R.id.action_row_distance_abs); 
 
-		// Setting all values in listview
-		color_block.setBackgroundColor(friend.getColor());
+		
 		name.setText(friend.getName());
 		if ( friend.getRelativeTime() != null)
 			textViewRelativeTime.setText(formatTime(friend.getRelativeTime()));
@@ -86,19 +83,27 @@ public class FriendListAdapter extends BaseAdapter {
 		return view;
 	}
 
-	private View inflateOfflineRow(Friend friend){
+	private View inflateOfflineRow(int friendId, Friend friend){
 
 		View view = inflater.inflate(R.layout.friend_list_row, null);
 
+		ImageView colorBlockImageView = (ImageView)view.findViewById(R.id.color_block);
+		setColorForBlock(colorBlockImageView, friendId, friend);
+
 		TextView textViewName = (TextView)view.findViewById(R.id.row_friend_name); 
 		TextView textViewStatus = (TextView)view.findViewById(R.id.row_friend_status); 
-		ImageView colorBlockImageView = (ImageView)view.findViewById(R.id.color_block); 
 
 		// Setting all values in listview
 		textViewName.setText(friend.getName());
 		updateStatus(friend, textViewStatus );
-		colorBlockImageView.setBackgroundColor(friend.getColor());
+
 		return view;
+	}
+	
+	private void setColorForBlock(ImageView colorBlockImageView, int friendId, Friend friend) {
+		colorBlockImageView.setBackgroundColor(friend.getColor());
+		if ( friendId == SocialActivity.ID_HEAD ||  friendId == SocialActivity.ID_TAIL )
+			colorBlockImageView.setVisibility(View.INVISIBLE);
 	}
 	
 	private void updateStatus(Friend friend, TextView textViewStatus) {

@@ -8,9 +8,12 @@ import java.util.Map;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import de.greencity.bladenightapp.android.R;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.util.Log;
 
 public class Friends {
@@ -78,6 +81,19 @@ public class Friends {
 		friends.remove(id);
 		save();
 	}
+
+	static public int getOwnColor(Context context) {
+		int defaultColor = context.getResources().getColor(R.color.default_own_color);
+		Friends friends = new Friends(context);
+		friends.load();
+		Friend me = friends.get(SocialActivity.ID_ME); 
+		if ( me == null )
+			return defaultColor;
+		if ( me.getColor() == Color.BLACK)
+			return defaultColor;
+		return me.getColor();
+	}
+	
 
 	@SuppressLint("UseSparseArrays")
 	private Map<Integer, Friend> friends = new HashMap<Integer, Friend>();

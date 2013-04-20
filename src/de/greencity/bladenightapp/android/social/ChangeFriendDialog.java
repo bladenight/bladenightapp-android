@@ -30,6 +30,7 @@ public class ChangeFriendDialog extends DialogFragment  {
     private ImageView color_friend3;
     private ImageView color_friend4;
     private ImageView color_friend5;
+    private ImageView color_friend6;
 
     public static final String KEY_FRIENDOBJ = "friend";
     public static final String KEY_FRIENDID = "index";
@@ -56,6 +57,7 @@ public class ChangeFriendDialog extends DialogFragment  {
     	color_friend3 = (ImageView) rootView.findViewById(R.id.color_friend3);
     	color_friend4 = (ImageView) rootView.findViewById(R.id.color_friend4);
     	color_friend5 = (ImageView) rootView.findViewById(R.id.color_friend5);
+    	color_friend6 = (ImageView) rootView.findViewById(R.id.color_friend6);
         
         mEditText.setText(friend.getName());
         activeBox.setChecked(friend.isActive()); 
@@ -123,6 +125,13 @@ public class ChangeFriendDialog extends DialogFragment  {
             	setColor();
             }
         });
+
+        color_friend6.setOnClickListener(new ImageView.OnClickListener() {
+            public void onClick(View view) {
+            	friend.setColor(view.getResources().getColor(R.color.new_friend6));
+            	setColor();
+            }
+        });
     }
     
     private void setColor() {
@@ -133,6 +142,7 @@ public class ChangeFriendDialog extends DialogFragment  {
     	color_friend3.setImageResource(R.drawable.color_field_off);
     	color_friend4.setImageResource(R.drawable.color_field_off);
     	color_friend5.setImageResource(R.drawable.color_field_off);
+    	color_friend6.setImageResource(R.drawable.color_field_off);
     	
     	if(currentColor == rootView.getResources().getColor(R.color.new_friend1)){
     		color_friend1.setImageResource(R.drawable.color_field);
@@ -148,6 +158,9 @@ public class ChangeFriendDialog extends DialogFragment  {
     	}
     	if(currentColor == rootView.getResources().getColor(R.color.new_friend5)){
     		color_friend5.setImageResource(R.drawable.color_field);
+    	}
+    	if(currentColor == rootView.getResources().getColor(R.color.new_friend6)){
+    		color_friend6.setImageResource(R.drawable.color_field);
     	}
     }
    

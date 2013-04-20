@@ -9,6 +9,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.PorterDuff.Mode;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.GradientDrawable.Orientation;
@@ -49,6 +50,11 @@ public class ProcessionProgressBar extends ProgressBar {
 			setDemoData();
 		}
 		friends = new Friends(context);
+		friends.load();
+	}
+
+	public void onResume() {
+		// reload colors:
 		friends.load();
 	}
 
@@ -201,7 +207,7 @@ public class ProcessionProgressBar extends ProgressBar {
 			return userDrawable;
 
 		int[] colors = new int[2];
-		int color = context.getResources().getColor(R.color.new_myself);
+		int color = Friends.getOwnColor(context);
 		colors[0] = color;
 		colors[1] = color;
 

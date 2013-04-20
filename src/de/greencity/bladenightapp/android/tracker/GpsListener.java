@@ -30,10 +30,14 @@ public class GpsListener {
 	public void cancelLocationUpdates() {
 		LocationManager locationManager;
 		locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-		locationManager.removeUpdates(locationListener);
+		if ( locationListener == null )
+			Log.w(TAG, "locationManager==null in cancelLocationUpdates");
+		else
+			locationManager.removeUpdates(locationListener);
 	}
 
 	private LocationListener locationListener;
 	private Context context;
+	static private final String TAG = "GpsListener";
 
 }
