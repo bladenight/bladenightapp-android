@@ -429,8 +429,6 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 		sortedFriendIdsToDisplay = new ArrayList<Integer>();
 		for(int friendId : friends.keySet()){
 			Friend friend = friends.get(friendId);
-			Log.i(TAG, "sortListViewWhileInAction: id="+friendId);
-			Log.i(TAG, "sortListViewWhileInAction: friend="+friend);
 			if( friend.isActive() && friend.isOnline() )
 				sortedFriendIdsToDisplay.add(friendId);
 		}

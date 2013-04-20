@@ -32,9 +32,9 @@ public class JsonCacheAccess<T> {
 	}
 	
 	public void set(T object) {
-		String json = gson.toJson(object);
-		Log.i(TAG, "Writing data to cache, length=" + json.length());
-		cacheFile.write(json);
+		// String json = gson.toJson(object);
+		// Log.i(TAG, "Writing data to cache, length=" + json.length());
+		// cacheFile.write(json);
 	}
 	
 	public static String getNameForRoute(String routeName) {

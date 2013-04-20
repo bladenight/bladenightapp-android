@@ -17,6 +17,7 @@ public class ActionMap implements Action {
 	@Override
 	public void performAction(View view) {
 	    Intent intent = new Intent(view.getContext(), BladenightMapActivity.class);
+	    intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
 	    view.getContext().startActivity(intent);
 	}
 }

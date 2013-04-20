@@ -310,11 +310,11 @@ public class NetworkClient {
 
 	private void callOrStore(BacklogItem item) {
 		if ( isConnectionUsable() ) {
-			Log.i(TAG, "callOrStore: calling");
+			Log.i(TAG, "callOrStore: calling " + item.url);
 			call(item);
 		}
 		else {
-			Log.i(TAG, "callOrStore: storing");
+			Log.i(TAG, "callOrStore: storing " + item.url);
 			item.timestamp = System.currentTimeMillis();
 			backlogItems.add(item);
 			connect();

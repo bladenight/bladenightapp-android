@@ -14,6 +14,8 @@ import org.mapsforge.map.reader.header.FileOpenResult;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.location.Location;
+import android.location.LocationListener;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -54,6 +56,7 @@ public class BladenightMapActivity extends MapActivity {
 
 		downloadProgressDialog = new ProgressDialog(this);
 		processionProgressBar = (ProcessionProgressBar) findViewById(R.id.progress_procession);
+		
 	}
 
 	@Override
@@ -66,6 +69,11 @@ public class BladenightMapActivity extends MapActivity {
 
 		configureActionBar();
 
+		configureBasedOnIntent();
+		
+	}
+	
+	private void configureBasedOnIntent() {
 		getActivityParametersFromIntent(getIntent());
 
 		routeCache = new JsonCacheAccess<RouteMessage>(this, RouteMessage.class, JsonCacheAccess.getNameForRoute(routeName));
@@ -74,7 +82,7 @@ public class BladenightMapActivity extends MapActivity {
 			periodicTask = new Runnable() {
 				@Override
 				public void run() {
-					Log.i(TAG, "periodic task");
+					// Log.i(TAG, "periodic task");
 					if ( ! isRouteInfoAvailable )
 						requestRouteFromNetworkService();
 					getRealTimeDataFromServer();
@@ -82,12 +90,15 @@ public class BladenightMapActivity extends MapActivity {
 				}
 			};
 			periodicHandler.postDelayed(periodicTask, updatePeriod);
-			gpsListener = new GpsListener(this, userPositionOverlay);
-			gpsListener.requestLocationUpdates(updatePeriod);
 		}
 		else {
 			processionProgressBar.setVisibility(View.GONE);
 		}
+
+		if ( gpsListener != null )
+			gpsListener.cancelLocationUpdates();
+		gpsListener = new GpsListener(this, userPositionOverlay);
+		gpsListener.requestLocationUpdates(updatePeriod);
 
 		// The auto-zooming of the fetched route requires to have the layout 
 		if (mapView.getWidth() == 0 || mapView.getHeight() == 0 ) {
@@ -104,6 +115,13 @@ public class BladenightMapActivity extends MapActivity {
 		else {
 			triggerInitialRouteDataFetch();
 		}
+	}
+	
+	@Override
+	protected void onNewIntent(Intent intent) {
+	    super.onNewIntent(intent);
+	    setIntent(intent);
+	    configureBasedOnIntent();
 	}
 	
 	@Override
@@ -354,7 +372,6 @@ public class BladenightMapActivity extends MapActivity {
 		}
 	}
 
-
 	final String TAG = "BladenightMapActivity";
 	private BroadcastReceiversRegister broadcastReceiversRegister = new BroadcastReceiversRegister(this); 
 	private final String mapLocalPath = Environment.getExternalStorageDirectory().getPath()+"/Bladenight/munich.map";
@@ -366,7 +383,7 @@ public class BladenightMapActivity extends MapActivity {
 	private BladenightMapView mapView;
 	private ProcessionProgressBar processionProgressBar;
 	private NetworkClient networkClient;
-	private final int updatePeriod = 2000;
+	private final int updatePeriod = 3000;
 	private final Handler periodicHandler = new Handler();
 	private Runnable periodicTask;
 	private UserPositionOverlay userPositionOverlay;
