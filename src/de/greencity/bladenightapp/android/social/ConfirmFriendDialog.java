@@ -3,6 +3,7 @@ package de.greencity.bladenightapp.android.social;
 import de.greencity.bladenightapp.android.R;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +28,7 @@ public class ConfirmFriendDialog extends DialogFragment  {
         View view = inflater.inflate(R.layout.confirm_friend_dialog, container);
         editName = (EditText) view.findViewById(R.id.confirm_friendsName);
         editCode = (EditText) view.findViewById(R.id.confirm_code);
+        editCode.setInputType(InputType.TYPE_CLASS_NUMBER);
         getDialog().setTitle("Confirm Friend");
         
         setDefaultName();
