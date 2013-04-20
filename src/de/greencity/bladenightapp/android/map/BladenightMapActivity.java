@@ -21,7 +21,6 @@ import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.view.ViewTreeObserver.OnGlobalFocusChangeListener;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.Window;
 import android.widget.LinearLayout;

@@ -53,7 +53,7 @@ public class Friends {
 		return friends.keySet();
 	}
 
-	public static int generateId(Context context) {
+	public static synchronized int generateId(Context context) {
 		Friends friends = new Friends(context);
 		friends.load();
 		
