@@ -185,7 +185,8 @@ public class EventFragment extends Fragment {
 			imageViewStatus.setImageResource(R.drawable.traffic_light_green);
 			break;
 		case PEN:
-			imageViewStatus.setImageResource(R.drawable.traffic_light_orange);
+			if(isCurrent)
+				imageViewStatus.setImageResource(R.drawable.traffic_light_orange);
 			break;
 		default:
 			throw new Error("This status is not valid");

@@ -17,5 +17,10 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:padding="4dp" />
-
+    
+    <de.greencity.bladenightapp.android.selection.CirclePageIndicator
+        android:id="@+id/page_indicator"
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:padding="10dp" />
 </LinearLayout>

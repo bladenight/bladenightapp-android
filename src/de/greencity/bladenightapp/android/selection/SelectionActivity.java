@@ -49,7 +49,13 @@ public class SelectionActivity extends FragmentActivity {
 		eventsCache = new JsonCacheAccess<EventsListMessage>(this, EventsListMessage.class, JsonCacheAccess.FILE_EVENTS);
 
 		viewPager = (ViewPager) findViewById(R.id.pager);
-		viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+		viewPagerAdapter = new ViewPagerAdapter(viewPager, getSupportFragmentManager());
+		viewPager.setAdapter(viewPagerAdapter);
+		
+		CirclePageIndicator titleIndicator = (CirclePageIndicator)findViewById(R.id.page_indicator);
+		titleIndicator.setViewPager(viewPager);
+		
+		titleIndicator.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 			@Override
 			public void onPageSelected(int page) {
 				posEventShown = page;
@@ -62,8 +68,6 @@ public class SelectionActivity extends FragmentActivity {
 			public void onPageScrollStateChanged(int arg0) {
 			}
 		});
-		viewPagerAdapter = new ViewPagerAdapter(viewPager, getSupportFragmentManager());
-		viewPager.setAdapter(viewPagerAdapter);
 
 		networkClient =  new NetworkClient(this);
 	}
