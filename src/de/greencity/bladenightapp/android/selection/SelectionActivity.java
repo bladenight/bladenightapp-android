@@ -49,19 +49,6 @@ public class SelectionActivity extends FragmentActivity {
 		eventsCache = new JsonCacheAccess<EventsListMessage>(this, EventsListMessage.class, JsonCacheAccess.FILE_EVENTS);
 
 		viewPager = (ViewPager) findViewById(R.id.pager);
-//		viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-//			@Override
-//			public void onPageSelected(int page) {
-//				posEventShown = page;
-//				Log.i(TAG, "onPageSelected: currentFragmentShown="+posEventShown);
-//			}
-//			@Override
-//			public void onPageScrolled(int arg0, float arg1, int arg2) {
-//			}
-//			@Override
-//			public void onPageScrollStateChanged(int arg0) {
-//			}
-//		});
 		viewPagerAdapter = new ViewPagerAdapter(viewPager, getSupportFragmentManager());
 		viewPager.setAdapter(viewPagerAdapter);
 		

@@ -187,6 +187,8 @@ public class EventFragment extends Fragment {
 		case PEN:
 			imageViewStatus.setImageResource(R.drawable.traffic_light_orange);
 			break;
+		case FUT: //futur event -> no traffic light
+			break;
 		default:
 			throw new Error("This status is not valid");
 		}
