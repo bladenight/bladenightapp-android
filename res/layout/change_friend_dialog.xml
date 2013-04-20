@@ -16,90 +16,94 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:imeOptions="actionDone"
-        android:inputType="text" />
-    
-     <TextView
+        android:inputType="textCapSentences" />
+
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="5dp"
         android:text="Color" />
-    
-    <LinearLayout 
-        android:layout_width="match_parent" android:layout_height="50dp"
-        android:orientation="horizontal">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal" >
+
         <ImageView
-		    android:id="@+id/color_friend1"
-		    android:layout_height="match_parent"
-		    android:layout_weight="1"
-		    android:layout_width="match_parent"
-		    android:background="@color/new_friend1"
-		    android:src="@drawable/color_field_off" />
+            android:id="@+id/color_friend1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@color/new_friend1"
+            android:src="@drawable/color_field_off" />
 
         <ImageView
             android:id="@+id/color_friend2"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:layout_width="match_parent"
             android:background="@color/new_friend2"
-            android:src="@drawable/color_field_off"/>
+            android:src="@drawable/color_field_off" />
+
         <ImageView
             android:id="@+id/color_friend3"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:layout_width="match_parent"
             android:background="@color/new_friend3"
-            android:src="@drawable/color_field_off"/>
+            android:src="@drawable/color_field_off" />
+
         <ImageView
             android:id="@+id/color_friend4"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:layout_width="match_parent"
             android:background="@color/new_friend4"
-            android:src="@drawable/color_field_off"/>
+            android:src="@drawable/color_field_off" />
+
         <ImageView
             android:id="@+id/color_friend5"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:layout_width="match_parent"
             android:background="@color/new_friend5"
             android:src="@drawable/color_field" />
+
         <ImageView
             android:id="@+id/color_friend6"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:layout_width="match_parent"
             android:background="@color/new_friend6"
             android:src="@drawable/color_field" />
-        </LinearLayout>
+    </LinearLayout>
 
     <CheckBox
         android:id="@+id/friend_active"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Active" />
-    
-    <LinearLayout 
-        android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
         <Button
             android:id="@+id/changeFriend_confirm"
-            android:layout_weight="1"
-            android:layout_height="match_parent"
             android:layout_width="match_parent"
-            android:text="OK" 
-            android:onClick="onClick"/>
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:onClick="onClick"
+            android:text="OK" />
 
-        
         <Button
             android:id="@+id/changeFriend_cancel"
-            android:layout_weight="1"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="Cancel" 
-            android:onClick="onClick"/>
-    
-          
-        
+            android:layout_weight="1"
+            android:onClick="onClick"
+            android:text="Cancel" />
     </LinearLayout>
+
 </LinearLayout>

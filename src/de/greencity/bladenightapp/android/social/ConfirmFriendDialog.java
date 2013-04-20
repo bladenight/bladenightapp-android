@@ -28,15 +28,13 @@ public class ConfirmFriendDialog extends DialogFragment  {
         View view = inflater.inflate(R.layout.confirm_friend_dialog, container);
         editName = (EditText) view.findViewById(R.id.confirm_friendsName);
         editCode = (EditText) view.findViewById(R.id.confirm_code);
-        editCode.setInputType(InputType.TYPE_CLASS_NUMBER);
         getDialog().setTitle("Confirm Friend");
         
         setDefaultName();
         
      // Show soft keyboard automatically
         editName.requestFocus();
-        getDialog().getWindow().setSoftInputMode(
-                LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+        getDialog().getWindow().setSoftInputMode(LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         
         Button confirmButton = (Button) view.findViewById(R.id.confirmFriend_confirm);
         confirmButton.setOnClickListener(new Button.OnClickListener() {

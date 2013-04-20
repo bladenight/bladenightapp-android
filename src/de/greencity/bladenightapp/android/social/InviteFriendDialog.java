@@ -31,8 +31,7 @@ public class InviteFriendDialog extends DialogFragment  {
 		
 		// Show soft keyboard automatically
 		editText.requestFocus();
-		getDialog().getWindow().setSoftInputMode(
-				LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+		getDialog().getWindow().setSoftInputMode(LayoutParams.SOFT_INPUT_STATE_VISIBLE);
 
 		Button confirmButton = (Button) view.findViewById(R.id.inviteFriend_confirm);
 		confirmButton.setOnClickListener(new Button.OnClickListener() {

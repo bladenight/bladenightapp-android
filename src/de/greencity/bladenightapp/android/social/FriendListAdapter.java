@@ -114,10 +114,13 @@ public class FriendListAdapter extends BaseAdapter {
 		else if ( ! friend.isValid() ) {
 			statustext = "obsolete";
 		}
-		else if ( friend.isOnline() )
-			statustext = "online";
-		else
-			statustext = "offline";
+		else if ( ! friend.isActive() ) {
+			statustext = "inactive";
+		}
+//		else if ( friend.isOnline() )
+//			statustext = "online";
+//		else
+//			statustext = "offline";
 		textViewStatus.setText(statustext);
 	}
 
