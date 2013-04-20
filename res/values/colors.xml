@@ -18,13 +18,14 @@
     <color name="new_bar">#22A04D</color>
     <color name="new_route">#50009834</color>
     <color name="new_procession">#C0009834</color>
-    <color name="new_friend1">#FE100D</color>
-    <color name="new_friend2">#454DE7</color>
+    <color name="new_friend1">#454DE7</color>
+    <color name="new_friend2">#FE100D</color>
     <color name="new_friend3">#02E5FC</color>
     <color name="new_friend4">#F6FC02</color>
     <color name="new_friend5">#FF00DA</color>
     <color name="new_friend6">#FE6D00</color>
     
+    <color name="default_friend_color">#454DE7</color>
     <color name="default_own_color">#FE6D00</color>
     
     

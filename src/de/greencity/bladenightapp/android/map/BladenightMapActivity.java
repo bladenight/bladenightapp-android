@@ -14,8 +14,6 @@ import org.mapsforge.map.reader.header.FileOpenResult;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.location.Location;
-import android.location.LocationListener;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -56,7 +54,7 @@ public class BladenightMapActivity extends MapActivity {
 
 		downloadProgressDialog = new ProgressDialog(this);
 		processionProgressBar = (ProcessionProgressBar) findViewById(R.id.progress_procession);
-		
+
 	}
 
 	@Override
@@ -67,14 +65,14 @@ public class BladenightMapActivity extends MapActivity {
 
 		verifyMapFile();
 
-		configureActionBar();
-
 		configureBasedOnIntent();
-		
+
 	}
-	
+
 	private void configureBasedOnIntent() {
 		getActivityParametersFromIntent(getIntent());
+
+		configureActionBar();
 
 		routeCache = new JsonCacheAccess<RouteMessage>(this, RouteMessage.class, JsonCacheAccess.getNameForRoute(routeName));
 
@@ -82,6 +80,8 @@ public class BladenightMapActivity extends MapActivity {
 			periodicTask = new Runnable() {
 				@Override
 				public void run() {
+					if ( ! isRunning )
+						return;
 					// Log.i(TAG, "periodic task");
 					if ( ! isRouteInfoAvailable )
 						requestRouteFromNetworkService();
@@ -94,11 +94,6 @@ public class BladenightMapActivity extends MapActivity {
 		else {
 			processionProgressBar.setVisibility(View.GONE);
 		}
-
-		if ( gpsListener != null )
-			gpsListener.cancelLocationUpdates();
-		gpsListener = new GpsListener(this, userPositionOverlay);
-		gpsListener.requestLocationUpdates(updatePeriod);
 
 		// The auto-zooming of the fetched route requires to have the layout 
 		if (mapView.getWidth() == 0 || mapView.getHeight() == 0 ) {
@@ -116,21 +111,42 @@ public class BladenightMapActivity extends MapActivity {
 			triggerInitialRouteDataFetch();
 		}
 	}
-	
+
 	@Override
 	protected void onNewIntent(Intent intent) {
-	    super.onNewIntent(intent);
-	    setIntent(intent);
-	    configureBasedOnIntent();
+		super.onNewIntent(intent);
+		setIntent(intent);
+		configureBasedOnIntent();
 	}
-	
+
+	@Override
+	public void onPause() {
+		super.onPause();
+		cancelAllAutomaticTasks();
+		isRunning = false;
+	}
+
+	public void cancelAllAutomaticTasks() {
+		if ( periodicTask != null )
+			periodicHandler.removeCallbacks(periodicTask);
+		if ( gpsListener != null)
+			gpsListener.cancelLocationUpdates();
+	}
+
 	@Override
 	public void onResume() {
 		super.onResume();
-		
+
 		// Friend colors and stuff like that could have been changed in the meantime, so re-create the overlays
 		userPositionOverlay.onResume();
 		processionProgressBar.onResume();
+
+		if ( gpsListener != null )
+			gpsListener.cancelLocationUpdates();
+		gpsListener = new GpsListener(this, userPositionOverlay);
+		gpsListener.requestLocationUpdates(updatePeriod);
+
+		isRunning = true;
 	}
 
 	private void triggerInitialRouteDataFetch() {
@@ -142,10 +158,8 @@ public class BladenightMapActivity extends MapActivity {
 	@Override
 	public void onStop() {
 		super.onStop();
-		if ( periodicTask != null )
-			periodicHandler.removeCallbacks(periodicTask);
-		if ( gpsListener != null)
-			gpsListener.cancelLocationUpdates();
+		cancelAllAutomaticTasks();
+		isRunning = false;
 	}
 
 
@@ -179,6 +193,8 @@ public class BladenightMapActivity extends MapActivity {
 		}
 		@Override
 		public void handleMessage(Message msg) {
+			if ( ! reference.get().isRunning ) // too late !
+				return;
 			RealTimeUpdateData realTimeUpdateData = (RealTimeUpdateData)msg.obj;
 			reference.get().routeOverlay.update(realTimeUpdateData);
 			reference.get().processionProgressBar.update(realTimeUpdateData);
@@ -204,6 +220,8 @@ public class BladenightMapActivity extends MapActivity {
 		}
 		@Override
 		public void handleMessage(Message msg) {
+			if ( ! reference.get().isRunning ) // too late !
+				return;
 			RouteMessage routeMessage = (RouteMessage) msg.obj;
 			reference.get().updateRouteFromRouteMessage(routeMessage);
 			reference.get().routeCache.set(routeMessage);
@@ -242,11 +260,13 @@ public class BladenightMapActivity extends MapActivity {
 
 	private void configureActionBar() {
 		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
-		new ActionBarConfigurator(actionBar)
+		ActionBarConfigurator configurator = new ActionBarConfigurator(actionBar)
 		.show(ActionItemType.FRIENDS)
-		.show(ActionItemType.TRACKER_CONTROL)
-		.setTitle(R.string.title_map)
-		.configure();
+		.setTitle(R.string.title_map);
+		if ( isShowingActiveEvent ) {
+			configurator.show(ActionItemType.TRACKER_CONTROL);
+		}
+		configurator.configure();
 	}
 
 
@@ -270,7 +290,7 @@ public class BladenightMapActivity extends MapActivity {
 
 		centerViewOnCoordinates(new GeoPoint(48.132491, 11.543474), (byte)13);
 	}
-	
+
 	public void createOverlays() {
 		if ( routeOverlay != null )
 			mapView.getOverlays().remove(routeOverlay);
@@ -391,5 +411,6 @@ public class BladenightMapActivity extends MapActivity {
 	private boolean isRouteInfoAvailable = false;
 	private JsonCacheAccess<RouteMessage> routeCache;
 	static public final String PARAM_ROUTENAME = "routeName";
+	private boolean isRunning = true;
 
 } 

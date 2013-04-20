@@ -165,7 +165,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 				ShowCodeDialog showCodeDialog = new ShowCodeDialog();
 				showCodeDialog.setArguments(arguments);
 				showCodeDialog.show(fm, "fragment_show_code");
-				Friend newFriend = new Friend(friendName);
+				Friend newFriend = socialActivity.newFriend(friendName);
 				newFriend.setRequestId(relMsg.getRequestId());
 				socialActivity.friends.put((int)relMsg.fid,newFriend);
 				socialActivity.updateGui();
@@ -176,6 +176,12 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 		private WeakReference<SocialActivity> reference;
 		private String friendName;
 		private ProgressDialog progressDialog;
+	}
+	
+	public Friend newFriend(String name) {
+		Friend newFriend = new Friend(name);
+		newFriend.setColor(findViewById(android.R.id.content).getResources().getColor(R.color.default_friend_color));
+		return newFriend;
 	}
 
 	@Override
@@ -201,7 +207,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 			RelationshipOutputMessage relMsg = (RelationshipOutputMessage)msg.obj;
 			Log.i("CreateNewRequestHandler", "Got answer from server:" + relMsg);
 			if (relMsg != null ) {
-				Friend newFriend = new Friend(friendName);
+				Friend newFriend = socialActivity.newFriend(friendName);
 				socialActivity.friends.put((int)relMsg.fid, newFriend);
 				socialActivity.updateGui();
 				progressDialog.dismiss();
@@ -315,7 +321,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 			Friend friend = friends.get(friendId);
 			if ( friend == null ) {
 				// for some reason the server knows about this friend but we don't
-				friend = new Friend("?");
+				friend = newFriend("?");
 				friends.put(friendId, friend);
 			}
 
@@ -382,7 +388,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 				friendLocation =  friendsMessage.get(friendId);
 				if ( friends.get(friendId) == null ) {
 					// for one reason the server knows about this friend but we don't
-					friend = new Friend("?");
+					friend = newFriend("?");
 					friends.put(friendId, friend);
 				}
 			}
