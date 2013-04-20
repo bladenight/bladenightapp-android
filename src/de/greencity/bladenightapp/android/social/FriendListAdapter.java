@@ -108,6 +108,9 @@ public class FriendListAdapter extends BaseAdapter {
 		if ( friend.getRequestId() > 0 ) {
 			statustext = "pending (" + friend.getRequestId() + ")";
 		}
+		else if ( ! friend.isValid() ) {
+			statustext = "obsolete";
+		}
 		else if ( friend.isOnline() )
 			statustext = "online";
 		else

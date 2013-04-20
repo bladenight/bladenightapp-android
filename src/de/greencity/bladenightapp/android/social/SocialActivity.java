@@ -277,6 +277,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 		public void handleMessage(Message msg) {
 			Toast.makeText(reference.get(), "Friend has been removed", Toast.LENGTH_SHORT).show();
 			reference.get().friends.remove(friendId);
+			reference.get().friends.save();
 			reference.get().updateGui();
 			reference.get().getFriendsListFromServer();
 		}
@@ -316,7 +317,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 
 			Friend friend = friends.get(friendId);
 			if ( friend == null ) {
-				// for one reason the server knows about this friend but we don't
+				// for some reason the server knows about this friend but we don't
 				friend = new Friend("?", FriendColor.BLACK);
 				friends.put(friendId, friend);
 			}
