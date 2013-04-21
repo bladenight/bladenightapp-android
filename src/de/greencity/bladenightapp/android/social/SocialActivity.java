@@ -113,9 +113,6 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 
 
 	private void createListView() {
-
-		updateGui();
-
 		//Create an adapter for the listView and add the ArrayList to the adapter.
 		listView.setAdapter(new FriendListAdapter(SocialActivity.this));
 		listView.setOnItemClickListener(new OnItemClickListener()
@@ -249,6 +246,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 	@Override
 	public void onFinishChangeFriendDialog(Friend friend, int friendId) { 
 		friends.put(friendId, friend);
+		friends.save();
 		updateGui();
 		getFriendsListFromServer();
 	}
@@ -420,7 +418,8 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 	}
 
 	private void sortListViewWhileNotInAction() {
-		sortedFriendIdsToDisplay = new ArrayList<Integer>(friends.keySet());
+		sortedFriendIdsToDisplay.clear();
+		sortedFriendIdsToDisplay.addAll(friends.keySet());
 		sortedFriendIdsToDisplay.remove(ID_HEAD);
 		sortedFriendIdsToDisplay.remove(ID_TAIL);
 		sortedFriendIdsToDisplay.remove(ID_ME);
@@ -432,7 +431,8 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 	}
 
 	private void sortListViewWhileInAction() {
-		sortedFriendIdsToDisplay = new ArrayList<Integer>();
+		sortedFriendIdsToDisplay.clear();
+		sortedFriendIdsToDisplay.addAll(friends.keySet());
 		for(int friendId : friends.keySet()){
 			Friend friend = friends.get(friendId);
 			if( friend.isActive() && friend.isOnline() )
@@ -477,7 +477,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 
 	private ListView listView;
 	Friends friends;
-	List<Integer> sortedFriendIdsToDisplay;
+	final List<Integer> sortedFriendIdsToDisplay = new ArrayList<Integer>();
 	private final static String TAG = "SocialActivity"; 
 	private NetworkClient networkClient = new NetworkClient(this);
 	private final Handler periodicHandler = new Handler();
