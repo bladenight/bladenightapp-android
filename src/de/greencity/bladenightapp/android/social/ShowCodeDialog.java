@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import de.greencity.bladenightapp.android.R;
+import de.greencity.bladenightapp.dev.android.R;
 
 
 public class ShowCodeDialog extends DialogFragment  {

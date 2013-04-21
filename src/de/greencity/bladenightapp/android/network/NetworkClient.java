@@ -26,7 +26,7 @@ import android.util.Log;
 
 import com.codebutler.android_websockets.WebSocketClient;
 
-import de.greencity.bladenightapp.android.R;
+import de.greencity.bladenightapp.dev.android.R;
 import de.greencity.bladenightapp.android.admin.AdminUtilities;
 import de.greencity.bladenightapp.android.network.BladenightWampClient.State;
 import de.greencity.bladenightapp.android.tracker.GpsTrackerService;

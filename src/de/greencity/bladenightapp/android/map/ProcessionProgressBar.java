@@ -17,7 +17,7 @@ import android.graphics.drawable.LayerDrawable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.widget.ProgressBar;
-import de.greencity.bladenightapp.android.R;
+import de.greencity.bladenightapp.dev.android.R;
 import de.greencity.bladenightapp.android.social.Friends;
 import de.greencity.bladenightapp.android.utils.DistanceFormatting;
 import de.greencity.bladenightapp.network.messages.FriendMessage;

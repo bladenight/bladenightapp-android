@@ -23,7 +23,7 @@ import android.widget.Toast;
 
 import com.markupartist.android.widget.ActionBar;
 
-import de.greencity.bladenightapp.android.R;
+import de.greencity.bladenightapp.dev.android.R;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
 import de.greencity.bladenightapp.android.admin.AdminUtilities;
 import de.greencity.bladenightapp.android.network.NetworkClient;

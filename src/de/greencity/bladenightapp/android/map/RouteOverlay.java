@@ -15,7 +15,7 @@ import android.graphics.Paint;
 import android.graphics.Paint.Cap;
 import android.location.Location;
 import android.util.Log;
-import de.greencity.bladenightapp.android.R;
+import de.greencity.bladenightapp.dev.android.R;
 import de.greencity.bladenightapp.network.messages.LatLong;
 import de.greencity.bladenightapp.network.messages.RealTimeUpdateData;
 import de.greencity.bladenightapp.network.messages.RouteMessage;

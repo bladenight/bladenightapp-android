@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
-import de.greencity.bladenightapp.android.R;
+import de.greencity.bladenightapp.dev.android.R;
 
 public class StatisticsActivity extends Activity {
 	@Override

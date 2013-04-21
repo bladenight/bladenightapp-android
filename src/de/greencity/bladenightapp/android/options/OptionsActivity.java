@@ -8,7 +8,7 @@ import android.view.Window;
 
 import com.markupartist.android.widget.ActionBar;
 
-import de.greencity.bladenightapp.android.R;
+import de.greencity.bladenightapp.dev.android.R;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
 
 public class OptionsActivity extends Activity {

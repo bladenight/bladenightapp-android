@@ -17,7 +17,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
 import android.util.Log;
-import de.greencity.bladenightapp.android.R;
+import de.greencity.bladenightapp.dev.android.R;
 import de.greencity.bladenightapp.android.social.Friend;
 import de.greencity.bladenightapp.android.social.Friends;
 import de.greencity.bladenightapp.android.social.SocialActivity;

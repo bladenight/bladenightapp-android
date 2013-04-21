@@ -16,7 +16,7 @@
  */
 package de.greencity.bladenightapp.android.selection;
 
-import de.greencity.bladenightapp.android.R;
+import de.greencity.bladenightapp.dev.android.R;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;

@@ -7,6 +7,7 @@
     <string name="about_olivier">Olivier Croquette : ocroquette@free.fr</string>
     <string name="about_server_application">Server Application</string>
     <string name="app_name">AOK Blade Night</string>
+    <string name="app_name_dev">AOK Blade Night (dev)</string>
     <string name="arrow_left">&lt;</string>
     <string name="arrow_no"></string>
     <string name="arrow_right">&gt;</string>

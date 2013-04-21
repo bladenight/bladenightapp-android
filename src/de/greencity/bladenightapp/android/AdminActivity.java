@@ -3,6 +3,7 @@ package de.greencity.bladenightapp.android;
 import android.os.Bundle;
 import android.app.Activity;
 import android.view.Menu;
+import de.greencity.bladenightapp.dev.android.R;
 
 public class AdminActivity extends Activity {
 
