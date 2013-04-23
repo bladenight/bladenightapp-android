@@ -124,7 +124,7 @@ public class EventFragment extends Fragment {
 
 		//tmp till statistics implemented
 		//if ( ! hasStatistics )
-			view.findViewById(R.id.image_event_statistics).setEnabled(false);
+		view.findViewById(R.id.image_event_statistics).setEnabled(false);
 
 		if ( ! isCurrent )
 			view.findViewById(R.id.image_event_participate).setEnabled(false);
@@ -150,12 +150,21 @@ public class EventFragment extends Fragment {
 			Log.e(TAG, "updateEvent: event=" + event);
 			return;
 		}
+
 		TextView textViewCourse = (TextView)view.findViewById(R.id.course);
 		textViewCourse.setText(event.getRouteName());
+
 		TextView textViewDate = (TextView)view.findViewById(R.id.date);
 		textViewDate.setText(toDateFormat.print(startDateTime));
+
+		if ( event.getParticipantsCount() > 0 ) {
+			TextView textViewParticipants = (TextView)view.findViewById(R.id.participants);
+			textViewParticipants.setText(event.getParticipantsCount() + " " + viewPager.getResources().getString(R.string.msg_participants));
+		}
+
 		TextView textViewLeft = (TextView)view.findViewById(R.id.arrow_left);
 		textViewLeft.setText(hasLeft ? R.string.arrow_left : R.string.arrow_no);
+
 		TextView textViewRight = (TextView)view.findViewById(R.id.arrow_right);
 		textViewRight.setText(hasRight ? R.string.arrow_right : R.string.arrow_no);
 
