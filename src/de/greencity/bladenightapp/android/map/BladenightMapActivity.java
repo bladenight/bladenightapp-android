@@ -286,7 +286,7 @@ public class BladenightMapActivity extends MapActivity {
 
 		TileCache fileSystemTileCache = mapView.getFileSystemTileCache();
 		fileSystemTileCache.setPersistent(true);
-		fileSystemTileCache.setCapacity(20000);
+		fileSystemTileCache.setCapacity(100);
 
 		centerViewOnCoordinates(new GeoPoint(48.132491, 11.543474), (byte)13);
 	}
