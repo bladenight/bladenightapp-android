@@ -13,7 +13,7 @@ public class JsonCacheAccess<T> {
 		this.gson = new GsonBuilder().setPrettyPrinting().create();
 		this.clazz = clazz;
 	}
-	
+
 	public T get() {
 		Log.i(TAG, "Fetching JsonCache: " + filename);
 		if ( cacheFile == null )
@@ -30,17 +30,17 @@ public class JsonCacheAccess<T> {
 			return null;
 		}
 	}
-	
+
 	public void set(T object) {
-		// String json = gson.toJson(object);
-		// Log.i(TAG, "Writing data to cache, length=" + json.length());
-		// cacheFile.write(json);
+		String json = gson.toJson(object);
+		Log.i(TAG, "Writing data to cache, length=" + json.length());
+		cacheFile.write(json);
 	}
-	
+
 	public static String getNameForRoute(String routeName) {
 		return PREFIX_ROUTE + routeName;
 	}
-	
+
 	final private InternalStorageFile cacheFile;
 	final private Gson gson;
 	final private Class<T> clazz;
