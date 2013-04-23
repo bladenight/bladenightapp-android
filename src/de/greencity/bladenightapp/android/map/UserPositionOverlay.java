@@ -1,6 +1,8 @@
 package de.greencity.bladenightapp.android.map;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.mapsforge.android.maps.MapView;
 import org.mapsforge.android.maps.overlay.Circle;
@@ -74,6 +76,9 @@ public class UserPositionOverlay extends ListOverlay implements LocationListener
 	}
 
 	public void update(RealTimeUpdateData data) {
+		Set<Integer> depracatedFriendIds = new HashSet<Integer>();
+		depracatedFriendIds.addAll(friendAccuracyCircles.keySet());
+		depracatedFriendIds.addAll(friendMarkers.keySet());
 		for ( Integer friendId : data.fri.keySet() ) {
 			MovingPointMessage nvp = data.fri.get(friendId);
 			GeoPoint position = new GeoPoint(nvp.getLatitude(), nvp.getLongitude());
@@ -84,7 +89,11 @@ public class UserPositionOverlay extends ListOverlay implements LocationListener
 			Circle circle = getAccuracyCircle(friendId);
 			circle.setRadius(nvp.getAccuracy());
 			circle.setGeoPoint(position);
+			
+			depracatedFriendIds.remove(friendId);
 		}
+		for (Integer depracatedFriendId : depracatedFriendIds)
+			deleteFriend(depracatedFriendId);
 	}
 
 	public Marker getFriendMarker(Integer friendId) {
@@ -142,6 +151,19 @@ public class UserPositionOverlay extends ListOverlay implements LocationListener
 		for (Circle circle: friendAccuracyCircles.values())
 			getOverlayItems().remove(circle);
 		friendAccuracyCircles.clear();
+	}
+	
+	private void deleteFriend(int friendId) {
+		Marker marker = friendMarkers.get(friendId);
+		if ( marker != null ) {
+			getOverlayItems().remove(marker);
+			friendMarkers.remove(marker);
+		}
+		Circle circle = friendAccuracyCircles.get(friendId);
+		if ( circle != null ) {
+			getOverlayItems().remove(circle);
+			friendMarkers.remove(circle);
+		}
 	}
 
 
