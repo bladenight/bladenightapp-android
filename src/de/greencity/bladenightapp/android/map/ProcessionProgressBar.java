@@ -56,6 +56,7 @@ public class ProcessionProgressBar extends ProgressBar {
 		// reload colors:
 		friends = new Friends(context);
 		friends.load();
+		friendDrawables.clear();
 	}
 
 	public void update(RealTimeUpdateData realTimeUpdateData) {
@@ -219,7 +220,7 @@ public class ProcessionProgressBar extends ProgressBar {
 		if ( friendDrawables.get(friendId) != null)
 			return friendDrawables.get(friendId);
 		
-		int color = friends.get(friendId).getColor();
+		int color = friends.getFriendColor(friendId);
 
 		int[] colors = new int[2];
 		//		colors[0] = getResources().getColor();

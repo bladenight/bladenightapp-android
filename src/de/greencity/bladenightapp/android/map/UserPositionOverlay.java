@@ -17,10 +17,9 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
 import android.util.Log;
-import de.greencity.bladenightapp.dev.android.R;
-import de.greencity.bladenightapp.android.social.Friend;
 import de.greencity.bladenightapp.android.social.Friends;
 import de.greencity.bladenightapp.android.social.SocialActivity;
+import de.greencity.bladenightapp.dev.android.R;
 import de.greencity.bladenightapp.network.messages.MovingPointMessage;
 import de.greencity.bladenightapp.network.messages.RealTimeUpdateData;
 
@@ -30,11 +29,7 @@ public class UserPositionOverlay extends ListOverlay implements LocationListener
 		this.mapView = mapView;
 		this.context = context;
 		friends = new Friends(context);
-		reinit();	
-	}
-
-	private void reinit() {
-		friends.load();
+		onResume();
 	}
 
 	public void show() {
@@ -54,7 +49,7 @@ public class UserPositionOverlay extends ListOverlay implements LocationListener
 
 		Marker ownMarker = getFriendMarker(SocialActivity.ID_ME);
 		ownMarker.setGeoPoint(gp);
-		
+
 		Circle ownCircle = getAccuracyCircle(SocialActivity.ID_ME);
 		ownCircle.setGeoPoint(gp);
 		ownCircle.setRadius(location.getAccuracy());
@@ -81,13 +76,14 @@ public class UserPositionOverlay extends ListOverlay implements LocationListener
 	public void update(RealTimeUpdateData data) {
 		for ( Integer friendId : data.fri.keySet() ) {
 			MovingPointMessage nvp = data.fri.get(friendId);
+			GeoPoint position = new GeoPoint(nvp.getLatitude(), nvp.getLongitude());
+
 			Marker marker = getFriendMarker(friendId);
-			marker.setGeoPoint(new GeoPoint(nvp.getLatitude(), nvp.getLongitude()));
+			marker.setGeoPoint(position);
 
 			Circle circle = getAccuracyCircle(friendId);
-			circle.setRadius(100);
-			marker.setGeoPoint(new GeoPoint(nvp.getLatitude(), nvp.getLongitude()));
-
+			circle.setRadius(nvp.getAccuracy());
+			circle.setGeoPoint(position);
 		}
 	}
 
@@ -114,7 +110,7 @@ public class UserPositionOverlay extends ListOverlay implements LocationListener
 		int color = friends.getFriendColor(friendId);
 		Log.i(TAG, "color="+Integer.toHexString(color));
 		int alpha = 50;
-		
+
 		Paint paintFill = new Paint();
 		paintFill.setColor(color);
 		paintFill.setAlpha(alpha);
@@ -135,7 +131,17 @@ public class UserPositionOverlay extends ListOverlay implements LocationListener
 
 	public void onResume() {
 		// Colors might been have changed in the meantime:
+		clearSymbolCache();
+		friends.load();
+	}
+	
+	private void clearSymbolCache() {
+		for (Marker marker: friendMarkers.values())
+			getOverlayItems().remove(marker);
 		friendMarkers.clear();
+		for (Circle circle: friendAccuracyCircles.values())
+			getOverlayItems().remove(circle);
+		friendAccuracyCircles.clear();
 	}
 
 
