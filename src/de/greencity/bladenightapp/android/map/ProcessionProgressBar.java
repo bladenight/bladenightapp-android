@@ -2,22 +2,17 @@ package de.greencity.bladenightapp.android.map;
 
 import java.util.HashMap;
 
-import org.mapsforge.android.maps.overlay.Marker;
-
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.graphics.PorterDuff.Mode;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.GradientDrawable.Orientation;
 import android.graphics.drawable.LayerDrawable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.widget.ProgressBar;
-import de.greencity.bladenightapp.dev.android.R;
 import de.greencity.bladenightapp.android.social.Friends;
 import de.greencity.bladenightapp.android.utils.DistanceFormatting;
 import de.greencity.bladenightapp.network.messages.FriendMessage;

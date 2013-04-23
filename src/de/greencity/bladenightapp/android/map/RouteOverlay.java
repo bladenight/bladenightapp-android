@@ -10,7 +10,6 @@ import org.mapsforge.android.maps.overlay.Polyline;
 import org.mapsforge.core.model.BoundingBox;
 import org.mapsforge.core.model.GeoPoint;
 
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Cap;
 import android.location.Location;

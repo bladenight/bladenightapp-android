@@ -9,7 +9,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.os.Handler;
@@ -29,7 +28,6 @@ import android.widget.Toast;
 import com.markupartist.android.widget.ActionBar;
 import com.markupartist.android.widget.ActionBar.Action;
 
-import de.greencity.bladenightapp.dev.android.R;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator.ActionItemType;
 import de.greencity.bladenightapp.android.actionbar.ActionReload;
@@ -39,6 +37,7 @@ import de.greencity.bladenightapp.android.social.ConfirmFriendDialog.ConfirmFrie
 import de.greencity.bladenightapp.android.social.InviteFriendDialog.InviteFriendDialogListener;
 import de.greencity.bladenightapp.android.tracker.GpsTrackerService;
 import de.greencity.bladenightapp.android.utils.ServiceUtils;
+import de.greencity.bladenightapp.dev.android.R;
 import de.greencity.bladenightapp.network.messages.FriendMessage;
 import de.greencity.bladenightapp.network.messages.FriendsMessage;
 import de.greencity.bladenightapp.network.messages.MovingPointMessage;
@@ -48,7 +47,6 @@ import de.greencity.bladenightapp.network.messages.RelationshipOutputMessage;
 public class SocialActivity extends FragmentActivity implements InviteFriendDialogListener, 
 ConfirmFriendDialogListener, ChangeFriendDialogListener {
 
-	@SuppressLint("UseSparseArrays")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		Log.i(TAG, "onCreate");
@@ -431,13 +429,15 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 	}
 
 	private void sortListViewWhileInAction() {
-		sortedFriendIdsToDisplay.clear();
-		sortedFriendIdsToDisplay.addAll(friends.keySet());
+		Set<Integer> set = new HashSet<Integer>(); 
+		set.addAll(friends.keySet());
 		for(int friendId : friends.keySet()){
 			Friend friend = friends.get(friendId);
 			if( friend.isActive() && friend.isOnline() )
-				sortedFriendIdsToDisplay.add(friendId);
+				set.add(friendId);
 		}
+		sortedFriendIdsToDisplay.clear();
+		sortedFriendIdsToDisplay.addAll(set);
 		Collections.sort(sortedFriendIdsToDisplay, new Comparator<Integer>() {
 			public int compare(Integer id1, Integer id2) {
 				Long d1 = friends.get(id1).getAbsolutePosition();
