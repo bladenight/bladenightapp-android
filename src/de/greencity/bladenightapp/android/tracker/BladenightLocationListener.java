@@ -5,20 +5,20 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
 import android.util.Log;
-import de.greencity.bladenightapp.network.messages.LatLong;
 
 
 public class BladenightLocationListener implements LocationListener {
-	public BladenightLocationListener(Context context, LatLong latLong) {
+	public BladenightLocationListener(Context context, Location location) {
 		super();
-		this.latLong = latLong;
+		this.location = location;
 	}
 
 	@Override
 	public void onLocationChanged(Location location) {
 		Log.d(this.toString(), "onLocationChanged" + location);
-		latLong.setLatitude(location.getLatitude());
-		latLong.setLongitude(location.getLongitude());
+		this.location.setLatitude(location.getLatitude());
+		this.location.setLongitude(location.getLongitude());
+		this.location.setAccuracy(location.getAccuracy());
 	}
 
 	@Override
@@ -36,5 +36,5 @@ public class BladenightLocationListener implements LocationListener {
 		Log.d(this.toString(), "onStatusChanged");
 	}
 
-	private LatLong latLong;
+	private Location location;
 }

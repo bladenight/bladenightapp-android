@@ -4,6 +4,7 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.location.Location;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
@@ -82,13 +83,13 @@ public class GpsTrackerService extends Service {
 	}
 
 	private void sendLocationUpdateToNetworkService() {
-		Log.i(TAG, "Sending:"+lastKnownPosition);
-		networkClient.updateFromGpsTrackerService(lastKnownPosition);
+		Log.i(TAG, "Sending:"+lastKnownLocation);
+		networkClient.updateFromGpsTrackerService(lastKnownLocation);
 	}
 
 
-	private LatLong lastKnownPosition = new LatLong(0, 0);
-	final private BladenightLocationListener locationListener = new BladenightLocationListener(this, lastKnownPosition);
+	private Location lastKnownLocation = new Location("INTERNAL");
+	final private BladenightLocationListener locationListener = new BladenightLocationListener(this, lastKnownLocation);
 	final private GpsListener gpsListener = new GpsListener(this, locationListener);
 	private NetworkClient networkClient;
 	private Runnable periodicRunnable;

@@ -20,6 +20,7 @@ import javax.net.ssl.TrustManagerFactory;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import android.content.Context;
+import android.location.Location;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -222,9 +223,10 @@ public class NetworkClient {
 
 		gpsInfo.setDeviceId(getDeviceId());
 		gpsInfo.isParticipating(ServiceUtils.isServiceRunning(context, GpsTrackerService.class));
-		if ( lastKnownPosition != null ) {
-			gpsInfo.setLatitude(lastKnownPosition.getLatitude());
-			gpsInfo.setLongitude(lastKnownPosition.getLongitude());
+		if ( lastKnownLocation != null ) {
+			gpsInfo.setLatitude(lastKnownLocation.getLatitude());
+			gpsInfo.setLongitude(lastKnownLocation.getLongitude());
+			gpsInfo.setAccuracy((int)lastKnownLocation.getAccuracy());
 
 			// TODO remove test coordinates
 //			gpsInfo.setLatitude(48.154249);
@@ -303,8 +305,8 @@ public class NetworkClient {
 		callOrStore(item);
 	}
 
-	public void updateFromGpsTrackerService(LatLong lastKnownPosition) {
-		NetworkClient.lastKnownPosition = lastKnownPosition;
+	public void updateFromGpsTrackerService(Location lastKnownLocation) {
+		NetworkClient.lastKnownLocation = lastKnownLocation;
 		getRealTimeData(null, null);
 	}
 
@@ -384,7 +386,7 @@ public class NetworkClient {
 	static private String server;
 	static final private int port = 8081;
 	static final private GpsInfo gpsInfo = new GpsInfo();
-	static private LatLong lastKnownPosition;
+	static private Location lastKnownLocation;
 	static private BladenightWampClient bladenightWampClient = new BladenightWampClient();
 	static private long lookingForServerTimestamp = 0;
 	static private String deviceId = null;
