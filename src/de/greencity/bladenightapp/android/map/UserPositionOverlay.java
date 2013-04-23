@@ -79,6 +79,7 @@ public class UserPositionOverlay extends ListOverlay implements LocationListener
 		Set<Integer> depracatedFriendIds = new HashSet<Integer>();
 		depracatedFriendIds.addAll(friendAccuracyCircles.keySet());
 		depracatedFriendIds.addAll(friendMarkers.keySet());
+		depracatedFriendIds.remove(SocialActivity.ID_ME);
 		for ( Integer friendId : data.fri.keySet() ) {
 			MovingPointMessage nvp = data.fri.get(friendId);
 			GeoPoint position = new GeoPoint(nvp.getLatitude(), nvp.getLongitude());
