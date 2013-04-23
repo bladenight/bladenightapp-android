@@ -472,7 +472,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 	}
 	
 	public static String formatRequestId(long requestId) {
-		return MessageFormat.format("{0,number,#,00}", requestId).replace(",", " ");
+		return Long.toString(requestId).replaceAll("(\\d\\d)","$1 ");
 	}
 
 	private ListView listView;
