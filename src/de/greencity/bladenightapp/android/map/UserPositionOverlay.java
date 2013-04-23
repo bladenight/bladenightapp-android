@@ -34,29 +34,7 @@ public class UserPositionOverlay extends ListOverlay implements LocationListener
 	}
 
 	private void reinit() {
-		int resourceIdentifier = R.drawable.user_symbol;
-
-		Drawable drawable = context.getResources().getDrawable(resourceIdentifier);
-		drawable.setColorFilter(Friends.getOwnColor(context), Mode.MULTIPLY);
-
-		externalCircle = createExternalCircle();
-		getOverlayItems().add(externalCircle);
-
-		userSymbol = new Marker(new GeoPoint(0, 0), Marker.boundCenter(drawable));
-		getOverlayItems().add(userSymbol);
-
 		friends.load();
-	}
-
-	private Circle createExternalCircle() {
-		Paint paintFill = new Paint();
-		paintFill.setColor(Color.argb(50, 150, 150, 255));
-		paintFill.setAntiAlias(true);
-
-		Paint paintStroke = new Paint();
-		paintStroke.setColor(Color.argb(50, 20, 20, 100));
-		paintStroke.setAntiAlias(true);
-		return new Circle(new GeoPoint(0,0), 0, paintFill, paintStroke);
 	}
 
 	public void show() {
@@ -74,9 +52,12 @@ public class UserPositionOverlay extends ListOverlay implements LocationListener
 		Log.i(TAG, "onLocationChanged: " + location);
 		GeoPoint gp = new GeoPoint(location.getLatitude(), location.getLongitude());
 
-		userSymbol.setGeoPoint(gp);
-		externalCircle.setGeoPoint(gp);
-		externalCircle.setRadius(location.getAccuracy());
+		Marker ownMarker = getFriendMarker(SocialActivity.ID_ME);
+		ownMarker.setGeoPoint(gp);
+		
+		Circle ownCircle = getAccuracyCircle(SocialActivity.ID_ME);
+		ownCircle.setGeoPoint(gp);
+		ownCircle.setRadius(location.getAccuracy());
 		show();
 	}
 
@@ -102,6 +83,11 @@ public class UserPositionOverlay extends ListOverlay implements LocationListener
 			MovingPointMessage nvp = data.fri.get(friendId);
 			Marker marker = getFriendMarker(friendId);
 			marker.setGeoPoint(new GeoPoint(nvp.getLatitude(), nvp.getLongitude()));
+
+			Circle circle = getAccuracyCircle(friendId);
+			circle.setRadius(100);
+			marker.setGeoPoint(new GeoPoint(nvp.getLatitude(), nvp.getLongitude()));
+
 		}
 	}
 
@@ -121,6 +107,32 @@ public class UserPositionOverlay extends ListOverlay implements LocationListener
 		return marker;
 	}
 
+	private Circle getAccuracyCircle(Integer friendId) {
+		if ( friendAccuracyCircles.get(friendId) != null )
+			return friendAccuracyCircles.get(friendId);
+
+		int color = friends.get(friendId).getColor();
+		Log.i(TAG, "color="+Integer.toHexString(color));
+		int alpha = 50;
+		
+		Paint paintFill = new Paint();
+		paintFill.setColor(color);
+		paintFill.setAlpha(alpha);
+		paintFill.setAntiAlias(true);
+
+		Paint paintStroke = new Paint();
+		paintStroke.setColor(Color.WHITE);
+		paintStroke.setAlpha(alpha);
+		paintStroke.setAntiAlias(true);
+
+		Circle circle = new Circle(new GeoPoint(0,0), 0, paintFill, paintStroke);
+		friendAccuracyCircles.put(friendId, circle);
+		getOverlayItems().add(circle);
+
+		return circle;
+	}
+
+
 	public void onResume() {
 		// Colors might been have changed in the meantime:
 		friendMarkers.clear();
@@ -129,9 +141,8 @@ public class UserPositionOverlay extends ListOverlay implements LocationListener
 
 	private final MapView mapView;
 	private Context context;
-	private Marker userSymbol;
 	private HashMap<Integer, Marker> friendMarkers = new HashMap<Integer, Marker>();
-	private Circle externalCircle;
+	private HashMap<Integer, Circle> friendAccuracyCircles = new HashMap<Integer, Circle>();
 	private Friends friends;
 
 	private final String TAG = "UserPositionOverlay";

@@ -50,12 +50,11 @@ public class ProcessionProgressBar extends ProgressBar {
 		if ( isInEditMode() ) {
 			setDemoData();
 		}
-		friends = new Friends(context);
-		friends.load();
 	}
 
 	public void onResume() {
 		// reload colors:
+		friends = new Friends(context);
 		friends.load();
 	}
 
