@@ -83,6 +83,14 @@ public class Friends {
 		save();
 	}
 
+	public int getFriendColor(int friendId) {
+		Friend friend = get(friendId); 
+		if ( friend == null || friend.getColor() == Color.BLACK )
+			return context.getResources().getColor(R.color.default_friend_color);
+		return friend.getColor();
+	}
+	
+
 	static public int getOwnColor(Context context) {
 		int defaultColor = context.getResources().getColor(R.color.default_own_color);
 		Friends friends = new Friends(context);
