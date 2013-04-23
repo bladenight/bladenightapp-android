@@ -21,19 +21,21 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import android.content.Context;
 import android.location.Location;
+import android.location.LocationListener;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
 import com.codebutler.android_websockets.WebSocketClient;
 
-import de.greencity.bladenightapp.dev.android.R;
 import de.greencity.bladenightapp.android.admin.AdminUtilities;
 import de.greencity.bladenightapp.android.network.BladenightWampClient.State;
 import de.greencity.bladenightapp.android.tracker.GpsTrackerService;
 import de.greencity.bladenightapp.android.utils.AsyncDownloadTask;
 import de.greencity.bladenightapp.android.utils.DeviceId;
 import de.greencity.bladenightapp.android.utils.ServiceUtils;
+import de.greencity.bladenightapp.dev.android.R;
 import de.greencity.bladenightapp.network.BladenightUrl;
 import de.greencity.bladenightapp.network.messages.AdminMessage;
 import de.greencity.bladenightapp.network.messages.EventMessage;
@@ -41,7 +43,6 @@ import de.greencity.bladenightapp.network.messages.EventMessage.EventStatus;
 import de.greencity.bladenightapp.network.messages.EventsListMessage;
 import de.greencity.bladenightapp.network.messages.FriendsMessage;
 import de.greencity.bladenightapp.network.messages.GpsInfo;
-import de.greencity.bladenightapp.network.messages.LatLong;
 import de.greencity.bladenightapp.network.messages.RealTimeUpdateData;
 import de.greencity.bladenightapp.network.messages.RelationshipInputMessage;
 import de.greencity.bladenightapp.network.messages.RelationshipOutputMessage;
@@ -54,7 +55,7 @@ import fr.ocroquette.wampoc.client.WelcomeListener;
 import fr.ocroquette.wampoc.common.Channel;
 import fr.ocroquette.wampoc.messages.CallResultMessage;
 
-public class NetworkClient {
+public class NetworkClient implements LocationListener {
 
 	public NetworkClient(Context context) {
 		NetworkClient.context = context;
@@ -379,6 +380,23 @@ public class NetworkClient {
 		if (deviceId == null)
 			deviceId = DeviceId.getDeviceId(context);
 		return deviceId;
+	}
+
+	@Override
+	public void onLocationChanged(Location location) {
+		updateFromGpsTrackerService(location);
+	}
+
+	@Override
+	public void onProviderDisabled(String provider) {
+	}
+
+	@Override
+	public void onProviderEnabled(String provider) {
+	}
+
+	@Override
+	public void onStatusChanged(String provider, int status, Bundle extras) {
 	}
 
 	static private Context context;

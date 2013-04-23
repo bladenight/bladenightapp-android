@@ -75,6 +75,48 @@ public class BladenightMapActivity extends MapActivity {
 		configureActionBar();
 
 		routeCache = new JsonCacheAccess<RouteMessage>(this, RouteMessage.class, JsonCacheAccess.getNameForRoute(routeName));
+	}
+
+	@Override
+	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+		setIntent(intent);
+		configureBasedOnIntent();
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+		cancelAllAutomaticTasks();
+		isRunning = false;
+	}
+
+	public void cancelAllAutomaticTasks() {
+		if ( periodicTask != null )
+			periodicHandler.removeCallbacks(periodicTask);
+		if ( gpsListenerForPositionOverlay != null)
+			gpsListenerForPositionOverlay.cancelLocationUpdates();
+		if ( gpsListenerForNetworkClient != null )
+			gpsListenerForNetworkClient.cancelLocationUpdates();
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+
+		// Friend colors and stuff like that could have been changed in the meantime, so re-create the overlays
+		userPositionOverlay.onResume();
+		processionProgressBar.onResume();
+
+		if ( gpsListenerForPositionOverlay != null )
+			gpsListenerForPositionOverlay.cancelLocationUpdates();
+		gpsListenerForPositionOverlay = new GpsListener(this, userPositionOverlay);
+		gpsListenerForPositionOverlay.requestLocationUpdates(updatePeriod);
+
+		if ( gpsListenerForNetworkClient != null )
+			gpsListenerForNetworkClient.cancelLocationUpdates();
+		gpsListenerForNetworkClient = new GpsListener(this, networkClient);
+		gpsListenerForNetworkClient.requestLocationUpdates(updatePeriod);
 
 		if ( isShowingActiveEvent ) {
 			periodicTask = new Runnable() {
@@ -110,41 +152,6 @@ public class BladenightMapActivity extends MapActivity {
 		else {
 			triggerInitialRouteDataFetch();
 		}
-	}
-
-	@Override
-	protected void onNewIntent(Intent intent) {
-		super.onNewIntent(intent);
-		setIntent(intent);
-		configureBasedOnIntent();
-	}
-
-	@Override
-	public void onPause() {
-		super.onPause();
-		cancelAllAutomaticTasks();
-		isRunning = false;
-	}
-
-	public void cancelAllAutomaticTasks() {
-		if ( periodicTask != null )
-			periodicHandler.removeCallbacks(periodicTask);
-		if ( gpsListener != null)
-			gpsListener.cancelLocationUpdates();
-	}
-
-	@Override
-	public void onResume() {
-		super.onResume();
-
-		// Friend colors and stuff like that could have been changed in the meantime, so re-create the overlays
-		userPositionOverlay.onResume();
-		processionProgressBar.onResume();
-
-		if ( gpsListener != null )
-			gpsListener.cancelLocationUpdates();
-		gpsListener = new GpsListener(this, userPositionOverlay);
-		gpsListener.requestLocationUpdates(updatePeriod);
 
 		isRunning = true;
 	}
@@ -407,7 +414,8 @@ public class BladenightMapActivity extends MapActivity {
 	private final Handler periodicHandler = new Handler();
 	private Runnable periodicTask;
 	private UserPositionOverlay userPositionOverlay;
-	private GpsListener gpsListener;
+	private GpsListener gpsListenerForPositionOverlay;
+	private GpsListener gpsListenerForNetworkClient;
 	private boolean isRouteInfoAvailable = false;
 	private JsonCacheAccess<RouteMessage> routeCache;
 	static public final String PARAM_ROUTENAME = "routeName";
