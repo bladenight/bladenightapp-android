@@ -22,7 +22,6 @@ import android.view.Window;
 import com.markupartist.android.widget.ActionBar;
 import com.markupartist.android.widget.ActionBar.Action;
 
-import de.greencity.bladenightapp.dev.android.R;
 import de.greencity.bladenightapp.android.about.AboutActivity;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator.ActionItemType;
@@ -32,6 +31,7 @@ import de.greencity.bladenightapp.android.admin.AdminUtilities;
 import de.greencity.bladenightapp.android.network.NetworkClient;
 import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
 import de.greencity.bladenightapp.android.utils.JsonCacheAccess;
+import de.greencity.bladenightapp.dev.android.R;
 import de.greencity.bladenightapp.events.Event;
 import de.greencity.bladenightapp.events.EventList;
 import de.greencity.bladenightapp.network.messages.EventsListMessage;
@@ -47,27 +47,6 @@ public class SelectionActivity extends FragmentActivity {
 		setContentView(R.layout.activity_selection);
 
 		eventsCache = new JsonCacheAccess<EventsListMessage>(this, EventsListMessage.class, JsonCacheAccess.FILE_EVENTS);
-
-		viewPager = (ViewPager) findViewById(R.id.pager);
-		viewPagerAdapter = new ViewPagerAdapter(viewPager, getSupportFragmentManager());
-		viewPager.setAdapter(viewPagerAdapter);
-
-		CirclePageIndicator titleIndicator = (CirclePageIndicator)findViewById(R.id.page_indicator);
-		titleIndicator.setViewPager(viewPager);
-
-		titleIndicator.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-			@Override
-			public void onPageSelected(int page) {
-				posEventShown = page;
-				Log.i(TAG, "onPageSelected: currentFragmentShown="+posEventShown);
-			}
-			@Override
-			public void onPageScrolled(int arg0, float arg1, int arg2) {
-			}
-			@Override
-			public void onPageScrollStateChanged(int arg0) {
-			}
-		});
 
 		networkClient =  new NetworkClient(this);
 	}
@@ -99,8 +78,8 @@ public class SelectionActivity extends FragmentActivity {
 
 	@Override
 	protected void onStop() {
-		Log.i(TAG, "onStop");
 		super.onStop();
+		Log.i(TAG, "onStop");
 
 		broadcastReceiversRegister.unregisterReceivers();
 		// unbindService(networkServiceConnection);
@@ -109,10 +88,33 @@ public class SelectionActivity extends FragmentActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
+		Log.i(TAG, "onResume");
 
 		configureActionBar();
 
+		viewPager = (ViewPager) findViewById(R.id.pager);
+		viewPagerAdapter = new ViewPagerAdapter(viewPager, getSupportFragmentManager());
+		viewPager.setAdapter(viewPagerAdapter);
+
+		CirclePageIndicator titleIndicator = (CirclePageIndicator)findViewById(R.id.page_indicator);
+		titleIndicator.setViewPager(viewPager);
+
+		titleIndicator.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+			@Override
+			public void onPageSelected(int page) {
+				posEventShown = page;
+				Log.i(TAG, "onPageSelected: currentFragmentShown="+posEventShown);
+			}
+			@Override
+			public void onPageScrolled(int arg0, float arg1, int arg2) {
+			}
+			@Override
+			public void onPageScrollStateChanged(int arg0) {
+			}
+		});
+
 		getEventsFromCache();
+
 		getEventsFromServer();
 	}
 
@@ -202,9 +204,7 @@ public class SelectionActivity extends FragmentActivity {
 		eventsList = eventListMessage.convertToEventsList();
 		eventsList.sortByStartDate();
 
-		viewPager.setAdapter(null) ;
 		viewPagerAdapter.setEventListMessage(EventsListMessage.newFromEventsList(eventsList));
-		viewPager.setAdapter(viewPagerAdapter) ;
 		updatePositionEventCurrent();
 		if ( ! tryToRestorePreviouslyShownEvent() ) {
 			showUpcomingEvent();
@@ -270,6 +270,7 @@ public class SelectionActivity extends FragmentActivity {
 
 		public void setEventListMessage(EventsListMessage eventListMessage) {
 			this.eventListMessage = eventListMessage;
+			notifyDataSetChanged();
 		}
 
 		@Override
@@ -280,14 +281,14 @@ public class SelectionActivity extends FragmentActivity {
 
 		@Override
 		public int getItemPosition(Object object) {
-			//						Log.d(TAG, "getItemPosition " + object);
+			Log.d(TAG, "getItemPosition " + object);
 			return POSITION_NONE;
 		}
 
 		@Override
 		public Fragment getItem(int position) {
-//			Log.d(TAG, "getItem("+position+")");
-//			Log.d(TAG, eventListMessage.get(position).toString());
+			Log.d(TAG, "getItem("+position+")");
+			Log.d(TAG, eventListMessage.get(position).toString());
 			boolean hasRight = position < getCount()-1;
 			boolean hasLeft = position > 0;
 			EventFragment fragment = new EventFragment();

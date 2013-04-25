@@ -22,7 +22,7 @@ public class InternalStorageFile {
 		FileOutputStream fos = null;
 		try {
 			fos = context.openFileOutput(name, Context.MODE_PRIVATE);
-			Log.i(TAG, "Writing " + content);
+//			Log.i(TAG, "Writing " + content);
 			fos.write(content.getBytes());
 			success = true;
 		} catch (IOException e) {

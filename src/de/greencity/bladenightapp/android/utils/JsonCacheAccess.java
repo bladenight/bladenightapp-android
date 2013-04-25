@@ -15,7 +15,7 @@ public class JsonCacheAccess<T> {
 	}
 
 	public T get() {
-		Log.i(TAG, "Fetching JsonCache: " + filename);
+//		Log.i(TAG, "Fetching JsonCache: " + filename);
 		if ( cacheFile == null )
 			return null;
 		String jsonString = cacheFile.read();
