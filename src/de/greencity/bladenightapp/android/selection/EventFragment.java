@@ -12,7 +12,6 @@ import android.content.Intent;
 import android.graphics.PorterDuff.Mode;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,10 +20,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import de.greencity.bladenightapp.dev.android.R;
 import de.greencity.bladenightapp.android.map.BladenightMapActivity;
 import de.greencity.bladenightapp.android.tracker.GpsTrackerService;
 import de.greencity.bladenightapp.android.utils.ServiceUtils;
+import de.greencity.bladenightapp.dev.android.R;
 import de.greencity.bladenightapp.network.messages.EventMessage;
 
 public class EventFragment extends Fragment {
@@ -32,38 +31,6 @@ public class EventFragment extends Fragment {
 	public EventFragment(){
 		super();
 	}
-
-	public void setParameters(ViewPager viewPager, EventMessage event, boolean hasLeft, boolean hasRight) {
-		this.event = event;
-		this.hasLeft = hasLeft;
-		this.hasRight = hasRight;
-		this.startDateTime = fromDateFormat.parseDateTime(event.getStartDate()); 
-	}
-
-	public void setViewPager(ViewPager viewPager) {
-		this.viewPager = viewPager;
-	}
-
-	public void setEventMessage(EventMessage eventMessage) {
-		this.event = eventMessage;
-	}
-
-	public void hasLeft(boolean hasLeft) {
-		this.hasLeft = hasLeft;
-	}
-
-	public void hasRight(boolean hasRight) {
-		this.hasRight = hasRight;
-	}
-
-	public void isCurrent(boolean isCurrent) {
-		this.isCurrent = isCurrent;
-	}
-
-	public void hasStatistics(boolean hasStatistics) {
-		this.hasStatistics = hasStatistics;
-	}
-
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -73,24 +40,38 @@ public class EventFragment extends Fragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-
+		configureFromBundle(getArguments());
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
-		this.view = inflater.inflate(R.layout.event_view, container, false); 
+	public void onViewStateRestored(Bundle savedInstanceState) {
+		super.onViewStateRestored(savedInstanceState);
+		configureFromBundle(savedInstanceState);
+	}
 
-		//		setColor(R.id.image_event_observe, getResources().getColor(R.color.bn_green));
-		//		setColor(R.id.image_event_participate, getResources().getColor(R.color.bn_green));
-		//		setColor(R.id.image_event_statistics, getResources().getColor(R.color.bn_green));
+	public void configureFromBundle(Bundle bundle) {
+		if ( bundle == null ) {
+			Log.e(TAG, "onViewStateRestored: savedInstanceState="+bundle);
+			return;
+		}
+		eventMessage = (EventMessage) bundle.getSerializable("eventMessage");
+		hasLeft = bundle.getBoolean("hasLeft");
+		hasRight = bundle.getBoolean("hasRight");
+		isCurrent = bundle.getBoolean("isCurrent");
+		startDateTime = fromDateFormat.parseDateTime(eventMessage.getStartDate());
+		updateUi();
+	}
+
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		this.view = inflater.inflate(R.layout.event_view, container, false); 
 
 		View leftArrowView = view.findViewById(R.id.arrow_left);
 		leftArrowView.setClickable(true);
 		leftArrowView.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				viewPager.setCurrentItem(viewPager.getCurrentItem()-1, true);
+				((SelectionActivity)getActivity()).showPreviousEvent();
 			}
 		});
 
@@ -99,7 +80,7 @@ public class EventFragment extends Fragment {
 		rightArrowView.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				viewPager.setCurrentItem(viewPager.getCurrentItem()+1, true);
+				((SelectionActivity)getActivity()).showNextEvent();
 			}
 		});
 
@@ -122,16 +103,28 @@ public class EventFragment extends Fragment {
 			}
 		});
 
-		//tmp till statistics implemented
-		//if ( ! hasStatistics )
-		view.findViewById(R.id.image_event_statistics).setEnabled(false);
-
-		if ( ! isCurrent )
-			view.findViewById(R.id.image_event_participate).setEnabled(false);
-
-		updateEvent();
 		return view;
 	}
+
+	@Override
+	public void onSaveInstanceState(Bundle savedInstanceState) {
+		prepareBundle(savedInstanceState, eventMessage, hasLeft, hasRight, isCurrent);
+	}
+
+
+	public static Bundle prepareBundle(EventMessage eventMessage, boolean hasLeft, boolean hasRight, boolean isCurrent) {
+		return prepareBundle(new Bundle(), eventMessage, hasLeft, hasRight, isCurrent);
+	}
+
+	public static Bundle prepareBundle(Bundle bundle, EventMessage eventMessage, boolean hasLeft, boolean hasRight, boolean isCurrent) {
+		bundle.putSerializable("eventMessage", eventMessage);
+		bundle.putBoolean("hasLeft", hasLeft);
+		bundle.putBoolean("hasRight", hasRight);
+		bundle.putBoolean("isCurrent", isCurrent);
+		return bundle;
+	}
+
+
 
 	protected void setColor(int imageId, int color) {
 		Log.i(TAG, "imageId="+imageId);
@@ -145,21 +138,22 @@ public class EventFragment extends Fragment {
 	}
 
 
-	private void updateEvent(){
-		if ( event == null ) {
-			Log.e(TAG, "updateEvent: event=" + event);
+	private void updateUi(){
+		if ( eventMessage == null ) {
+			Log.e(TAG, "updateUi: event=" + eventMessage);
+			Log.i(TAG, "Trace: " +Log.getStackTraceString(new Throwable()) );
 			return;
 		}
 
 		TextView textViewCourse = (TextView)view.findViewById(R.id.course);
-		textViewCourse.setText(event.getRouteName());
+		textViewCourse.setText(eventMessage.getRouteName());
 
 		TextView textViewDate = (TextView)view.findViewById(R.id.date);
 		textViewDate.setText(toDateFormat.print(startDateTime));
 
-		if ( event.getParticipantsCount() > 0 ) {
+		if ( eventMessage.getParticipantsCount() > 0 ) {
 			TextView textViewParticipants = (TextView)view.findViewById(R.id.participants);
-			textViewParticipants.setText(event.getParticipantsCount() + " " + viewPager.getResources().getString(R.string.msg_participants));
+			textViewParticipants.setText(eventMessage.getParticipantsCount() + " " + getActivity().getResources().getString(R.string.msg_participants));
 		}
 
 		TextView textViewLeft = (TextView)view.findViewById(R.id.arrow_left);
@@ -168,25 +162,32 @@ public class EventFragment extends Fragment {
 		TextView textViewRight = (TextView)view.findViewById(R.id.arrow_right);
 		textViewRight.setText(hasRight ? R.string.arrow_right : R.string.arrow_no);
 
+		//tmp till statistics implemented
+		//if ( ! hasStatistics )
+		view.findViewById(R.id.image_event_statistics).setEnabled(false);
+
+		if ( ! isCurrent )
+			view.findViewById(R.id.image_event_participate).setEnabled(false);
+
 		updateStatus();
 		updateSchedule(); 
 	}
 
 	private void startMapActivity() {
 		Intent intent = new Intent(view.getContext(), BladenightMapActivity.class);
-		if ( event == null ) {
-			Log.e(TAG, "No event currently shown");
+		if ( eventMessage.getRouteName() == null) {
+			Log.e(TAG, "No event or no route available");
 			return;
 		}
 		if ( ! isCurrent )
 			// BladenightMapActivity will assume the current route if not specified
-			intent.putExtra(BladenightMapActivity.PARAM_ROUTENAME, event.getRouteName());
+			intent.putExtra(BladenightMapActivity.PARAM_ROUTENAME, eventMessage.getRouteName());
 		view.getContext().startActivity(intent);
 	}
 
 	private void updateStatus(){
 		ImageView imageViewStatus = (ImageView)view.findViewById(R.id.status);
-		switch (event.getStatus()) {
+		switch (eventMessage.getStatus()) {
 		case CAN:
 			imageViewStatus.setImageResource(R.drawable.traffic_light_red);
 			break;
@@ -236,14 +237,14 @@ public class EventFragment extends Fragment {
 		}
 	}
 
-	private EventMessage event;
 	private DateTime startDateTime;
 	private View view;
 	private boolean hasRight;
 	private boolean hasLeft;
 	private boolean isCurrent;
-	private boolean hasStatistics;
-	private ViewPager viewPager;
+	private EventMessage eventMessage;
+
+
 	private DateTimeFormatter fromDateFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm");
 	private static DateTimeFormatter toDateFormat = getDestinationDateFormatter(Locale.getDefault());
 	final static String TAG = "EventFragment";

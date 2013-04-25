@@ -51,10 +51,10 @@ public class SelectionActivity extends FragmentActivity {
 		viewPager = (ViewPager) findViewById(R.id.pager);
 		viewPagerAdapter = new ViewPagerAdapter(viewPager, getSupportFragmentManager());
 		viewPager.setAdapter(viewPagerAdapter);
-		
+
 		CirclePageIndicator titleIndicator = (CirclePageIndicator)findViewById(R.id.page_indicator);
 		titleIndicator.setViewPager(viewPager);
-		
+
 		titleIndicator.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 			@Override
 			public void onPageSelected(int page) {
@@ -85,7 +85,7 @@ public class SelectionActivity extends FragmentActivity {
 		Action actionGoToCurrentEvent = new ActionEventSelection() {
 			@Override
 			public void performAction(View view) {
-				showNextEvent();
+				showUpcomingEvent();
 			}
 		};
 		new ActionBarConfigurator(actionBar)
@@ -142,14 +142,14 @@ public class SelectionActivity extends FragmentActivity {
 		inflater.inflate(R.menu.activity_selection, menu);
 		return true;
 	}
-	
+
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		if ( AdminUtilities.getAdminPassword(this) == null )
 			menu.findItem(R.id.menu_item_admin).setVisible(false);
 		return true;
 	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if( item.getItemId() == R.id.menu_item_admin ){
@@ -197,15 +197,17 @@ public class SelectionActivity extends FragmentActivity {
 
 
 	private void updateFragmentsFromEventList(EventsListMessage eventListMessage) {
-		Log.i(TAG, "updateFragementsFromEventList " + eventListMessage);
+		Log.i(TAG, "updateFragmentsFromEventList " + eventListMessage);
+
+		eventsList = eventListMessage.convertToEventsList();
+		eventsList.sortByStartDate();
+
 		viewPager.setAdapter(null) ;
 		viewPagerAdapter.setEventListMessage(eventListMessage);
 		viewPager.setAdapter(viewPagerAdapter) ;
-		eventsList = eventListMessage.convertToEventsList();
-		eventsList.sortByStartDate();
 		updatePositionEventCurrent();
 		if ( ! tryToRestorePreviouslyShownEvent() ) {
-			showNextEvent();
+			showUpcomingEvent();
 		}
 	}
 
@@ -214,7 +216,7 @@ public class SelectionActivity extends FragmentActivity {
 		Log.i(TAG, "restore: currentFragmentShown="+posEventShown);
 		Log.i(TAG, "restore: max="+count);
 		if ( posEventShown >= 0 && posEventShown < count ) {
-			viewPager.setCurrentItem(posEventShown);
+			viewPager.setCurrentItem(posEventShown, false);
 			return true;
 		}
 		return false;
@@ -232,13 +234,22 @@ public class SelectionActivity extends FragmentActivity {
 		return pos >=0 && pos < getFragmentCount();
 	}
 
-	private void showNextEvent() {
+	private void showUpcomingEvent() {
 		Event nextEvent = eventsList.getActiveEvent();
 		if ( isValidFragmentPosition(posEventCurrent) ) {
 			int startFragment = eventsList.indexOf(nextEvent);
 			viewPager.setCurrentItem(startFragment);
 		}
 	}
+
+	public void showNextEvent() {
+		viewPager.setCurrentItem(viewPager.getCurrentItem()+1);
+	}
+
+	public void showPreviousEvent() {
+		viewPager.setCurrentItem(viewPager.getCurrentItem()-1);
+	}
+
 
 	private int getFragmentCount() {
 		if ( viewPager == null || viewPager.getAdapter() == null )
@@ -255,7 +266,6 @@ public class SelectionActivity extends FragmentActivity {
 	public static class ViewPagerAdapter extends FragmentStatePagerAdapter {
 		public ViewPagerAdapter(ViewPager viewPager, FragmentManager fm) {
 			super(fm);
-			this.viewPager = viewPager;
 		}
 
 		public void setEventListMessage(EventsListMessage eventListMessage) {
@@ -270,24 +280,18 @@ public class SelectionActivity extends FragmentActivity {
 
 		@Override
 		public int getItemPosition(Object object) {
-			//			Log.d(TAG, "getItemPosition " + object);
+			//						Log.d(TAG, "getItemPosition " + object);
 			return POSITION_NONE;
 		}
 
 		@Override
 		public Fragment getItem(int position) {
-			//			Log.d(TAG, "getItem("+position+")");
-			//			Log.d(TAG, eventListMessage.get(position).toString());
+//			Log.d(TAG, "getItem("+position+")");
+//			Log.d(TAG, eventListMessage.get(position).toString());
 			boolean hasRight = position < getCount()-1;
 			boolean hasLeft = position > 0;
 			EventFragment fragment = new EventFragment();
-			fragment.setParameters(viewPager, eventListMessage.get(position), hasLeft, hasRight);
-			fragment.setViewPager(viewPager);
-			fragment.setEventMessage(eventListMessage.get(position));
-			fragment.hasLeft(hasLeft);
-			fragment.hasRight(hasRight);
-			fragment.isCurrent(posEventCurrent == position);
-			fragment.hasStatistics(position < posEventCurrent);
+			fragment.setArguments(EventFragment.prepareBundle(eventListMessage.get(position), hasLeft, hasRight, posEventCurrent == position));
 			return fragment;      
 		}
 
@@ -295,8 +299,6 @@ public class SelectionActivity extends FragmentActivity {
 		final private String TAG = "SelectionActivity.MyAdapter"; 
 
 		public EventsListMessage eventListMessage = new EventsListMessage();
-		private ViewPager viewPager;
-
 	}
 
 	private ViewPagerAdapter viewPagerAdapter;
