@@ -108,11 +108,11 @@ public class FriendListAdapter extends BaseAdapter {
 	
 	private void updateStatus(Friend friend, TextView textViewStatus) {
 		String statustext = "active";
-		if ( friend.getRequestId() > 0 ) {
-			statustext = "pending (" + SocialActivity.formatRequestId(friend.getRequestId()) + ")";
-		}
-		else if ( ! friend.isValid() ) {
+		if ( ! friend.isValid() ) {
 			statustext = "obsolete";
+		}
+		else if ( friend.getRequestId() > 0 ) {
+			statustext = "pending (" + SocialActivity.formatRequestId(friend.getRequestId()) + ")";
 		}
 		else if ( ! friend.isActive() ) {
 			statustext = "inactive";
