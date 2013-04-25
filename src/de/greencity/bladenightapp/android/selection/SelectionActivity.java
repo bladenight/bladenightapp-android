@@ -203,7 +203,7 @@ public class SelectionActivity extends FragmentActivity {
 		eventsList.sortByStartDate();
 
 		viewPager.setAdapter(null) ;
-		viewPagerAdapter.setEventListMessage(eventListMessage);
+		viewPagerAdapter.setEventListMessage(EventsListMessage.newFromEventsList(eventsList));
 		viewPager.setAdapter(viewPagerAdapter) ;
 		updatePositionEventCurrent();
 		if ( ! tryToRestorePreviouslyShownEvent() ) {
