@@ -78,10 +78,6 @@ public class SelectionActivity extends FragmentActivity {
 
 		Log.i(TAG, "onStart");
 
-		configureActionBar();
-
-		getEventsFromCache();
-		getEventsFromServer();
 	}
 
 	private void configureActionBar() {
@@ -113,6 +109,11 @@ public class SelectionActivity extends FragmentActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
+
+		configureActionBar();
+
+		getEventsFromCache();
+		getEventsFromServer();
 	}
 
 	@Override
@@ -139,11 +140,16 @@ public class SelectionActivity extends FragmentActivity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.activity_selection, menu);
+		return true;
+	}
+	
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
 		if ( AdminUtilities.getAdminPassword(this) == null )
 			menu.findItem(R.id.menu_item_admin).setVisible(false);
 		return true;
 	}
-
+	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if( item.getItemId() == R.id.menu_item_admin ){
@@ -158,17 +164,6 @@ public class SelectionActivity extends FragmentActivity {
 		}
 		return false;
 	}
-
-	//	private void goStatistics(){
-	//		Intent intent = new Intent(SelectionActivity.this, StatisticsActivity.class);
-	//		startActivity(intent);
-	//	}
-	//
-	//	private void goAction(){
-	//		Intent intent = new Intent(SelectionActivity.this, BladenightMapActivity.class);
-	//		startActivity(intent);
-	//	}
-	//
 
 	static class GetEventsFromServerHandler extends Handler {
 		private WeakReference<SelectionActivity> reference;
