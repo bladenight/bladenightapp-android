@@ -80,8 +80,6 @@ public class SelectionActivity extends FragmentActivity {
 
 		configureActionBar();
 
-		tryToRestorePreviouslyShownEvent();
-
 		getEventsFromCache();
 		getEventsFromServer();
 	}
