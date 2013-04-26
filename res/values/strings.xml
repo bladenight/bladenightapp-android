@@ -20,6 +20,7 @@
     <string name="button_social">Manage Friends</string>
     <string name="button_statistics">Statistics</string>
     <string name="button_view">View</string>
+    <string name="config_default_server_url"></string>
     <string name="impressum">Impressum</string>
     <string name="menu_settings">Settings</string>
     <string name="msg_administration">Administration</string>
