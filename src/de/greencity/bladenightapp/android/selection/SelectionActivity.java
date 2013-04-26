@@ -56,7 +56,6 @@ public class SelectionActivity extends FragmentActivity {
 		super.onStart();
 
 		Log.i(TAG, "onStart");
-
 	}
 
 	private void configureActionBar() {

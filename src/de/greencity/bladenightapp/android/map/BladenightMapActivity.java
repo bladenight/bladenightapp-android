@@ -20,21 +20,19 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewTreeObserver;
-import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.Window;
 import android.widget.LinearLayout;
 
 import com.markupartist.android.widget.ActionBar;
 
-import de.greencity.bladenightapp.dev.android.R;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator.ActionItemType;
 import de.greencity.bladenightapp.android.network.NetworkClient;
 import de.greencity.bladenightapp.android.tracker.GpsListener;
-import de.greencity.bladenightapp.android.utils.AsyncDownloadTask;
+import de.greencity.bladenightapp.android.utils.AsyncDownloadTaskHttpClient;
 import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
 import de.greencity.bladenightapp.android.utils.JsonCacheAccess;
+import de.greencity.bladenightapp.dev.android.R;
 import de.greencity.bladenightapp.network.messages.RealTimeUpdateData;
 import de.greencity.bladenightapp.network.messages.RouteMessage;
 
@@ -331,7 +329,7 @@ public class BladenightMapActivity extends MapActivity {
 
 		downloadProgressDialog.show();
 
-		AsyncDownloadTask.StatusHandler handler = new AsyncDownloadTask.StatusHandler() {
+		AsyncDownloadTaskHttpClient.StatusHandler handler = new AsyncDownloadTaskHttpClient.StatusHandler() {
 
 			@Override
 			public void onProgress(long current, long total) {

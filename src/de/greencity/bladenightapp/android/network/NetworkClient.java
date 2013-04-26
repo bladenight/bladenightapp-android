@@ -2,7 +2,6 @@ package de.greencity.bladenightapp.android.network;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +20,7 @@ import com.codebutler.android_websockets.WebSocketClient;
 import de.greencity.bladenightapp.android.admin.AdminUtilities;
 import de.greencity.bladenightapp.android.network.BladenightWampClient.State;
 import de.greencity.bladenightapp.android.tracker.GpsTrackerService;
-import de.greencity.bladenightapp.android.utils.AsyncDownloadTask;
+import de.greencity.bladenightapp.android.utils.AsyncDownloadTaskHttpClient;
 import de.greencity.bladenightapp.android.utils.BladenightPreferences;
 import de.greencity.bladenightapp.android.utils.DeviceId;
 import de.greencity.bladenightapp.android.utils.ServiceUtils;
@@ -316,10 +315,11 @@ public class NetworkClient implements LocationListener {
 		}
 	}
 
-	public void downloadFile(String localPath, String remotePath, final AsyncDownloadTask.StatusHandler handler) {
+	public void downloadFile(String localPath, String remotePath, final AsyncDownloadTaskHttpClient.StatusHandler handler) {
 		String url = sharedState.getHttpUrl() + "/" + remotePath;
 		Log.i(TAG,"downloadFile: " + url + " to " + localPath);
-		AsyncDownloadTask asyncDownloadTask = new AsyncDownloadTask(handler);
+		
+		AsyncDownloadTaskHttpClient asyncDownloadTask = new AsyncDownloadTaskHttpClient(context, handler);
 		asyncDownloadTask.execute(url, localPath);
 	}
 
