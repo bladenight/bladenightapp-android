@@ -4,6 +4,7 @@ package de.greencity.bladenightapp.android.selection;
 
 import java.util.Locale;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -24,7 +25,7 @@ import de.greencity.bladenightapp.android.map.BladenightMapActivity;
 import de.greencity.bladenightapp.android.tracker.GpsTrackerService;
 import de.greencity.bladenightapp.android.utils.ServiceUtils;
 import de.greencity.bladenightapp.dev.android.R;
-import de.greencity.bladenightapp.network.messages.EventMessage;
+import de.greencity.bladenightapp.events.Event;
 
 public class EventFragment extends Fragment {
 
@@ -35,35 +36,34 @@ public class EventFragment extends Fragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		Log.i(TAG, "onCreate: " + this);
 	}
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		configureFromBundle(getArguments());
-	}
-
-	@Override
-	public void onViewStateRestored(Bundle savedInstanceState) {
-		super.onViewStateRestored(savedInstanceState);
-		configureFromBundle(savedInstanceState);
+		Log.i(TAG, "onActivityCreated: " + this);
 	}
 
 	public void configureFromBundle(Bundle bundle) {
+		Log.i(TAG, "configureFromBundle: savedInstanceState="+bundle);
 		if ( bundle == null ) {
-			Log.e(TAG, "onViewStateRestored: savedInstanceState="+bundle);
+			Log.i(TAG, "configureFromBundle: savedInstanceState="+bundle);
+			Log.i(TAG, "Trace: " + ExceptionUtils.getStackTrace( new Throwable()));
 			return;
 		}
-		eventMessage = (EventMessage) bundle.getSerializable("eventMessage");
+		eventMessage = (Event) bundle.getSerializable("eventMessage");
 		hasLeft = bundle.getBoolean("hasLeft");
 		hasRight = bundle.getBoolean("hasRight");
 		isCurrent = bundle.getBoolean("isCurrent");
-		startDateTime = fromDateFormat.parseDateTime(eventMessage.getStartDate());
 		updateUi();
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		Log.i(TAG, "onCreateView: this="+this);
+
 		this.view = inflater.inflate(R.layout.event_view, container, false); 
 
 		View leftArrowView = view.findViewById(R.id.arrow_left);
@@ -106,17 +106,11 @@ public class EventFragment extends Fragment {
 		return view;
 	}
 
-	@Override
-	public void onSaveInstanceState(Bundle savedInstanceState) {
-		prepareBundle(savedInstanceState, eventMessage, hasLeft, hasRight, isCurrent);
-	}
-
-
-	public static Bundle prepareBundle(EventMessage eventMessage, boolean hasLeft, boolean hasRight, boolean isCurrent) {
+	public static Bundle prepareBundle(Event eventMessage, boolean hasLeft, boolean hasRight, boolean isCurrent) {
 		return prepareBundle(new Bundle(), eventMessage, hasLeft, hasRight, isCurrent);
 	}
 
-	public static Bundle prepareBundle(Bundle bundle, EventMessage eventMessage, boolean hasLeft, boolean hasRight, boolean isCurrent) {
+	public static Bundle prepareBundle(Bundle bundle, Event eventMessage, boolean hasLeft, boolean hasRight, boolean isCurrent) {
 		bundle.putSerializable("eventMessage", eventMessage);
 		bundle.putBoolean("hasLeft", hasLeft);
 		bundle.putBoolean("hasRight", hasRight);
@@ -139,8 +133,8 @@ public class EventFragment extends Fragment {
 
 
 	private void updateUi(){
+		Log.i(TAG, "updateUi: event=" + eventMessage);
 		if ( eventMessage == null ) {
-			Log.e(TAG, "updateUi: event=" + eventMessage);
 			Log.i(TAG, "Trace: " +Log.getStackTraceString(new Throwable()) );
 			return;
 		}
@@ -149,11 +143,11 @@ public class EventFragment extends Fragment {
 		textViewCourse.setText(eventMessage.getRouteName());
 
 		TextView textViewDate = (TextView)view.findViewById(R.id.date);
-		textViewDate.setText(toDateFormat.print(startDateTime));
+		textViewDate.setText(toDateFormat.print(eventMessage.getStartDate()));
 
-		if ( eventMessage.getParticipantsCount() > 0 ) {
+		if ( eventMessage.getParticipants() > 0 ) {
 			TextView textViewParticipants = (TextView)view.findViewById(R.id.participants);
-			textViewParticipants.setText(eventMessage.getParticipantsCount() + " " + getActivity().getResources().getString(R.string.msg_participants));
+			textViewParticipants.setText(eventMessage.getParticipants() + " " + getActivity().getResources().getString(R.string.msg_participants));
 		}
 
 		TextView textViewLeft = (TextView)view.findViewById(R.id.arrow_left);
@@ -188,13 +182,13 @@ public class EventFragment extends Fragment {
 	private void updateStatus(){
 		ImageView imageViewStatus = (ImageView)view.findViewById(R.id.status);
 		switch (eventMessage.getStatus()) {
-		case CAN:
+		case CANCELLED:
 			imageViewStatus.setImageResource(R.drawable.traffic_light_red);
 			break;
-		case CON:
+		case CONFIRMED:
 			imageViewStatus.setImageResource(R.drawable.traffic_light_green);
 			break;
-		case PEN:
+		case PENDING:
 			if(isCurrent)
 				imageViewStatus.setImageResource(R.drawable.traffic_light_orange);
 			break;
@@ -216,7 +210,7 @@ public class EventFragment extends Fragment {
 	}
 
 	private boolean isUpcoming(){
-		return startDateTime.isAfterNow();
+		return eventMessage.getStartDate().isAfterNow();
 	}
 
 	private static DateTimeFormatter getDestinationDateFormatter(Locale locale) {
@@ -237,15 +231,13 @@ public class EventFragment extends Fragment {
 		}
 	}
 
-	private DateTime startDateTime;
 	private View view;
 	private boolean hasRight;
 	private boolean hasLeft;
 	private boolean isCurrent;
-	private EventMessage eventMessage;
+	private Event eventMessage;
 
 
-	private DateTimeFormatter fromDateFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm");
 	private static DateTimeFormatter toDateFormat = getDestinationDateFormatter(Locale.getDefault());
 	final static String TAG = "EventFragment";
 }
