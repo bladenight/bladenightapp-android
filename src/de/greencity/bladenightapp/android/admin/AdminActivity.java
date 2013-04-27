@@ -9,8 +9,10 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
@@ -60,7 +62,7 @@ public class AdminActivity extends Activity {
 		statusSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-				Log.i(TAG,"statusSpinner.setOnItemSelectedListener");
+				Log.i(TAG,"statusSpinner.onItemSelected");
 				// Silly Android might fire the listener even before we are ready, hence this check
 				if ( isStatusSpinnerInitialized ) {
 					String status = (String) statusSpinner.getSelectedItem();
@@ -72,9 +74,12 @@ public class AdminActivity extends Activity {
 			public void onNothingSelected(AdapterView<?> arg0) {
 			}
 		});
+		
 	}
 
 	private void configureRouteNameSpinner() {
+		Log.i(TAG, "configureRouteNameSpinner ");
+
 		routeNameSpinner = (Spinner) findViewById(R.id.spinner_current_route);	    
 		spinnerRouteNameAdapter = new ArrayAdapter<CharSequence>(AdminActivity.this, android.R.layout.simple_spinner_item);
 		spinnerRouteNameAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);        
@@ -83,6 +88,7 @@ public class AdminActivity extends Activity {
 		routeNameSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+				Log.i(TAG, "onItemSelected arg2=" + arg2 + " arg3="+arg3);
 				// Silly Android might fire the listener even before we are ready
 				if (isRouteNameSpinnerInitialized) {
 					String routeName = (String) routeNameSpinner.getSelectedItem();
@@ -115,6 +121,7 @@ public class AdminActivity extends Activity {
 	}
 
 	public void updateGuiRouteListFromServerResponse(RouteNamesMessage routeNamesMessage) {
+		Log.i(TAG, "updateGuiRouteListFromServerResponse routeNamesMessage=" + routeNamesMessage);
 		spinnerRouteNameAdapter.clear();
 		for(String name: routeNamesMessage.rna) {
 			spinnerRouteNameAdapter.add(name);
@@ -135,6 +142,7 @@ public class AdminActivity extends Activity {
 		@Override
 		public void handleMessage(Message msg) {
 			EventMessage eventMessage = (EventMessage)msg.obj;
+			Log.i(TAG, "Got active event: " + eventMessage.toString());
 			if ( eventMessage.getRouteName() == null)
 				Log.e(TAG, "Server sent invalid route name:" + eventMessage.toString());
 			else
@@ -158,6 +166,7 @@ public class AdminActivity extends Activity {
 				setSpinnerSelectionWithoutCallingListener(routeNameSpinner, i);
 		}
 		isRouteNameSpinnerInitialized = true;
+		configureStatusSpinner();
 	}
 
 	public void updateGuiStatus(String status) {
@@ -185,6 +194,18 @@ public class AdminActivity extends Activity {
 		}
 	}
 
+	static private class NetwortErrorHandler extends Handler {
+		private WeakReference<AdminActivity> reference;
+		NetwortErrorHandler(AdminActivity activity) {
+			this.reference = new WeakReference<AdminActivity>(activity);
+		}
+		@Override
+		public void handleMessage(Message msg) {
+			Toast.makeText(this.reference.get(), "Failed" + msg, Toast.LENGTH_SHORT).show();
+			reference.get().getAllInformationFromServer();
+		}
+	}
+
 
 	protected void setActiveRouteOnServer(String routeName) {
 		Log.i(TAG, "setActiveRouteOnServer");
@@ -193,7 +214,7 @@ public class AdminActivity extends Activity {
 
 	protected void setActiveStatusOnServer(String status) {
 		Log.i(TAG, "setActiveStatusOnServer");
-		networkClient.setActiveStatus(EventStatus.valueOf(status), new NetworkResultHandler(this), null);
+		networkClient.setActiveStatus(EventStatus.valueOf(status), new NetworkResultHandler(this), new NetwortErrorHandler(this));
 	}
 
 
