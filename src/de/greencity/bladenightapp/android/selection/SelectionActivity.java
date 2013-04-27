@@ -295,8 +295,7 @@ public class SelectionActivity extends FragmentActivity {
 			fragment.setArguments(EventFragment.prepareBundle(eventsList.get(position), hasLeft, hasRight, eventsList.getActiveEvent() == event));
 			return fragment;      
 		}
-
-		@SuppressWarnings("unused")
+	
 		final private String TAG = "SelectionActivity.MyAdapter"; 
 
 		public EventList eventsList = new EventList();

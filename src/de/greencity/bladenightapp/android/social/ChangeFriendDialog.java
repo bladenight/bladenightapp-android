@@ -47,7 +47,7 @@ public class ChangeFriendDialog extends DialogFragment  {
     	
         rootView = inflater.inflate(R.layout.change_friend_dialog, container);
         
-        getDialog().setTitle("Change name and color of friend");
+        getDialog().setTitle(getResources().getString(R.string.title_friend_change));
         
         mEditText = (EditText) rootView.findViewById(R.id.change_friends_name);
         activeBox = (CheckBox) rootView.findViewById(R.id.friend_active);

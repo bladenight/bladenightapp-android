@@ -189,7 +189,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
 	public void onFinishInviteFriendDialog(String friendName) { 
 		ProgressDialog dialog = new ProgressDialog(SocialActivity.this);
 
-		dialog.setMessage("Loading add-friend code...");
+		dialog.setMessage(getResources().getString(R.string.msg_loading_code));
 		dialog.show();
 
 		CreateNewRequestHandler handler = new CreateNewRequestHandler(this, friendName, dialog);
@@ -212,10 +212,10 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
 				socialActivity.friends.put((int)relMsg.fid, newFriend);
 				socialActivity.updateGui();
 				progressDialog.dismiss();
-				Toast.makeText(socialActivity, friendName + " was added", Toast.LENGTH_LONG).show();
+				Toast.makeText(socialActivity, friendName + socialActivity.getResources().getString(R.string.msg_friend_added), Toast.LENGTH_LONG).show();
 			}
 			else{
-				Toast.makeText(socialActivity, "Code is not valid", Toast.LENGTH_LONG).show();
+				Toast.makeText(socialActivity, socialActivity.getResources().getString(R.string.msg_code_not_valid), Toast.LENGTH_LONG).show();
 			}
 			socialActivity.getFriendsListFromServer();
 		}
@@ -231,7 +231,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
 		}
 		@Override
 		public void handleMessage(Message msg) {
-			Toast.makeText(reference.get(), "Code is not valid", Toast.LENGTH_LONG).show();
+			Toast.makeText(reference.get(), reference.get().getResources().getString(R.string.msg_code_not_valid), Toast.LENGTH_LONG).show();
 			progressDialog.dismiss();
 		}
 		private WeakReference<SocialActivity> reference;
@@ -242,7 +242,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
 	@Override
 	public void onFinishConfirmFriendDialog(String friendName, String code) { 
 		ProgressDialog dialog = new ProgressDialog(SocialActivity.this);
-		dialog.setMessage("Validating friend code...");
+		dialog.setMessage(getResources().getString(R.string.msg_validating_code));
 		dialog.show();
 		networkClient.finalizeRelationship(Long.parseLong(code), Friends.generateId(this), new ConfirmRequestHandler(this, friendName, dialog), new ConfirmRequestErrorHandler(this, dialog));
 	}
@@ -286,7 +286,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
 		}
 		@Override
 		public void handleMessage(Message msg) {
-			Toast.makeText(reference.get(), "Friend has been removed", Toast.LENGTH_SHORT).show();
+			Toast.makeText(reference.get(), reference.get().getResources().getString(R.string.msg_friend_removed), Toast.LENGTH_SHORT).show();
 			reference.get().friends.remove(friendId);
 			reference.get().friends.save();
 			reference.get().updateGui();

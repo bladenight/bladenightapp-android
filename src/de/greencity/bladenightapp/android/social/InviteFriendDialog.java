@@ -25,7 +25,7 @@ public class InviteFriendDialog extends DialogFragment  {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.invite_friend_dialog, container);
 		editText = (EditText) view.findViewById(R.id.txt_friends_name);
-		getDialog().setTitle("Invite Friend");
+		getDialog().setTitle(getResources().getString(R.string.title_friend_invite));
 
 		setDefaultName();
 		
@@ -54,7 +54,7 @@ public class InviteFriendDialog extends DialogFragment  {
 	public void setDefaultName() {
 		int friendId = Friends.generateId(getActivity());
 		if ( friendId > 0)
-			editText.setText("Freund-"+friendId);
+			editText.setText(getResources().getString(R.string.default_friend_name)+friendId);
 	}
 
 	private EditText editText;

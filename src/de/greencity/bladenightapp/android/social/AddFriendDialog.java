@@ -21,7 +21,7 @@ public class AddFriendDialog extends DialogFragment  {
 
     	View view = inflater.inflate(R.layout.add_friend_dialog, container);     
         
-    	getDialog().setTitle("Add Friend");
+    	getDialog().setTitle(getResources().getString(R.string.title_friend_add));
         
         Button confirmButton = (Button) view.findViewById(R.id.addFriend);
         confirmButton.setOnClickListener(new Button.OnClickListener() {

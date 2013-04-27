@@ -352,7 +352,7 @@ public class BladenightMapActivity extends MapActivity {
 	}
 
 	private void startMapFileDownload() {
-		downloadProgressDialog.setMessage("Kartenmaterial wird heruntergeladen...");
+		downloadProgressDialog.setMessage(getResources().getString(R.string.msg_download_maps));
 		downloadProgressDialog.setIndeterminate(false);
 		downloadProgressDialog.setMax(100);
 		downloadProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);

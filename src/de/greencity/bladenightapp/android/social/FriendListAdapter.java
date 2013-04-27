@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import de.greencity.bladenightapp.dev.android.R;
+import de.greencity.bladenightapp.android.social.SocialActivity.GetRealTimeDataFromServerHandler;
 import de.greencity.bladenightapp.android.tracker.GpsTrackerService;
 import de.greencity.bladenightapp.android.utils.ServiceUtils;
 
@@ -107,15 +108,15 @@ public class FriendListAdapter extends BaseAdapter {
 	}
 	
 	private void updateStatus(Friend friend, TextView textViewStatus) {
-		String statustext = "active";
+		String statustext = textViewStatus.getResources().getString(R.string.status_active);
 		if ( ! friend.isValid() ) {
-			statustext = "obsolete";
+			statustext = textViewStatus.getResources().getString(R.string.status_obsolete);
 		}
 		else if ( friend.getRequestId() > 0 ) {
-			statustext = "pending (" + SocialActivity.formatRequestId(friend.getRequestId()) + ")";
+			statustext = textViewStatus.getResources().getString(R.string.status_pending) + "(" + SocialActivity.formatRequestId(friend.getRequestId()) + ")";
 		}
 		else if ( ! friend.isActive() ) {
-			statustext = "inactive";
+			statustext = textViewStatus.getResources().getString(R.string.status_inactive);
 		}
 //		else if ( friend.isOnline() )
 //			statustext = "online";
