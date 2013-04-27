@@ -23,10 +23,14 @@ public class RouteOverlay extends ListOverlay {
 
 	public RouteOverlay(MapView mapView) {
 		this.mapView = mapView;
+		Log.i(TAG, "RouteOverlay:RouteOverlay");
 		reinit();
 	}
 
 	private void reinit() {
+
+		Log.i(TAG, "reinit");
+		
 		routePolyline = createRoutePolyline();
 		getOverlayItems().add(routePolyline);
 
@@ -63,6 +67,10 @@ public class RouteOverlay extends ListOverlay {
 	}
 
 	public void update(RouteMessage routeMessage) {
+
+		Log.i(TAG, "update: routeName=" + routeMessage.getRouteName());
+		Log.i(TAG, "update: routeMessage=" + routeMessage);
+
 		routeNodes = new ArrayList<GeoPoint>();
 		for (LatLong node : routeMessage.nod) {
 			routeNodes.add(new GeoPoint(node.getLatitude(), node.getLongitude()));
@@ -75,6 +83,9 @@ public class RouteOverlay extends ListOverlay {
 	}
 
 	public void update(RealTimeUpdateData realTimeUpdateData) {
+
+		Log.i(TAG, "update: realTimeUpdateData=" + realTimeUpdateData);
+
 		List<GeoPoint> geoPoints = generateProcessionsGeopoints(realTimeUpdateData);
 		processionBoundingBox = computeBoundingBox(geoPoints);
 		processionPolyline.setPolygonalChain(new PolygonalChain(geoPoints));
@@ -91,7 +102,7 @@ public class RouteOverlay extends ListOverlay {
 			mapView.redraw();
 		}
 		catch(IllegalStateException e) {
-			Log.e(TAG, e.toString());
+			Log.e(TAG, "Exception in redrawMapView:" + e.toString());
 		}
 	}
 
@@ -106,7 +117,7 @@ public class RouteOverlay extends ListOverlay {
 		List<GeoPoint> geoPoints = new ArrayList<GeoPoint>();
 		double currentLinearPosition = 0.0;
 
-		Log.i(TAG, method + ": " + tailPosition + " - " + headPosition);
+		// Log.i(TAG, method + ": " + tailPosition + " - " + headPosition);
 
 		if ( ( tailPosition == 0.0 && headPosition == 0.0 ) || headPosition < tailPosition )
 			return geoPoints;

@@ -259,11 +259,11 @@ public class NetworkClient implements LocationListener {
 
 	private void callOrStore(BacklogItem item) {
 		if ( isConnectionUsable() ) {
-			Log.i(TAG, "callOrStore: calling " + item.url);
+			Log.i(TAG, "callOrStore: calling " + item.url + " arguments:" + item.outgoingPayload);
 			call(item);
 		}
 		else {
-			Log.i(TAG, "callOrStore: storing " + item.url);
+			Log.i(TAG, "callOrStore: storing " + item.url + " arguments:" + item.outgoingPayload);
 			item.timestamp = System.currentTimeMillis();
 			backlogItems.add(item);
 			connect();

@@ -5,7 +5,6 @@ package de.greencity.bladenightapp.android.selection;
 import java.util.Locale;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
@@ -173,9 +172,8 @@ public class EventFragment extends Fragment {
 			Log.e(TAG, "No event or no route available");
 			return;
 		}
-		if ( ! isCurrent )
-			// BladenightMapActivity will assume the current route if not specified
-			intent.putExtra(BladenightMapActivity.PARAM_ROUTENAME, eventMessage.getRouteName());
+		intent.putExtra(BladenightMapActivity.PARAM_ROUTENAME, eventMessage.getRouteName());
+		intent.putExtra(BladenightMapActivity.PARAM_ACTIVE, isCurrent);
 		view.getContext().startActivity(intent);
 	}
 

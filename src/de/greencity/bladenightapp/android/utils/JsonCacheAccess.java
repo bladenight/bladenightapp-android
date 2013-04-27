@@ -1,10 +1,14 @@
 package de.greencity.bladenightapp.android.utils;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
+
 import android.content.Context;
 import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
+import de.greencity.bladenightapp.network.messages.RouteMessage;
 
 public class JsonCacheAccess<T> {
 	public JsonCacheAccess(Context context, Class<T> clazz, String name) {
@@ -40,6 +44,23 @@ public class JsonCacheAccess<T> {
 	public static String getNameForRoute(String routeName) {
 		return PREFIX_ROUTE + routeName;
 	}
+	
+	public static void saveRouteToCache(Context context, RouteMessage routeMessage) {
+		Log.i(TAG, "Saving " + routeMessage.getRouteName() + " to cache");
+		JsonCacheAccess<RouteMessage> routeCache = new JsonCacheAccess<RouteMessage>(context, RouteMessage.class, JsonCacheAccess.getNameForRoute(routeMessage.getRouteName()));
+		routeCache.set(routeMessage);
+	}
+
+	public static RouteMessage getRouteFromCache(Context context, String routeName) {
+		Log.i(TAG, "Getting cache for route named \"" + routeName + "\"");
+		if ( routeName == null) {
+			Log.i(TAG, "Trace: " + ExceptionUtils.getStackTrace( new Throwable()));
+			return null;
+		}
+		JsonCacheAccess<RouteMessage> routeCache = new JsonCacheAccess<RouteMessage>(context, RouteMessage.class, routeName);
+		return routeCache.get();
+	}
+
 
 	final private InternalStorageFile cacheFile;
 	final private Gson gson;
