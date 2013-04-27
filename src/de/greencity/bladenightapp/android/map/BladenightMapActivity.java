@@ -25,6 +25,7 @@ import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.Window;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.markupartist.android.widget.ActionBar;
 
@@ -212,12 +213,22 @@ public class BladenightMapActivity extends MapActivity {
 		}
 		@Override
 		public void handleMessage(Message msg) {
-			if ( ! reference.get().isRunning ) // too late !
+			final BladenightMapActivity bladenightMapActivity = reference.get();
+			if ( ! bladenightMapActivity.isRunning ) // too late !
 				return;
 			RealTimeUpdateData realTimeUpdateData = (RealTimeUpdateData)msg.obj;
-			reference.get().routeOverlay.update(realTimeUpdateData);
-			reference.get().processionProgressBar.update(realTimeUpdateData);
-			reference.get().userPositionOverlay.update(realTimeUpdateData);
+			String liveRouteName = realTimeUpdateData.getRouteName(); 
+			if ( ! liveRouteName.equals(bladenightMapActivity.routeName) ) {
+				// the route has changed, typically Lang -> Kurz
+				Log.i(TAG, "GetRealTimeDataFromServerHandler: route has changed: " + bladenightMapActivity.routeName + " -> " + liveRouteName);
+				String text = bladenightMapActivity.getResources().getString(R.string.msg_route_has_changed);
+				Toast.makeText(bladenightMapActivity, text + " " + liveRouteName, Toast.LENGTH_LONG).show();
+				bladenightMapActivity.routeName = liveRouteName;
+				bladenightMapActivity.requestRouteFromNetworkService();
+			}
+			bladenightMapActivity.routeOverlay.update(realTimeUpdateData);
+			bladenightMapActivity.processionProgressBar.update(realTimeUpdateData);
+			bladenightMapActivity.userPositionOverlay.update(realTimeUpdateData);
 		}
 	}
 
@@ -229,7 +240,7 @@ public class BladenightMapActivity extends MapActivity {
 		if ( routeName.length() > 0 )
 			getSpecificRouteFromServer(routeName);
 		else
-			getActiveRouteFromServer();
+			Log.e(TAG, "requestRouteFromNetworkService: I don't know what route to request. routeName=" + routeName);
 	}
 
 	static class GetRouteFromServerHandler extends Handler {
@@ -415,7 +426,7 @@ public class BladenightMapActivity extends MapActivity {
 		}
 	}
 
-	final String TAG = "BladenightMapActivity";
+	final static String TAG = "BladenightMapActivity";
 	private BroadcastReceiversRegister broadcastReceiversRegister = new BroadcastReceiversRegister(this); 
 	private final String mapLocalPath = Environment.getExternalStorageDirectory().getPath()+"/Bladenight/munich.map";
 	private final String mapRemotePath = "maps/munich.map";
