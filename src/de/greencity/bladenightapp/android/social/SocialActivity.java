@@ -1,7 +1,6 @@
 package de.greencity.bladenightapp.android.social;
 
 import java.lang.ref.WeakReference;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -34,6 +33,7 @@ import de.greencity.bladenightapp.android.actionbar.ActionReload;
 import de.greencity.bladenightapp.android.network.NetworkClient;
 import de.greencity.bladenightapp.android.social.ChangeFriendDialog.ChangeFriendDialogListener;
 import de.greencity.bladenightapp.android.social.ConfirmFriendDialog.ConfirmFriendDialogListener;
+import de.greencity.bladenightapp.android.social.DeleteFriendDialog.DeleteFriendDialogListener;
 import de.greencity.bladenightapp.android.social.InviteFriendDialog.InviteFriendDialogListener;
 import de.greencity.bladenightapp.android.tracker.GpsTrackerService;
 import de.greencity.bladenightapp.android.utils.ServiceUtils;
@@ -45,7 +45,7 @@ import de.greencity.bladenightapp.network.messages.RealTimeUpdateData;
 import de.greencity.bladenightapp.network.messages.RelationshipOutputMessage;
 
 public class SocialActivity extends FragmentActivity implements InviteFriendDialogListener, 
-ConfirmFriendDialogListener, ChangeFriendDialogListener {
+ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListener {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -132,9 +132,15 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 		{
 			@Override
 			public boolean onItemLongClick(AdapterView<?> adapterView, View view, int selectedIndex, long rowId) {
+				FragmentManager fm = getSupportFragmentManager();
 				LinearLayout row = (LinearLayout)view.findViewById(R.id.row_friend);
 				int friendId = (Integer) row.getTag();
-				removeFriendOnServer(friendId);
+				DeleteFriendDialog deleteFriendDialog = new DeleteFriendDialog();
+				Bundle arguments = new Bundle();
+				arguments.putSerializable(ChangeFriendDialog.KEY_FRIENDOBJ, friends.get(friendId));
+				arguments.putInt(ChangeFriendDialog.KEY_FRIENDID, friendId);
+				deleteFriendDialog.setArguments(arguments);
+				deleteFriendDialog.show(fm, "fragment_delete_friend");
 				return true;
 			}
 		});
@@ -239,6 +245,12 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener {
 		dialog.setMessage("Validating friend code...");
 		dialog.show();
 		networkClient.finalizeRelationship(Long.parseLong(code), Friends.generateId(this), new ConfirmRequestHandler(this, friendName, dialog), new ConfirmRequestErrorHandler(this, dialog));
+	}
+	
+	@Override
+	public void onFinishDeleteFriendDialog(String friendName, int friendId) { 
+		removeFriendOnServer(friendId);
+		
 	}
 
 	@Override
