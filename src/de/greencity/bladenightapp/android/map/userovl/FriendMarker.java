@@ -44,5 +44,5 @@ public class FriendMarker {
 	private AccuracyCircle accuracyCircle;
 	private PositionMarker positionMarker;
 	private ListOverlay listOverlay;
-	private static final String TAG = "FriendMarker";
+	//	private static final String TAG = "FriendMarker";
 }

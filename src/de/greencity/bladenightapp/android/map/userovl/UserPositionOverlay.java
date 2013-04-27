@@ -12,6 +12,7 @@ import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
+import android.util.Log;
 import de.greencity.bladenightapp.android.social.Friends;
 import de.greencity.bladenightapp.android.social.SocialActivity;
 import de.greencity.bladenightapp.network.messages.MovingPointMessage;
@@ -63,7 +64,7 @@ public class UserPositionOverlay extends ListOverlay implements LocationListener
 		//		Log.i(TAG, "onStatusChanged: " + provider + " status="+status);
 	}
 
-	public void update(RealTimeUpdateData data) {
+	public synchronized void update(RealTimeUpdateData data) {
 		Set<Integer> depracatedFriendIds = new HashSet<Integer>(friendMarkers.keySet());
 		depracatedFriendIds.remove(SocialActivity.ID_ME);
 		for ( Integer friendId : data.fri.keySet() ) {
@@ -81,9 +82,13 @@ public class UserPositionOverlay extends ListOverlay implements LocationListener
 	}
 
 	public FriendMarker getFriendMarker(Integer friendId) {
-		if ( friendMarkers.get(friendId) != null )
+		Log.i(TAG, "getFriendMarker: " + friendId);
+		if ( friendMarkers.get(friendId) != null ) {
+			Log.i(TAG, "getFriendMarker: returning existing for " + friendId);
 			return friendMarkers.get(friendId);
+		}
 
+		Log.i(TAG, "getFriendMarker: creating new for " + friendId);
 		FriendMarker friendMarker = new FriendMarker(context, this, friends.getFriendColor(friendId));
 		friendMarkers.put(friendId, friendMarker);
 		friendMarker.show();
@@ -108,7 +113,7 @@ public class UserPositionOverlay extends ListOverlay implements LocationListener
 		FriendMarker friendMarker = friendMarkers.get(friendId);
 		if ( friendMarker != null ) {
 			friendMarker.remove();
-			friendMarkers.remove(friendMarker);
+			friendMarkers.remove(friendId);
 		}
 	}
 
