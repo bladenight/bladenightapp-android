@@ -6,7 +6,6 @@ import org.mapsforge.core.model.GeoPoint;
 
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.util.Log;
 
 class AccuracyCircle {
 	public AccuracyCircle(int color) {
@@ -27,6 +26,7 @@ class AccuracyCircle {
 		Paint paintStroke = new Paint();
 		paintStroke.setStyle(Paint.Style.STROKE);
 		paintStroke.setColor(Color.WHITE);
+		paintStroke.setAlpha(ALPHA);
 		paintStroke.setAntiAlias(true);
 		paintStroke.setStrokeWidth(3);
 
@@ -44,7 +44,7 @@ class AccuracyCircle {
 	}
 
 	public void setRadius(float radius) {
-		radius = Math.max(radius, MAX_RADIUS);
+		radius = Math.min(radius, MAX_RADIUS);
 		circle.setRadius(radius);
 	}
 

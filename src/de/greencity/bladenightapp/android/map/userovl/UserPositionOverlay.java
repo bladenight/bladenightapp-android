@@ -82,13 +82,10 @@ public class UserPositionOverlay extends ListOverlay implements LocationListener
 	}
 
 	public FriendMarker getFriendMarker(Integer friendId) {
-		Log.i(TAG, "getFriendMarker: " + friendId);
 		if ( friendMarkers.get(friendId) != null ) {
-			Log.i(TAG, "getFriendMarker: returning existing for " + friendId);
 			return friendMarkers.get(friendId);
 		}
 
-		Log.i(TAG, "getFriendMarker: creating new for " + friendId);
 		FriendMarker friendMarker = new FriendMarker(context, this, friends.getFriendColor(friendId));
 		friendMarkers.put(friendId, friendMarker);
 		friendMarker.show();
