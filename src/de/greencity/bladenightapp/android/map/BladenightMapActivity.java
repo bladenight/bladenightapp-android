@@ -31,6 +31,7 @@ import com.markupartist.android.widget.ActionBar;
 
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator.ActionItemType;
+import de.greencity.bladenightapp.android.map.userovl.UserPositionOverlay;
 import de.greencity.bladenightapp.android.network.NetworkClient;
 import de.greencity.bladenightapp.android.tracker.GpsListener;
 import de.greencity.bladenightapp.android.utils.AsyncDownloadTaskHttpClient;

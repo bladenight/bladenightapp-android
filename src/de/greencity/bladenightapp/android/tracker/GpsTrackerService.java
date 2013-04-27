@@ -10,10 +10,9 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import de.greencity.bladenightapp.dev.android.R;
 import de.greencity.bladenightapp.android.network.NetworkClient;
 import de.greencity.bladenightapp.android.selection.SelectionActivity;
-import de.greencity.bladenightapp.network.messages.LatLong;
+import de.greencity.bladenightapp.dev.android.R;
 
 public class GpsTrackerService extends Service {
 
@@ -94,7 +93,7 @@ public class GpsTrackerService extends Service {
 	private NetworkClient networkClient;
 	private Runnable periodicRunnable;
 	final Handler handler = new Handler();
-	static private final int updatePeriod = 5000;
+	static private final int updatePeriod = 10000;
 	static private final int NOTIFICATION_ID = 1;
 
 	static final String TAG = "GpsTrackerService";
