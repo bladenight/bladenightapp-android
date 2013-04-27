@@ -56,7 +56,6 @@ public class SelectionActivity extends FragmentActivity {
 		super.onStart();
 
 		Log.i(TAG, "onStart");
-
 	}
 
 	private void configureActionBar() {
@@ -204,7 +203,7 @@ public class SelectionActivity extends FragmentActivity {
 		eventsList = eventListMessage.convertToEventsList();
 		eventsList.sortByStartDate();
 
-		viewPagerAdapter.setEventListMessage(EventsListMessage.newFromEventsList(eventsList));
+		viewPagerAdapter.setEventList(eventsList);
 		updatePositionEventCurrent();
 		if ( ! tryToRestorePreviouslyShownEvent() ) {
 			showUpcomingEvent();
@@ -268,15 +267,15 @@ public class SelectionActivity extends FragmentActivity {
 			super(fm);
 		}
 
-		public void setEventListMessage(EventsListMessage eventListMessage) {
-			this.eventListMessage = eventListMessage;
+		public void setEventList(EventList eventsList) {
+			this.eventsList = eventsList;
 			notifyDataSetChanged();
 		}
 
 		@Override
 		public int getCount() {
 			//			Log.d(TAG, "getCount");
-			return eventListMessage.size();
+			return eventsList.size();
 		}
 
 		@Override
@@ -287,19 +286,20 @@ public class SelectionActivity extends FragmentActivity {
 
 		@Override
 		public Fragment getItem(int position) {
+			Event event = eventsList.get(position);
 			Log.d(TAG, "getItem("+position+")");
-			Log.d(TAG, eventListMessage.get(position).toString());
+			Log.d(TAG, event.toString());
 			boolean hasRight = position < getCount()-1;
 			boolean hasLeft = position > 0;
 			EventFragment fragment = new EventFragment();
-			fragment.setArguments(EventFragment.prepareBundle(eventListMessage.get(position), hasLeft, hasRight, posEventCurrent == position));
+			fragment.setArguments(EventFragment.prepareBundle(eventsList.get(position), hasLeft, hasRight, eventsList.getActiveEvent() == event));
 			return fragment;      
 		}
 
 		@SuppressWarnings("unused")
 		final private String TAG = "SelectionActivity.MyAdapter"; 
 
-		public EventsListMessage eventListMessage = new EventsListMessage();
+		public EventList eventsList = new EventList();
 	}
 
 	private ViewPagerAdapter viewPagerAdapter;

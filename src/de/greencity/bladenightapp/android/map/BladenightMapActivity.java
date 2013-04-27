@@ -5,6 +5,7 @@ import java.io.File;
 import java.lang.ref.WeakReference;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.mapsforge.android.maps.MapActivity;
 import org.mapsforge.android.maps.mapgenerator.TileCache;
 import org.mapsforge.core.model.BoundingBox;
@@ -24,17 +25,18 @@ import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.Window;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.markupartist.android.widget.ActionBar;
 
-import de.greencity.bladenightapp.dev.android.R;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator.ActionItemType;
 import de.greencity.bladenightapp.android.network.NetworkClient;
 import de.greencity.bladenightapp.android.tracker.GpsListener;
-import de.greencity.bladenightapp.android.utils.AsyncDownloadTask;
+import de.greencity.bladenightapp.android.utils.AsyncDownloadTaskHttpClient;
 import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
 import de.greencity.bladenightapp.android.utils.JsonCacheAccess;
+import de.greencity.bladenightapp.dev.android.R;
 import de.greencity.bladenightapp.network.messages.RealTimeUpdateData;
 import de.greencity.bladenightapp.network.messages.RouteMessage;
 
@@ -69,20 +71,25 @@ public class BladenightMapActivity extends MapActivity {
 
 	}
 
-	private void configureBasedOnIntent() {
-		getActivityParametersFromIntent(getIntent());
-
-		configureActionBar();
-
-		routeCache = new JsonCacheAccess<RouteMessage>(this, RouteMessage.class, JsonCacheAccess.getNameForRoute(routeName));
-	}
-
 	@Override
 	protected void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);
+
+		Log.i(TAG, "onNewIntent");
+
 		setIntent(intent);
 		configureBasedOnIntent();
 	}
+
+	private void configureBasedOnIntent() {
+
+		Log.i(TAG, "configureBasedOnIntent");
+
+		getActivityParametersFromIntent(getIntent());
+
+		configureActionBar();
+	}
+
 
 	@Override
 	public void onPause() {
@@ -171,18 +178,22 @@ public class BladenightMapActivity extends MapActivity {
 
 
 	private void getActivityParametersFromIntent(Intent intent) {
+
+		Log.i(TAG, "getActivityParametersFromIntent intent="+intent);
+
 		isShowingActiveEvent = true;
 		if ( intent != null) {
 			Bundle bundle = intent.getExtras();
+			Log.i(TAG, "getActivityParametersFromIntent bundle="+bundle);
 			if ( bundle != null ) {
 				String routeNameFromBundle = bundle.getString(PARAM_ROUTENAME);
+				isShowingActiveEvent = bundle.getBoolean(PARAM_ACTIVE);
+				Log.i(TAG, "getActivityParametersFromIntent routeNameFromBundle="+routeNameFromBundle);
 				if ( routeNameFromBundle != null) {
 					routeName = routeNameFromBundle;
-					isShowingActiveEvent = false;
 					if ( ! routeNameFromBundle.equals(routeName))
 						isRouteInfoAvailable = false;
 				}
-				Log.i(TAG, "isShowingActiveEvent="+isShowingActiveEvent);
 			}
 			else {
 				Log.w(TAG, "bundle="+bundle);
@@ -191,6 +202,8 @@ public class BladenightMapActivity extends MapActivity {
 		else {
 			Log.w(TAG, "intent="+intent);
 		}
+		Log.i(TAG, "getActivityParametersFromIntent DONE routeName="+routeName);
+		Log.i(TAG, "isShowingActiveEvent="+isShowingActiveEvent);
 	}
 
 	static class GetRealTimeDataFromServerHandler extends Handler {
@@ -200,12 +213,22 @@ public class BladenightMapActivity extends MapActivity {
 		}
 		@Override
 		public void handleMessage(Message msg) {
-			if ( ! reference.get().isRunning ) // too late !
+			final BladenightMapActivity bladenightMapActivity = reference.get();
+			if ( ! bladenightMapActivity.isRunning ) // too late !
 				return;
 			RealTimeUpdateData realTimeUpdateData = (RealTimeUpdateData)msg.obj;
-			reference.get().routeOverlay.update(realTimeUpdateData);
-			reference.get().processionProgressBar.update(realTimeUpdateData);
-			reference.get().userPositionOverlay.update(realTimeUpdateData);
+			String liveRouteName = realTimeUpdateData.getRouteName(); 
+			if ( ! liveRouteName.equals(bladenightMapActivity.routeName) ) {
+				// the route has changed, typically Lang -> Kurz
+				Log.i(TAG, "GetRealTimeDataFromServerHandler: route has changed: " + bladenightMapActivity.routeName + " -> " + liveRouteName);
+				String text = bladenightMapActivity.getResources().getString(R.string.msg_route_has_changed);
+				Toast.makeText(bladenightMapActivity, text + " " + liveRouteName, Toast.LENGTH_LONG).show();
+				bladenightMapActivity.routeName = liveRouteName;
+				bladenightMapActivity.requestRouteFromNetworkService();
+			}
+			bladenightMapActivity.routeOverlay.update(realTimeUpdateData);
+			bladenightMapActivity.processionProgressBar.update(realTimeUpdateData);
+			bladenightMapActivity.userPositionOverlay.update(realTimeUpdateData);
 		}
 	}
 
@@ -217,7 +240,7 @@ public class BladenightMapActivity extends MapActivity {
 		if ( routeName.length() > 0 )
 			getSpecificRouteFromServer(routeName);
 		else
-			getActiveRouteFromServer();
+			Log.e(TAG, "requestRouteFromNetworkService: I don't know what route to request. routeName=" + routeName);
 	}
 
 	static class GetRouteFromServerHandler extends Handler {
@@ -231,7 +254,7 @@ public class BladenightMapActivity extends MapActivity {
 				return;
 			RouteMessage routeMessage = (RouteMessage) msg.obj;
 			reference.get().updateRouteFromRouteMessage(routeMessage);
-			reference.get().routeCache.set(routeMessage);
+			JsonCacheAccess.saveRouteToCache(reference.get(), routeMessage);
 		}
 	}
 
@@ -246,14 +269,18 @@ public class BladenightMapActivity extends MapActivity {
 	}
 
 	private void updateRouteFromRouteMessage(RouteMessage routeMessage) {
-		isRouteInfoAvailable = true;;
+		if ( ! routeMessage.getRouteName().equals(routeName) ) {
+			Log.e(TAG, "Inconsistency: Got \"" + routeMessage.getRouteName() + "\" but expected: \"" + routeName + "\"");
+			Log.i(TAG, "Trace: " + ExceptionUtils.getStackTrace( new Throwable()));
+		}
+		isRouteInfoAvailable = true;
 		routeName = routeMessage.getRouteName();
 		routeOverlay.update(routeMessage);
 		fitViewToRoute();
 	}
 
 	private void updateRouteFromCache() {
-		RouteMessage message = routeCache.get();
+		RouteMessage message = JsonCacheAccess.getRouteFromCache(this, routeName);
 		if ( message != null ) {
 			updateRouteFromRouteMessage(message);
 		}
@@ -331,7 +358,7 @@ public class BladenightMapActivity extends MapActivity {
 
 		downloadProgressDialog.show();
 
-		AsyncDownloadTask.StatusHandler handler = new AsyncDownloadTask.StatusHandler() {
+		AsyncDownloadTaskHttpClient.StatusHandler handler = new AsyncDownloadTaskHttpClient.StatusHandler() {
 
 			@Override
 			public void onProgress(long current, long total) {
@@ -399,7 +426,7 @@ public class BladenightMapActivity extends MapActivity {
 		}
 	}
 
-	final String TAG = "BladenightMapActivity";
+	final static String TAG = "BladenightMapActivity";
 	private BroadcastReceiversRegister broadcastReceiversRegister = new BroadcastReceiversRegister(this); 
 	private final String mapLocalPath = Environment.getExternalStorageDirectory().getPath()+"/Bladenight/munich.map";
 	private final String mapRemotePath = "maps/munich.map";
@@ -417,8 +444,8 @@ public class BladenightMapActivity extends MapActivity {
 	private GpsListener gpsListenerForPositionOverlay;
 	private GpsListener gpsListenerForNetworkClient;
 	private boolean isRouteInfoAvailable = false;
-	private JsonCacheAccess<RouteMessage> routeCache;
 	static public final String PARAM_ROUTENAME = "routeName";
+	public static final String PARAM_ACTIVE = "active";
 	private boolean isRunning = true;
 
 } 

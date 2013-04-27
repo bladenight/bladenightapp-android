@@ -231,24 +231,19 @@ public class WebSocketClient {
         public void onError(Exception error);
     }
 
-	static public void setCustomSslFactory(org.apache.http.conn.ssl.SSLSocketFactory factory) {
-		sslFactory = factory;
-	}
-	
 	private Socket getSocket(String host, int port) throws IOException {
 		if ( mURI.getScheme().equals("wss") || mURI.getScheme().equals("https") ) {
 			// return sslFactory.connectSocket(null, host, port, null, 0, new BasicHttpParams());
-			return sslFactory2.createSocket(host, port);
+			return sslFactory.createSocket(host, port);
 		}
 		else {
 			return SocketFactory.getDefault().createSocket(host, port);
 		}
 	}
 	
-	static org.apache.http.conn.ssl.SSLSocketFactory sslFactory = org.apache.http.conn.ssl.SSLSocketFactory.getSocketFactory();
-	static SocketFactory sslFactory2 = SSLSocketFactory.getDefault();
+	static SocketFactory sslFactory = SSLSocketFactory.getDefault();
 
 	public static void setCustomSslFactory(SSLSocketFactory sslSocketFactory) {
-		sslFactory2 = sslSocketFactory;
+		sslFactory = sslSocketFactory;
 	}
 }

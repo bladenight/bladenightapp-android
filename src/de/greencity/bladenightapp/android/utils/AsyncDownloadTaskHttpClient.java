@@ -1,32 +1,36 @@
 package de.greencity.bladenightapp.android.utils;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
 import java.net.URL;
-import java.net.URLConnection;
 
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.SSLException;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.ssl.AbstractVerifier;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpParams;
+
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
+import de.greencity.bladenightapp.android.network.SslHelper;
 
-public class AsyncDownloadTask extends AsyncTask<String, Long, Boolean> {
+public class AsyncDownloadTaskHttpClient extends AsyncTask<String, Long, Boolean> {
 
-	public AsyncDownloadTask(StatusHandler handler) {
+	public AsyncDownloadTaskHttpClient(Context context, StatusHandler handler) {
+		this.context = context;
 		this.statusHandler = handler;
 	}
-
-	public void setSslSocketFactory(SSLSocketFactory sslSocketFactory) {
-		this.sslSocketFactory = sslSocketFactory;
-	}
-
-
 
 	@Override
 	protected Boolean doInBackground(String... params) {
@@ -41,31 +45,43 @@ public class AsyncDownloadTask extends AsyncTask<String, Long, Boolean> {
 		}
 	}
 
+	static class MyVerifier extends AbstractVerifier {
+
+		@Override
+		public void verify(String host, String[] cns, String[] subjectAlts) throws SSLException {
+		}
+	}
+
+
 	private Boolean doInBackground2(String... params) {
 		try {
+
+			URI uri = new URI(params[0]);
 			URL url = new URL(params[0]);
-			URLConnection connection = url.openConnection();
 
+			HttpClient httpClient = null;
+			HttpParams httpParams = new BasicHttpParams();
 			if ( "https".equals(url.getProtocol()) ) {
-				if ( sslSocketFactory == null )
-					Log.w(TAG, "HTTPS requested but no sslSocketFactory provided");
-				else {
-					HttpsURLConnection httpsUrlConnection = (HttpsURLConnection) connection; 
-					Log.i(TAG, "Configuring the SSL factory: " + sslSocketFactory);
-					httpsUrlConnection.setSSLSocketFactory(sslSocketFactory);
-					httpsUrlConnection.setHostnameVerifier(new HostnameVerifier() {
-						@Override
-						public boolean verify(String hostname, SSLSession session) {
-							return true;
-						}
-					});
-				}
+				SchemeRegistry registry = new SchemeRegistry();
+				Scheme scheme = new Scheme("https", SslHelper.getSocketFactory(context), 8081);
+				registry.register(scheme);
+				httpClient = new DefaultHttpClient(new ThreadSafeClientConnManager(httpParams, registry), httpParams);
 			}
-			Log.i(TAG, connection.toString());
-			connection.connect();
+			else {
+				httpClient = new DefaultHttpClient();
+			}
 
-			fileSize = connection.getContentLength();
+			org.apache.http.conn.ssl.SSLSocketFactory sslSocketFactory = (org.apache.http.conn.ssl.SSLSocketFactory)httpClient
+					.getConnectionManager().getSchemeRegistry().getScheme("https")
+					.getSocketFactory();
+			sslSocketFactory.setHostnameVerifier(new MyVerifier());
+
+
+			HttpResponse httpResponse = httpClient.execute( new HttpGet(uri) );
+
+			fileSize = httpResponse.getEntity().getContentLength();
 			Log.i(TAG, "fileSize="+fileSize);
+
 
 			File targetFile = new File(params[1]);
 			File parentDir = targetFile.getParentFile();
@@ -78,7 +94,7 @@ public class AsyncDownloadTask extends AsyncTask<String, Long, Boolean> {
 				return false;
 			}
 
-			InputStream input = new BufferedInputStream(url.openStream());
+			InputStream input = httpResponse.getEntity().getContent();
 			OutputStream output = new FileOutputStream(targetFile);
 
 			byte data[] = new byte[10*1024];
@@ -140,6 +156,6 @@ public class AsyncDownloadTask extends AsyncTask<String, Long, Boolean> {
 	private final String TAG  = "AsyncDownloadTask";
 	private long fileSize = 0;
 	private StatusHandler statusHandler;
-	private SSLSocketFactory sslSocketFactory;
+	private Context context;
 
 }
