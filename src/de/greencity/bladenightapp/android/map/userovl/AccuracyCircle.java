@@ -17,9 +17,8 @@ class AccuracyCircle {
 	private Paint getPaintFill(int color) {
 		Paint paintFill = new Paint();
 		paintFill.setStyle(Paint.Style.FILL);
-
 		paintFill.setColor(color);
-		paintFill.setAlpha(alpha);
+		paintFill.setAlpha(ALPHA);
 		paintFill.setAntiAlias(true);
 		return paintFill;
 	}
@@ -45,6 +44,7 @@ class AccuracyCircle {
 	}
 
 	public void setRadius(float radius) {
+		radius = Math.max(radius, MAX_RADIUS);
 		circle.setRadius(radius);
 	}
 
@@ -55,6 +55,7 @@ class AccuracyCircle {
 
 	private Circle circle;
 	//	static private String TAG = "UserPositionOverlay.AccuracyCircle"; 
-	final int alpha = 40;
+	static final int ALPHA = 40;
+	static final float MAX_RADIUS = 300; 
 	private int color;
 }
