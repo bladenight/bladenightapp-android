@@ -352,10 +352,10 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
 		friends = new Friends(this);
 		friends.load();
 
-		friends.put(ID_HEAD, new Friend("Head"));
-		friends.put(ID_TAIL, new Friend("Tail"));
+		friends.put(ID_HEAD, new Friend(getResources().getString(R.string.name_head)));
+		friends.put(ID_TAIL, new Friend(getResources().getString(R.string.name_tail)));
 		if ( friends.get(ID_ME) == null )
-			friends.put(ID_ME, new Friend("Me"));
+			friends.put(ID_ME, new Friend(getResources().getString(R.string.name_me)));
 	}
 
 	private void updateFriendDynamicData(RealTimeUpdateData realTimeUpdateData, MovingPointMessage nmp, Friend friend) {
