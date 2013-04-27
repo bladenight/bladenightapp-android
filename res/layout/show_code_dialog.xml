@@ -4,7 +4,7 @@
     android:layout_gravity="center" android:orientation="vertical"  >
 
     <TextView
-        android:id="@+id/code_text" android:text="Test" 
+        android:id="@+id/code_text" android:text="@string/default_code" 
         android:layout_width="match_parent" android:layout_height="wrap_content"
         android:padding="5dp"
         android:textSize="20dip"
@@ -17,7 +17,7 @@
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
-            android:text="OK" 
+            android:text="@string/button_confirm" 
             android:onClick="onClick"/>  
         
 </LinearLayout>

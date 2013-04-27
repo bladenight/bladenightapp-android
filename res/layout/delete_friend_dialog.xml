@@ -22,7 +22,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:onClick="onClick"
-            android:text="OK" />
+            android:text="@string/button_confirm" />
 
         <Button
             android:id="@+id/deleteFriend_cancel"
@@ -30,7 +30,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:onClick="onClick"
-            android:text="Cancel" />
+            android:text="@string/button_cancel" />
     </LinearLayout>
 
 </LinearLayout>
