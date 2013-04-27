@@ -93,7 +93,7 @@ public class GpsTrackerService extends Service {
 	private NetworkClient networkClient;
 	private Runnable periodicRunnable;
 	final Handler handler = new Handler();
-	static private final int updatePeriod = 5000;
+	static private final int updatePeriod = 10000;
 	static private final int NOTIFICATION_ID = 1;
 
 	static final String TAG = "GpsTrackerService";
