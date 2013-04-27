@@ -43,7 +43,7 @@ public class DeleteFriendDialog extends DialogFragment  {
         text = (TextView) rootView.findViewById(R.id.deleteFriend_text);
         
         
-        text.setText(getResources().getString(R.string.text_friend_delete) + friend.getName() + "?");
+        text.setText(getResources().getString(R.string.text_friend_delete) + " " +  friend.getName() + "?");
 
         setButtonListeners(rootView);
         

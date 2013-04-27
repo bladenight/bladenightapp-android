@@ -30,7 +30,7 @@ public class ShowCodeDialog extends DialogFragment  {
 
 		View view = inflater.inflate(R.layout.show_code_dialog, container);
 
-		getDialog().setTitle(getResources().getString(R.string.msg_new_code)+ friendName);
+		getDialog().setTitle(getResources().getString(R.string.msg_new_code)+ " " + friendName);
 
 		TextView codetext = (TextView) view.findViewById(R.id.code_text);
 		codetext.setText(code);

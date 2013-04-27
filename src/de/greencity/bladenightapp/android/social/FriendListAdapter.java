@@ -113,7 +113,7 @@ public class FriendListAdapter extends BaseAdapter {
 			statustext = textViewStatus.getResources().getString(R.string.status_obsolete);
 		}
 		else if ( friend.getRequestId() > 0 ) {
-			statustext = textViewStatus.getResources().getString(R.string.status_pending) + "(" + SocialActivity.formatRequestId(friend.getRequestId()) + ")";
+			statustext = textViewStatus.getResources().getString(R.string.status_pending) + " (" + SocialActivity.formatRequestId(friend.getRequestId()) + ")";
 		}
 		else if ( ! friend.isActive() ) {
 			statustext = textViewStatus.getResources().getString(R.string.status_inactive);
