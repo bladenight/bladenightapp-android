@@ -28,7 +28,7 @@ public class ConfirmFriendDialog extends DialogFragment  {
         View view = inflater.inflate(R.layout.confirm_friend_dialog, container);
         editName = (EditText) view.findViewById(R.id.confirm_friendsName);
         editCode = (EditText) view.findViewById(R.id.confirm_code);
-        getDialog().setTitle("Confirm Friend");
+        getDialog().setTitle(getResources().getString(R.string.title_friend_confirm));
         
         setDefaultName();
         
@@ -57,7 +57,7 @@ public class ConfirmFriendDialog extends DialogFragment  {
 	public void setDefaultName() {
 		int friendId = Friends.generateId(getActivity());
 		if ( friendId > 0)
-			editName.setText("Freund-"+friendId);
+			editName.setText(getResources().getString(R.string.default_friend_name)+friendId);
 	}
 
 	private EditText editCode;

@@ -38,12 +38,12 @@ public class DeleteFriendDialog extends DialogFragment  {
     	
         rootView = inflater.inflate(R.layout.delete_friend_dialog, container);
         
-        getDialog().setTitle("Delete friend");
+        getDialog().setTitle(getResources().getString(R.string.title_friend_delete));
         
         text = (TextView) rootView.findViewById(R.id.deleteFriend_text);
         
         
-        text.setText("Do you really want to delete " + friend.getName() + "?");
+        text.setText(getResources().getString(R.string.text_friend_delete) + friend.getName() + "?");
 
         setButtonListeners(rootView);
         

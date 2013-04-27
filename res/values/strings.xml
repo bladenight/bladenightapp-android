@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="about_android_application">Android Application</string>
-    <string name="about_ben">Benjamin Uekermann</string>
+    <string name="about_ben">Benjamin Uekermann : benjamin.uekermann@gmail.com</string>
     <string name="about_bladenight_link">http://www.aok-bladenight.de/</string>
     <string name="about_more_info">More information</string>
     <string name="about_olivier">Olivier Croquette : ocroquette@free.fr</string>
@@ -26,6 +26,7 @@
     <string name="default_code">12 34 56</string>
     <string name="default_distance_rel">+234m</string>
     <string name="default_distance_tol">2384m</string>
+    <string name="default_friend_name">Friend</string>
     <string name="default_name">Heinz</string>
     <string name="default_time">+01:24</string>
     <string name="field_active">Active</string>
@@ -37,18 +38,35 @@
     <string name="menu_settings">Settings</string>
     <string name="msg_administration">Administration</string>
     <string name="msg_about_app">About the app</string>
+    <string name="msg_code_not_valid">Code is not valid</string>
+    <string name="msg_download_maps">Download maps</string>
     <string name="msg_failed_to_load_map">Failed to load the map</string>
+    <string name="msg_friend_added"> was added</string>
+    <string name="msg_friend_removed">Friend has been removed</string>
+    <string name="msg_loading_code">Loading add-friend code</string>
+    <string name="msg_new_code">Give this code to </string>
     <string name="msg_no">No</string>
     <string name="msg_participants">participants</string>
     <string name="msg_route_has_changed">The route has changed. We will now go for the route</string>
     <string name="msg_status">Status</string>
     <string name="msg_tracker_confirm_stop">Your friend will miss you, and track recording will stop. Are you sure ?</string>
     <string name="msg_tracking_running">Tracking is on</string>
+    <string name="msg_validating_code">Validating friend code</string>
     <string name="msg_yes">Yes</string>
     <string name="social_explanation">To add a friend, you have to use a code. If you want to invite a friend, press \'Invite Friend\' and we will generate a code for you. If a friend gave you a code, press \'Confirm Friend\'.</string>
     <string name="social_ask_for_name">Give a name to this friend</string>
+    <string name="status_active">active</string>
+    <string name="status_inactive">inactive</string>
+    <string name="status_obsolete">obsolete</string>
+    <string name="status_pending">pending</string>
+    <string name="text_friend_delete">Do you really want to delete </string>
     <string name="title_about">About this application</string>
     <string name="title_admin">Admin</string>
+    <string name="title_friend_add">Add Friend</string>
+    <string name="title_friend_change">Edit Friend</string>
+    <string name="title_friend_confirm">Confirm Friend</string>
+    <string name="title_friend_delete">Delete Friend</string>
+    <string name="title_friend_invite">Invite Friend</string>
     <string name="title_map">Live</string>
     <string name="title_options">Options</string>
     <string name="title_selection">Events</string>
