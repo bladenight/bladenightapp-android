@@ -30,7 +30,7 @@
     <string name="msg_friend_added"> wurde hinzugefügt</string>
     <string name="msg_friend_removed">Freund wurde gelöscht</string>
     <string name="msg_loading_code">Lade Freund-Code</string>
-    <string name="msg_new_code">Gib diesen Code deinen Freund </string>
+    <string name="msg_new_code">Gib diesen Code </string>
     <string name="msg_no">Nein</string>
     <string name="msg_participants">Teilnehmer</string>
     <string name="msg_route_has_changed">Die Strecke hat sich geändert. Wir fahren jetzt die Strecke</string>
