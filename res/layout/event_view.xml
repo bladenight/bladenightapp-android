@@ -101,7 +101,7 @@
             android:background="@drawable/custom_button"
             android:gravity="center_vertical"
             android:paddingTop="10dip"
-            android:src="@drawable/ic_action_glasses" />
+            android:src="@drawable/ic_action_show" />
 
         <ImageView
             android:id="@+id/image_event_participate"
