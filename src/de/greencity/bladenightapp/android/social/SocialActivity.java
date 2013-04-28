@@ -135,6 +135,11 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
 				FragmentManager fm = getSupportFragmentManager();
 				LinearLayout row = (LinearLayout)view.findViewById(R.id.row_friend);
 				int friendId = (Integer) row.getTag();
+				if ( friendId == ID_HEAD || friendId == ID_TAIL || friendId == ID_ME ) {
+					Toast.makeText(view.getContext(), getResources().getString(R.string.msg_invalid_friend_to_delete), Toast.LENGTH_LONG).show();
+					return true;
+				}
+					
 				DeleteFriendDialog deleteFriendDialog = new DeleteFriendDialog();
 				Bundle arguments = new Bundle();
 				arguments.putSerializable(ChangeFriendDialog.KEY_FRIENDOBJ, friends.get(friendId));

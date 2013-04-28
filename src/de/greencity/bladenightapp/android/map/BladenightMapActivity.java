@@ -29,7 +29,6 @@ import android.widget.Toast;
 
 import com.markupartist.android.widget.ActionBar;
 
-import de.greencity.bladenightapp.android.about.AboutActivity;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator.ActionItemType;
 import de.greencity.bladenightapp.android.map.userovl.UserPositionOverlay;
@@ -267,11 +266,6 @@ public class BladenightMapActivity extends MapActivity {
 	private void getSpecificRouteFromServer(String routeName) {
 		Log.i(TAG,"getSpecificRouteFromServer routeName="+routeName);
 		networkClient.getRoute(routeName, new GetRouteFromServerHandler(this), null);
-	}
-
-	private void getActiveRouteFromServer() {
-		Log.i(TAG,"getActiveRouteFromServer");
-		networkClient.getActiveRoute(new GetRouteFromServerHandler(this), null);
 	}
 
 	private void updateRouteFromRouteMessage(RouteMessage routeMessage) {

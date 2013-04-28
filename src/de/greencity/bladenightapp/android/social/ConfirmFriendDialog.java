@@ -1,15 +1,14 @@
 package de.greencity.bladenightapp.android.social;
 
-import de.greencity.bladenightapp.dev.android.R;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager.LayoutParams;
 import android.widget.Button;
 import android.widget.EditText;
+import de.greencity.bladenightapp.dev.android.R;
 
 
 public class ConfirmFriendDialog extends DialogFragment  {

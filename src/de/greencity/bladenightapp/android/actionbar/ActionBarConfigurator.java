@@ -6,16 +6,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import android.content.Intent;
-import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 
 import com.markupartist.android.widget.ActionBar;
 import com.markupartist.android.widget.ActionBar.Action;
-
-import de.greencity.bladenightapp.android.map.BladenightMapActivity;
-import de.greencity.bladenightapp.android.utils.ServiceUtils;
 
 public class ActionBarConfigurator {
 
