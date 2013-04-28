@@ -6,6 +6,7 @@
     <string name="about_more_info">More information</string>
     <string name="about_olivier">Olivier Croquette : ocroquette@free.fr</string>
     <string name="about_server_application">Server Application</string>
+    <string name="about_version">Version:</string>
     <string name="app_name">AOK Blade Night</string>
     <string name="app_name_dev">AOK Blade Night (dev)</string>
     <string name="arrow_left">&lt;</string>

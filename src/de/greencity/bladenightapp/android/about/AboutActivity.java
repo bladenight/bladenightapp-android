@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.markupartist.android.widget.ActionBar;
@@ -22,7 +23,6 @@ import com.markupartist.android.widget.ActionBar;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
 import de.greencity.bladenightapp.android.admin.AdminUtilities;
 import de.greencity.bladenightapp.android.network.NetworkClient;
-import de.greencity.bladenightapp.android.social.SocialActivity;
 import de.greencity.bladenightapp.dev.android.R;
 
 public class AboutActivity extends Activity {
@@ -32,6 +32,14 @@ public class AboutActivity extends Activity {
 
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_about);
+
+		final TextView versionTextView = (TextView) findViewById(R.id.version);
+		try {
+			versionTextView.setText(getPackageManager().getPackageInfo(getPackageName(), 0).versionName);
+		} catch (Exception e) {
+			Log.e(TAG, "Failed to update version string: " + e);
+		}
+
 	}
 
 	@Override
