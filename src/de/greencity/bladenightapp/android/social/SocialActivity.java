@@ -212,7 +212,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
 				socialActivity.friends.put((int)relMsg.fid, newFriend);
 				socialActivity.updateGui();
 				progressDialog.dismiss();
-				Toast.makeText(socialActivity, friendName + socialActivity.getResources().getString(R.string.msg_friend_added), Toast.LENGTH_LONG).show();
+				Toast.makeText(socialActivity, friendName + " " + socialActivity.getResources().getString(R.string.msg_friend_added), Toast.LENGTH_LONG).show();
 			}
 			else{
 				Toast.makeText(socialActivity, socialActivity.getResources().getString(R.string.msg_code_not_valid), Toast.LENGTH_LONG).show();

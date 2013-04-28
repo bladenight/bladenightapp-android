@@ -41,7 +41,7 @@
     <string name="msg_code_not_valid">Code is not valid</string>
     <string name="msg_download_maps">Download maps</string>
     <string name="msg_failed_to_load_map">Failed to load the map</string>
-    <string name="msg_friend_added"> was added</string>
+    <string name="msg_friend_added">was added</string>
     <string name="msg_friend_removed">Friend has been removed</string>
     <string name="msg_loading_code">Loading add-friend code</string>
     <string name="msg_new_code">Give this code to</string>
