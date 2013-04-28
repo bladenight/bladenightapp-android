@@ -9,10 +9,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
@@ -21,12 +19,12 @@ import android.widget.Toast;
 import com.markupartist.android.widget.ActionBar;
 import com.markupartist.android.widget.ActionBar.Action;
 
-import de.greencity.bladenightapp.dev.android.R;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator.ActionItemType;
 import de.greencity.bladenightapp.android.actionbar.ActionReload;
 import de.greencity.bladenightapp.android.network.NetworkClient;
 import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
+import de.greencity.bladenightapp.dev.android.R;
 import de.greencity.bladenightapp.network.messages.EventMessage;
 import de.greencity.bladenightapp.network.messages.EventMessage.EventStatus;
 import de.greencity.bladenightapp.network.messages.RouteNamesMessage;
@@ -115,8 +113,11 @@ public class AdminActivity extends Activity {
 		}
 		@Override
 		public void handleMessage(Message msg) {
+			final AdminActivity adminActivity = reference.get();
+			if ( adminActivity == null || adminActivity.isFinishing() )
+				return;
 			RouteNamesMessage routeNamesMessage = (RouteNamesMessage)msg.obj;
-			reference.get().updateGuiRouteListFromServerResponse(routeNamesMessage);
+			adminActivity.updateGuiRouteListFromServerResponse(routeNamesMessage);
 		}
 	}
 
@@ -141,16 +142,19 @@ public class AdminActivity extends Activity {
 		}
 		@Override
 		public void handleMessage(Message msg) {
+			final AdminActivity adminActivity = reference.get();
+			if ( adminActivity == null || adminActivity.isFinishing() )
+				return;
 			EventMessage eventMessage = (EventMessage)msg.obj;
 			Log.i(TAG, "Got active event: " + eventMessage.toString());
 			if ( eventMessage.getRouteName() == null)
 				Log.e(TAG, "Server sent invalid route name:" + eventMessage.toString());
 			else
-				reference.get().updateGuiRouteCurrent(eventMessage.getRouteName());
+				adminActivity.updateGuiRouteCurrent(eventMessage.getRouteName());
 			if ( eventMessage.getStatus() == null )
 				Log.e(TAG, "Server sent invalid status:" + eventMessage.toString());
 			else
-				reference.get().updateGuiStatus(eventMessage.getStatus().toString());
+				adminActivity.updateGuiStatus(eventMessage.getStatus().toString());
 		}
 	}
 
@@ -189,8 +193,11 @@ public class AdminActivity extends Activity {
 		}
 		@Override
 		public void handleMessage(Message msg) {
-			Toast.makeText(this.reference.get(), "OK", Toast.LENGTH_SHORT).show();
-			reference.get().getAllInformationFromServer();
+			final AdminActivity adminActivity = reference.get();
+			if ( adminActivity == null || adminActivity.isFinishing() )
+				return;
+			Toast.makeText(adminActivity, "OK", Toast.LENGTH_SHORT).show();
+			adminActivity.getAllInformationFromServer();
 		}
 	}
 
@@ -201,8 +208,11 @@ public class AdminActivity extends Activity {
 		}
 		@Override
 		public void handleMessage(Message msg) {
-			Toast.makeText(this.reference.get(), "Failed" + msg, Toast.LENGTH_SHORT).show();
-			reference.get().getAllInformationFromServer();
+			final AdminActivity adminActivity = reference.get();
+			if ( adminActivity == null || adminActivity.isFinishing() )
+				return;
+			Toast.makeText(adminActivity, "Failed" + msg, Toast.LENGTH_SHORT).show();
+			adminActivity.getAllInformationFromServer();
 		}
 	}
 

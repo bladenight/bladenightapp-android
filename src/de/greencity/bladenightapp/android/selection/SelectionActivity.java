@@ -173,10 +173,13 @@ public class SelectionActivity extends FragmentActivity {
 		}
 		@Override
 		public void handleMessage(Message msg) {
+			final SelectionActivity selectionActivity = reference.get();
+			if ( selectionActivity == null || selectionActivity.isFinishing() )
+				return;
 			EventsListMessage eventsListMessage = (EventsListMessage)msg.obj;
 			Log.i(TAG, "Updating event fragments from server data");
-			reference.get().updateFragmentsFromEventList((EventsListMessage)eventsListMessage);
-			reference.get().saveEventsToCache(eventsListMessage);
+			selectionActivity.updateFragmentsFromEventList((EventsListMessage)eventsListMessage);
+			selectionActivity.saveEventsToCache(eventsListMessage);
 		}
 	}
 

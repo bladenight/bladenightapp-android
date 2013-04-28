@@ -29,6 +29,7 @@ import android.widget.Toast;
 
 import com.markupartist.android.widget.ActionBar;
 
+import de.greencity.bladenightapp.android.about.AboutActivity;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator.ActionItemType;
 import de.greencity.bladenightapp.android.map.userovl.UserPositionOverlay;
@@ -191,9 +192,12 @@ public class BladenightMapActivity extends MapActivity {
 				isShowingActiveEvent = bundle.getBoolean(PARAM_ACTIVE);
 				Log.i(TAG, "getActivityParametersFromIntent routeNameFromBundle="+routeNameFromBundle);
 				if ( routeNameFromBundle != null) {
-					routeName = routeNameFromBundle;
-					if ( ! routeNameFromBundle.equals(routeName))
+					if ( ! routeNameFromBundle.equals(routeName)) {
+						// Activity is (re)started with a new route, request automatic zooming
+						shallFitViewToRoute = true;
 						isRouteInfoAvailable = false;
+					}
+					routeName = routeNameFromBundle;
 				}
 			}
 			else {
@@ -215,7 +219,7 @@ public class BladenightMapActivity extends MapActivity {
 		@Override
 		public void handleMessage(Message msg) {
 			final BladenightMapActivity bladenightMapActivity = reference.get();
-			if ( ! bladenightMapActivity.isRunning ) // too late !
+			if ( bladenightMapActivity == null || bladenightMapActivity.isFinishing() || ! bladenightMapActivity.isRunning )
 				return;
 			RealTimeUpdateData realTimeUpdateData = (RealTimeUpdateData)msg.obj;
 			String liveRouteName = realTimeUpdateData.getRouteName(); 
@@ -251,11 +255,12 @@ public class BladenightMapActivity extends MapActivity {
 		}
 		@Override
 		public void handleMessage(Message msg) {
-			if ( ! reference.get().isRunning ) // too late !
+			final BladenightMapActivity bladenightMapActivity = reference.get();
+			if ( bladenightMapActivity == null || bladenightMapActivity.isFinishing() || ! bladenightMapActivity.isRunning )
 				return;
 			RouteMessage routeMessage = (RouteMessage) msg.obj;
-			reference.get().updateRouteFromRouteMessage(routeMessage);
-			JsonCacheAccess.saveRouteToCache(reference.get(), routeMessage);
+			bladenightMapActivity.updateRouteFromRouteMessage(routeMessage);
+			JsonCacheAccess.saveRouteToCache(bladenightMapActivity, routeMessage);
 		}
 	}
 
@@ -277,7 +282,10 @@ public class BladenightMapActivity extends MapActivity {
 		isRouteInfoAvailable = true;
 		routeName = routeMessage.getRouteName();
 		routeOverlay.update(routeMessage);
-		fitViewToRoute();
+		if ( shallFitViewToRoute ) {
+			shallFitViewToRoute = true;
+			fitViewToRoute();
+		}
 	}
 
 	private void updateRouteFromCache() {
@@ -448,5 +456,6 @@ public class BladenightMapActivity extends MapActivity {
 	static public final String PARAM_ROUTENAME = "routeName";
 	public static final String PARAM_ACTIVE = "active";
 	private boolean isRunning = true;
+	private boolean shallFitViewToRoute = true;
 
 } 

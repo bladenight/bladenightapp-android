@@ -6,14 +6,10 @@ import java.lang.ref.WeakReference;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.util.Log;
 import android.view.View;
@@ -23,10 +19,11 @@ import android.widget.Toast;
 
 import com.markupartist.android.widget.ActionBar;
 
-import de.greencity.bladenightapp.dev.android.R;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
 import de.greencity.bladenightapp.android.admin.AdminUtilities;
 import de.greencity.bladenightapp.android.network.NetworkClient;
+import de.greencity.bladenightapp.android.social.SocialActivity;
+import de.greencity.bladenightapp.dev.android.R;
 
 public class AboutActivity extends Activity {
 	@Override
@@ -110,9 +107,12 @@ public class AboutActivity extends Activity {
 		}
 		@Override
 		public void handleMessage(Message msg) {
+			final AboutActivity aboutActivity = reference.get();
+			if ( aboutActivity == null || aboutActivity.isFinishing())
+				return;
 			progressDialog.dismiss();
-			Toast.makeText(reference.get(), "OK", Toast.LENGTH_LONG).show();
-			AdminUtilities.saveAdminPassword(reference.get(), password);
+			Toast.makeText(aboutActivity, "OK", Toast.LENGTH_LONG).show();
+			AdminUtilities.saveAdminPassword(aboutActivity, password);
 		}
 	}
 
@@ -122,9 +122,12 @@ public class AboutActivity extends Activity {
 		}
 		@Override
 		public void handleMessage(Message msg) {
+			final AboutActivity aboutActivity = reference.get();
+			if ( aboutActivity == null || aboutActivity.isFinishing())
+				return;
 			progressDialog.dismiss();
-			Toast.makeText(reference.get(), "Failed", Toast.LENGTH_LONG).show();
-			AdminUtilities.deleteAdminPassword(reference.get());
+			Toast.makeText(aboutActivity, "Failed", Toast.LENGTH_LONG).show();
+			AdminUtilities.deleteAdminPassword(aboutActivity);
 		}
 	}
 

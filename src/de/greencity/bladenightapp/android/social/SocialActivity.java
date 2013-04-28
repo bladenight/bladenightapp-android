@@ -158,6 +158,8 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
 			Log.i("CreateNewRequestHandler", "Got answer from server:" + relMsg);
 			if (relMsg != null ) {
 				final SocialActivity socialActivity = reference.get();
+				if ( socialActivity == null || socialActivity.isFinishing())
+					return;
 				FragmentManager fm = socialActivity.getSupportFragmentManager();
 				Bundle arguments = new Bundle();
 				Log.i("CreateNewRequestHandler", "Got: " + relMsg);
@@ -204,7 +206,9 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
 		}
 		@Override
 		public void handleMessage(Message msg) {
-			SocialActivity socialActivity = reference.get();
+			final SocialActivity socialActivity = reference.get();
+			if ( socialActivity == null || socialActivity.isFinishing())
+				return;
 			RelationshipOutputMessage relMsg = (RelationshipOutputMessage)msg.obj;
 			Log.i("CreateNewRequestHandler", "Got answer from server:" + relMsg);
 			if (relMsg != null ) {
@@ -231,7 +235,10 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
 		}
 		@Override
 		public void handleMessage(Message msg) {
-			Toast.makeText(reference.get(), reference.get().getResources().getString(R.string.msg_code_not_valid), Toast.LENGTH_LONG).show();
+			final SocialActivity socialActivity = reference.get();
+			if ( socialActivity == null || socialActivity.isFinishing())
+				return;
+			Toast.makeText(socialActivity, socialActivity.getResources().getString(R.string.msg_code_not_valid), Toast.LENGTH_LONG).show();
 			progressDialog.dismiss();
 		}
 		private WeakReference<SocialActivity> reference;
@@ -268,8 +275,11 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
 		}
 		@Override
 		public void handleMessage(Message msg) {
+			final SocialActivity socialActivity = reference.get();
+			if ( socialActivity == null || socialActivity.isFinishing())
+				return;
 			RealTimeUpdateData realTimeUpdateData = (RealTimeUpdateData)msg.obj;
-			reference.get().updateGuiFromRealTimeUpdateData(realTimeUpdateData);
+			socialActivity.updateGuiFromRealTimeUpdateData(realTimeUpdateData);
 		}
 	}
 
@@ -286,11 +296,14 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
 		}
 		@Override
 		public void handleMessage(Message msg) {
-			Toast.makeText(reference.get(), reference.get().getResources().getString(R.string.msg_friend_removed), Toast.LENGTH_SHORT).show();
-			reference.get().friends.remove(friendId);
-			reference.get().friends.save();
-			reference.get().updateGui();
-			reference.get().getFriendsListFromServer();
+			final SocialActivity socialActivity = reference.get();
+			if ( socialActivity == null || socialActivity.isFinishing())
+				return;
+			Toast.makeText(socialActivity, socialActivity.getResources().getString(R.string.msg_friend_removed), Toast.LENGTH_SHORT).show();
+			socialActivity.friends.remove(friendId);
+			socialActivity.friends.save();
+			socialActivity.updateGui();
+			socialActivity.getFriendsListFromServer();
 		}
 	}
 
@@ -306,9 +319,12 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
 		}
 		@Override
 		public void handleMessage(Message msg) {
+			final SocialActivity socialActivity = reference.get();
+			if ( socialActivity == null || socialActivity.isFinishing())
+				return;
 			FriendsMessage friendsMessage = (FriendsMessage)msg.obj;
 			Log.i(TAG, "friendsMessage="+friendsMessage);
-			reference.get().updateGuiFromFriendsMessage(friendsMessage);
+			socialActivity.updateGuiFromFriendsMessage(friendsMessage);
 		}
 	}
 
