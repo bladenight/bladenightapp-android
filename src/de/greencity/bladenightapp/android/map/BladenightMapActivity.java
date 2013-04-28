@@ -405,12 +405,16 @@ public class BladenightMapActivity extends MapActivity {
 	}
 
 	protected void fitViewToRoute() {
-		shallFitViewWhenPossible = false;
-		fitViewToBoundingBox(routeOverlay.getRouteBoundingBox());
+		if ( routeOverlay != null ) {
+			shallFitViewWhenPossible = false;
+			fitViewToBoundingBox(routeOverlay.getRouteBoundingBox());
+		}
 	}
 
 	protected void fitViewToProcession() {
-		fitViewToBoundingBox(routeOverlay.getProcessionBoundingBox());
+		if ( routeOverlay != null ) {
+			fitViewToBoundingBox(routeOverlay.getProcessionBoundingBox());
+		}
 	}
 
 
