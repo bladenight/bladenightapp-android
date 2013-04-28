@@ -2,6 +2,7 @@ package de.greencity.bladenightapp.android.social;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,6 +41,8 @@ public class FriendListAdapter extends BaseAdapter {
 		View view=convertView;
 		int friendId = activity.sortedFriendIdsToDisplay.get(position);
 		Friend friend = activity.friends.get(friendId);
+		
+		Log.i(TAG, "friend="+friend);
 
 		isServiceRunning = ServiceUtils.isServiceRunning(activity, GpsTrackerService.class);
 		if( isServiceRunning ){
@@ -102,9 +105,10 @@ public class FriendListAdapter extends BaseAdapter {
 	}
 	
 	private void setColorForBlock(ImageView colorBlockImageView, int friendId, Friend friend) {
-		colorBlockImageView.setBackgroundColor(friend.getColor());
 		if ( friendId == SocialActivity.ID_HEAD ||  friendId == SocialActivity.ID_TAIL )
 			colorBlockImageView.setVisibility(View.INVISIBLE);
+		else
+			colorBlockImageView.setBackgroundColor(Friends.getFriendColorOrDefault(activity, friendId, friend));
 	}
 	
 	private void updateStatus(Friend friend, TextView textViewStatus) {

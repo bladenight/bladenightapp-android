@@ -84,12 +84,19 @@ public class Friends {
 	}
 
 	public int getFriendColor(int friendId) {
-		Friend friend = get(friendId); 
-		if ( friend == null || friend.getColor() == Color.BLACK )
-			return context.getResources().getColor(R.color.default_friend_color);
+		return getFriendColorOrDefault(context, friendId, get(friendId));
+	}
+
+	static public int getFriendColorOrDefault(Context context, int friendId, Friend friend) {
+		if ( friend == null || friend.getColor() == Color.BLACK ) {
+			if ( friendId == SocialActivity.ID_ME )
+				return context.getResources().getColor(R.color.default_own_color);
+			else
+				return context.getResources().getColor(R.color.default_friend_color);
+		}
 		return friend.getColor();
 	}
-	
+
 
 	static public int getOwnColor(Context context) {
 		int defaultColor = context.getResources().getColor(R.color.default_own_color);
