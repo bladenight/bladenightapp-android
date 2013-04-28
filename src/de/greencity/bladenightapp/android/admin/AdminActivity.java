@@ -2,6 +2,10 @@ package de.greencity.bladenightapp.android.admin;
 
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -123,8 +127,12 @@ public class AdminActivity extends Activity {
 
 	public void updateGuiRouteListFromServerResponse(RouteNamesMessage routeNamesMessage) {
 		Log.i(TAG, "updateGuiRouteListFromServerResponse routeNamesMessage=" + routeNamesMessage);
+
+		List<String> routeNames = Arrays.asList(routeNamesMessage.rna);
+		Collections.sort(routeNames);
+
 		spinnerRouteNameAdapter.clear();
-		for(String name: routeNamesMessage.rna) {
+		for(String name: routeNames) {
 			spinnerRouteNameAdapter.add(name);
 		}
 		spinnerRouteNameAdapter.notifyDataSetChanged();

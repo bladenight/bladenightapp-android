@@ -10,10 +10,9 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import de.greencity.bladenightapp.dev.android.R;
-import de.greencity.bladenightapp.android.social.SocialActivity.GetRealTimeDataFromServerHandler;
 import de.greencity.bladenightapp.android.tracker.GpsTrackerService;
 import de.greencity.bladenightapp.android.utils.ServiceUtils;
+import de.greencity.bladenightapp.dev.android.R;
 
 public class FriendListAdapter extends BaseAdapter {
 	private static LayoutInflater inflater=null;
