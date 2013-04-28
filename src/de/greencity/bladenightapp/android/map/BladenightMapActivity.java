@@ -193,7 +193,7 @@ public class BladenightMapActivity extends MapActivity {
 				if ( routeNameFromBundle != null) {
 					if ( ! routeNameFromBundle.equals(routeName)) {
 						// Activity is (re)started with a new route, request automatic zooming
-						shallFitViewToRoute = true;
+						shallFitViewWhenPossible = true;
 						isRouteInfoAvailable = false;
 					}
 					routeName = routeNameFromBundle;
@@ -276,8 +276,8 @@ public class BladenightMapActivity extends MapActivity {
 		isRouteInfoAvailable = true;
 		routeName = routeMessage.getRouteName();
 		routeOverlay.update(routeMessage);
-		if ( shallFitViewToRoute ) {
-			shallFitViewToRoute = false;
+		if ( shallFitViewWhenPossible ) {
+			shallFitViewWhenPossible = false;
 			fitViewToRoute();
 		}
 	}
@@ -391,7 +391,8 @@ public class BladenightMapActivity extends MapActivity {
 	private void setMapFile() {
 		if ( mapView.setMapFile(new File(mapLocalPath)) == FileOpenResult.SUCCESS ) {
 			mapView.redraw();
-			mapView.getMapViewPosition().setZoomLevel((byte) 15);
+			// mapView.getMapViewPosition().setZoomLevel((byte) 15);
+			fitViewToRoute();
 		}
 		else {
 			Log.e(TAG, "Failed to set map file: " + mapLocalPath);
@@ -404,6 +405,7 @@ public class BladenightMapActivity extends MapActivity {
 	}
 
 	protected void fitViewToRoute() {
+		shallFitViewWhenPossible = false;
 		fitViewToBoundingBox(routeOverlay.getRouteBoundingBox());
 	}
 
@@ -450,6 +452,6 @@ public class BladenightMapActivity extends MapActivity {
 	static public final String PARAM_ROUTENAME = "routeName";
 	public static final String PARAM_ACTIVE = "active";
 	private boolean isRunning = true;
-	private boolean shallFitViewToRoute = true;
+	private boolean shallFitViewWhenPossible = true;
 
 } 

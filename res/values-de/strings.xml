@@ -26,7 +26,7 @@
     <string name="msg_administration">Administration</string>
     <string name="msg_about_app">Über die App</string>
     <string name="msg_code_not_valid">Dieser Code ist nicht gültig</string>
-    <string name="msg_download_maps">Kartenmaterial wird heruntergeladen</string>
+    <string name="msg_download_maps">Kartenmaterial wird heruntergeladen (10MB)</string>
     <string name="msg_failed_to_load_map">Laden der Karten ist fehlgeschlagen</string>
     <string name="msg_friend_added">wurde hinzugefügt</string>
     <string name="msg_friend_removed">Freund wurde gelöscht</string>
@@ -36,7 +36,7 @@
     <string name="msg_no">Nein</string>
     <string name="msg_participants">Teilnehmer</string>
     <string name="msg_route_has_changed">Die Strecke hat sich geändert. Wir fahren jetzt die Strecke</string>
-    <string name="msg_tracker_confirm_stop">Deine Freunde werden Dich vermissen und Deine Position wird nicht mehr gesendet. Bist Du sicher ?</string>
+    <string name="msg_tracker_confirm_stop">Deine Freunde werden Dich vermissen und Deine Position wird nicht mehr berücksichtigt. Bist Du sicher ?</string>
     <string name="msg_tracking_running">Tracking läuft</string>
     <string name="msg_validating_code">Freund-Code wird überprüft</string>    
     <string name="msg_yes">Ja</string>
