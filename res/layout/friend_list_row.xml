@@ -30,7 +30,7 @@
         android:layout_alignTop="@+id/row_friend"
         android:layout_toRightOf="@+id/row_friend"
         android:textColor="@color/bn_white"
-        android:textIsSelectable="true"
+        android:textIsSelectable="false"
         android:typeface="sans"
         android:textSize="18sp"
         android:textStyle="bold"/>
