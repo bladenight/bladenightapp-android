@@ -252,11 +252,21 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
 
 
 	@Override
-	public void onFinishConfirmFriendDialog(String friendName, String code) { 
+	public void onFinishConfirmFriendDialog(String friendName, String codeAsString) { 
+		long codeAsLong = 0;
+		try {
+			codeAsLong = Long.parseLong(codeAsString);
+		}
+		catch (NumberFormatException e) {
+			Log.e(TAG, "Failed to parse long: " + e);
+			Toast.makeText(this, getResources().getString(R.string.msg_code_not_valid), Toast.LENGTH_SHORT).show();
+			return;
+		}
+		
 		ProgressDialog dialog = new ProgressDialog(SocialActivity.this);
 		dialog.setMessage(getResources().getString(R.string.msg_validating_code));
 		dialog.show();
-		networkClient.finalizeRelationship(Long.parseLong(code), Friends.generateId(this), new ConfirmRequestHandler(this, friendName, dialog), new ConfirmRequestErrorHandler(this, dialog));
+		networkClient.finalizeRelationship(codeAsLong, Friends.generateId(this), new ConfirmRequestHandler(this, friendName, dialog), new ConfirmRequestErrorHandler(this, dialog));
 	}
 	
 	@Override
