@@ -283,7 +283,7 @@ public class BladenightMapActivity extends MapActivity {
 		routeName = routeMessage.getRouteName();
 		routeOverlay.update(routeMessage);
 		if ( shallFitViewToRoute ) {
-			shallFitViewToRoute = true;
+			shallFitViewToRoute = false;
 			fitViewToRoute();
 		}
 	}
