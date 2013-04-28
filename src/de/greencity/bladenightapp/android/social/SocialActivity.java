@@ -55,6 +55,8 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
 		setContentView(R.layout.activity_social);
 
 		listView = (ListView)findViewById(R.id.listview);
+		
+		networkClient = new NetworkClient(this);
 	}
 
 	@Override
@@ -522,7 +524,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
 	Friends friends;
 	final List<Integer> sortedFriendIdsToDisplay = new ArrayList<Integer>();
 	private final static String TAG = "SocialActivity"; 
-	private NetworkClient networkClient = new NetworkClient(this);
+	private NetworkClient networkClient;
 	private final Handler periodicHandler = new Handler();
 	private Runnable periodicTask;
 	private long updatePeriod = 2000;
