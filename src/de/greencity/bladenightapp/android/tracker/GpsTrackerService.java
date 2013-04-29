@@ -86,7 +86,7 @@ public class GpsTrackerService extends Service {
 	}
 
 	private void sendLocationUpdateToNetworkService() {
-		Log.i(TAG, "Sending:"+lastKnownLocation);
+		Log.i(TAG, "Sending: "+lastKnownLocation);
 		networkClient.updateFromGpsTrackerService(lastKnownLocation);
 	}
 
