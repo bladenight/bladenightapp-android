@@ -22,6 +22,10 @@ public class GpsTrackerService extends Service {
 
 		networkClient = new NetworkClient(this);
 
+		lastKnownLocation = new Location("INTERNAL");
+		locationListener = new BladenightLocationListener(lastKnownLocation);
+		gpsListener = new GpsListener(this, locationListener);
+
 		gpsListener.requestLocationUpdates(5000);
 
 		setNotification();
@@ -87,9 +91,9 @@ public class GpsTrackerService extends Service {
 	}
 
 
-	private Location lastKnownLocation = new Location("INTERNAL");
-	final private BladenightLocationListener locationListener = new BladenightLocationListener(this, lastKnownLocation);
-	final private GpsListener gpsListener = new GpsListener(this, locationListener);
+	private Location lastKnownLocation;
+	private BladenightLocationListener locationListener;
+	private GpsListener gpsListener;
 	private NetworkClient networkClient;
 	private Runnable periodicRunnable;
 	final Handler handler = new Handler();

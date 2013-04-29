@@ -62,7 +62,7 @@ public class NetworkClient implements LocationListener {
 		if ( sharedState.setServerInfoFromUrl(defaultUrl) )
 			return;
 	}
-	
+
 	static class WebSocketClientChannelAdapter implements Channel {
 		private WebSocketClient client;
 		public void setClient(WebSocketClient client) {
@@ -83,7 +83,7 @@ public class NetworkClient implements LocationListener {
 			else
 				return;
 		}
-		
+
 		if ( "autoscan".equals(sharedState.getServer()) ) {
 			findServer();
 			return;
@@ -176,8 +176,8 @@ public class NetworkClient implements LocationListener {
 			sharedState.gpsInfo.setAccuracy((int)sharedState.lastKnownLocation.getAccuracy());
 
 			// TODO remove test coordinates
-//			sharedState.gpsInfo.setLatitude(48.154249);
-//			sharedState.gpsInfo.setLongitude(11.554098);
+			//			sharedState.gpsInfo.setLatitude( 48.160027);
+			//			sharedState.gpsInfo.setLongitude( 11.561509);
 		}
 
 		item.outgoingPayload = sharedState.gpsInfo;
@@ -318,7 +318,7 @@ public class NetworkClient implements LocationListener {
 	public void downloadFile(String localPath, String remotePath, final AsyncDownloadTaskHttpClient.StatusHandler handler) {
 		String url = sharedState.getHttpUrl() + "/" + remotePath;
 		Log.i(TAG,"downloadFile: " + url + " to " + localPath);
-		
+
 		AsyncDownloadTaskHttpClient asyncDownloadTask = new AsyncDownloadTaskHttpClient(context, handler);
 		asyncDownloadTask.execute(url, localPath);
 	}
@@ -329,7 +329,7 @@ public class NetworkClient implements LocationListener {
 		return sharedState.deviceId;
 	}
 
-	
+
 	private void findServer() {
 		if ( System.currentTimeMillis() - sharedState.lookingForServerTimestamp < 10000) {
 			Log.i(TAG, "Already looking for server ("+sharedState.lookingForServerTimestamp+")");
@@ -358,7 +358,7 @@ public class NetworkClient implements LocationListener {
 	}
 
 
-	
+
 	@Override
 	public void onLocationChanged(Location location) {
 		updateFromGpsTrackerService(location);
@@ -381,7 +381,7 @@ public class NetworkClient implements LocationListener {
 	static private NetworkClientSharedState sharedState = new NetworkClientSharedState();
 	private static final long CONNECT_TIMEOUT = 10000;
 	static final int port = 8081;
-		
+
 	static class BacklogItem {
 		public long 				timestamp;
 		public String 				url;

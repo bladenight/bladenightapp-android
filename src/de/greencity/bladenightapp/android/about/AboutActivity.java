@@ -23,6 +23,7 @@ import com.markupartist.android.widget.ActionBar;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
 import de.greencity.bladenightapp.android.admin.AdminUtilities;
 import de.greencity.bladenightapp.android.network.NetworkClient;
+import de.greencity.bladenightapp.android.utils.MetaInfo;
 import de.greencity.bladenightapp.dev.android.R;
 
 public class AboutActivity extends Activity {
@@ -35,7 +36,10 @@ public class AboutActivity extends Activity {
 
 		final TextView versionTextView = (TextView) findViewById(R.id.version);
 		try {
-			versionTextView.setText(getPackageManager().getPackageInfo(getPackageName(), 0).versionName);
+			String versionName = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+			if ( "DEV".equals(versionName))
+				versionName = versionName + " " + MetaInfo.getBuildTime(this);
+			versionTextView.setText(versionName);
 		} catch (Exception e) {
 			Log.e(TAG, "Failed to update version string: " + e);
 		}
