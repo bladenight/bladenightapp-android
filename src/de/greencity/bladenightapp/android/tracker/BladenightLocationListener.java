@@ -98,7 +98,7 @@ public class BladenightLocationListener implements LocationListener {
 	
 
 	private Location location;
-	private static final int MAX_DELTA_TIME = 1000 * 60 * 2;
+	private static final int MAX_DELTA_TIME = 1000 * 60;
 	private static String TAG = "BladenightLocationListener";
 
 }
