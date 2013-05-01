@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import de.greencity.bladenightapp.android.utils.ClipboardUtils;
 import de.greencity.bladenightapp.dev.android.R;
 
 
@@ -22,7 +23,7 @@ public class ShowCodeDialog extends DialogFragment  {
 		Bundle arguments = getArguments();
 		if ( arguments != null ) {
 			this.friendName = arguments.getString(ARG_NICKNAME);
-			this.code = arguments.getString(ARG_CODE);
+			this.code = arguments.getLong(ARG_CODE);
 		}
 		else {
 			Log.e(TAG, "arguments="+arguments);
@@ -30,10 +31,13 @@ public class ShowCodeDialog extends DialogFragment  {
 
 		View view = inflater.inflate(R.layout.show_code_dialog, container);
 
-		getDialog().setTitle(getResources().getString(R.string.msg_new_code)+ " " + friendName);
+		String text = getResources().getString(R.string.msg_new_code) + " " + friendName;
+		getDialog().setTitle(text);
+		
+		ClipboardUtils.copy(getActivity(), Long.toString(code));
 
 		TextView codetext = (TextView) view.findViewById(R.id.code_text);
-		codetext.setText(code);
+		codetext.setText(SocialActivity.formatRequestId(code));
 
 		Button confirmButton = (Button) view.findViewById(R.id.show_code_confirm);
 		confirmButton.setOnClickListener(new Button.OnClickListener() {
@@ -50,5 +54,5 @@ public class ShowCodeDialog extends DialogFragment  {
 	final public static String ARG_CODE = "code";
 	final public static String ARG_NICKNAME = "nickname";
 	private String friendName;
-	private String code;
+	private long code;
 }

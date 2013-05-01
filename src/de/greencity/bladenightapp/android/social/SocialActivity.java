@@ -171,7 +171,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
 				Bundle arguments = new Bundle();
 				Log.i("CreateNewRequestHandler", "Got: " + relMsg);
 				arguments.putString(ShowCodeDialog.ARG_NICKNAME, friendName);
-				arguments.putString(ShowCodeDialog.ARG_CODE, formatRequestId(relMsg.getRequestId()));
+				arguments.putLong(ShowCodeDialog.ARG_CODE, relMsg.getRequestId());
 				ShowCodeDialog showCodeDialog = new ShowCodeDialog();
 				showCodeDialog.setArguments(arguments);
 				showCodeDialog.show(fm, "fragment_show_code");

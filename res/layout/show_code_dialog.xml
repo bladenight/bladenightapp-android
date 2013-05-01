@@ -1,23 +1,37 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/add_friend"
-    android:layout_width="wrap_content" android:layout_height="wrap_content"
-    android:layout_gravity="center" android:orientation="vertical"  >
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:orientation="vertical" >
 
     <TextView
-        android:id="@+id/code_text" android:text="@string/default_code" 
-        android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:padding="5dp"
-        android:textSize="20dip"
+        android:id="@+id/code_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
         android:gravity="center"
-        android:textStyle="bold" 
-        android:layout_weight="1"/>
+        android:padding="5dp"
+        android:text="@string/default_code"
+        android:textSize="20dip"
+        android:textStyle="bold" />
 
-        <Button
-            android:id="@+id/show_code_confirm"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            android:text="@string/button_confirm" 
-            android:onClick="onClick"/>  
-        
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:padding="5dp"
+        android:text="@string/msg_code_copied"
+        android:textSize="10dip"
+        android:textStyle="bold" />
+
+    <Button
+        android:id="@+id/show_code_confirm"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:onClick="onClick"
+        android:text="@string/button_confirm" />
+
 </LinearLayout>
