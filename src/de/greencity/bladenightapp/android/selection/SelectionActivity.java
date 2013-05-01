@@ -91,27 +91,6 @@ public class SelectionActivity extends FragmentActivity {
 
 		configureActionBar();
 
-		viewPager = (ViewPager) findViewById(R.id.pager);
-		viewPagerAdapter = new ViewPagerAdapter(viewPager, getSupportFragmentManager());
-		viewPager.setAdapter(viewPagerAdapter);
-
-		CirclePageIndicator titleIndicator = (CirclePageIndicator)findViewById(R.id.page_indicator);
-		titleIndicator.setViewPager(viewPager);
-
-		titleIndicator.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-			@Override
-			public void onPageSelected(int page) {
-				posEventShown = page;
-				Log.i(TAG, "onPageSelected: currentFragmentShown="+posEventShown);
-			}
-			@Override
-			public void onPageScrolled(int arg0, float arg1, int arg2) {
-			}
-			@Override
-			public void onPageScrollStateChanged(int arg0) {
-			}
-		});
-
 		getEventsFromCache();
 
 		getEventsFromServer();
@@ -202,6 +181,27 @@ public class SelectionActivity extends FragmentActivity {
 
 	private void updateFragmentsFromEventList(EventsListMessage eventListMessage) {
 		Log.i(TAG, "updateFragmentsFromEventList " + eventListMessage);
+
+		viewPager = (ViewPager) findViewById(R.id.pager);
+		viewPagerAdapter = new ViewPagerAdapter(viewPager, getSupportFragmentManager());
+		viewPager.setAdapter(viewPagerAdapter);
+
+		CirclePageIndicator titleIndicator = (CirclePageIndicator)findViewById(R.id.page_indicator);
+		titleIndicator.setViewPager(viewPager);
+
+		titleIndicator.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+			@Override
+			public void onPageSelected(int page) {
+				posEventShown = page;
+				Log.i(TAG, "onPageSelected: currentFragmentShown="+posEventShown);
+			}
+			@Override
+			public void onPageScrolled(int arg0, float arg1, int arg2) {
+			}
+			@Override
+			public void onPageScrollStateChanged(int arg0) {
+			}
+		});
 
 		eventsList = eventListMessage.convertToEventsList();
 		eventsList.sortByStartDate();
@@ -304,13 +304,13 @@ public class SelectionActivity extends FragmentActivity {
 		public EventList eventsList = new EventList();
 	}
 
+	private ViewPager viewPager;
 	private ViewPagerAdapter viewPagerAdapter;
 	private final static String TAG = "SelectionActivity"; 
 	private BroadcastReceiversRegister broadcastReceiversRegister = new BroadcastReceiversRegister(this);
 	private static int posEventShown = -1;
 	private static int posEventCurrent = -1;
 	private EventList eventsList;
-	private ViewPager viewPager;
 	private NetworkClient networkClient;
 	private JsonCacheAccess<EventsListMessage> eventsCache;
 } 
