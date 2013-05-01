@@ -18,7 +18,6 @@ public class GpsListener {
 		locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
 		try {
 			locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, period, 1f, locationListener);
-			locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, period, 1f, locationListener);
 		}
 		catch(Exception e) {
 			Log.e(this.toString(), "Failed to subscribe some of the location listeners",e);
