@@ -4,7 +4,6 @@ package de.greencity.bladenightapp.android.selection;
 import java.lang.ref.WeakReference;
 
 import org.joda.time.DateTime;
-import org.joda.time.Duration;
 import org.joda.time.Minutes;
 
 import android.content.Intent;
@@ -335,8 +334,6 @@ public class SelectionActivity extends FragmentActivity {
 		@Override
 		public Fragment getItem(int position) {
 			Event event = eventsList.get(position);
-			Log.d(TAG, "getItem("+position+")");
-			Log.d(TAG, event.toString());
 			boolean hasRight = position < getCount()-1;
 			boolean hasLeft = position > 0;
 			EventFragment fragment = new EventFragment();
