@@ -52,10 +52,11 @@ public class EventFragment extends Fragment {
 			Log.i(TAG, "Trace: " + ExceptionUtils.getStackTrace( new Throwable()));
 			return;
 		}
-		eventMessage = (Event) bundle.getSerializable("eventMessage");
-		hasLeft = bundle.getBoolean("hasLeft");
-		hasRight = bundle.getBoolean("hasRight");
-		isCurrent = bundle.getBoolean("isCurrent");
+		eventMessage = (Event) bundle.getSerializable(PARAM_EVENT_MESSAGE);
+		hasLeft = bundle.getBoolean(PARAM_HAS_LEFT);
+		hasRight = bundle.getBoolean(PARAM_HAS_RIGHT);
+		showStatus = bundle.getBoolean(PARAM_IS_SHOW_STATUS);
+		allowParticipate = bundle.getBoolean(PARAM_ALLOW_PARTICIPATE);
 		updateUi();
 	}
 
@@ -105,15 +106,16 @@ public class EventFragment extends Fragment {
 		return view;
 	}
 
-	public static Bundle prepareBundle(Event eventMessage, boolean hasLeft, boolean hasRight, boolean isCurrent) {
-		return prepareBundle(new Bundle(), eventMessage, hasLeft, hasRight, isCurrent);
+	public static Bundle prepareBundle(Event eventMessage, boolean hasLeft, boolean hasRight, boolean showStatus, boolean allowParticipate) {
+		return prepareBundle(new Bundle(), eventMessage, hasLeft, hasRight, showStatus, allowParticipate);
 	}
 
-	public static Bundle prepareBundle(Bundle bundle, Event eventMessage, boolean hasLeft, boolean hasRight, boolean isCurrent) {
-		bundle.putSerializable("eventMessage", eventMessage);
-		bundle.putBoolean("hasLeft", hasLeft);
-		bundle.putBoolean("hasRight", hasRight);
-		bundle.putBoolean("isCurrent", isCurrent);
+	public static Bundle prepareBundle(Bundle bundle, Event eventMessage, boolean hasLeft, boolean hasRight, boolean showStatus, boolean allowParticipate) {
+		bundle.putSerializable(PARAM_EVENT_MESSAGE, eventMessage);
+		bundle.putBoolean(PARAM_HAS_LEFT, hasLeft);
+		bundle.putBoolean(PARAM_HAS_RIGHT, hasRight);
+		bundle.putBoolean(PARAM_IS_SHOW_STATUS, showStatus);
+		bundle.putBoolean(PARAM_ALLOW_PARTICIPATE, allowParticipate);
 		return bundle;
 	}
 
@@ -159,10 +161,10 @@ public class EventFragment extends Fragment {
 		//if ( ! hasStatistics )
 		view.findViewById(R.id.image_event_statistics).setEnabled(false);
 
-		if ( ! isCurrent )
-			view.findViewById(R.id.image_event_participate).setEnabled(false);
+		view.findViewById(R.id.image_event_participate).setEnabled(allowParticipate);
 
-		updateStatus();
+		if(showStatus)
+			updateStatus();
 		updateSchedule(); 
 	}
 
@@ -173,7 +175,7 @@ public class EventFragment extends Fragment {
 			return;
 		}
 		intent.putExtra(BladenightMapActivity.PARAM_ROUTENAME, eventMessage.getRouteName());
-		intent.putExtra(BladenightMapActivity.PARAM_ACTIVE, isCurrent);
+		intent.putExtra(BladenightMapActivity.PARAM_ACTIVE, allowParticipate);
 		view.getContext().startActivity(intent);
 	}
 
@@ -187,8 +189,7 @@ public class EventFragment extends Fragment {
 			imageViewStatus.setImageResource(R.drawable.traffic_light_green);
 			break;
 		case PENDING:
-			if(isCurrent)
-				imageViewStatus.setImageResource(R.drawable.traffic_light_orange);
+			imageViewStatus.setImageResource(R.drawable.traffic_light_orange);
 			break;
 		default:
 			throw new Error("This status is not valid");
@@ -232,8 +233,15 @@ public class EventFragment extends Fragment {
 	private View view;
 	private boolean hasRight;
 	private boolean hasLeft;
-	private boolean isCurrent;
+	private boolean showStatus;
+	private boolean allowParticipate;
 	private Event eventMessage;
+
+	static public final String PARAM_HAS_RIGHT = "hasRight";
+	static public final String PARAM_HAS_LEFT = "hasLeft";
+	static public final String PARAM_IS_SHOW_STATUS = "showStatus";
+	static public final String PARAM_ALLOW_PARTICIPATE = "allowParticipate";
+	static public final String PARAM_EVENT_MESSAGE = "eventMessage";
 
 
 	private static DateTimeFormatter toDateFormat = getDestinationDateFormatter(Locale.getDefault());

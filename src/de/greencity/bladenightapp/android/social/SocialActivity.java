@@ -488,7 +488,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
 				Long d1 = friends.get(id1).getAbsolutePosition();
 				Long d2 = friends.get(id2).getAbsolutePosition();
 				if ( d1 == null && d2 == null)
-					return 0;
+					return id1.compareTo(id2);
 				if ( d1 == null )
 					return 1;
 				if ( d2 == null )
@@ -529,8 +529,8 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
 	private Runnable periodicTask;
 	private long updatePeriod = 2000;
 
-	public final static Integer ID_HEAD 	= -1;
+	public final static Integer ID_HEAD 	= -3;
 	public final static Integer ID_ME 		= -2;
-	public final static Integer ID_TAIL 	= -3;
+	public final static Integer ID_TAIL 	= -1;
 
 } 
