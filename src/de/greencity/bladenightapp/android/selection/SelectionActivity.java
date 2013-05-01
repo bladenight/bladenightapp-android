@@ -3,6 +3,10 @@ package de.greencity.bladenightapp.android.selection;
 
 import java.lang.ref.WeakReference;
 
+import org.joda.time.DateTime;
+import org.joda.time.Duration;
+import org.joda.time.Minutes;
+
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -19,7 +23,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
-import android.widget.Toast;
 
 import com.markupartist.android.widget.ActionBar;
 import com.markupartist.android.widget.ActionBar.Action;
@@ -31,12 +34,11 @@ import de.greencity.bladenightapp.android.actionbar.ActionEventSelection;
 import de.greencity.bladenightapp.android.admin.AdminActivity;
 import de.greencity.bladenightapp.android.admin.AdminUtilities;
 import de.greencity.bladenightapp.android.network.NetworkClient;
-import de.greencity.bladenightapp.android.social.ChangeFriendDialog;
-import de.greencity.bladenightapp.android.social.DeleteFriendDialog;
 import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
 import de.greencity.bladenightapp.android.utils.JsonCacheAccess;
 import de.greencity.bladenightapp.dev.android.R;
 import de.greencity.bladenightapp.events.Event;
+import de.greencity.bladenightapp.events.Event.EventStatus;
 import de.greencity.bladenightapp.events.EventList;
 import de.greencity.bladenightapp.network.messages.EventsListMessage;
 
@@ -313,6 +315,22 @@ public class SelectionActivity extends FragmentActivity {
 			Log.d(TAG, "getItemPosition " + object);
 			return POSITION_NONE;
 		}
+		
+		private boolean checkNextAndSoon(Event event, int minutes) {
+			if ( eventsList.getActiveEvent() != event )
+				return false;
+			DateTime now = new DateTime();
+			Minutes minutesToStart = Minutes.minutesBetween(now, event.getStartDate());
+			return minutesToStart.getMinutes() < minutes;
+		}
+		private boolean showStatus(Event event) {
+			return checkNextAndSoon(event, 60*24);
+		}
+		private boolean allowParticipate(Event event) {
+			if ( event.getStatus() != EventStatus.CONFIRMED )
+				return false;
+			return checkNextAndSoon(event, 30);
+		}
 
 		@Override
 		public Fragment getItem(int position) {
@@ -322,7 +340,13 @@ public class SelectionActivity extends FragmentActivity {
 			boolean hasRight = position < getCount()-1;
 			boolean hasLeft = position > 0;
 			EventFragment fragment = new EventFragment();
-			fragment.setArguments(EventFragment.prepareBundle(eventsList.get(position), hasLeft, hasRight, eventsList.getActiveEvent() == event));
+			fragment.setArguments(EventFragment.prepareBundle(
+					eventsList.get(position),
+					hasLeft,
+					hasRight,
+					showStatus(event),
+					allowParticipate(event)
+					));
 			return fragment;      
 		}
 	
