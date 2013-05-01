@@ -2,6 +2,7 @@ package de.greencity.bladenightapp.android.selection;
 
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +30,8 @@ public class HelpDialog extends DialogFragment  {
         rootView = inflater.inflate(R.layout.help_dialog, container);
         getDialog().setTitle(getResources().getString(R.string.title_help));
         setButtonListeners(rootView);
+        TextView text = (TextView) rootView.findViewById(R.id.help_text);
+        text.setMovementMethod(new ScrollingMovementMethod());
         
         return rootView;
     }
