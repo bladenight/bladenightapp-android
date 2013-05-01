@@ -22,6 +22,7 @@
     <string name="field_color">Farbe</string>
     <string name="field_name">Kurzname Deines Freundes</string>
     <string name="impressum">Impressum</string>
+    <string name="help_text">blablabladeutsch</string>
     <string name="menu_settings">Optionen</string>
     <string name="msg_administration">Administration</string>
     <string name="msg_about_app">Über die App</string>
@@ -56,6 +57,7 @@
     <string name="title_friend_confirm">Bestätige einen Freund</string>
     <string name="title_friend_delete">Lösche einen Freund</string>
     <string name="title_friend_invite">Lade einen Freund ein</string>
+    <string name="title_help">Hilfe</string>
     <string name="title_map">Live</string>
     <string name="title_options">Optionen</string>
     <string name="title_selection">Termine</string>

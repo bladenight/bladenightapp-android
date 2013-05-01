@@ -4,6 +4,7 @@ package de.greencity.bladenightapp.android.selection;
 import java.lang.ref.WeakReference;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -18,6 +19,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.widget.Toast;
 
 import com.markupartist.android.widget.ActionBar;
 import com.markupartist.android.widget.ActionBar.Action;
@@ -29,6 +31,8 @@ import de.greencity.bladenightapp.android.actionbar.ActionEventSelection;
 import de.greencity.bladenightapp.android.admin.AdminActivity;
 import de.greencity.bladenightapp.android.admin.AdminUtilities;
 import de.greencity.bladenightapp.android.network.NetworkClient;
+import de.greencity.bladenightapp.android.social.ChangeFriendDialog;
+import de.greencity.bladenightapp.android.social.DeleteFriendDialog;
 import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
 import de.greencity.bladenightapp.android.utils.JsonCacheAccess;
 import de.greencity.bladenightapp.dev.android.R;
@@ -49,6 +53,9 @@ public class SelectionActivity extends FragmentActivity {
 		eventsCache = new JsonCacheAccess<EventsListMessage>(this, EventsListMessage.class, JsonCacheAccess.FILE_EVENTS);
 
 		networkClient =  new NetworkClient(this);
+		
+		openHelpDialog();
+
 	}
 
 	@Override
@@ -163,6 +170,12 @@ public class SelectionActivity extends FragmentActivity {
 			startActivity(intent);
 			return true;
 		}
+		else if( item.getItemId() == R.id.menu_item_help ){
+			FragmentManager fm = getSupportFragmentManager();
+	    	HelpDialog helpDialog = new HelpDialog();
+	    	helpDialog.show(fm, "fragment_help");
+			return true;
+		}
 		return false;
 	}
 
@@ -264,6 +277,20 @@ public class SelectionActivity extends FragmentActivity {
 			return null;
 		return eventsList.get(posEventShown);
 	}
+	
+	private void openHelpDialog(){
+		SharedPreferences settings = getSharedPreferences("HelpPrefs", 0);
+	    boolean firstCreate = settings.getBoolean("firstCreate", true);
+	    Log.i(TAG, "firstCreate is "+firstCreate);
+	    if(firstCreate){
+	    	FragmentManager fm = getSupportFragmentManager();
+	    	HelpDialog helpDialog = new HelpDialog();
+	    	helpDialog.show(fm, "fragment_help");
+	    }
+	    SharedPreferences.Editor editor = settings.edit();
+	    editor.putBoolean("firstCreate", false);
+	    editor.commit();
+	}
 
 	public static class ViewPagerAdapter extends FragmentStatePagerAdapter {
 		public ViewPagerAdapter(ViewPager viewPager, FragmentManager fm) {
@@ -303,6 +330,7 @@ public class SelectionActivity extends FragmentActivity {
 
 		public EventList eventsList = new EventList();
 	}
+	
 
 	private ViewPagerAdapter viewPagerAdapter;
 	private final static String TAG = "SelectionActivity"; 
