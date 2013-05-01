@@ -69,7 +69,7 @@ public class Friends {
 		friends.load();
 		
 		SharedPreferences settings = context.getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE);
-		int id = 1 + settings.getInt(PREF_FRIENDS_LASTID, 1);
+		int id = 1 + settings.getInt(PREF_FRIENDS_LASTID, 0);
 		while ( friends.get(id) != null)
 			id++;
 		SharedPreferences.Editor editor = settings.edit();
