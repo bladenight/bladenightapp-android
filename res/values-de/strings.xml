@@ -26,6 +26,7 @@
     <string name="menu_settings">Optionen</string>
     <string name="msg_administration">Administration</string>
     <string name="msg_about_app">Über die App</string>
+    <string name="msg_code_copied">Der Code wurde in die Zwischenablage kopiert</string>
     <string name="msg_code_not_valid">Dieser Code ist nicht gültig</string>
     <string name="msg_download_maps">Kartenmaterial wird heruntergeladen (10MB)</string>
     <string name="msg_failed_to_load_map">Laden der Karten ist fehlgeschlagen</string>

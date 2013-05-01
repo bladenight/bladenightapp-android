@@ -40,6 +40,7 @@
     <string name="menu_settings">Settings</string>
     <string name="msg_administration">Administration</string>
     <string name="msg_about_app">About the app</string>
+    <string name="msg_code_copied">The code has been copied to the clipboard</string>
     <string name="msg_code_not_valid">Code is not valid</string>
     <string name="msg_download_maps">Downloading map data (10MB)</string>
     <string name="msg_failed_to_load_map">Failed to load the map</string>
