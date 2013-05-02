@@ -57,6 +57,8 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
 		listView = (ListView)findViewById(R.id.listview);
 		
 		networkClient = new NetworkClient(this);
+
+		friendColorsHelper = new FriendColorsHelper(this);
 	}
 
 	@Override
@@ -187,10 +189,10 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
 		private String friendName;
 		private ProgressDialog progressDialog;
 	}
-	
+
 	public Friend newFriend(String name) {
 		Friend newFriend = new Friend(name);
-		newFriend.setColor(findViewById(android.R.id.content).getResources().getColor(R.color.default_friend_color));
+		newFriend.setColor(friendColorsHelper.getDistinguishableColor(friends.getUsedColors()));
 		return newFriend;
 	}
 
@@ -528,6 +530,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
 	private final Handler periodicHandler = new Handler();
 	private Runnable periodicTask;
 	private long updatePeriod = 2000;
+	FriendColorsHelper friendColorsHelper;
 
 	public final static Integer ID_HEAD 	= -3;
 	public final static Integer ID_ME 		= -2;

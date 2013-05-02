@@ -1,8 +1,10 @@
 package de.greencity.bladenightapp.android.social;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.google.gson.Gson;
@@ -64,6 +66,11 @@ public class Friends {
 		return friends.keySet();
 	}
 
+	public Collection<Friend> values() {
+		return friends.values();
+	}
+
+
 	public static synchronized int generateId(Context context) {
 		Friends friends = new Friends(context);
 		friends.load();
@@ -110,6 +117,16 @@ public class Friends {
 		return me.getColor();
 	}
 	
+	public List<Integer> getUsedColors() {
+		List<Integer> usedColors = new ArrayList<Integer>();
+		for (int friendId: friends.keySet()) {
+			// Tail and head don't have colors:
+			if ( friendId == SocialActivity.ID_HEAD || friendId == SocialActivity.ID_TAIL )
+				continue;
+			usedColors.add(friends.get(friendId).getColor());
+		}
+		return usedColors;
+	}
 
 	@SuppressLint("UseSparseArrays")
 	private Map<Integer, Friend> friends = new HashMap<Integer, Friend>();

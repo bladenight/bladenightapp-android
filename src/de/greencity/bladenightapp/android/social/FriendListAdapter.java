@@ -40,8 +40,8 @@ public class FriendListAdapter extends BaseAdapter {
 		View view=convertView;
 		int friendId = activity.sortedFriendIdsToDisplay.get(position);
 		Friend friend = activity.friends.get(friendId);
-		
-		Log.i(TAG, "friend="+friend);
+
+		//		Log.i(TAG, "friend="+friend);
 
 		isServiceRunning = ServiceUtils.isServiceRunning(activity, GpsTrackerService.class);
 		if( isServiceRunning ){
@@ -63,13 +63,13 @@ public class FriendListAdapter extends BaseAdapter {
 
 		ImageView colorBlockImageView = (ImageView)view.findViewById(R.id.action_color_block);
 		setColorForBlock(colorBlockImageView, friendId, friend);
-		
+
 		TextView name = (TextView)view.findViewById(R.id.action_row_friend_name); 
 		TextView textViewRelativeTime = (TextView)view.findViewById(R.id.action_row_time_rel); 
 		TextView textViewRelativeDistance = (TextView)view.findViewById(R.id.action_row_distance_rel); 
 		TextView textViewAbsolutePosition = (TextView)view.findViewById(R.id.action_row_distance_abs); 
 
-		
+
 		name.setText(friend.getName());
 		if ( friend.getRelativeTime() != null)
 			textViewRelativeTime.setText(formatTime(friend.getRelativeTime()));
@@ -102,14 +102,14 @@ public class FriendListAdapter extends BaseAdapter {
 
 		return view;
 	}
-	
+
 	private void setColorForBlock(ImageView colorBlockImageView, int friendId, Friend friend) {
 		if ( friendId == SocialActivity.ID_HEAD ||  friendId == SocialActivity.ID_TAIL )
 			colorBlockImageView.setVisibility(View.INVISIBLE);
 		else
 			colorBlockImageView.setBackgroundColor(Friends.getFriendColorOrDefault(activity, friendId, friend));
 	}
-	
+
 	private void updateStatus(Friend friend, TextView textViewStatus) {
 		String statustext = textViewStatus.getResources().getString(R.string.status_active);
 		if ( ! friend.isValid() ) {
@@ -121,10 +121,10 @@ public class FriendListAdapter extends BaseAdapter {
 		else if ( ! friend.isActive() ) {
 			statustext = textViewStatus.getResources().getString(R.string.status_inactive);
 		}
-//		else if ( friend.isOnline() )
-//			statustext = "online";
-//		else
-//			statustext = "offline";
+		//		else if ( friend.isOnline() )
+		//			statustext = "online";
+		//		else
+		//			statustext = "offline";
 		textViewStatus.setText(statustext);
 	}
 

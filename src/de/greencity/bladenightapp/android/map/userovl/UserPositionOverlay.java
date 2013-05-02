@@ -12,7 +12,6 @@ import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
-import android.util.Log;
 import de.greencity.bladenightapp.android.social.Friends;
 import de.greencity.bladenightapp.android.social.SocialActivity;
 import de.greencity.bladenightapp.network.messages.MovingPointMessage;
@@ -80,7 +79,7 @@ public class UserPositionOverlay extends ListOverlay implements LocationListener
 		for (Integer depracatedFriendId : depracatedFriendIds) {
 			deleteFriend(depracatedFriendId);
 		}
-		mapView.redraw();
+		mapView.getOverlayController().redrawOverlays();
 	}
 
 	public FriendMarker getFriendMarker(Integer friendId) {
@@ -99,7 +98,6 @@ public class UserPositionOverlay extends ListOverlay implements LocationListener
 		// Colors might been have changed in the meantime:
 		friends.load();
 		updateColors();
-		mapView.redraw();
 	}
 
 	private void updateColors() {
@@ -107,6 +105,7 @@ public class UserPositionOverlay extends ListOverlay implements LocationListener
 			int color = friends.getFriendColor(friendId);
 			getFriendMarker(friendId).setColor(color);
 		}
+		mapView.getOverlayController().redrawOverlays();
 	}
 
 	private void deleteFriend(int friendId) {
