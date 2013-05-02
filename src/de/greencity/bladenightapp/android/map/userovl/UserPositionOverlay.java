@@ -12,6 +12,7 @@ import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
+import android.util.Log;
 import de.greencity.bladenightapp.android.social.Friends;
 import de.greencity.bladenightapp.android.social.SocialActivity;
 import de.greencity.bladenightapp.network.messages.MovingPointMessage;
@@ -39,15 +40,14 @@ public class UserPositionOverlay extends ListOverlay implements LocationListener
 
 	@Override
 	public void onLocationChanged(Location location) {
-		//		Log.i(TAG, "onLocationChanged: " + location);
+		// Log.i(TAG, "UserPositionOverlay.onLocationChanged: " + location);
 		GeoPoint gp = new GeoPoint(location.getLatitude(), location.getLongitude());
-
 
 		FriendMarker ownMarker = getFriendMarker(SocialActivity.ID_ME);
 		ownMarker.setGeoPoint(gp);
 		ownMarker.setRadius(location.getAccuracy());
 		
-		mapView.redraw();
+		mapView.getOverlayController().redrawOverlays();
 	}
 
 	@Override
