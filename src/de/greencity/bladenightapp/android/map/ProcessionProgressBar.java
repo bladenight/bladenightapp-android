@@ -12,6 +12,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.GradientDrawable.Orientation;
 import android.graphics.drawable.LayerDrawable;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.widget.ProgressBar;
 import de.greencity.bladenightapp.android.social.Friends;
 import de.greencity.bladenightapp.android.utils.DistanceFormatting;
@@ -35,12 +36,22 @@ public class ProcessionProgressBar extends ProgressBar {
 		init(context);
 	}
 
+	private int getResolutionIndependantSize(int pixelSize) {
+		return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, pixelSize, getResources().getDisplayMetrics());
+	}
+
+	private int getResolutionIndependantFontSize() {
+		int pixelSize = 18;
+		return getResolutionIndependantSize(pixelSize);
+	}
+	
 	private void init(Context context) {
 		this.context = context;
 		textPaint = new Paint();  
 		textPaint.setColor(Color.BLACK);
 		textPaint.setAntiAlias(true);
-		textPaint.setTextSize(20);
+		textPaint.setTextSize(getResolutionIndependantFontSize());
+		
 		realTimeUpdateData = new RealTimeUpdateData();
 		if ( isInEditMode() ) {
 			setDemoData();
@@ -135,7 +146,8 @@ public class ProcessionProgressBar extends ProgressBar {
 		String routeLengthString = DistanceFormatting.getDistanceAsString(realTimeUpdateData.getRouteLength(), true);
 		Rect routeLengthBounds = new Rect();  
 		textPaint.getTextBounds(routeLengthString, 0, routeLengthString.length(), routeLengthBounds);
-		int routeLenghtLeftPosition = getWidth() - routeLengthBounds.width(); 
+		int margin = getResolutionIndependantFontSize()/4;
+		int routeLenghtLeftPosition = getWidth() - routeLengthBounds.width() - margin; 
 		canvas.drawText(
 				routeLengthString,
 				routeLenghtLeftPosition,

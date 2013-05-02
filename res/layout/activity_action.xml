@@ -13,10 +13,8 @@
         android:id="@+id/progress_procession"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="50dip"
         android:max="200"
-        android:maxHeight="48dip"
-        android:minHeight="48dip"
         android:progressDrawable="@drawable/procession_progressbar"
         />
 
