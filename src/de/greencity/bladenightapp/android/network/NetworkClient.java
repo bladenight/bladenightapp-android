@@ -38,6 +38,7 @@ import de.greencity.bladenightapp.network.messages.RouteMessage;
 import de.greencity.bladenightapp.network.messages.RouteNamesMessage;
 import de.greencity.bladenightapp.network.messages.SetActiveRouteMessage;
 import de.greencity.bladenightapp.network.messages.SetActiveStatusMessage;
+import de.greencity.bladenightapp.network.messages.SetMinimumLinearPosition;
 import fr.ocroquette.wampoc.client.RpcResultReceiver;
 import fr.ocroquette.wampoc.client.WelcomeListener;
 import fr.ocroquette.wampoc.common.Channel;
@@ -201,6 +202,16 @@ public class NetworkClient implements LocationListener {
 		item.outgoingPayload = new SetActiveStatusMessage(status, AdminUtilities.getAdminPassword(context));
 		callOrStore(item);
 	}
+
+	public void setMinimumLinearPosition(double value, Handler successHandler, Handler errorHandler) {
+		BacklogItem item = new BacklogItem();
+		item.url = BladenightUrl.SET_MIN_POSITION.getText();
+		item.successHandler = successHandler;
+		item.errorHandler = errorHandler;
+		item.outgoingPayload = new SetMinimumLinearPosition(value, AdminUtilities.getAdminPassword(context));
+		callOrStore(item);
+	}
+
 
 	public void createRelationship(int friendId, Handler successHandler, Handler errorHandler) {
 		BacklogItem item = new BacklogItem();

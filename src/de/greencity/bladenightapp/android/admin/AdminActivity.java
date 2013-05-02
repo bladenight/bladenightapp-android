@@ -7,15 +7,21 @@ import java.util.Collections;
 import java.util.List;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -51,7 +57,42 @@ public class AdminActivity extends Activity {
 		configureRouteNameSpinner();
 		configureStatusSpinner();	    
 
+		configureSetMinPosButton();
+
 		getRouteListFromServer();
+	}
+
+	private void configureSetMinPosButton() {
+		Button button= (Button) findViewById(R.id.button_set_min_position);
+		button.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				AlertDialog.Builder alert = new AlertDialog.Builder(AdminActivity.this);
+
+				alert.setTitle("Min. position");
+				alert.setMessage("Enter the required value:");
+
+				// Set an EditText view to get user input 
+				final EditText editText = new EditText(AdminActivity.this);
+				editText.setRawInputType(InputType.TYPE_CLASS_NUMBER);
+				alert.setView(editText);
+
+				alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int whichButton) {
+						int value = Integer.parseInt(editText.getText().toString());
+						networkClient.setMinimumLinearPosition(value, null, null);
+					}
+				});
+
+				alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int whichButton) {
+						// Canceled.
+					}
+				});
+
+				alert.show();
+			}
+		});
 	}
 
 	private void configureStatusSpinner() {
@@ -75,7 +116,7 @@ public class AdminActivity extends Activity {
 			public void onNothingSelected(AdapterView<?> arg0) {
 			}
 		});
-		
+
 	}
 
 	private void configureRouteNameSpinner() {
