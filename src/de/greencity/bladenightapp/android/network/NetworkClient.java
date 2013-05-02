@@ -242,6 +242,15 @@ public class NetworkClient implements LocationListener {
 		callOrStore(item);
 	}
 
+	public void killServer(Handler successHandler, Handler errorHandler) {
+		BacklogItem item = new BacklogItem();
+		item.url = BladenightUrl.KILL_SERVER.getText();
+		item.successHandler = successHandler;
+		item.errorHandler = errorHandler;
+		item.outgoingPayload = new AdminMessage(AdminUtilities.getAdminPassword(context));
+		callOrStore(item);
+	}
+
 
 	public void verifyAdminPassword(String password, Handler successHandler, Handler errorHandler) {
 		BacklogItem item = new BacklogItem();

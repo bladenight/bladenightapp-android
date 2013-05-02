@@ -58,6 +58,7 @@ public class AdminActivity extends Activity {
 		configureStatusSpinner();	    
 
 		configureSetMinPosButton();
+		configureKillServerButton();
 
 		getRouteListFromServer();
 	}
@@ -94,6 +95,35 @@ public class AdminActivity extends Activity {
 			}
 		});
 	}
+
+	private void configureKillServerButton() {
+		Button button= (Button) findViewById(R.id.button_kill_server);
+		button.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						switch (which){
+						case DialogInterface.BUTTON_POSITIVE:
+							networkClient.killServer(null,null);
+							break;
+
+						case DialogInterface.BUTTON_NEGATIVE:
+							//No button clicked
+							break;
+						}
+					}
+				};
+
+				AlertDialog.Builder builder = new AlertDialog.Builder(AdminActivity.this);
+				builder.setMessage("Are you sure you want to kill the server?")
+				.setPositiveButton("Yes", dialogClickListener)
+				.setNegativeButton("No", dialogClickListener).show();
+			}
+		});
+	}
+
 
 	private void configureStatusSpinner() {
 		statusSpinner = (Spinner) findViewById(R.id.spinner_current_status);
