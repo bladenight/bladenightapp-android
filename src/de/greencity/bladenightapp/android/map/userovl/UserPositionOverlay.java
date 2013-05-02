@@ -46,6 +46,8 @@ public class UserPositionOverlay extends ListOverlay implements LocationListener
 		FriendMarker ownMarker = getFriendMarker(SocialActivity.ID_ME);
 		ownMarker.setGeoPoint(gp);
 		ownMarker.setRadius(location.getAccuracy());
+		
+		mapView.redraw();
 	}
 
 	@Override
@@ -78,6 +80,7 @@ public class UserPositionOverlay extends ListOverlay implements LocationListener
 		for (Integer depracatedFriendId : depracatedFriendIds) {
 			deleteFriend(depracatedFriendId);
 		}
+		mapView.redraw();
 	}
 
 	public FriendMarker getFriendMarker(Integer friendId) {
@@ -96,6 +99,7 @@ public class UserPositionOverlay extends ListOverlay implements LocationListener
 		// Colors might been have changed in the meantime:
 		friends.load();
 		updateColors();
+		mapView.redraw();
 	}
 
 	private void updateColors() {
