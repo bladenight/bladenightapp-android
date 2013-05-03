@@ -12,6 +12,7 @@ import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
+import android.util.Log;
 import de.greencity.bladenightapp.android.social.Friends;
 import de.greencity.bladenightapp.android.social.SocialActivity;
 import de.greencity.bladenightapp.network.messages.MovingPointMessage;
@@ -69,10 +70,13 @@ public class UserPositionOverlay extends ListOverlay implements LocationListener
 	}
 
 	public synchronized void update(RealTimeUpdateData data) {
+		Log.i(TAG, "update");
 		Set<Integer> depracatedFriendIds = new HashSet<Integer>(friendMarkers.keySet());
 		depracatedFriendIds.remove(SocialActivity.ID_ME);
 		for ( Integer friendId : data.fri.keySet() ) {
 			MovingPointMessage nvp = data.fri.get(friendId);
+
+			Log.i(TAG, friendId + " " + nvp);
 
 			FriendMarker friendMarker = getFriendMarker(friendId);
 			friendMarker.setRadius(nvp.getAccuracy());
@@ -114,6 +118,7 @@ public class UserPositionOverlay extends ListOverlay implements LocationListener
 	}
 
 	private void deleteFriend(int friendId) {
+		Log.i(TAG, "deleteFriend " + friendId);
 		FriendMarker friendMarker = friendMarkers.get(friendId);
 		if ( friendMarker != null ) {
 			friendMarker.remove();

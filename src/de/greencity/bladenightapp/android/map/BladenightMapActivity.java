@@ -126,22 +126,21 @@ public class BladenightMapActivity extends MapActivity {
 		gpsListenerForNetworkClient = new GpsListener(this, networkClient);
 		gpsListenerForNetworkClient.requestLocationUpdates(updatePeriod);
 
+		periodicTask = new Runnable() {
+			@Override
+			public void run() {
+				if ( ! isRunning )
+					return;
+				// Log.i(TAG, "periodic task");
+				if ( ! isRouteInfoAvailable )
+					requestRouteFromNetworkService();
+				getRealTimeDataFromServer();
+				periodicHandler.postDelayed(this, updatePeriod);
+			}
+		};
+		periodicHandler.postDelayed(periodicTask, updatePeriod);
+
 		if ( isShowingActiveEvent ) {
-			periodicTask = new Runnable() {
-				@Override
-				public void run() {
-					if ( ! isRunning )
-						return;
-					// Log.i(TAG, "periodic task");
-					if ( ! isRouteInfoAvailable )
-						requestRouteFromNetworkService();
-					getRealTimeDataFromServer();
-					periodicHandler.postDelayed(this, updatePeriod);
-				}
-			};
-			periodicHandler.postDelayed(periodicTask, updatePeriod);
-		}
-		else {
 			processionProgressBar.setVisibility(View.GONE);
 		}
 
