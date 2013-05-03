@@ -41,7 +41,6 @@ import de.greencity.bladenightapp.network.messages.SetActiveStatusMessage;
 import de.greencity.bladenightapp.network.messages.SetMinimumLinearPosition;
 import fr.ocroquette.wampoc.client.RpcResultReceiver;
 import fr.ocroquette.wampoc.client.WelcomeListener;
-import fr.ocroquette.wampoc.common.Channel;
 import fr.ocroquette.wampoc.messages.CallResultMessage;
 
 public class NetworkClient implements LocationListener {
@@ -62,17 +61,6 @@ public class NetworkClient implements LocationListener {
 		String defaultUrl = "http://autoscan:8081";
 		if ( sharedState.setServerInfoFromUrl(defaultUrl) )
 			return;
-	}
-
-	static class WebSocketClientChannelAdapter implements Channel {
-		private WebSocketClient client;
-		public void setClient(WebSocketClient client) {
-			this.client = client;
-		}
-		@Override
-		public void handle(String message) throws IOException {
-			client.send(message);
-		}
 	}
 
 	private void connect() {
@@ -291,7 +279,13 @@ public class NetworkClient implements LocationListener {
 	}
 
 	private boolean isConnectionUsable() {
-		return sharedState.bladenightWampClient.getState() == State.USUABLE;
+		if ( sharedState.bladenightWampClient.getState() != State.USUABLE )
+			return false;
+		if ( sharedState.bladenightWampClient.verifyTimeOut() ) {
+			Log.e(TAG, "Connection timed out");
+			return false;
+		}
+		return true;
 	}
 
 	private static void processBacklog() {
@@ -304,34 +298,35 @@ public class NetworkClient implements LocationListener {
 	}
 
 	private static void call(final BacklogItem item) {
-		try {
-			RpcResultReceiver rpcResultReceiver = new RpcResultReceiver() {
-				@Override
-				public void onSuccess() {
-					if ( item.successHandler == null )
-						return;
-					Message message = new Message();
-					if ( item.expectedReturnType == CallResultMessage.class )
-						message.obj = this.callResultMessage;
-					else if ( item.expectedReturnType != null )
-						message.obj = callResultMessage.getPayload(item.expectedReturnType);
-					item.successHandler.sendMessage(message);
-				}
-
-				@Override
-				public void onError() {
-					Log.e(TAG, callErrorMessage.toString());
-					if ( item.errorHandler == null )
-						return;
-					Message message = new Message();
+		RpcResultReceiver rpcResultReceiver = new RpcResultReceiver() {
+			@Override
+			public void onSuccess() {
+				if ( item.successHandler == null )
+					return;
+				Message message = new Message();
+				if ( item.expectedReturnType == CallResultMessage.class )
 					message.obj = this.callResultMessage;
-					item.errorHandler.sendMessage(message);
-				}
+				else if ( item.expectedReturnType != null )
+					message.obj = callResultMessage.getPayload(item.expectedReturnType);
+				item.successHandler.sendMessage(message);
+			}
 
-			};
+			@Override
+			public void onError() {
+				Log.e(TAG, callErrorMessage.toString());
+				if ( item.errorHandler == null )
+					return;
+				Message message = new Message();
+				message.obj = this.callResultMessage;
+				item.errorHandler.sendMessage(message);
+			}
+
+		};
+		try {
 			sharedState.bladenightWampClient.call(item.url, rpcResultReceiver, item.outgoingPayload);
 		} catch (IOException e) {
 			Log.e(TAG, e.toString());
+			sharedState.bladenightWampClient.disconnect();
 		}
 	}
 
