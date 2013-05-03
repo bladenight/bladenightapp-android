@@ -29,14 +29,18 @@ public class UserPositionOverlay extends ListOverlay implements LocationListener
 
 	public void show() {
 		mapView.getOverlays().add(this);
-		mapView.redraw();
+		redraw();
 	}
 
 	public void hide() {
 		mapView.getOverlays().remove(this);
-		mapView.redraw();
 	}
 
+	public void redraw() {
+		mapView.redraw();
+		mapView.getOverlayController().redrawOverlays();
+	}
+	
 	@Override
 	public void onLocationChanged(Location location) {
 		// Log.i(TAG, "UserPositionOverlay.onLocationChanged: " + location);
@@ -46,7 +50,7 @@ public class UserPositionOverlay extends ListOverlay implements LocationListener
 		ownMarker.setGeoPoint(gp);
 		ownMarker.setRadius(location.getAccuracy());
 		
-		mapView.getOverlayController().redrawOverlays();
+		redraw();
 	}
 
 	@Override
@@ -79,7 +83,7 @@ public class UserPositionOverlay extends ListOverlay implements LocationListener
 		for (Integer depracatedFriendId : depracatedFriendIds) {
 			deleteFriend(depracatedFriendId);
 		}
-		mapView.getOverlayController().redrawOverlays();
+		redraw();
 	}
 
 	public FriendMarker getFriendMarker(Integer friendId) {
@@ -98,6 +102,7 @@ public class UserPositionOverlay extends ListOverlay implements LocationListener
 		// Colors might been have changed in the meantime:
 		friends.load();
 		updateColors();
+		redraw();
 	}
 
 	private void updateColors() {
@@ -105,7 +110,7 @@ public class UserPositionOverlay extends ListOverlay implements LocationListener
 			int color = friends.getFriendColor(friendId);
 			getFriendMarker(friendId).setColor(color);
 		}
-		mapView.getOverlayController().redrawOverlays();
+		redraw();
 	}
 
 	private void deleteFriend(int friendId) {

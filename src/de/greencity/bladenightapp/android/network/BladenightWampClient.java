@@ -109,7 +109,7 @@ public class BladenightWampClient {
 	 * the data to the server just gets queued and never sent. 
 	 */
 	boolean verifyTimeOut() {
-		if ( lastServerLifeSign > lastClientLifeSign )
+		if ( lastServerLifeSign >= lastClientLifeSign )
 			return false;
 		if ( lastClientLifeSign - lastServerLifeSign < TIMEOUT )
 			return false;
