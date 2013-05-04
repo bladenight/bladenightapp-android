@@ -57,9 +57,9 @@
     <string name="msg_tracking_running">Tracking is on</string>
     <string name="msg_validating_code">Validating friend code</string>
     <string name="msg_yes">Yes</string>
-    <string name="name_head">Head</string>
-    <string name="name_me">Me</string>
-    <string name="name_tail">Tail</string>
+    <string name="name_head">HEAD</string>
+    <string name="name_me">ME</string>
+    <string name="name_tail">TAIL</string>
     <string name="social_explanation">To add a friend, you have to use a code. If you want to invite a friend, press \'Invite Friend\' and we will generate a code for you. If a friend gave you a code, press \'Confirm Friend\'.</string>
     <string name="social_ask_for_name">Give a name to this friend</string>
     <string name="status_active">active</string>

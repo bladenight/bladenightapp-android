@@ -124,6 +124,11 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
 				FragmentManager fm = getSupportFragmentManager();
 				LinearLayout row = (LinearLayout)view.findViewById(R.id.row_friend);
 				int friendId = (Integer) row.getTag();
+				
+				if ( friendId == ID_HEAD || friendId == ID_TAIL) {
+					return;
+				}
+				
 				ChangeFriendDialog changeFriendDialog = new ChangeFriendDialog();
 				Bundle arguments = new Bundle();
 				arguments.putSerializable(ChangeFriendDialog.KEY_FRIENDOBJ, friends.get(friendId));

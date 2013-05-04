@@ -2,6 +2,7 @@ package de.greencity.bladenightapp.android.social;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Typeface;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import de.greencity.bladenightapp.android.social.SocialActivity.GetRealTimeDataFromServerHandler;
 import de.greencity.bladenightapp.android.tracker.GpsTrackerService;
 import de.greencity.bladenightapp.android.utils.ServiceUtils;
 import de.greencity.bladenightapp.dev.android.R;
@@ -69,6 +71,19 @@ public class FriendListAdapter extends BaseAdapter {
 		TextView textViewRelativeDistance = (TextView)view.findViewById(R.id.action_row_distance_rel); 
 		TextView textViewAbsolutePosition = (TextView)view.findViewById(R.id.action_row_distance_abs); 
 
+		
+		if(friendId==SocialActivity.ID_HEAD||friendId==SocialActivity.ID_TAIL){
+			View row = (View)view.findViewById(R.id.row_friend);
+			row.setBackgroundColor(view.getResources().getColor(R.color.dialog_grey));
+		}
+		if(friendId==SocialActivity.ID_ME){
+			int color = Friends.getFriendColorOrDefault(activity, friendId, friend);
+			textViewRelativeTime.setTextColor(color);
+			textViewRelativeDistance.setTextColor(color);
+			textViewAbsolutePosition.setTextColor(color);
+		}
+		
+		
 
 		name.setText(friend.getName());
 		if ( friend.getRelativeTime() != null)
