@@ -11,10 +11,10 @@
     <TextView
         android:id="@+id/date"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="2.5"
+        android:layout_height="0px"
+        android:layout_weight="0.5"
         android:gravity="center"
-        android:textColor="#ffffff"
+        android:textColor="@color/bn_white"
        	android:textIsSelectable="false"
         android:textSize="25sp"
         android:textStyle="bold" />
@@ -22,33 +22,22 @@
     <TextView
         android:id="@+id/course"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="2.5"
+        android:layout_height="0px"
+        android:layout_weight="0.5"
         android:gravity="center"
-        android:textColor="#ffffff"
+        android:textColor="@color/bn_white"
        	android:textIsSelectable="false"
-        android:textSize="25sp"
-        android:textStyle="bold" />
-
-    <TextView
-        android:id="@+id/participants"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="2.5"
-        android:gravity="center"
-        android:textColor="#ffffff"
-        android:textSize="16sp"
-       	android:textIsSelectable="false"
-        android:textStyle="bold" />
+        android:textSize="30sp"
+        android:textStyle="bold|italic" />
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="2" >
+        android:layout_height="0px"
+        android:layout_weight="2.0" >
 
         <TextView
             android:id="@+id/arrow_left"
-            android:layout_width="80dp"
+            android:layout_width="80sp"
             android:layout_height="match_parent"
             android:layout_centerVertical="true"
             android:gravity="fill_vertical|center"
@@ -62,15 +51,15 @@
         <ImageView
             android:id="@+id/status"
             android:contentDescription="@string/msg_status"
-            android:layout_width="200dp"
-            android:layout_height="200dp"
+            android:layout_width="100sp"
+            android:layout_height="100sp"
             android:layout_centerInParent="true"
             android:gravity="center_vertical"
             android:paddingTop="10dip" />
 
         <TextView
             android:id="@+id/arrow_right"
-            android:layout_width="80dp"
+            android:layout_width="80sp"
             android:layout_height="match_parent"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
@@ -85,9 +74,9 @@
 
     <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_height="0px"
         android:layout_marginTop="10dp"
-        android:layout_weight="2"
+        android:layout_weight="1.0"
         android:gravity="center_vertical"
         android:orientation="horizontal" >
 

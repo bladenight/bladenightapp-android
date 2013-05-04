@@ -146,10 +146,11 @@ public class EventFragment extends Fragment {
 		TextView textViewDate = (TextView)view.findViewById(R.id.date);
 		textViewDate.setText(toDateFormat.print(eventMessage.getStartDate()));
 
-		if ( eventMessage.getParticipants() > 0 ) {
-			TextView textViewParticipants = (TextView)view.findViewById(R.id.participants);
-			textViewParticipants.setText(eventMessage.getParticipants() + " " + getActivity().getResources().getString(R.string.msg_participants));
-		}
+		// not sure anymore if participants are necessary on the main screen
+//		if ( eventMessage.getParticipants() > 0 ) {
+//			TextView textViewParticipants = (TextView)view.findViewById(R.id.participants);
+//			textViewParticipants.setText(eventMessage.getParticipants() + " " + getActivity().getResources().getString(R.string.msg_participants));
+//		}
 
 		TextView textViewLeft = (TextView)view.findViewById(R.id.arrow_left);
 		textViewLeft.setText(hasLeft ? R.string.arrow_left : R.string.arrow_no);
