@@ -12,14 +12,6 @@ import de.greencity.bladenightapp.dev.android.R;
 
 
 public class HelpDialog extends DialogFragment  {
-
-	
-	private View rootView;
-	
-    private TextView text;
-    
-    
-    
     public HelpDialog() {
         // Empty constructor required for DialogFragment
     }
@@ -45,7 +37,5 @@ public class HelpDialog extends DialogFragment  {
         });
     }
     
-  
-    
-
+	private View rootView;
 }
