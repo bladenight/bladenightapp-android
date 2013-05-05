@@ -34,9 +34,11 @@ import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator.Action
 import de.greencity.bladenightapp.android.map.userovl.UserPositionOverlay;
 import de.greencity.bladenightapp.android.network.NetworkClient;
 import de.greencity.bladenightapp.android.tracker.GpsListener;
+import de.greencity.bladenightapp.android.tracker.GpsTrackerService;
 import de.greencity.bladenightapp.android.utils.AsyncDownloadTaskHttpClient;
 import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
 import de.greencity.bladenightapp.android.utils.JsonCacheAccess;
+import de.greencity.bladenightapp.android.utils.ServiceUtils;
 import de.greencity.bladenightapp.dev.android.R;
 import de.greencity.bladenightapp.network.messages.RealTimeUpdateData;
 import de.greencity.bladenightapp.network.messages.RouteMessage;
@@ -140,7 +142,7 @@ public class BladenightMapActivity extends MapActivity {
 		};
 		periodicHandler.postDelayed(periodicTask, updatePeriod);
 
-		if ( isShowingActiveEvent ) {
+		if ( ! isShowingActiveEvent ) {
 			processionProgressBar.setVisibility(View.GONE);
 		}
 
@@ -205,6 +207,8 @@ public class BladenightMapActivity extends MapActivity {
 		else {
 			Log.w(TAG, "intent="+intent);
 		}
+		if ( ServiceUtils.isServiceRunning(this, GpsTrackerService.class) )
+			isShowingActiveEvent = true;
 		Log.i(TAG, "getActivityParametersFromIntent DONE routeName="+routeName);
 		Log.i(TAG, "isShowingActiveEvent="+isShowingActiveEvent);
 	}
@@ -220,17 +224,20 @@ public class BladenightMapActivity extends MapActivity {
 			if ( bladenightMapActivity == null || bladenightMapActivity.isFinishing() || ! bladenightMapActivity.isRunning )
 				return;
 			RealTimeUpdateData realTimeUpdateData = (RealTimeUpdateData)msg.obj;
-			String liveRouteName = realTimeUpdateData.getRouteName(); 
-			if ( ! liveRouteName.equals(bladenightMapActivity.routeName) ) {
-				// the route has changed, typically Lang -> Kurz
-				Log.i(TAG, "GetRealTimeDataFromServerHandler: route has changed: " + bladenightMapActivity.routeName + " -> " + liveRouteName);
-				String text = bladenightMapActivity.getResources().getString(R.string.msg_route_has_changed);
-				Toast.makeText(bladenightMapActivity, text + " " + liveRouteName, Toast.LENGTH_LONG).show();
-				bladenightMapActivity.routeName = liveRouteName;
-				bladenightMapActivity.requestRouteFromNetworkService();
+			String liveRouteName = realTimeUpdateData.getRouteName();
+			if ( bladenightMapActivity.isShowingActiveEvent ) {
+				if ( ! liveRouteName.equals(bladenightMapActivity.routeName) ) {
+					// the route has changed, typically Lang -> Kurz
+					Log.i(TAG, "GetRealTimeDataFromServerHandler: route has changed: " + bladenightMapActivity.routeName + " -> " + liveRouteName);
+					String text = bladenightMapActivity.getResources().getString(R.string.msg_route_has_changed);
+					Toast.makeText(bladenightMapActivity, text + " " + liveRouteName, Toast.LENGTH_LONG).show();
+					bladenightMapActivity.routeName = liveRouteName;
+					bladenightMapActivity.requestRouteFromNetworkService();
+				}
+				bladenightMapActivity.routeOverlay.update(realTimeUpdateData);
+				bladenightMapActivity.processionProgressBar.update(realTimeUpdateData);
+				bladenightMapActivity.userPositionOverlay.update(realTimeUpdateData);
 			}
-			bladenightMapActivity.routeOverlay.update(realTimeUpdateData);
-			bladenightMapActivity.processionProgressBar.update(realTimeUpdateData);
 			bladenightMapActivity.userPositionOverlay.update(realTimeUpdateData);
 		}
 	}

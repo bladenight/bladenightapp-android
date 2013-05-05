@@ -113,7 +113,6 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
 
 	}
 
-
 	private void createListView() {
 		//Create an adapter for the listView and add the ArrayList to the adapter.
 		listView.setAdapter(new FriendListAdapter(SocialActivity.this));
