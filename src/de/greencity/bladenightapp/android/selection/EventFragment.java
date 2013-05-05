@@ -232,25 +232,25 @@ public class EventFragment extends Fragment {
 	}
 	
 	private String routeNameToText(String routeName){
-		if (routeName.equals("ns")){
+		if (routeName.equals("Nord - kurz")){
 			return view.getResources().getString(R.string.course_north_short);
 		}
-		if (routeName.equals("nl")){
+		if (routeName.equals("Nord - lang")){
 			return view.getResources().getString(R.string.course_north_long);
 		}
-		if (routeName.equals("ws")){
+		if (routeName.equals("West - kurz")){
 			return view.getResources().getString(R.string.course_west_short);
 		}
-		if (routeName.equals("wl")){
+		if (routeName.equals("West - lang")){
 			return view.getResources().getString(R.string.course_west_long);
 		}
-		if (routeName.equals("es")){
+		if (routeName.equals("Ost - kurz")){
 			return view.getResources().getString(R.string.course_east_short);
 		}
-		if (routeName.equals("el")){
+		if (routeName.equals("Ost - lang")){
 			return view.getResources().getString(R.string.course_east_long);
 		}
-		if (routeName.equals("fa")){
+		if (routeName.equals("Familie")){
 			return view.getResources().getString(R.string.course_family);
 		}
 		return routeName;
