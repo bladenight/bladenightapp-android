@@ -25,6 +25,13 @@
     <string name="button_statistics">Statistics</string>
     <string name="button_view">View</string>
     <string name="config_default_server_url"></string>
+    <string name="course_east_short">East - short</string>
+    <string name="course_east_long">East - long</string>
+    <string name="course_family">Family</string>
+    <string name="course_north_short">North - short</string>
+    <string name="course_north_long">North - long</string>
+    <string name="course_west_short">West - short</string>
+    <string name="course_west_long">West - long</string>
     <string name="default_code">12 34 56</string>
     <string name="default_distance_rel">+234m</string>
     <string name="default_distance_tol">2384m</string>
@@ -58,9 +65,9 @@
     <string name="msg_tracking_running">Tracking is on</string>
     <string name="msg_validating_code">Validating friend code</string>
     <string name="msg_yes">Yes</string>
-    <string name="name_head">Head</string>
-    <string name="name_me">Me</string>
-    <string name="name_tail">Tail</string>
+    <string name="name_head">HEAD</string>
+    <string name="name_me">ME</string>
+    <string name="name_tail">TAIL</string>
     <string name="social_explanation">To add a friend, you have to use a code. If you want to invite a friend, press \'Invite Friend\' and we will generate a code for you. If a friend gave you a code, press \'Confirm Friend\'.</string>
     <string name="social_ask_for_name">Give a name to this friend</string>
     <string name="status_active">active</string>

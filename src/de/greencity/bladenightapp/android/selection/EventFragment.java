@@ -141,15 +141,16 @@ public class EventFragment extends Fragment {
 		}
 
 		TextView textViewCourse = (TextView)view.findViewById(R.id.course);
-		textViewCourse.setText(eventMessage.getRouteName());
+		textViewCourse.setText(routeNameToText(eventMessage.getRouteName()));
 
 		TextView textViewDate = (TextView)view.findViewById(R.id.date);
 		textViewDate.setText(toDateFormat.print(eventMessage.getStartDate()));
 
-		if ( eventMessage.getParticipants() > 0 ) {
-			TextView textViewParticipants = (TextView)view.findViewById(R.id.participants);
-			textViewParticipants.setText(eventMessage.getParticipants() + " " + getActivity().getResources().getString(R.string.msg_participants));
-		}
+		// not sure anymore if participants are necessary on the main screen
+//		if ( eventMessage.getParticipants() > 0 ) {
+//			TextView textViewParticipants = (TextView)view.findViewById(R.id.participants);
+//			textViewParticipants.setText(eventMessage.getParticipants() + " " + getActivity().getResources().getString(R.string.msg_participants));
+//		}
 
 		TextView textViewLeft = (TextView)view.findViewById(R.id.arrow_left);
 		textViewLeft.setText(hasLeft ? R.string.arrow_left : R.string.arrow_no);
@@ -228,6 +229,31 @@ public class EventFragment extends Fragment {
 		else {
 			return DateTimeFormat.forStyle("MS").withLocale(locale);
 		}
+	}
+	
+	private String routeNameToText(String routeName){
+		if (routeName.equals("Nord - kurz")){
+			return view.getResources().getString(R.string.course_north_short);
+		}
+		if (routeName.equals("Nord - lang")){
+			return view.getResources().getString(R.string.course_north_long);
+		}
+		if (routeName.equals("West - kurz")){
+			return view.getResources().getString(R.string.course_west_short);
+		}
+		if (routeName.equals("West - lang")){
+			return view.getResources().getString(R.string.course_west_long);
+		}
+		if (routeName.equals("Ost - kurz")){
+			return view.getResources().getString(R.string.course_east_short);
+		}
+		if (routeName.equals("Ost - lang")){
+			return view.getResources().getString(R.string.course_east_long);
+		}
+		if (routeName.equals("Familie")){
+			return view.getResources().getString(R.string.course_family);
+		}
+		return routeName;
 	}
 
 	private View view;

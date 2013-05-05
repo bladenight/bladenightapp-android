@@ -124,6 +124,11 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
 				FragmentManager fm = getSupportFragmentManager();
 				LinearLayout row = (LinearLayout)view.findViewById(R.id.row_friend);
 				int friendId = (Integer) row.getTag();
+				
+				if ( friendId == ID_HEAD || friendId == ID_TAIL) {
+					return;
+				}
+				
 				ChangeFriendDialog changeFriendDialog = new ChangeFriendDialog();
 				Bundle arguments = new Bundle();
 				arguments.putSerializable(ChangeFriendDialog.KEY_FRIENDOBJ, friends.get(friendId));
@@ -477,10 +482,10 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
 
 	private void sortListViewWhileInAction() {
 		Set<Integer> set = new HashSet<Integer>(); 
-		set.addAll(friends.keySet());
 		for(int friendId : friends.keySet()){
 			Friend friend = friends.get(friendId);
-			if( friend.isActive() && friend.isOnline() )
+			// i erased friend.isOnline here (ben): do we really need this feature?
+			if( friend.isActive() )
 				set.add(friendId);
 		}
 		sortedFriendIdsToDisplay.clear();
@@ -524,7 +529,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
 
 	private ListView listView;
 	Friends friends;
-	final List<Integer> sortedFriendIdsToDisplay = new ArrayList<Integer>();
+	List<Integer> sortedFriendIdsToDisplay = new ArrayList<Integer>();
 	private final static String TAG = "SocialActivity"; 
 	private NetworkClient networkClient;
 	private final Handler periodicHandler = new Handler();
