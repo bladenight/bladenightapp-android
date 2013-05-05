@@ -141,7 +141,7 @@ public class EventFragment extends Fragment {
 		}
 
 		TextView textViewCourse = (TextView)view.findViewById(R.id.course);
-		textViewCourse.setText(eventMessage.getRouteName());
+		textViewCourse.setText(routeNameToText(eventMessage.getRouteName()));
 
 		TextView textViewDate = (TextView)view.findViewById(R.id.date);
 		textViewDate.setText(toDateFormat.print(eventMessage.getStartDate()));
@@ -229,6 +229,31 @@ public class EventFragment extends Fragment {
 		else {
 			return DateTimeFormat.forStyle("MS").withLocale(locale);
 		}
+	}
+	
+	private String routeNameToText(String routeName){
+		if (routeName.equals("ns")){
+			return view.getResources().getString(R.string.course_north_short);
+		}
+		if (routeName.equals("nl")){
+			return view.getResources().getString(R.string.course_north_long);
+		}
+		if (routeName.equals("ws")){
+			return view.getResources().getString(R.string.course_west_short);
+		}
+		if (routeName.equals("wl")){
+			return view.getResources().getString(R.string.course_west_long);
+		}
+		if (routeName.equals("es")){
+			return view.getResources().getString(R.string.course_east_short);
+		}
+		if (routeName.equals("el")){
+			return view.getResources().getString(R.string.course_east_long);
+		}
+		if (routeName.equals("fa")){
+			return view.getResources().getString(R.string.course_family);
+		}
+		return routeName;
 	}
 
 	private View view;

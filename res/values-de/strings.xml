@@ -16,6 +16,13 @@
     <string name="button_social">Freunde verwalten</string>
     <string name="button_statistics">Statistiken</string>
     <string name="button_view">Anschauen</string>
+    <string name="course_east_short">Ost - kurz</string>
+    <string name="course_east_long">Ost - lang</string>
+    <string name="course_family">Familie</string>
+    <string name="course_north_short">Nord - kurz</string>
+    <string name="course_north_long">Nord - lang</string>
+    <string name="course_west_short">West - kurz</string>
+    <string name="course_west_long">West - lang</string>
     <string name="default_friend_name">Freund</string>
     <string name="field_active">Aktiv</string>
     <string name="field_code">Code</string>
