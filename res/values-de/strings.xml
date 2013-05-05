@@ -36,6 +36,7 @@
     <string name="msg_loading_code">Lade Freund-Code</string>
     <string name="msg_new_code">Gib diesen Code </string>
     <string name="msg_no">Nein</string>
+    <string name="msg_outdated_client">Die App ist veraltet, bitte aktualisieren!</string>
     <string name="msg_participants">Teilnehmer</string>
     <string name="msg_route_has_changed">Die Strecke hat sich geändert. Wir fahren jetzt die Strecke</string>
     <string name="msg_tracker_confirm_stop">Deine Freunde werden Dich vermissen und Deine Position wird nicht mehr berücksichtigt. Bist Du sicher ?</string>

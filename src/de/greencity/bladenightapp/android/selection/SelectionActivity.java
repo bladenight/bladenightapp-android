@@ -8,6 +8,9 @@ import org.joda.time.Minutes;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -22,6 +25,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.widget.Toast;
 
 import com.markupartist.android.widget.ActionBar;
 import com.markupartist.android.widget.ActionBar.Action;
@@ -34,12 +38,16 @@ import de.greencity.bladenightapp.android.admin.AdminActivity;
 import de.greencity.bladenightapp.android.admin.AdminUtilities;
 import de.greencity.bladenightapp.android.network.NetworkClient;
 import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
+import de.greencity.bladenightapp.android.utils.DeviceId;
 import de.greencity.bladenightapp.android.utils.JsonCacheAccess;
 import de.greencity.bladenightapp.dev.android.R;
 import de.greencity.bladenightapp.events.Event;
 import de.greencity.bladenightapp.events.Event.EventStatus;
 import de.greencity.bladenightapp.events.EventList;
+import de.greencity.bladenightapp.network.BladenightError;
 import de.greencity.bladenightapp.network.messages.EventsListMessage;
+import de.greencity.bladenightapp.network.messages.HandshakeClientMessage;
+import fr.ocroquette.wampoc.messages.CallErrorMessage;
 
 public class SelectionActivity extends FragmentActivity {
 	@Override
@@ -54,7 +62,7 @@ public class SelectionActivity extends FragmentActivity {
 		eventsCache = new JsonCacheAccess<EventsListMessage>(this, EventsListMessage.class, JsonCacheAccess.FILE_EVENTS);
 
 		networkClient =  new NetworkClient(this);
-		
+
 		openHelpDialog();
 
 	}
@@ -64,6 +72,8 @@ public class SelectionActivity extends FragmentActivity {
 		super.onStart();
 
 		Log.i(TAG, "onStart");
+
+		shakeHands();
 	}
 
 	private void configureActionBar() {
@@ -152,8 +162,8 @@ public class SelectionActivity extends FragmentActivity {
 		}
 		else if( item.getItemId() == R.id.menu_item_help ){
 			FragmentManager fm = getSupportFragmentManager();
-	    	HelpDialog helpDialog = new HelpDialog();
-	    	helpDialog.show(fm, "fragment_help");
+			HelpDialog helpDialog = new HelpDialog();
+			helpDialog.show(fm, "fragment_help");
 			return true;
 		}
 		return false;
@@ -175,6 +185,55 @@ public class SelectionActivity extends FragmentActivity {
 			selectionActivity.saveEventsToCache(eventsListMessage);
 		}
 	}
+
+	static class HandshakeErrorHandler extends Handler {
+		private WeakReference<SelectionActivity> reference;
+		HandshakeErrorHandler(SelectionActivity activity) {
+			this.reference = new WeakReference<SelectionActivity>(activity);
+		}
+		@Override
+		public void handleMessage(Message msg) {
+			final SelectionActivity selectionActivity = reference.get();
+			if ( selectionActivity == null || selectionActivity.isFinishing() )
+				return;
+			CallErrorMessage errorMessage = (CallErrorMessage)msg.obj;
+			if ( errorMessage == null ) {
+				Log.i(TAG, "Failed to get the error message");
+				return;
+			}
+			if ( BladenightError.OUTDATED_CLIENT.getText().equals(errorMessage.getErrorUri())) {
+				Toast.makeText(selectionActivity, R.string.msg_outdated_client , Toast.LENGTH_LONG).show();
+			}
+			else {
+				Log.e(TAG, "Unknown error occured in the handshake with the server: " + errorMessage);
+			}
+		}
+	}
+
+	private void shakeHands() {
+		PackageManager manager = this.getPackageManager();
+		PackageInfo info;
+		try {
+			info = manager.getPackageInfo(this.getPackageName(), 0);
+			String deviceId = DeviceId.getDeviceId(this);
+			int clientBuild = info.versionCode;
+
+			String phoneManufacturer = android.os.Build.MANUFACTURER;
+			String phoneModel = android.os.Build.MODEL;
+			String androidRelease = Build.VERSION.RELEASE;
+
+			HandshakeClientMessage msg = new HandshakeClientMessage(
+					deviceId,
+					clientBuild,
+					phoneManufacturer,
+					phoneModel,
+					androidRelease);
+			networkClient.shakeHands(msg, null, new HandshakeErrorHandler(this));
+		} catch (Exception e) {
+			Log.e(TAG, "shakeHands failed to gather and send information: " + e.toString());
+		}
+	}
+
 
 	private void getEventsFromCache() {
 		EventsListMessage eventsListMessage = eventsCache.get();
@@ -278,19 +337,19 @@ public class SelectionActivity extends FragmentActivity {
 			return null;
 		return eventsList.get(posEventShown);
 	}
-	
+
 	private void openHelpDialog(){
 		SharedPreferences settings = getSharedPreferences("HelpPrefs", 0);
-	    boolean firstCreate = settings.getBoolean("firstCreate", true);
-	    Log.i(TAG, "firstCreate is "+firstCreate);
-	    if(firstCreate){
-	    	FragmentManager fm = getSupportFragmentManager();
-	    	HelpDialog helpDialog = new HelpDialog();
-	    	helpDialog.show(fm, "fragment_help");
-	    }
-	    SharedPreferences.Editor editor = settings.edit();
-	    editor.putBoolean("firstCreate", false);
-	    editor.commit();
+		boolean firstCreate = settings.getBoolean("firstCreate", true);
+		Log.i(TAG, "firstCreate is "+firstCreate);
+		if(firstCreate){
+			FragmentManager fm = getSupportFragmentManager();
+			HelpDialog helpDialog = new HelpDialog();
+			helpDialog.show(fm, "fragment_help");
+		}
+		SharedPreferences.Editor editor = settings.edit();
+		editor.putBoolean("firstCreate", false);
+		editor.commit();
 	}
 
 	public static class ViewPagerAdapter extends FragmentStatePagerAdapter {
@@ -314,7 +373,7 @@ public class SelectionActivity extends FragmentActivity {
 			Log.d(TAG, "getItemPosition " + object);
 			return POSITION_NONE;
 		}
-		
+
 		private boolean checkNextAndSoon(Event event, int minutes) {
 			if ( eventsList.getActiveEvent() != event )
 				return false;
@@ -346,12 +405,12 @@ public class SelectionActivity extends FragmentActivity {
 					));
 			return fragment;      
 		}
-	
+
 		final private String TAG = "SelectionActivity.MyAdapter"; 
 
 		public EventList eventsList = new EventList();
 	}
-	
+
 
 	private ViewPager viewPager;
 	private ViewPagerAdapter viewPagerAdapter;

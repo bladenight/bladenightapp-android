@@ -31,6 +31,7 @@ import de.greencity.bladenightapp.network.messages.EventMessage;
 import de.greencity.bladenightapp.network.messages.EventMessage.EventStatus;
 import de.greencity.bladenightapp.network.messages.EventsListMessage;
 import de.greencity.bladenightapp.network.messages.FriendsMessage;
+import de.greencity.bladenightapp.network.messages.HandshakeClientMessage;
 import de.greencity.bladenightapp.network.messages.RealTimeUpdateData;
 import de.greencity.bladenightapp.network.messages.RelationshipInputMessage;
 import de.greencity.bladenightapp.network.messages.RelationshipOutputMessage;
@@ -260,6 +261,16 @@ public class NetworkClient implements LocationListener {
 		callOrStore(item);
 	}
 
+	public void shakeHands(HandshakeClientMessage clientMsg, Handler successHandler, Handler errorHandler) {
+		BacklogItem item = new BacklogItem();
+		item.url = BladenightUrl.SHAKE_HANDS.getText();
+		item.successHandler = successHandler;
+		item.errorHandler = errorHandler;
+		item.expectedReturnType = String.class;
+		item.outgoingPayload = clientMsg;
+		callOrStore(item);
+	}
+
 	public void updateFromGpsTrackerService(Location lastKnownLocation) {
 		NetworkClient.sharedState.lastKnownLocation = lastKnownLocation;
 		getRealTimeData(null, null);
@@ -317,7 +328,7 @@ public class NetworkClient implements LocationListener {
 				if ( item.errorHandler == null )
 					return;
 				Message message = new Message();
-				message.obj = this.callResultMessage;
+				message.obj = this.callErrorMessage;
 				item.errorHandler.sendMessage(message);
 			}
 

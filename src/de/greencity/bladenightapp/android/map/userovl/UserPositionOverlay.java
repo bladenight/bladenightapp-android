@@ -8,6 +8,7 @@ import org.mapsforge.android.maps.MapView;
 import org.mapsforge.android.maps.overlay.ListOverlay;
 import org.mapsforge.core.model.GeoPoint;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
@@ -129,10 +130,10 @@ public class UserPositionOverlay extends ListOverlay implements LocationListener
 
 	private final MapView mapView;
 	private Context context;
+	@SuppressLint("UseSparseArrays")
 	private HashMap<Integer, FriendMarker> friendMarkers = new HashMap<Integer, FriendMarker>();
 	private Friends friends;
 
-	@SuppressWarnings("unused")
 	private final String TAG = "UserPositionOverlay";
 
 
