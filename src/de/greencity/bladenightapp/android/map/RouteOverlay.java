@@ -31,6 +31,10 @@ public class RouteOverlay extends ListOverlay {
 
 		Log.i(TAG, "reinit");
 		
+		
+		routePolylineFrame = createRoutePolylineFrame();
+		getOverlayItems().add(routePolylineFrame);
+		
 		routePolyline = createRoutePolyline();
 		getOverlayItems().add(routePolyline);
 
@@ -49,6 +53,20 @@ public class RouteOverlay extends ListOverlay {
 		paintStroke.setColor(mapView.getResources().getColor(R.color.new_route));
 		//>paintStroke.setAlpha(100);
 		paintStroke.setStrokeWidth(12);
+		paintStroke.setStrokeCap(Cap.ROUND);
+
+		return new Polyline(polygonalChain, paintStroke);
+	}
+	
+	private Polyline createRoutePolylineFrame() {
+
+		PolygonalChain polygonalChain = new PolygonalChain(new ArrayList<GeoPoint>());
+
+		Paint paintStroke = new Paint(Paint.ANTI_ALIAS_FLAG);
+		paintStroke.setStyle(Paint.Style.STROKE);
+		paintStroke.setColor(mapView.getResources().getColor(R.color.new_route_frame));
+		//>paintStroke.setAlpha(100);
+		paintStroke.setStrokeWidth(16);
 		paintStroke.setStrokeCap(Cap.ROUND);
 
 		return new Polyline(polygonalChain, paintStroke);
@@ -78,6 +96,7 @@ public class RouteOverlay extends ListOverlay {
 		updateRouteBoundingBox();
 		
 		routePolyline.setPolygonalChain(new PolygonalChain(routeNodes));
+		routePolylineFrame.setPolygonalChain(new PolygonalChain(routeNodes));
 
 		redrawMapView();
 	}
@@ -233,6 +252,7 @@ public class RouteOverlay extends ListOverlay {
 	private final MapView mapView;
 
 	private Polyline routePolyline;
+	private Polyline routePolylineFrame;
 	private List<GeoPoint> routeNodes;
 	private BoundingBox routeBoundingBox = new BoundingBox(0, 0, 0, 0);
 	private BoundingBox processionBoundingBox  = new BoundingBox(0, 0, 0, 0);
