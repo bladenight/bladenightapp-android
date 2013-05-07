@@ -57,7 +57,7 @@ public class JsonCacheAccess<T> {
 			Log.i(TAG, "Trace: " + ExceptionUtils.getStackTrace( new Throwable()));
 			return null;
 		}
-		JsonCacheAccess<RouteMessage> routeCache = new JsonCacheAccess<RouteMessage>(context, RouteMessage.class, routeName);
+		JsonCacheAccess<RouteMessage> routeCache = new JsonCacheAccess<RouteMessage>(context, RouteMessage.class, getNameForRoute(routeName));
 		return routeCache.get();
 	}
 
