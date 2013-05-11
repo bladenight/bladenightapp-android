@@ -41,6 +41,7 @@
     <string name="msg_friend_removed">Freund wurde gelöscht</string>
     <string name="msg_invalid_friend_to_delete">Dieses Element kann nicht gelöscht werden</string>
     <string name="msg_loading_code">Lade Freund-Code</string>
+    <string name="msg_locate">Zentriere Ausschnitt auf meine Position</string>
     <string name="msg_new_code">Gib diesen Code </string>
     <string name="msg_no">Nein</string>
     <string name="msg_outdated_client">Die App ist veraltet, bitte aktualisieren!</string>
