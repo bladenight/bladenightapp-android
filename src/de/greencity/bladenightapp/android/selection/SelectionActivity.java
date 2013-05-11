@@ -374,20 +374,19 @@ public class SelectionActivity extends FragmentActivity {
 			return POSITION_NONE;
 		}
 
-		private boolean checkNextAndSoon(Event event, int minutes) {
-			if ( eventsList.getActiveEvent() != event )
-				return false;
+		private boolean showStatus(Event event) {
 			DateTime now = new DateTime();
 			Minutes minutesToStart = Minutes.minutesBetween(now, event.getStartDate());
-			return minutesToStart.getMinutes() < minutes;
-		}
-		private boolean showStatus(Event event) {
-			return checkNextAndSoon(event, 60*24);
+			return minutesToStart.getMinutes() < 60*24 || now.isAfter(event.getStartDate());
 		}
 		private boolean allowParticipate(Event event) {
 			if ( event.getStatus() != EventStatus.CONFIRMED )
 				return false;
-			return checkNextAndSoon(event, 30);
+			if ( eventsList.getActiveEvent() != event )
+				return false;
+			DateTime now = new DateTime();
+			Minutes minutesToStart = Minutes.minutesBetween(now, event.getStartDate());
+			return minutesToStart.getMinutes() < 30 || now.isAfter(event.getStartDate());
 		}
 
 		@Override
