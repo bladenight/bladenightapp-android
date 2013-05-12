@@ -444,8 +444,8 @@ public class BladenightMapActivity extends MapActivity {
 			this.mapView.getMapViewPosition().setCenter(pos);
 		}
 		else {
-			// TODO translation
-			Toast.makeText(this, "Current position unknown", Toast.LENGTH_LONG).show();
+			String text = getResources().getString(R.string.msg_current_position_unknown);
+			Toast.makeText(this, text, Toast.LENGTH_LONG).show();
 		}
 	}
 
