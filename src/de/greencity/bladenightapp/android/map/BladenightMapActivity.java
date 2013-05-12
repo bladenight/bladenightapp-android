@@ -15,6 +15,7 @@ import org.mapsforge.map.reader.header.FileOpenResult;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -30,6 +31,7 @@ import android.widget.Toast;
 import com.markupartist.android.widget.ActionBar;
 
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
+import de.greencity.bladenightapp.android.actionbar.ActionLocateMe;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator.ActionItemType;
 import de.greencity.bladenightapp.android.map.userovl.UserPositionOverlay;
 import de.greencity.bladenightapp.android.network.NetworkClient;
@@ -304,12 +306,18 @@ public class BladenightMapActivity extends MapActivity {
 	private void configureActionBar() {
 		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
 		ActionBarConfigurator configurator = new ActionBarConfigurator(actionBar)
-		.show(ActionItemType.LOCATE_ME)
 		.show(ActionItemType.FRIENDS)
 		.setTitle(R.string.title_map);
 		if ( isShowingActiveEvent ) {
 			configurator.show(ActionItemType.TRACKER_CONTROL);
 		}
+		configurator.setAction(ActionItemType.LOCATE_ME, new ActionLocateMe() {
+			@Override
+			public void performAction(View view) {
+				BladenightMapActivity.this.centerViewOnLastKnownLocation();
+			}
+		});
+		
 		configurator.configure();
 	}
 
@@ -428,6 +436,19 @@ public class BladenightMapActivity extends MapActivity {
 	protected void centerViewOnCoordinates(GeoPoint center, byte zoomLevel) {
 		mapView.getMapViewPosition().setMapPosition(new MapPosition(center, zoomLevel));
 	}
+
+	protected void centerViewOnLastKnownLocation() {
+		Location location = userPositionOverlay.getLastOwnLocation();
+		if ( location != null  ) {
+			GeoPoint pos = new GeoPoint(location.getLatitude(), location.getLongitude());
+			this.mapView.getMapViewPosition().setCenter(pos);
+		}
+		else {
+			// TODO translation
+			Toast.makeText(this, "Current position unknown", Toast.LENGTH_LONG).show();
+		}
+	}
+
 
 	private void clearTileCache() {
 		try {

@@ -42,9 +42,11 @@ public class UserPositionOverlay extends ListOverlay implements LocationListener
 		mapView.redraw();
 		mapView.getOverlayController().redrawOverlays();
 	}
-	
+
 	@Override
 	public void onLocationChanged(Location location) {
+		lastOwnLocation = location;
+		
 		// Log.i(TAG, "UserPositionOverlay.onLocationChanged: " + location);
 		GeoPoint gp = new GeoPoint(location.getLatitude(), location.getLongitude());
 
@@ -54,6 +56,7 @@ public class UserPositionOverlay extends ListOverlay implements LocationListener
 		
 		redraw();
 	}
+	
 
 	@Override
 	public void onProviderDisabled(String provider) {
@@ -70,6 +73,10 @@ public class UserPositionOverlay extends ListOverlay implements LocationListener
 		//		Log.i(TAG, "onStatusChanged: " + provider + " status="+status);
 	}
 
+	public Location getLastOwnLocation() {
+		return lastOwnLocation;
+	}
+	
 	public synchronized void update(RealTimeUpdateData data) {
 		Log.i(TAG, "update");
 		Set<Integer> depracatedFriendIds = new HashSet<Integer>(friendMarkers.keySet());
@@ -133,6 +140,8 @@ public class UserPositionOverlay extends ListOverlay implements LocationListener
 	@SuppressLint("UseSparseArrays")
 	private HashMap<Integer, FriendMarker> friendMarkers = new HashMap<Integer, FriendMarker>();
 	private Friends friends;
+	private Location lastOwnLocation;
+
 
 	private final String TAG = "UserPositionOverlay";
 
