@@ -144,7 +144,7 @@ public class BladenightMapActivity extends MapActivity {
 		};
 		periodicHandler.postDelayed(periodicTask, updatePeriod);
 
-		if ( ! isShowingActiveEvent ) {
+		if ( ! isLive ) {
 			processionProgressBar.setVisibility(View.GONE);
 		}
 
@@ -185,13 +185,13 @@ public class BladenightMapActivity extends MapActivity {
 
 		Log.i(TAG, "getActivityParametersFromIntent intent="+intent);
 
-		isShowingActiveEvent = true;
+		isLive = true;
 		if ( intent != null) {
 			Bundle bundle = intent.getExtras();
 			Log.i(TAG, "getActivityParametersFromIntent bundle="+bundle);
 			if ( bundle != null ) {
-				String routeNameFromBundle = bundle.getString(PARAM_ROUTENAME);
-				isShowingActiveEvent = bundle.getBoolean(PARAM_ACTIVE);
+				String routeNameFromBundle = bundle.getString(PARAM_ROUTE_NAME);
+				isLive = bundle.getBoolean(PARAM_IS_EVENT_LIVE);
 				Log.i(TAG, "getActivityParametersFromIntent routeNameFromBundle="+routeNameFromBundle);
 				if ( routeNameFromBundle != null) {
 					if ( ! routeNameFromBundle.equals(routeName)) {
@@ -210,9 +210,9 @@ public class BladenightMapActivity extends MapActivity {
 			Log.w(TAG, "intent="+intent);
 		}
 		if ( ServiceUtils.isServiceRunning(this, GpsTrackerService.class) )
-			isShowingActiveEvent = true;
+			isLive = true;
 		Log.i(TAG, "getActivityParametersFromIntent DONE routeName="+routeName);
-		Log.i(TAG, "isShowingActiveEvent="+isShowingActiveEvent);
+		Log.i(TAG, "isShowingActiveEvent="+isLive);
 	}
 
 	static class GetRealTimeDataFromServerHandler extends Handler {
@@ -227,12 +227,14 @@ public class BladenightMapActivity extends MapActivity {
 				return;
 			RealTimeUpdateData realTimeUpdateData = (RealTimeUpdateData)msg.obj;
 			String liveRouteName = realTimeUpdateData.getRouteName();
-			if ( bladenightMapActivity.isShowingActiveEvent ) {
+			if ( bladenightMapActivity.isLive ) {
 				if ( ! liveRouteName.equals(bladenightMapActivity.routeName) ) {
-					// the route has changed, typically Lang -> Kurz
-					Log.i(TAG, "GetRealTimeDataFromServerHandler: route has changed: " + bladenightMapActivity.routeName + " -> " + liveRouteName);
-					String text = bladenightMapActivity.getResources().getString(R.string.msg_route_has_changed);
-					Toast.makeText(bladenightMapActivity, text + " " + liveRouteName, Toast.LENGTH_LONG).show();
+					if ( bladenightMapActivity.routeName != null ) {
+						// the route has changed, typically Lang -> Kurz
+						Log.i(TAG, "GetRealTimeDataFromServerHandler: route has changed: " + bladenightMapActivity.routeName + " -> " + liveRouteName);
+						String text = bladenightMapActivity.getResources().getString(R.string.msg_route_has_changed);
+						Toast.makeText(bladenightMapActivity, text + " " + liveRouteName, Toast.LENGTH_LONG).show();
+					}
 					bladenightMapActivity.routeName = liveRouteName;
 					bladenightMapActivity.requestRouteFromNetworkService();
 				}
@@ -240,7 +242,9 @@ public class BladenightMapActivity extends MapActivity {
 				bladenightMapActivity.processionProgressBar.update(realTimeUpdateData);
 				bladenightMapActivity.userPositionOverlay.update(realTimeUpdateData);
 			}
-			bladenightMapActivity.userPositionOverlay.update(realTimeUpdateData);
+			else {
+				bladenightMapActivity.userPositionOverlay.update(realTimeUpdateData);
+			}
 		}
 	}
 
@@ -252,7 +256,7 @@ public class BladenightMapActivity extends MapActivity {
 		if ( routeName.length() > 0 )
 			getSpecificRouteFromServer(routeName);
 		else
-			Log.e(TAG, "requestRouteFromNetworkService: I don't know what route to request. routeName=" + routeName);
+			getNextRouteFromServer();
 	}
 
 	static class GetRouteFromServerHandler extends Handler {
@@ -275,6 +279,12 @@ public class BladenightMapActivity extends MapActivity {
 		Log.i(TAG,"getSpecificRouteFromServer routeName="+routeName);
 		networkClient.getRoute(routeName, new GetRouteFromServerHandler(this), null);
 	}
+
+	private void getNextRouteFromServer() {
+		Log.i(TAG,"getNextRouteFromServer");
+		networkClient.getActiveRoute(new GetRouteFromServerHandler(this), null);
+	}
+
 
 	private void updateRouteFromRouteMessage(RouteMessage routeMessage) {
 		if ( ! routeMessage.getRouteName().equals(routeName) ) {
@@ -308,7 +318,7 @@ public class BladenightMapActivity extends MapActivity {
 		ActionBarConfigurator configurator = new ActionBarConfigurator(actionBar)
 		.show(ActionItemType.FRIENDS)
 		.setTitle(R.string.title_map);
-		if ( isShowingActiveEvent ) {
+		if ( isLive ) {
 			configurator.show(ActionItemType.TRACKER_CONTROL);
 		}
 		configurator.setAction(ActionItemType.LOCATE_ME, new ActionLocateMe() {
@@ -317,7 +327,7 @@ public class BladenightMapActivity extends MapActivity {
 				BladenightMapActivity.this.centerViewOnLastKnownLocation();
 			}
 		});
-		
+
 		configurator.configure();
 	}
 
@@ -469,7 +479,7 @@ public class BladenightMapActivity extends MapActivity {
 	private final String mapRemotePath = "maps/munich.map";
 	private ProgressDialog downloadProgressDialog;
 	private String routeName = "";
-	private boolean isShowingActiveEvent = false;
+	private boolean isLive = false;
 	private RouteOverlay routeOverlay;
 	private BladenightMapView mapView;
 	private ProcessionProgressBar processionProgressBar;
@@ -481,8 +491,8 @@ public class BladenightMapActivity extends MapActivity {
 	private GpsListener gpsListenerForPositionOverlay;
 	private GpsListener gpsListenerForNetworkClient;
 	private boolean isRouteInfoAvailable = false;
-	static public final String PARAM_ROUTENAME = "routeName";
-	public static final String PARAM_ACTIVE = "active";
+	static public final String PARAM_ROUTE_NAME = "routeName";
+	public static final String PARAM_IS_EVENT_LIVE = "active";
 	private boolean isRunning = true;
 	private boolean shallFitViewWhenPossible = true;
 

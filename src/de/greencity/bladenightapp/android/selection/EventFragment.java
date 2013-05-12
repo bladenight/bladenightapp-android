@@ -175,8 +175,8 @@ public class EventFragment extends Fragment {
 			Log.e(TAG, "No event or no route available");
 			return;
 		}
-		intent.putExtra(BladenightMapActivity.PARAM_ROUTENAME, eventMessage.getRouteName());
-		intent.putExtra(BladenightMapActivity.PARAM_ACTIVE, allowParticipate);
+		intent.putExtra(BladenightMapActivity.PARAM_ROUTE_NAME, eventMessage.getRouteName());
+		intent.putExtra(BladenightMapActivity.PARAM_IS_EVENT_LIVE, allowParticipate);
 		view.getContext().startActivity(intent);
 	}
 
