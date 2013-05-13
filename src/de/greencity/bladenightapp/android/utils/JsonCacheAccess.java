@@ -61,7 +61,6 @@ public class JsonCacheAccess<T> {
 		return routeCache.get();
 	}
 
-
 	final private InternalStorageFile cacheFile;
 	final private Gson gson;
 	final private Class<T> clazz;

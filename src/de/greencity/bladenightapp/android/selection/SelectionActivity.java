@@ -42,10 +42,9 @@ import de.greencity.bladenightapp.android.utils.DeviceId;
 import de.greencity.bladenightapp.android.utils.JsonCacheAccess;
 import de.greencity.bladenightapp.dev.android.R;
 import de.greencity.bladenightapp.events.Event;
-import de.greencity.bladenightapp.events.Event.EventStatus;
 import de.greencity.bladenightapp.events.EventList;
 import de.greencity.bladenightapp.network.BladenightError;
-import de.greencity.bladenightapp.network.messages.EventsListMessage;
+import de.greencity.bladenightapp.network.messages.EventListMessage;
 import de.greencity.bladenightapp.network.messages.HandshakeClientMessage;
 import fr.ocroquette.wampoc.messages.CallErrorMessage;
 
@@ -59,7 +58,7 @@ public class SelectionActivity extends FragmentActivity {
 
 		setContentView(R.layout.activity_selection);
 
-		eventsCache = new JsonCacheAccess<EventsListMessage>(this, EventsListMessage.class, JsonCacheAccess.FILE_EVENTS);
+		eventsCache = new JsonCacheAccess<EventListMessage>(this, EventListMessage.class, JsonCacheAccess.FILE_EVENTS);
 
 		networkClient =  new NetworkClient(this);
 
@@ -179,9 +178,9 @@ public class SelectionActivity extends FragmentActivity {
 			final SelectionActivity selectionActivity = reference.get();
 			if ( selectionActivity == null || selectionActivity.isFinishing() )
 				return;
-			EventsListMessage eventsListMessage = (EventsListMessage)msg.obj;
+			EventListMessage eventsListMessage = (EventListMessage)msg.obj;
 			Log.i(TAG, "Updating event fragments from server data");
-			selectionActivity.updateFragmentsFromEventList((EventsListMessage)eventsListMessage);
+			selectionActivity.updateFragmentsFromEventList((EventListMessage)eventsListMessage);
 			selectionActivity.saveEventsToCache(eventsListMessage);
 		}
 	}
@@ -236,14 +235,14 @@ public class SelectionActivity extends FragmentActivity {
 
 
 	private void getEventsFromCache() {
-		EventsListMessage eventsListMessage = eventsCache.get();
+		EventListMessage eventsListMessage = eventsCache.get();
 		if ( eventsListMessage != null) {
 			Log.i(TAG, "Updating event fragments from cached data");
 			updateFragmentsFromEventList(eventsListMessage);
 		}
 	}
 
-	private void saveEventsToCache(EventsListMessage eventsListMessage) {
+	private void saveEventsToCache(EventListMessage eventsListMessage) {
 		eventsCache.set(eventsListMessage);
 	}
 
@@ -252,7 +251,7 @@ public class SelectionActivity extends FragmentActivity {
 	}
 
 
-	private void updateFragmentsFromEventList(EventsListMessage eventListMessage) {
+	private void updateFragmentsFromEventList(EventListMessage eventListMessage) {
 		Log.i(TAG, "updateFragmentsFromEventList " + eventListMessage);
 
 		viewPager = (ViewPager) findViewById(R.id.pager);
@@ -299,7 +298,7 @@ public class SelectionActivity extends FragmentActivity {
 
 	private void updatePositionEventCurrent() {
 		posEventCurrent = -1;
-		Event nextEvent = eventsList.getActiveEvent();
+		Event nextEvent = eventsList.getNextEvent();
 		if ( nextEvent != null ) {
 			posEventCurrent = eventsList.indexOf(nextEvent);
 		}
@@ -310,7 +309,7 @@ public class SelectionActivity extends FragmentActivity {
 	}
 
 	private void showUpcomingEvent() {
-		Event nextEvent = eventsList.getActiveEvent();
+		Event nextEvent = eventsList.getNextEvent();
 		if ( isValidFragmentPosition(posEventCurrent) ) {
 			int startFragment = eventsList.indexOf(nextEvent);
 			viewPager.setCurrentItem(startFragment);
@@ -379,15 +378,6 @@ public class SelectionActivity extends FragmentActivity {
 			Minutes minutesToStart = Minutes.minutesBetween(now, event.getStartDate());
 			return minutesToStart.getMinutes() < 60*24 || now.isAfter(event.getStartDate());
 		}
-		private boolean allowParticipate(Event event) {
-			if ( event.getStatus() != EventStatus.CONFIRMED )
-				return false;
-			if ( eventsList.getActiveEvent() != event )
-				return false;
-			DateTime now = new DateTime();
-			Minutes minutesToStart = Minutes.minutesBetween(now, event.getStartDate());
-			return minutesToStart.getMinutes() < 30 || now.isAfter(event.getStartDate());
-		}
 
 		@Override
 		public Fragment getItem(int position) {
@@ -400,7 +390,7 @@ public class SelectionActivity extends FragmentActivity {
 					hasLeft,
 					hasRight,
 					showStatus(event),
-					allowParticipate(event)
+					eventsList.isLive(event)
 					));
 			return fragment;      
 		}
@@ -419,5 +409,5 @@ public class SelectionActivity extends FragmentActivity {
 	private static int posEventCurrent = -1;
 	private EventList eventsList;
 	private NetworkClient networkClient;
-	private JsonCacheAccess<EventsListMessage> eventsCache;
+	private JsonCacheAccess<EventListMessage> eventsCache;
 } 

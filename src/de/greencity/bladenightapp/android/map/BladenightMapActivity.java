@@ -362,16 +362,6 @@ public class BladenightMapActivity extends MapActivity {
 		userPositionOverlay = new UserPositionOverlay(this, mapView);
 	}
 
-	// Will be called via the onClick attribute
-	// of the buttons in main.xml
-	public void onClick(View view) {	  
-		switch (view.getId()) {
-		//	    case R.id.next: goUp();
-		//	      break;
-
-		}
-	}
-
 	private void verifyMapFile() {
 		if ( ! new File(mapLocalPath).exists() ) {
 			startMapFileDownload();
