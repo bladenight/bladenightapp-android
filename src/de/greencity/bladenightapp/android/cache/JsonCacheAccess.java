@@ -6,7 +6,6 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import de.greencity.bladenightapp.android.utils.InternalStorageFile;
 
 public class JsonCacheAccess<T> {
 	public JsonCacheAccess(Context context, Class<T> clazz, String name) {
