@@ -36,10 +36,10 @@ import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator.Action
 import de.greencity.bladenightapp.android.actionbar.ActionEventSelection;
 import de.greencity.bladenightapp.android.admin.AdminActivity;
 import de.greencity.bladenightapp.android.admin.AdminUtilities;
+import de.greencity.bladenightapp.android.cache.EventsCache;
 import de.greencity.bladenightapp.android.network.NetworkClient;
 import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
 import de.greencity.bladenightapp.android.utils.DeviceId;
-import de.greencity.bladenightapp.android.utils.JsonCacheAccess;
 import de.greencity.bladenightapp.dev.android.R;
 import de.greencity.bladenightapp.events.Event;
 import de.greencity.bladenightapp.events.EventList;
@@ -58,7 +58,7 @@ public class SelectionActivity extends FragmentActivity {
 
 		setContentView(R.layout.activity_selection);
 
-		eventsCache = new JsonCacheAccess<EventListMessage>(this, EventListMessage.class, JsonCacheAccess.FILE_EVENTS);
+		eventsCache = new EventsCache(this);
 
 		networkClient =  new NetworkClient(this);
 
@@ -98,7 +98,6 @@ public class SelectionActivity extends FragmentActivity {
 		Log.i(TAG, "onStop");
 
 		broadcastReceiversRegister.unregisterReceivers();
-		// unbindService(networkServiceConnection);
 	}
 
 	@Override
@@ -235,7 +234,7 @@ public class SelectionActivity extends FragmentActivity {
 
 
 	private void getEventsFromCache() {
-		EventListMessage eventsListMessage = eventsCache.get();
+		EventListMessage eventsListMessage = eventsCache.read();
 		if ( eventsListMessage != null) {
 			Log.i(TAG, "Updating event fragments from cached data");
 			updateFragmentsFromEventList(eventsListMessage);
@@ -243,7 +242,7 @@ public class SelectionActivity extends FragmentActivity {
 	}
 
 	private void saveEventsToCache(EventListMessage eventsListMessage) {
-		eventsCache.set(eventsListMessage);
+		eventsCache.write(eventsListMessage);
 	}
 
 	private void getEventsFromServer() {
@@ -409,5 +408,5 @@ public class SelectionActivity extends FragmentActivity {
 	private static int posEventCurrent = -1;
 	private EventList eventsList;
 	private NetworkClient networkClient;
-	private JsonCacheAccess<EventListMessage> eventsCache;
+	private EventsCache eventsCache;
 } 

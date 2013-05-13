@@ -31,15 +31,15 @@ import android.widget.Toast;
 import com.markupartist.android.widget.ActionBar;
 
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
-import de.greencity.bladenightapp.android.actionbar.ActionLocateMe;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator.ActionItemType;
+import de.greencity.bladenightapp.android.actionbar.ActionLocateMe;
+import de.greencity.bladenightapp.android.cache.RoutesCache;
 import de.greencity.bladenightapp.android.map.userovl.UserPositionOverlay;
 import de.greencity.bladenightapp.android.network.NetworkClient;
 import de.greencity.bladenightapp.android.tracker.GpsListener;
 import de.greencity.bladenightapp.android.tracker.GpsTrackerService;
 import de.greencity.bladenightapp.android.utils.AsyncDownloadTaskHttpClient;
 import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
-import de.greencity.bladenightapp.android.utils.JsonCacheAccess;
 import de.greencity.bladenightapp.android.utils.ServiceUtils;
 import de.greencity.bladenightapp.dev.android.R;
 import de.greencity.bladenightapp.network.messages.RealTimeUpdateData;
@@ -271,7 +271,7 @@ public class BladenightMapActivity extends MapActivity {
 				return;
 			RouteMessage routeMessage = (RouteMessage) msg.obj;
 			bladenightMapActivity.updateRouteFromRouteMessage(routeMessage);
-			JsonCacheAccess.saveRouteToCache(bladenightMapActivity, routeMessage);
+			new RoutesCache(bladenightMapActivity).write(routeMessage);
 		}
 	}
 
@@ -301,7 +301,7 @@ public class BladenightMapActivity extends MapActivity {
 	}
 
 	private void updateRouteFromCache() {
-		RouteMessage message = JsonCacheAccess.getRouteFromCache(this, routeName);
+		RouteMessage message = new RoutesCache(this).read(routeName);
 		if ( message != null ) {
 			updateRouteFromRouteMessage(message);
 		}
