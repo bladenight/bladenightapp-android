@@ -85,7 +85,8 @@
     <string name="title_friend_delete">Delete Friend</string>
     <string name="title_friend_invite">Invite Friend</string>
     <string name="title_help">Help</string>
-    <string name="title_map">Live</string>
+    <string name="title_map_default">Preview</string>
+    <string name="title_map_live">Live</string>
     <string name="title_options">Options</string>
     <string name="title_selection">Events</string>
     <string name="title_social">Social</string>

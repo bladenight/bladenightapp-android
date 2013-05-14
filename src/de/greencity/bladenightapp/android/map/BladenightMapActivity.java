@@ -33,15 +33,18 @@ import com.markupartist.android.widget.ActionBar;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator.ActionItemType;
 import de.greencity.bladenightapp.android.actionbar.ActionLocateMe;
+import de.greencity.bladenightapp.android.cache.EventsCache;
 import de.greencity.bladenightapp.android.cache.RoutesCache;
 import de.greencity.bladenightapp.android.map.userovl.UserPositionOverlay;
 import de.greencity.bladenightapp.android.network.NetworkClient;
 import de.greencity.bladenightapp.android.tracker.GpsListener;
-import de.greencity.bladenightapp.android.tracker.GpsTrackerService;
 import de.greencity.bladenightapp.android.utils.AsyncDownloadTaskHttpClient;
 import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
-import de.greencity.bladenightapp.android.utils.ServiceUtils;
 import de.greencity.bladenightapp.dev.android.R;
+import de.greencity.bladenightapp.events.Event;
+import de.greencity.bladenightapp.events.EventGsonHelper;
+import de.greencity.bladenightapp.events.EventList;
+import de.greencity.bladenightapp.network.messages.EventListMessage;
 import de.greencity.bladenightapp.network.messages.RealTimeUpdateData;
 import de.greencity.bladenightapp.network.messages.RouteMessage;
 
@@ -90,7 +93,7 @@ public class BladenightMapActivity extends MapActivity {
 
 		Log.i(TAG, "configureBasedOnIntent");
 
-		getActivityParametersFromIntent(getIntent());
+		getActivityParametersFromIntentOrDefault(getIntent());
 
 		configureActionBar();
 	}
@@ -181,38 +184,71 @@ public class BladenightMapActivity extends MapActivity {
 	}
 
 
-	private void getActivityParametersFromIntent(Intent intent) {
+	private boolean getActivityParametersFromIntentOrDefault(Intent intent) {
+		if ( getActivityParametersFromIntent(intent) )
+			return true;
+		Event nextEvent = getEventListFromCacheOrEmptyList().getNextEvent();
+		if ( nextEvent == null )
+			return false;
+		getActivityParametersFromEvent(nextEvent);
+		return true;
+	}
 
+	private boolean getActivityParametersFromIntent(Intent intent) {
 		Log.i(TAG, "getActivityParametersFromIntent intent="+intent);
 
-		isLive = true;
-		if ( intent != null) {
-			Bundle bundle = intent.getExtras();
+		if ( intent == null)
+			return false;
+
+		Bundle bundle = intent.getExtras();
+		if ( bundle == null ) {
 			Log.i(TAG, "getActivityParametersFromIntent bundle="+bundle);
-			if ( bundle != null ) {
-				String routeNameFromBundle = bundle.getString(PARAM_ROUTE_NAME);
-				isLive = bundle.getBoolean(PARAM_IS_EVENT_LIVE);
-				Log.i(TAG, "getActivityParametersFromIntent routeNameFromBundle="+routeNameFromBundle);
-				if ( routeNameFromBundle != null) {
-					if ( ! routeNameFromBundle.equals(routeName)) {
-						// Activity is (re)started with a new route, request automatic zooming
-						shallFitViewWhenPossible = true;
-						isRouteInfoAvailable = false;
-					}
-					routeName = routeNameFromBundle;
-				}
-			}
-			else {
-				Log.w(TAG, "bundle="+bundle);
-			}
+			return false;
 		}
-		else {
-			Log.w(TAG, "intent="+intent);
+		String json = bundle.getString(PARAM_EVENT_MESSAGE);
+		if ( json == null ) {
+			Log.i(TAG, "getActivityParametersFromIntent json="+json);
+			return false;
 		}
-		if ( ServiceUtils.isServiceRunning(this, GpsTrackerService.class) )
-			isLive = true;
+
+		Log.i(TAG, "json="+json);
+		Event event = EventGsonHelper.getGson().fromJson(json, Event.class);
+
+		if ( event == null ) {
+			Log.i(TAG, "getActivityParametersFromIntent eventMessage="+event);
+			return false;
+		}
+
+		getActivityParametersFromEvent(event);
+
 		Log.i(TAG, "getActivityParametersFromIntent DONE routeName="+routeName);
-		Log.i(TAG, "isShowingActiveEvent="+isLive);
+		Log.i(TAG, "isLive="+isLive);
+		return true;
+	}
+
+	private void getActivityParametersFromEvent(Event event) {
+		setRoute(event.getRouteName());
+		isLive = false;
+		EventList eventList = getEventListFromCacheOrEmptyList();
+		if ( eventList.isLive(event ) ) {
+			isLive = true;
+		}
+	}
+
+	private EventList getEventListFromCacheOrEmptyList() {
+		EventListMessage eventListMessage = new EventsCache(this).read();
+		if ( eventListMessage == null )
+			return new EventList();
+		return eventListMessage.convertToEventsList();
+	}
+
+	private void setRoute(String routeName) {
+		if ( ! routeName.equals(this.routeName)) {
+			// Activity will now display a new new route, request automatic zooming
+			shallFitViewWhenPossible = true;
+			isRouteInfoAvailable = false;
+		}
+		this.routeName = routeName;
 	}
 
 	static class GetRealTimeDataFromServerHandler extends Handler {
@@ -315,12 +351,19 @@ public class BladenightMapActivity extends MapActivity {
 
 	private void configureActionBar() {
 		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
-		ActionBarConfigurator configurator = new ActionBarConfigurator(actionBar)
-		.show(ActionItemType.FRIENDS)
-		.setTitle(R.string.title_map);
+		ActionBarConfigurator configurator = new ActionBarConfigurator(actionBar);
+		
+		configurator.show(ActionItemType.FRIENDS);
+		
 		if ( isLive ) {
-			configurator.show(ActionItemType.TRACKER_CONTROL);
+			configurator
+			.show(ActionItemType.TRACKER_CONTROL)
+			.setTitle(R.string.title_map_live);
 		}
+		else {
+			configurator.setTitle(R.string.title_map_default);
+		}
+		
 		configurator.setAction(ActionItemType.LOCATE_ME, new ActionLocateMe() {
 			@Override
 			public void performAction(View view) {
@@ -481,8 +524,7 @@ public class BladenightMapActivity extends MapActivity {
 	private GpsListener gpsListenerForPositionOverlay;
 	private GpsListener gpsListenerForNetworkClient;
 	private boolean isRouteInfoAvailable = false;
-	static public final String PARAM_ROUTE_NAME = "routeName";
-	public static final String PARAM_IS_EVENT_LIVE = "active";
+	public static final String PARAM_EVENT_MESSAGE = "eventMessage";
 	private boolean isRunning = true;
 	private boolean shallFitViewWhenPossible = true;
 

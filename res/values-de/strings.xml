@@ -69,7 +69,8 @@
     <string name="title_friend_delete">Lösche einen Freund</string>
     <string name="title_friend_invite">Lade einen Freund ein</string>
     <string name="title_help">Hilfe</string>
-    <string name="title_map">Live</string>
+    <string name="title_map_default">Vorschau</string>
+    <string name="title_map_live">Live</string>
     <string name="title_options">Optionen</string>
     <string name="title_selection">Termine</string>
     <string name="title_social">Freunde</string>

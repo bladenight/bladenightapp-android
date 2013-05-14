@@ -1,7 +1,5 @@
 package de.greencity.bladenightapp.android.selection;
 
-
-
 import java.util.Locale;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -25,6 +23,7 @@ import de.greencity.bladenightapp.android.tracker.GpsTrackerService;
 import de.greencity.bladenightapp.android.utils.ServiceUtils;
 import de.greencity.bladenightapp.dev.android.R;
 import de.greencity.bladenightapp.events.Event;
+import de.greencity.bladenightapp.events.EventGsonHelper;
 
 public class EventFragment extends Fragment {
 
@@ -52,7 +51,7 @@ public class EventFragment extends Fragment {
 			Log.i(TAG, "Trace: " + ExceptionUtils.getStackTrace( new Throwable()));
 			return;
 		}
-		eventMessage = (Event) bundle.getSerializable(PARAM_EVENT_MESSAGE);
+		event = (Event) bundle.getSerializable(PARAM_EVENT_MESSAGE);
 		hasLeft = bundle.getBoolean(PARAM_HAS_LEFT);
 		hasRight = bundle.getBoolean(PARAM_HAS_RIGHT);
 		showStatus = bundle.getBoolean(PARAM_IS_SHOW_STATUS);
@@ -134,17 +133,17 @@ public class EventFragment extends Fragment {
 
 
 	private void updateUi(){
-		Log.i(TAG, "updateUi: event=" + eventMessage);
-		if ( eventMessage == null ) {
+		Log.i(TAG, "updateUi: event=" + event);
+		if ( event == null ) {
 			Log.i(TAG, "Trace: " +Log.getStackTraceString(new Throwable()) );
 			return;
 		}
 
 		TextView textViewCourse = (TextView)view.findViewById(R.id.course);
-		textViewCourse.setText(routeNameToText(eventMessage.getRouteName()));
+		textViewCourse.setText(routeNameToText(event.getRouteName()));
 
 		TextView textViewDate = (TextView)view.findViewById(R.id.date);
-		textViewDate.setText(toDateFormat.print(eventMessage.getStartDate()));
+		textViewDate.setText(toDateFormat.print(event.getStartDate()));
 
 		// not sure anymore if participants are necessary on the main screen
 //		if ( eventMessage.getParticipants() > 0 ) {
@@ -171,18 +170,17 @@ public class EventFragment extends Fragment {
 
 	private void startMapActivity() {
 		Intent intent = new Intent(view.getContext(), BladenightMapActivity.class);
-		if ( eventMessage.getRouteName() == null) {
+		if ( event.getRouteName() == null) {
 			Log.e(TAG, "No event or no route available");
 			return;
 		}
-		intent.putExtra(BladenightMapActivity.PARAM_ROUTE_NAME, eventMessage.getRouteName());
-		intent.putExtra(BladenightMapActivity.PARAM_IS_EVENT_LIVE, allowParticipate);
+		intent.putExtra(BladenightMapActivity.PARAM_EVENT_MESSAGE, EventGsonHelper.toJson(event));
 		view.getContext().startActivity(intent);
 	}
 
 	private void updateStatus(){
 		ImageView imageViewStatus = (ImageView)view.findViewById(R.id.status);
-		switch (eventMessage.getStatus()) {
+		switch (event.getStatus()) {
 		case CANCELLED:
 			imageViewStatus.setImageResource(R.drawable.traffic_light_red);
 			break;
@@ -210,7 +208,7 @@ public class EventFragment extends Fragment {
 	}
 
 	private boolean isUpcoming(){
-		return eventMessage.getStartDate().isAfterNow();
+		return event.getStartDate().isAfterNow();
 	}
 
 	private static DateTimeFormatter getDestinationDateFormatter(Locale locale) {
@@ -261,7 +259,7 @@ public class EventFragment extends Fragment {
 	private boolean hasLeft;
 	private boolean showStatus;
 	private boolean allowParticipate;
-	private Event eventMessage;
+	private Event event;
 
 	static public final String PARAM_HAS_RIGHT = "hasRight";
 	static public final String PARAM_HAS_LEFT = "hasLeft";
