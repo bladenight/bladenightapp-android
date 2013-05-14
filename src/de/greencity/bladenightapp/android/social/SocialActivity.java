@@ -30,6 +30,7 @@ import com.markupartist.android.widget.ActionBar.Action;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator.ActionItemType;
 import de.greencity.bladenightapp.android.actionbar.ActionReload;
+import de.greencity.bladenightapp.android.cache.FriendsCache;
 import de.greencity.bladenightapp.android.network.NetworkClient;
 import de.greencity.bladenightapp.android.social.ChangeFriendDialog.ChangeFriendDialogListener;
 import de.greencity.bladenightapp.android.social.ConfirmFriendDialog.ConfirmFriendDialogListener;
@@ -38,6 +39,7 @@ import de.greencity.bladenightapp.android.social.InviteFriendDialog.InviteFriend
 import de.greencity.bladenightapp.android.tracker.GpsTrackerService;
 import de.greencity.bladenightapp.android.utils.ServiceUtils;
 import de.greencity.bladenightapp.dev.android.R;
+import de.greencity.bladenightapp.network.messages.EventListMessage;
 import de.greencity.bladenightapp.network.messages.FriendMessage;
 import de.greencity.bladenightapp.network.messages.FriendsMessage;
 import de.greencity.bladenightapp.network.messages.MovingPointMessage;
@@ -68,7 +70,8 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
 		Log.i(TAG, "onResume");
 		configureActionBar();
 
-		getFriendsFromStorage();
+		getFriendsFromLocalStorage();
+		getFriendsServerInfoFromCache();
 		getFriendsListFromServer();
 		createListView();
 
@@ -99,7 +102,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
 			Action reloadAction = new ActionReload() {
 				@Override
 				public void performAction(View view) {
-					getFriendsFromStorage();
+					getFriendsFromLocalStorage();
 					getRealTimeDataFromServer();
 					getFriendsListFromServer();
 				}
@@ -348,6 +351,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
 			FriendsMessage friendsMessage = (FriendsMessage)msg.obj;
 			Log.i(TAG, "friendsMessage="+friendsMessage);
 			socialActivity.updateGuiFromFriendsMessage(friendsMessage);
+			new FriendsCache(socialActivity).write(friendsMessage);
 		}
 	}
 
@@ -355,6 +359,13 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
 		networkClient.getFriendsList(new GetFriendsListFromServerHandler(this), null);
 	}
 
+	private void getFriendsServerInfoFromCache() {
+		FriendsMessage friendsMessage = new FriendsCache(this).read();
+		if ( friendsMessage != null) {
+			Log.i(TAG, "Updating friends from cached data");
+			updateGuiFromFriendsMessage(friendsMessage);
+		}
+	}
 
 	private void updateGuiFromFriendsMessage(FriendsMessage friendsMessage) {
 		Set<Integer> combinedFriendIds = new HashSet<Integer>();
@@ -387,7 +398,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
 		updateGui();
 	}
 
-	private void getFriendsFromStorage(){
+	private void getFriendsFromLocalStorage(){
 		friends = new Friends(this);
 		friends.load();
 
