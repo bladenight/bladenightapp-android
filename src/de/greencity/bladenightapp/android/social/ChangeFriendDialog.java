@@ -108,7 +108,7 @@ public class ChangeFriendDialog extends DialogFragment  {
     private FriendColorsHelper friendColorsHelper;
     
     public static final String KEY_FRIENDOBJ = "friend";
-    public static final String KEY_FRIENDID = "index";
+    public static final String KEY_FRIENDID = "friendId";
 	private static Map<Integer, Integer> colorIndexToViewId;
     static {
     	colorIndexToViewId = new HashMap<Integer,Integer>();

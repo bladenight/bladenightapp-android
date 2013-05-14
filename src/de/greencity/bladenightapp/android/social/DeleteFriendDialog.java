@@ -13,18 +13,18 @@ import de.greencity.bladenightapp.dev.android.R;
 public class DeleteFriendDialog extends DialogFragment  {
 
 	public interface DeleteFriendDialogListener {
-        void onFinishDeleteFriendDialog(String friendName, int index);
+        void onFinishDeleteFriendDialog(int friendId);
     }
 	
 	private View rootView;
 	
     private TextView text;
     private Friend friend;
-    private int index;
+    private int friendId;
     
     
     public static final String KEY_FRIENDOBJ = "friend";
-    public static final String KEY_FRIENDID = "index";
+    public static final String KEY_FRIENDID = "friendId";
     
     public DeleteFriendDialog() {
         // Empty constructor required for DialogFragment
@@ -34,7 +34,7 @@ public class DeleteFriendDialog extends DialogFragment  {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     	
     	this.friend = (Friend)getArguments().getSerializable(KEY_FRIENDOBJ);
-    	this.index = getArguments().getInt(KEY_FRIENDID);
+    	this.friendId = getArguments().getInt(KEY_FRIENDID);
     	
         rootView = inflater.inflate(R.layout.delete_friend_dialog, container);
         
@@ -55,7 +55,7 @@ public class DeleteFriendDialog extends DialogFragment  {
         confirmButton.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View view) {
             	DeleteFriendDialogListener activity = (DeleteFriendDialogListener) getActivity();
-                activity.onFinishDeleteFriendDialog(friend.getName(),index);
+                activity.onFinishDeleteFriendDialog(friendId);
                 dismiss();
             }
         });

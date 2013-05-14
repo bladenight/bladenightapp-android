@@ -56,7 +56,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
 		setContentView(R.layout.activity_social);
 
 		listView = (ListView)findViewById(R.id.listview);
-		
+
 		networkClient = new NetworkClient(this);
 
 		friendColorsHelper = new FriendColorsHelper(this);
@@ -125,11 +125,11 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
 				FragmentManager fm = getSupportFragmentManager();
 				LinearLayout row = (LinearLayout)view.findViewById(R.id.row_friend);
 				int friendId = (Integer) row.getTag();
-				
+
 				if ( friendId == ID_HEAD || friendId == ID_TAIL) {
 					return;
 				}
-				
+
 				ChangeFriendDialog changeFriendDialog = new ChangeFriendDialog();
 				Bundle arguments = new Bundle();
 				arguments.putSerializable(ChangeFriendDialog.KEY_FRIENDOBJ, friends.get(friendId));
@@ -149,13 +149,22 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
 					Toast.makeText(view.getContext(), getResources().getString(R.string.msg_invalid_friend_to_delete), Toast.LENGTH_LONG).show();
 					return true;
 				}
-					
-				DeleteFriendDialog deleteFriendDialog = new DeleteFriendDialog();
-				Bundle arguments = new Bundle();
-				arguments.putSerializable(ChangeFriendDialog.KEY_FRIENDOBJ, friends.get(friendId));
-				arguments.putInt(ChangeFriendDialog.KEY_FRIENDID, friendId);
-				deleteFriendDialog.setArguments(arguments);
-				deleteFriendDialog.show(fm, "fragment_delete_friend");
+
+				Friend friend = friends.get(friendId);
+				if ( friend == null ) {
+					Log.e(TAG, "Friend " + friendId + " does not exist");
+				}
+				else if ( friends.get(friendId).isValid() ) {
+					DeleteFriendDialog deleteFriendDialog = new DeleteFriendDialog();
+					Bundle arguments = new Bundle();
+					arguments.putSerializable(DeleteFriendDialog.KEY_FRIENDOBJ, friends.get(friendId));
+					arguments.putInt(DeleteFriendDialog.KEY_FRIENDID, friendId);
+					deleteFriendDialog.setArguments(arguments);
+					deleteFriendDialog.show(fm, "fragment_delete_friend");
+				}
+				else {
+	                onFinishDeleteFriendDialog(friendId);
+				}
 				return true;
 			}
 		});
@@ -272,17 +281,16 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
 			Toast.makeText(this, getResources().getString(R.string.msg_code_not_valid), Toast.LENGTH_SHORT).show();
 			return;
 		}
-		
+
 		ProgressDialog dialog = new ProgressDialog(SocialActivity.this);
 		dialog.setMessage(getResources().getString(R.string.msg_validating_code));
 		dialog.show();
 		networkClient.finalizeRelationship(codeAsLong, Friends.generateId(this), new ConfirmRequestHandler(this, friendName, dialog), new ConfirmRequestErrorHandler(this, dialog));
 	}
-	
+
 	@Override
-	public void onFinishDeleteFriendDialog(String friendName, int friendId) { 
+	public void onFinishDeleteFriendDialog(int friendId) { 
 		removeFriendOnServer(friendId);
-		
 	}
 
 	@Override
@@ -383,7 +391,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
 			}
 
 			FriendMessage friendMessage = friendsMessage.get(friendId);
-			
+
 			Log.i(TAG, "friendMessage="+friendMessage);
 			if ( friendMessage == null ) {
 				friend.isValid(false);
@@ -531,7 +539,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
 		if ( periodicTask != null )
 			periodicHandler.removeCallbacks(periodicTask);
 	}
-	
+
 	public static String formatRequestId(long requestId) {
 		return Long.toString(requestId).replaceAll("(\\d\\d)","$1 ");
 	}
