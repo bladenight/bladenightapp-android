@@ -4,7 +4,7 @@ package de.greencity.bladenightapp.android.selection;
 import java.lang.ref.WeakReference;
 
 import org.joda.time.DateTime;
-import org.joda.time.Minutes;
+import org.joda.time.Hours;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -374,8 +374,8 @@ public class SelectionActivity extends FragmentActivity {
 
 		private boolean showStatus(Event event) {
 			DateTime now = new DateTime();
-			Minutes minutesToStart = Minutes.minutesBetween(now, event.getStartDate());
-			return minutesToStart.getMinutes() < 60*24 || now.isAfter(event.getStartDate());
+			Hours hoursToStart = Hours.hoursBetween(now, event.getStartDate());
+			return hoursToStart.getHours() <= 24 || now.isAfter(event.getStartDate());
 		}
 
 		@Override
