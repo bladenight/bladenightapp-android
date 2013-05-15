@@ -10,8 +10,8 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import de.greencity.bladenightapp.android.map.BladenightMapActivity;
 import de.greencity.bladenightapp.android.network.NetworkClient;
-import de.greencity.bladenightapp.android.selection.SelectionActivity;
 import de.greencity.bladenightapp.dev.android.R;
 
 public class GpsTrackerService extends Service {
@@ -70,7 +70,7 @@ public class GpsTrackerService extends Service {
 	}
 
 	private void setNotification() {
-		Intent notificationIntent = new Intent(this, SelectionActivity.class);
+		Intent notificationIntent = new Intent(this, BladenightMapActivity.class);
 		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
 		Notification notification = new  NotificationCompat.Builder(this)

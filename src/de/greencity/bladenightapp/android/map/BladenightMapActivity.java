@@ -38,8 +38,10 @@ import de.greencity.bladenightapp.android.cache.RoutesCache;
 import de.greencity.bladenightapp.android.map.userovl.UserPositionOverlay;
 import de.greencity.bladenightapp.android.network.NetworkClient;
 import de.greencity.bladenightapp.android.tracker.GpsListener;
+import de.greencity.bladenightapp.android.tracker.GpsTrackerService;
 import de.greencity.bladenightapp.android.utils.AsyncDownloadTaskHttpClient;
 import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
+import de.greencity.bladenightapp.android.utils.ServiceUtils;
 import de.greencity.bladenightapp.dev.android.R;
 import de.greencity.bladenightapp.events.Event;
 import de.greencity.bladenightapp.events.EventGsonHelper;
@@ -371,6 +373,12 @@ public class BladenightMapActivity extends MapActivity {
 			}
 		});
 
+		// If the tracker is currently running, show the control in the activity
+		// to give a chance to the user to stop it from here without having to go
+		// to the Selection activity. 
+		if ( ServiceUtils.isServiceRunning(this, GpsTrackerService.class))
+			configurator.show(ActionItemType.TRACKER_CONTROL);
+		
 		configurator.configure();
 	}
 
