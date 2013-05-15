@@ -42,28 +42,10 @@ import de.greencity.bladenightapp.dev.android.R;
  * others are only stroked.
  */
 public class CirclePageIndicator extends View implements PageIndicator {
-    private static final int INVALID_POINTER = -1;
-
-    private float mRadius;
-    private final Paint mPaintPageFill = new Paint(ANTI_ALIAS_FLAG);
-    private final Paint mPaintStroke = new Paint(ANTI_ALIAS_FLAG);
-    private final Paint mPaintFill = new Paint(ANTI_ALIAS_FLAG);
-    private ViewPager mViewPager;
-    private ViewPager.OnPageChangeListener mListener;
-    private int mCurrentPage;
-    private int mSnapPage;
-    private float mPageOffset;
-    private int mScrollState;
-    private int mOrientation;
-    private boolean mCentered;
-    private boolean mSnap;
-
-    private int mTouchSlop;
-    private float mLastMotionX = -1;
-    private int mActivePointerId = INVALID_POINTER;
-    private boolean mIsDragging;
-
-
+	interface ColorResolver {
+		int resolve(int index);
+	}
+	
     public CirclePageIndicator(Context context) {
         this(context, null);
     }
@@ -115,7 +97,10 @@ public class CirclePageIndicator extends View implements PageIndicator {
         mTouchSlop = ViewConfigurationCompat.getScaledPagingTouchSlop(configuration);
     }
 
-
+    public void setColorResolver(ColorResolver colorResolver) {
+    	this.colorResolver = colorResolver;
+    }
+    
     public void setCentered(boolean centered) {
         mCentered = centered;
         invalidate();
@@ -244,27 +229,6 @@ public class CirclePageIndicator extends View implements PageIndicator {
             pageFillRadius -= mPaintStroke.getStrokeWidth() / 2.0f;
         }
 
-        //Draw stroked circles
-        for (int iLoop = 0; iLoop < count; iLoop++) {
-            float drawLong = longOffset + (iLoop * threeRadius);
-            if (mOrientation == HORIZONTAL) {
-                dX = drawLong;
-                dY = shortOffset;
-            } else {
-                dX = shortOffset;
-                dY = drawLong;
-            }
-            // Only paint fill if not completely transparent
-            if (mPaintPageFill.getAlpha() > 0) {
-                canvas.drawCircle(dX, dY, pageFillRadius, mPaintPageFill);
-            }
-
-            // Only paint stroke if a stroke width was non-zero
-            if (pageFillRadius != mRadius) {
-                canvas.drawCircle(dX, dY, mRadius, mPaintStroke);
-            }
-        }
-
         //Draw the filled circle according to the current scroll
         float cx = (mSnap ? mSnapPage : mCurrentPage) * threeRadius;
         if (!mSnap) {
@@ -277,10 +241,45 @@ public class CirclePageIndicator extends View implements PageIndicator {
             dX = shortOffset;
             dY = longOffset + cx;
         }
-        canvas.drawCircle(dX, dY, mRadius, mPaintFill);
+        canvas.drawCircle(dX, dY, (int)(mRadius * 1.5), mPaintFill);
+
+        //Draw stroked circles
+        for (int iLoop = 0; iLoop < count; iLoop++) {
+        	Paint paint = getPaintForIndex(iLoop);
+        	
+            float drawLong = longOffset + (iLoop * threeRadius);
+            if (mOrientation == HORIZONTAL) {
+                dX = drawLong;
+                dY = shortOffset;
+            } else {
+                dX = shortOffset;
+                dY = drawLong;
+            }
+            // Only paint fill if not completely transparent
+            if (paint.getAlpha() > 0) {
+                canvas.drawCircle(dX, dY, pageFillRadius, paint);
+            }
+
+            // Only paint stroke if a stroke width was non-zero
+            if (pageFillRadius != mRadius) {
+                canvas.drawCircle(dX, dY, mRadius, mPaintStroke);
+            }
+        }
     }
 
-    public boolean onTouchEvent(android.view.MotionEvent ev) {
+    private Paint getPaintForIndex(int iLoop) {
+    	if (colorResolver == null)
+    		return mPaintPageFill;
+    	int color = colorResolver.resolve(iLoop);
+    	if (color < 0 )
+    		return mPaintPageFill;
+        Paint paint = new Paint();
+        paint.setStyle(Style.FILL);
+        paint.setColor(getResources().getColor(color));
+		return paint;
+	}
+
+	public boolean onTouchEvent(android.view.MotionEvent ev) {
         if (super.onTouchEvent(ev)) {
             return true;
         }
@@ -553,4 +552,26 @@ public class CirclePageIndicator extends View implements PageIndicator {
             }
         };
     }
+
+    private static final int INVALID_POINTER = -1;
+
+    private float mRadius;
+    private final Paint mPaintPageFill = new Paint(ANTI_ALIAS_FLAG);
+    private final Paint mPaintStroke = new Paint(ANTI_ALIAS_FLAG);
+    private final Paint mPaintFill = new Paint(ANTI_ALIAS_FLAG);
+    private ViewPager mViewPager;
+    private ViewPager.OnPageChangeListener mListener;
+    private int mCurrentPage;
+    private int mSnapPage;
+    private float mPageOffset;
+    private int mScrollState;
+    private int mOrientation;
+    private boolean mCentered;
+    private boolean mSnap;
+
+    private int mTouchSlop;
+    private float mLastMotionX = -1;
+    private int mActivePointerId = INVALID_POINTER;
+    private boolean mIsDragging;
+    private ColorResolver colorResolver;
 }

@@ -250,17 +250,38 @@ public class SelectionActivity extends FragmentActivity {
 	}
 
 
-	private void updateFragmentsFromEventList(EventListMessage eventListMessage) {
+	private void updateFragmentsFromEventList(final EventListMessage eventListMessage) {
 		Log.i(TAG, "updateFragmentsFromEventList " + eventListMessage);
+
+		eventsList = eventListMessage.convertToEventsList();
+		eventsList.sortByStartDate();
 
 		viewPager = (ViewPager) findViewById(R.id.pager);
 		viewPagerAdapter = new ViewPagerAdapter(viewPager, getSupportFragmentManager());
 		viewPager.setAdapter(viewPagerAdapter);
 
-		CirclePageIndicator titleIndicator = (CirclePageIndicator)findViewById(R.id.page_indicator);
-		titleIndicator.setViewPager(viewPager);
+		CirclePageIndicator circlePageIndicator = (CirclePageIndicator)findViewById(R.id.page_indicator);
+		circlePageIndicator.setViewPager(viewPager);
+		circlePageIndicator.setColorResolver(new CirclePageIndicator.ColorResolver() {
+			
+			@Override
+			public int resolve(int index) {
+				Event event = eventsList.get(index);
+				if ( event == null || ! showStatusForEvent(event) )
+					return -1;
+				switch(event.getStatus() ) {
+				case CANCELLED:
+					return R.color.bn_red;
+				case CONFIRMED:
+					return R.color.bn_green;
+				case PENDING:
+					return R.color.bn_orange;
+				}
+				return -1;
+			}
+		});
 
-		titleIndicator.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+		circlePageIndicator.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 			@Override
 			public void onPageSelected(int page) {
 				posEventShown = page;
@@ -274,8 +295,6 @@ public class SelectionActivity extends FragmentActivity {
 			}
 		});
 
-		eventsList = eventListMessage.convertToEventsList();
-		eventsList.sortByStartDate();
 
 		viewPagerAdapter.setEventList(eventsList);
 		updatePositionEventCurrent();
@@ -372,12 +391,6 @@ public class SelectionActivity extends FragmentActivity {
 			return POSITION_NONE;
 		}
 
-		private boolean showStatus(Event event) {
-			DateTime now = new DateTime();
-			Hours hoursToStart = Hours.hoursBetween(now, event.getStartDate());
-			return hoursToStart.getHours() <= 24 || now.isAfter(event.getStartDate());
-		}
-
 		@Override
 		public Fragment getItem(int position) {
 			Event event = eventsList.get(position);
@@ -388,7 +401,7 @@ public class SelectionActivity extends FragmentActivity {
 					eventsList.get(position),
 					hasLeft,
 					hasRight,
-					showStatus(event),
+					showStatusForEvent(event),
 					eventsList.isLive(event)
 					));
 			return fragment;      
@@ -397,6 +410,12 @@ public class SelectionActivity extends FragmentActivity {
 		final private String TAG = "SelectionActivity.MyAdapter"; 
 
 		public EventList eventsList = new EventList();
+	}
+
+	private static boolean showStatusForEvent(Event event) {
+		DateTime now = new DateTime();
+		Hours hoursToStart = Hours.hoursBetween(now, event.getStartDate());
+		return hoursToStart.getHours() <= 24 || now.isAfter(event.getStartDate());
 	}
 
 
