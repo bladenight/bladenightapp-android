@@ -11,6 +11,61 @@
         style="@style/ActionBar"
         />
 
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:id="@+id/social_live_legend"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:orientation="horizontal"
+	    android:padding="3dip"
+	    android:visibility="gone"
+	    android:tag="" >
+
+	    <ImageView
+	        android:layout_width="30dip"
+	        android:layout_height="30dip" />
+	
+	    <TextView
+	        android:id="@+id/legend_name"
+	        android:layout_width="0dp"
+	        android:layout_height="fill_parent"
+	        android:layout_weight="0.5"
+	        android:gravity="left|center_vertical"
+	        android:paddingLeft="5dip"
+	        android:text="@string/social_live_legend_name"
+	        android:textColor="@color/bn_white"
+	        android:textSize="18dip"
+	        android:textStyle="italic"
+	        android:typeface="sans" />
+	
+	    <ImageView
+	        android:id="@+id/action_row_distance_abs"
+	        android:layout_width="0dp"
+	        android:layout_height="fill_parent"
+	        android:layout_weight="0.2"
+	        android:src="@drawable/ic_action_calendar_month" />
+	
+	    <ImageView
+	        android:id="@+id/action_row_distance_rel"
+	        android:layout_width="0dp"
+	        android:layout_height="fill_parent"
+	        android:layout_weight="0.2"
+	        android:src="@drawable/ic_action_calendar_month" />
+	
+	    <ImageView
+	        android:id="@+id/action_row_time_rel"
+	        android:layout_width="0dp"
+	        android:layout_height="fill_parent"
+	        android:layout_weight="0.2"
+	        android:src="@drawable/ic_stats" />
+
+    </LinearLayout>
+    <View
+        android:id="@+id/social_live_sep"
+	    android:layout_width="fill_parent"
+	    android:layout_height="1dp"
+	    android:visibility="gone"
+	    android:background="@color/bn_white"/>
+    
     <ListView
         android:id="@+id/listview"
         android:layout_width="fill_parent"

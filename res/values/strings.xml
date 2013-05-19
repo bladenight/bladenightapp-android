@@ -72,6 +72,7 @@
     <string name="name_tail">TAIL</string>
     <string name="social_explanation">To add a friend, you have to use a code. If you want to invite a friend, press \'Invite Friend\' and we will generate a code for you. If a friend gave you a code, press \'Confirm Friend\'.</string>
     <string name="social_ask_for_name">Give a name to this friend</string>
+    <string name="social_live_legend_name"><u>LIVE DATA</u></string>
     <string name="status_active">active</string>
     <string name="status_inactive">inactive</string>
     <string name="status_obsolete">obsolete</string>

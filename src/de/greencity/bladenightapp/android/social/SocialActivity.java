@@ -77,6 +77,10 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
 		if ( ServiceUtils.isServiceRunning(SocialActivity.this, GpsTrackerService.class) ) {
 			getRealTimeDataFromServer();
 			schedulePeriodicTask();
+			LinearLayout legend = (LinearLayout) findViewById(R.id.social_live_legend);
+			legend.setVisibility(View.VISIBLE);
+			View sep = (View) findViewById(R.id.social_live_sep);
+			sep.setVisibility(View.VISIBLE);
 		}
 	}
 

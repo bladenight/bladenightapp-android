@@ -46,7 +46,7 @@ import de.greencity.bladenightapp.dev.android.R;
 import de.greencity.bladenightapp.events.Event;
 import de.greencity.bladenightapp.events.EventGsonHelper;
 import de.greencity.bladenightapp.events.EventList;
-import de.greencity.bladenightapp.network.messages.EventListMessage;
+import de.greencity.bladenightapp.network.messages.EventsListMessage;
 import de.greencity.bladenightapp.network.messages.RealTimeUpdateData;
 import de.greencity.bladenightapp.network.messages.RouteMessage;
 
@@ -238,7 +238,7 @@ public class BladenightMapActivity extends MapActivity {
 	}
 
 	private EventList getEventListFromCacheOrEmptyList() {
-		EventListMessage eventListMessage = new EventsCache(this).read();
+		EventsListMessage eventListMessage = new EventsCache(this).read();
 		if ( eventListMessage == null )
 			return new EventList();
 		return eventListMessage.convertToEventsList();
@@ -369,6 +369,7 @@ public class BladenightMapActivity extends MapActivity {
 		configurator.setAction(ActionItemType.LOCATE_ME, new ActionLocateMe() {
 			@Override
 			public void performAction(View view) {
+				Toast.makeText(view.getContext(), view.getResources().getString(R.string.msg_locate), Toast.LENGTH_LONG).show();
 				BladenightMapActivity.this.centerViewOnLastKnownLocation();
 			}
 		});
