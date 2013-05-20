@@ -143,20 +143,24 @@ public class WebSocketClient {
     }
 
     public void disconnect() {
-        if (mSocket != null) {
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        mSocket.close();
-                        mSocket = null;
-                    } catch (IOException ex) {
-                        Log.d(TAG, "Error while disconnecting", ex);
-                        mListener.onError(ex);
-                    }
+    	final Socket socket = mSocket;
+    	mSocket = null;
+        if (socket != null)
+        	disconnect(socket);
+    }
+    
+    private void disconnect(final Socket socket) {
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    socket.close();
+                } catch (IOException ex) {
+                    Log.d(TAG, "Error while disconnecting", ex);
+                    mListener.onError(ex);
                 }
-            });
-        }
+            }
+        });
     }
 
     public void send(String data) {
