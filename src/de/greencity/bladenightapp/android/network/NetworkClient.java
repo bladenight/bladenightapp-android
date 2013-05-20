@@ -29,7 +29,7 @@ import de.greencity.bladenightapp.network.BladenightUrl;
 import de.greencity.bladenightapp.network.messages.AdminMessage;
 import de.greencity.bladenightapp.network.messages.EventMessage;
 import de.greencity.bladenightapp.network.messages.EventMessage.EventStatus;
-import de.greencity.bladenightapp.network.messages.EventsListMessage;
+import de.greencity.bladenightapp.network.messages.EventListMessage;
 import de.greencity.bladenightapp.network.messages.FriendsMessage;
 import de.greencity.bladenightapp.network.messages.HandshakeClientMessage;
 import de.greencity.bladenightapp.network.messages.RealTimeUpdateData;
@@ -108,7 +108,7 @@ public class NetworkClient implements LocationListener {
 		item.url = BladenightUrl.GET_ALL_EVENTS.getText();
 		item.successHandler = successHandler;
 		item.errorHandler = errorHandler;
-		item.expectedReturnType = EventsListMessage.class;
+		item.expectedReturnType = EventListMessage.class;
 		callOrStore(item);
 	}
 

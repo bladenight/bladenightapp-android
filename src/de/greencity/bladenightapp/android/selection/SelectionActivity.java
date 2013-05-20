@@ -44,7 +44,7 @@ import de.greencity.bladenightapp.dev.android.R;
 import de.greencity.bladenightapp.events.Event;
 import de.greencity.bladenightapp.events.EventList;
 import de.greencity.bladenightapp.network.BladenightError;
-import de.greencity.bladenightapp.network.messages.EventsListMessage;
+import de.greencity.bladenightapp.network.messages.EventListMessage;
 import de.greencity.bladenightapp.network.messages.HandshakeClientMessage;
 import fr.ocroquette.wampoc.messages.CallErrorMessage;
 
@@ -177,9 +177,9 @@ public class SelectionActivity extends FragmentActivity {
 			final SelectionActivity selectionActivity = reference.get();
 			if ( selectionActivity == null || selectionActivity.isFinishing() )
 				return;
-			EventsListMessage eventsListMessage = (EventsListMessage)msg.obj;
+			EventListMessage eventsListMessage = (EventListMessage)msg.obj;
 			Log.i(TAG, "Updating event fragments from server data");
-			selectionActivity.updateFragmentsFromEventList((EventsListMessage)eventsListMessage);
+			selectionActivity.updateFragmentsFromEventList((EventListMessage)eventsListMessage);
 			selectionActivity.saveEventsToCache(eventsListMessage);
 		}
 	}
@@ -234,14 +234,14 @@ public class SelectionActivity extends FragmentActivity {
 
 
 	private void getEventsFromCache() {
-		EventsListMessage eventsListMessage = eventsCache.read();
+		EventListMessage eventsListMessage = eventsCache.read();
 		if ( eventsListMessage != null) {
 			Log.i(TAG, "Updating event fragments from cached data");
 			updateFragmentsFromEventList(eventsListMessage);
 		}
 	}
 
-	private void saveEventsToCache(EventsListMessage eventsListMessage) {
+	private void saveEventsToCache(EventListMessage eventsListMessage) {
 		eventsCache.write(eventsListMessage);
 	}
 
@@ -250,7 +250,7 @@ public class SelectionActivity extends FragmentActivity {
 	}
 
 
-	private void updateFragmentsFromEventList(final EventsListMessage eventListMessage) {
+	private void updateFragmentsFromEventList(final EventListMessage eventListMessage) {
 		Log.i(TAG, "updateFragmentsFromEventList " + eventListMessage);
 
 		eventsList = eventListMessage.convertToEventsList();
