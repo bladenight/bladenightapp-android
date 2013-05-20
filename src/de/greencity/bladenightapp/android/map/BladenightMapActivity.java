@@ -369,7 +369,7 @@ public class BladenightMapActivity extends MapActivity {
 		configurator.setAction(ActionItemType.LOCATE_ME, new ActionLocateMe() {
 			@Override
 			public void performAction(View view) {
-				Toast.makeText(view.getContext(), view.getResources().getString(R.string.msg_locate), Toast.LENGTH_LONG).show();
+				Toast.makeText(view.getContext(), view.getResources().getString(R.string.msg_locate), Toast.LENGTH_SHORT).show();
 				BladenightMapActivity.this.centerViewOnLastKnownLocation();
 			}
 		});
