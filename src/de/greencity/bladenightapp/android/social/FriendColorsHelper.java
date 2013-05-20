@@ -16,7 +16,7 @@ import de.greencity.bladenightapp.dev.android.R;
 public class FriendColorsHelper {
 
 	private Context context;
-
+	
 
 	FriendColorsHelper(Context context) {
 		this.context = context;
@@ -27,6 +27,10 @@ public class FriendColorsHelper {
 	}
 
 	public int getIndexedColor(int index) {
+		//tmp
+		if(index==customColorIndex){
+			return customColor;
+		}
 		if ( indexToColorId.get(index) == null ) {
 			Log.e(TAG, "Invalid color index: " + index);
 			Log.i(TAG, "Trace: " + ExceptionUtils.getStackTrace( new Throwable()));
@@ -40,6 +44,8 @@ public class FriendColorsHelper {
 			if ( getIndexedColor(colorIndex) == color )
 				return colorIndex;
 		}
+		if(color==customColor)
+			return customColorIndex;
 		return -1;
 	}
 
@@ -74,9 +80,15 @@ public class FriendColorsHelper {
 		}
 		return getIndexedColor(min.getKey());
 	}
+	
+	public void setCustomColor(int color){
+		customColor = color;
+	}
 
 	private static Map<Integer,Integer> indexToColorId;
 	private static final String TAG = "FriendColorsHelper";
+	private int customColor;
+	static final int customColorIndex = -2;
 
 
 	static {

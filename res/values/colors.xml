@@ -10,6 +10,7 @@
     <color name="bn_orange_light">#FFC295</color>
     <color name="bn_red">#FE100D</color>
     <color name="black">#000000</color>
+    <color name="default_background">#494949</color>
     <color name="dialog_grey">#414141</color>
     <color name="green_grey">#D6F6E2</color>
     <color name="grey">#BEBEBE</color>
