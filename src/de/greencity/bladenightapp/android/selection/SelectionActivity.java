@@ -271,11 +271,11 @@ public class SelectionActivity extends FragmentActivity {
 					return -1;
 				switch(event.getStatus() ) {
 				case CANCELLED:
-					return R.color.bn_red;
+					return R.color.light_red;
 				case CONFIRMED:
-					return R.color.bn_green;
+					return R.color.light_green;
 				case PENDING:
-					return R.color.bn_orange;
+					return R.color.light_yellow;
 				}
 				return -1;
 			}

@@ -182,13 +182,13 @@ public class EventFragment extends Fragment {
 		ImageView imageViewStatus = (ImageView)view.findViewById(R.id.status);
 		switch (event.getStatus()) {
 		case CANCELLED:
-			imageViewStatus.setImageResource(R.drawable.traffic_light_red);
+			imageViewStatus.setImageResource(R.drawable.light_red);
 			break;
 		case CONFIRMED:
-			imageViewStatus.setImageResource(R.drawable.traffic_light_green);
+			imageViewStatus.setImageResource(R.drawable.light_green);
 			break;
 		case PENDING:
-			imageViewStatus.setImageResource(R.drawable.traffic_light_orange);
+			imageViewStatus.setImageResource(R.drawable.light_yellow);
 			break;
 		default:
 			throw new Error("This status is not valid");

@@ -13,6 +13,10 @@
     <color name="dialog_grey">#414141</color>
     <color name="green_grey">#D6F6E2</color>
     <color name="grey">#BEBEBE</color>
+
+    <color name="light_green">#31da2c</color>
+    <color name="light_red">#ff282b</color>
+    <color name="light_yellow">#ffec05</color>
     
     <color name="new_background">#8DBE9D</color>
     <color name="new_bar">#22A04D</color>

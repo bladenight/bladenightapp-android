@@ -257,7 +257,7 @@ public class CirclePageIndicator extends View implements PageIndicator {
             }
             // Only paint fill if not completely transparent
             if (paint.getAlpha() > 0) {
-                canvas.drawCircle(dX, dY, pageFillRadius, paint);
+                canvas.drawCircle(dX, dY, (pageFillRadius+mRadius)/2, paint);
             }
 
             // Only paint stroke if a stroke width was non-zero
