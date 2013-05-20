@@ -14,6 +14,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import de.greencity.bladenightapp.dev.android.R;
+import de.greencity.bladenightapp.android.color_picker.*;
 
 
 @SuppressLint("UseSparseArrays")
@@ -33,8 +34,10 @@ public class ChangeFriendDialog extends DialogFragment  {
     	this.friendId = getArguments().getInt(KEY_FRIENDID);
 
     	friendColorsHelper = new FriendColorsHelper(getActivity());
+    	friendColorsHelper.setCustomColor(friend.getColor());
 
         rootView = inflater.inflate(R.layout.change_friend_dialog, container);
+        getImageView(FriendColorsHelper.customColorIndex).setBackgroundColor(friend.getColor());
         
         getDialog().setTitle(getResources().getString(R.string.title_friend_change));
         
@@ -81,6 +84,29 @@ public class ChangeFriendDialog extends DialogFragment  {
                 }
             });
     	}
+    	final ImageView custom_color_view = (ImageView) rootView.findViewById(R.id.color_costum);
+    	custom_color_view.setOnClickListener(new ImageView.OnClickListener() {
+            public void onClick(View view) {
+        		ColorPickerDialog dialog = new ColorPickerDialog(view.getContext(), 
+        				friendColorsHelper.getIndexedColor(FriendColorsHelper.customColorIndex),
+                        new ColorPickerDialog.OnAmbilWarnaListener() {
+                    @Override
+                    public void onOk(ColorPickerDialog dialog, int color) {
+                            friendColorsHelper.setCustomColor(color);
+                            custom_color_view.setBackgroundColor(color);  
+                            friend.setColor(friendColorsHelper.getIndexedColor(FriendColorsHelper.customColorIndex));
+                            setColor();
+                    }
+                            
+                    @Override
+                    public void onCancel(ColorPickerDialog dialog) {
+                    }
+                });
+
+                dialog.show();
+            	
+            }
+        });
         
     }
     
@@ -88,6 +114,7 @@ public class ChangeFriendDialog extends DialogFragment  {
 		return (ImageView) rootView.findViewById(colorIndexToViewId.get(index));
     }
     
+    //to set the highlight frame
     private void setColor() {
     	int currentColor = friend.getColor();
 
@@ -95,7 +122,7 @@ public class ChangeFriendDialog extends DialogFragment  {
     		getImageView(colorIndex).setImageResource(R.drawable.color_field_off);
     	}
     	int index = friendColorsHelper.getIndexOfColor(currentColor);
-    	if ( index > 0 )
+    	if ( index > 0 || index==FriendColorsHelper.customColorIndex)
     		getImageView(index).setImageResource(R.drawable.color_field);
     }
    
@@ -119,6 +146,7 @@ public class ChangeFriendDialog extends DialogFragment  {
         colorIndexToViewId.put(i++, R.id.color_friend4);
         colorIndexToViewId.put(i++, R.id.color_friend5);
         colorIndexToViewId.put(i++, R.id.color_friend6);
+        colorIndexToViewId.put(FriendColorsHelper.customColorIndex, R.id.color_costum);
     }
 
 }
