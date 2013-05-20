@@ -18,7 +18,7 @@ public class InviteFriendDialog extends DialogFragment  {
 
 
 	public interface InviteFriendDialogListener {
-		void onFinishInviteFriendDialog(String inputText);
+		void onFinishInviteFriendDialog(int friendId, String inputText);
 	}
 
 	@Override
@@ -27,7 +27,7 @@ public class InviteFriendDialog extends DialogFragment  {
 		editText = (EditText) view.findViewById(R.id.txt_friends_name);
 		getDialog().setTitle(getResources().getString(R.string.title_friend_invite));
 
-		setDefaultName();
+		generateFriendIdAndName();
 		
 		// Show soft keyboard automatically
 		editText.requestFocus();
@@ -37,7 +37,7 @@ public class InviteFriendDialog extends DialogFragment  {
 		confirmButton.setOnClickListener(new Button.OnClickListener() {
 			public void onClick(View v) {
 				InviteFriendDialogListener activity = (InviteFriendDialogListener) getActivity();
-				activity.onFinishInviteFriendDialog(editText.getText().toString());
+				activity.onFinishInviteFriendDialog(friendId, editText.getText().toString());
 				dismiss();
 			}
 		});
@@ -51,12 +51,13 @@ public class InviteFriendDialog extends DialogFragment  {
 		return view;
 	}
 	
-	public void setDefaultName() {
-		int friendId = Friends.generateId(getActivity());
+	public void generateFriendIdAndName() {
+		friendId = Friends.generateId(getActivity());
 		if ( friendId > 0)
 			editText.setText(getResources().getString(R.string.default_friend_name)+friendId);
 	}
 
+	private int friendId;
 	private EditText editText;
 	final static public String ARG_PLAUSIBLE_FRIEND_ID = "plausibleFriendId";
 }

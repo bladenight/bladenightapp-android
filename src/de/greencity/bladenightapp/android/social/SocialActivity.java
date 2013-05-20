@@ -216,14 +216,14 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
 	}
 
 	@Override
-	public void onFinishInviteFriendDialog(String friendName) { 
+	public void onFinishInviteFriendDialog(int friendId, String friendName) { 
 		ProgressDialog dialog = new ProgressDialog(SocialActivity.this);
 
 		dialog.setMessage(getResources().getString(R.string.msg_loading_code));
 		dialog.show();
 
 		CreateNewRequestHandler handler = new CreateNewRequestHandler(this, friendName, dialog);
-		networkClient.createRelationship(Friends.generateId(this), handler, null);
+		networkClient.createRelationship(friendId, handler, null);
 	}
 
 	static class ConfirmRequestHandler extends Handler {
