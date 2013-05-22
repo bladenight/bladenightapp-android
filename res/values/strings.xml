@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="about_android_application">Android Application</string>
-    <string name="about_ben">Benjamin Uekermann : benjamin.uekermann@gmail.com</string>
-    <string name="about_bladenight_link">http://www.aok-bladenight.de/</string>
+    <string name="about_ben">Benjamin Uekermann</string>
+    <string name="about_bladenight_link">http://www.aok-bladenight.de/apps.html</string>
     <string name="about_more_info">More information</string>
-    <string name="about_olivier">Olivier Croquette : ocroquette@free.fr</string>
+    <string name="about_olivier">Olivier Croquette</string>
     <string name="about_server_application">Server Application</string>
     <string name="about_version">Version:</string>
     <string name="app_name">AOK Blade Night</string>
@@ -52,9 +52,18 @@
     <string name="msg_current_position_unknown">Current position is unknown</string>
     <string name="msg_download_maps">Downloading map data (10MB)</string>
     <string name="msg_failed_to_load_map">Failed to load the map</string>
+    <string name="msg_feedback">You feedback is welcome.\n
+Send us an email:\n
+app@aok-bladenight.de</string>
     <string name="msg_friend_added">was added</string>
     <string name="msg_friend_removed">Friend has been removed</string>
     <string name="msg_invalid_friend_to_delete">This item cannot be deleted</string>
+    <string name="msg_impressum">Betreiber und Veranstalter:\n
+Green City Projekt GmbH\n
+Goethestraße 34 / Rgb.\n
+80336 München\n
+http://www.greencity-projekt.de\n
+bladenight@greencity.de</string>
     <string name="msg_loading_code">Loading add-friend code</string>
     <string name="msg_locate">Centering view on me</string>
     <string name="msg_new_code">Give this code to</string>
@@ -80,12 +89,14 @@
     <string name="text_friend_delete">Do you really want to delete </string>
     <string name="title_about">About this application</string>
     <string name="title_admin">Admin</string>
+    <string name="title_feedback">Feedback</string>
     <string name="title_friend_add">Add Friend</string>
     <string name="title_friend_change">Edit Friend</string>
     <string name="title_friend_confirm">Confirm Friend</string>
     <string name="title_friend_delete">Delete Friend</string>
     <string name="title_friend_invite">Invite Friend</string>
     <string name="title_help">Help</string>
+    <string name="title_impressum">Impressum</string>
     <string name="title_map_default">Preview</string>
     <string name="title_map_live">Live</string>
     <string name="title_options">Options</string>
