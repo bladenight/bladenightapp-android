@@ -38,9 +38,7 @@
     <string name="msg_current_position_unknown">Aktuelle Position ist nicht bekannt</string>
     <string name="msg_download_maps">Kartenmaterial wird heruntergeladen (10MB)</string>
     <string name="msg_failed_to_load_map">Laden der Karten ist fehlgeschlagen</string>
-    <string name="msg_feedback">Wir freuen uns auf Dein Feedback.\n
-Schreib uns an:\n
-app@aok-bladenight.de</string>
+    <string name="msg_feedback">Wir freuen uns auf Dein Feedback.\nSchreib uns an:\napp@aok-bladenight.de</string>
     <string name="msg_friend_added">wurde hinzugefügt</string>
     <string name="msg_friend_removed">Freund wurde gelöscht</string>
     <string name="msg_invalid_friend_to_delete">Dieses Element kann nicht gelöscht werden</string>
