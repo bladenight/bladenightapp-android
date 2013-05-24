@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import android.annotation.SuppressLint;
+import android.opengl.Visibility;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
@@ -48,6 +49,10 @@ public class ChangeFriendDialog extends DialogFragment  {
         
         mEditText.setText(friend.getName());
         activeBox.setChecked(friend.isActive()); 
+        if(friendId==SocialActivity.ID_ME){
+        	activeBox.setVisibility(View.INVISIBLE);
+        }
+        
         setColor();
 
         setButtonListeners(rootView);

@@ -60,9 +60,6 @@ public class FriendListAdapter extends BaseAdapter {
 	private View inflateActionRow(int friendId, Friend friend){
 		View view = inflater.inflate(R.layout.friend_list_row_action, null);
 
-		ImageView colorBlockImageView = (ImageView)view.findViewById(R.id.action_color_block);
-		setColorForBlock(colorBlockImageView, friendId, friend);
-
 		TextView name = (TextView)view.findViewById(R.id.action_row_friend_name); 
 		TextView textViewRelativeTime = (TextView)view.findViewById(R.id.action_row_time_rel); 
 		TextView textViewRelativeDistance = (TextView)view.findViewById(R.id.action_row_distance_rel); 
@@ -81,7 +78,8 @@ public class FriendListAdapter extends BaseAdapter {
 			textViewAbsolutePosition.setTextColor(color);
 		}
 		
-		
+		ImageView colorBlockImageView = (ImageView)view.findViewById(R.id.action_color_block);
+		setColorForBlock(colorBlockImageView, friendId, friend);
 
 		name.setText(friend.getName());
 		if ( friend.getRelativeTime() != null)
