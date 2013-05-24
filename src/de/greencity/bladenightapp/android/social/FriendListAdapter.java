@@ -75,6 +75,7 @@ public class FriendListAdapter extends BaseAdapter {
 		}
 		if(friendId==SocialActivity.ID_ME){
 			int color = Friends.getFriendColorOrDefault(activity, friendId, friend);
+			friend.setColor(color);
 			textViewRelativeTime.setTextColor(color);
 			textViewRelativeDistance.setTextColor(color);
 			textViewAbsolutePosition.setTextColor(color);
