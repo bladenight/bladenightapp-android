@@ -71,14 +71,25 @@
             android:background="@color/new_friend6"
             android:src="@drawable/color_field" />
         
-        <ImageView
-            android:id="@+id/color_costum"
-            android:layout_width="40dip"
-            android:layout_height="match_parent"
-            android:background="@color/bn_white"
-            android:src="@drawable/color_field_off" />
+        <RelativeLayout 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <ImageView
+	            android:id="@+id/color_costum"
+	            android:layout_width="40dip"
+	            android:layout_height="match_parent"
+	            android:background="@color/bn_green"
+	            android:src="@drawable/color_field_off"
+	            android:layout_alignParentTop="true" android:layout_alignParentBottom="true" />
+		    <ImageView 
+                android:src="@drawable/ic_action_gear"
+                android:layout_width="40dip"
+                android:layout_height="match_parent"
+                android:layout_alignParentTop="true" android:layout_alignParentBottom="true" />
+		</RelativeLayout>
+        
     </LinearLayout>
-
+    
     <CheckBox
         android:id="@+id/friend_active"
         android:layout_width="wrap_content"

@@ -35,6 +35,8 @@ public class ChangeFriendDialog extends DialogFragment  {
 
     	friendColorsHelper = new FriendColorsHelper(getActivity());
     	friendColorsHelper.setCustomColor(friend.getColor());
+    	
+    	activeColor = friend.getColor();
 
         rootView = inflater.inflate(R.layout.change_friend_dialog, container);
         getImageView(FriendColorsHelper.customColorIndex).setBackgroundColor(friend.getColor());
@@ -61,6 +63,7 @@ public class ChangeFriendDialog extends DialogFragment  {
             	ChangeFriendDialogListener activity = (ChangeFriendDialogListener) getActivity();
             	friend.setName(mEditText.getText().toString());
             	friend.isActive(activeBox.isChecked());
+            	friend.setColor(activeColor);
                 activity.onFinishChangeFriendDialog(friend,friendId);
                 dismiss();
             }
@@ -79,7 +82,7 @@ public class ChangeFriendDialog extends DialogFragment  {
     		ImageView imageView = getImageView(colorIndex);
     		imageView.setOnClickListener(new ImageView.OnClickListener() {
                 public void onClick(View view) {
-                	friend.setColor(friendColorsHelper.getIndexedColor(colorIndex));
+                	activeColor = friendColorsHelper.getIndexedColor(colorIndex);
                 	setColor();
                 }
             });
@@ -87,6 +90,7 @@ public class ChangeFriendDialog extends DialogFragment  {
     	final ImageView custom_color_view = (ImageView) rootView.findViewById(R.id.color_costum);
     	custom_color_view.setOnClickListener(new ImageView.OnClickListener() {
             public void onClick(View view) {
+            	highlightColorBlock(FriendColorsHelper.customColorIndex);
         		ColorPickerDialog dialog = new ColorPickerDialog(view.getContext(), 
         				friendColorsHelper.getIndexedColor(FriendColorsHelper.customColorIndex),
                         new ColorPickerDialog.OnAmbilWarnaListener() {
@@ -94,12 +98,13 @@ public class ChangeFriendDialog extends DialogFragment  {
                     public void onOk(ColorPickerDialog dialog, int color) {
                             friendColorsHelper.setCustomColor(color);
                             custom_color_view.setBackgroundColor(color);  
-                            friend.setColor(friendColorsHelper.getIndexedColor(FriendColorsHelper.customColorIndex));
+                            activeColor = friendColorsHelper.getIndexedColor(FriendColorsHelper.customColorIndex);
                             setColor();
                     }
                             
                     @Override
                     public void onCancel(ColorPickerDialog dialog) {
+                    		setColor();
                     }
                 });
 
@@ -116,12 +121,14 @@ public class ChangeFriendDialog extends DialogFragment  {
     
     //to set the highlight frame
     private void setColor() {
-    	int currentColor = friend.getColor();
-
+    	int index = friendColorsHelper.getIndexOfColor(activeColor);
+    	highlightColorBlock(index);
+    }
+    
+    private void highlightColorBlock(int index){
     	for (final Integer colorIndex : colorIndexToViewId.keySet() ) {
     		getImageView(colorIndex).setImageResource(R.drawable.color_field_off);
     	}
-    	int index = friendColorsHelper.getIndexOfColor(currentColor);
     	if ( index > 0 || index==FriendColorsHelper.customColorIndex)
     		getImageView(index).setImageResource(R.drawable.color_field);
     }
@@ -133,6 +140,7 @@ public class ChangeFriendDialog extends DialogFragment  {
     private Friend friend;
     private int friendId;
     private FriendColorsHelper friendColorsHelper;
+    private int activeColor;
     
     public static final String KEY_FRIENDOBJ = "friend";
     public static final String KEY_FRIENDID = "friendId";
