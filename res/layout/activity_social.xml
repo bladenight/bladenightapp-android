@@ -37,26 +37,38 @@
 	        android:textStyle="italic"
 	        android:typeface="sans" />
 	
-	    <ImageView
+	    <TextView
 	        android:id="@+id/action_row_distance_abs"
 	        android:layout_width="0dp"
 	        android:layout_height="fill_parent"
-	        android:layout_weight="0.2"
-	        android:src="@drawable/ic_action_calendar_month" />
+	        android:layout_weight="0.2" 
+	        android:gravity="center_vertical|right"
+            android:text="x-ABS"
+            android:textColor="@color/bn_white"
+            android:textSize="14dip"
+            android:typeface="sans"/>
 	
-	    <ImageView
+	    <TextView
 	        android:id="@+id/action_row_distance_rel"
 	        android:layout_width="0dp"
 	        android:layout_height="fill_parent"
 	        android:layout_weight="0.2"
-	        android:src="@drawable/ic_action_calendar_month" />
+	        android:gravity="center_vertical|right"
+            android:text="x-REL"
+            android:textColor="@color/bn_white"
+            android:textSize="14dip"
+            android:typeface="sans" />
 	
-	    <ImageView
+	    <TextView
 	        android:id="@+id/action_row_time_rel"
 	        android:layout_width="0dp"
 	        android:layout_height="fill_parent"
 	        android:layout_weight="0.2"
-	        android:src="@drawable/ic_stats" />
+	        android:gravity="center_vertical|right"
+            android:text="t-REL"
+            android:textColor="@color/bn_white"
+            android:textSize="14dip"
+            android:typeface="sans" />
 
     </LinearLayout>
     <View
