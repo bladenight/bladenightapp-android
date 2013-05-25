@@ -428,8 +428,8 @@ public class BladenightMapActivity extends MapActivity {
 
 		downloadProgressDialog.show();
 
+		final WeakReference<BladenightMapActivity> weakReference = new WeakReference<BladenightMapActivity>(this);
 		AsyncDownloadTaskHttpClient.StatusHandler handler = new AsyncDownloadTaskHttpClient.StatusHandler() {
-
 			@Override
 			public void onProgress(long current, long total) {
 				int percent = (int)(current*100.0/total);
@@ -439,18 +439,38 @@ public class BladenightMapActivity extends MapActivity {
 			@Override
 			public void onDownloadSuccess() {
 				Log.i(TAG, "Download successful");
-				downloadProgressDialog.dismiss();
-				clearTileCache();
-				setMapFile();
+				BladenightMapActivity activity = getActivity("onDownloadSuccess");
+				if (activity == null)
+					return;
+				activity.downloadProgressDialog.dismiss();
+				activity.clearTileCache();
+				activity.setMapFile();
 			}
 
 			@Override
 			public void onDownloadFailure() {
 				Log.i(TAG, "Download failed");
-				downloadProgressDialog.dismiss();
-				clearTileCache();
-				setMapFile();
+				BladenightMapActivity activity = getActivity("onDownloadFailure");
+				if (activity == null)
+					return;
+				activity.downloadProgressDialog.dismiss();
+				activity.clearTileCache();
+				activity.setMapFile();
 			}
+			
+			public BladenightMapActivity getActivity(String tag) {
+				BladenightMapActivity activity = weakReference.get();
+				if (activity == null) {
+					Log.i(TAG, tag+": activity has been dismissed in the meantime");
+					return null;
+				}
+				if (! activity.isRunning) {
+					Log.i(TAG, tag+": activity is currently not running");
+					return null;
+				}
+				return activity;
+			}
+			
 		};
 		networkClient.downloadFile(mapLocalPath, mapRemotePath, handler);
 	}
