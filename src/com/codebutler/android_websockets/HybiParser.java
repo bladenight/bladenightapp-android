@@ -192,7 +192,7 @@ public class HybiParser {
     private byte[] frame(Object data, int opcode, int errorCode) {
         if (mClosed) return null;
 
-        Log.d(TAG, "Creating frame for: " + data + " op: " + opcode + " err: " + errorCode);
+        // Log.d(TAG, "Creating frame for: " + data + " op: " + opcode + " err: " + errorCode);
 
         byte[] buffer = (data instanceof String) ? decode((String) data) : (byte[]) data;
         int insert = (errorCode > 0) ? 2 : 0;

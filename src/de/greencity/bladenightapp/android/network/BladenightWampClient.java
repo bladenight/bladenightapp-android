@@ -29,13 +29,13 @@ public class BladenightWampClient {
 		listener = new WebSocketClient.Listener() {
 			@Override
 			public void onConnect() {
-				Log.d(TAG, "Connected!");
+				Log.i(TAG, "Connected!");
 				state = State.SHAKING_HANDS;
 			}
 
 			@Override
 			public void onMessage(String message) {
-				Log.d(TAG, String.format("Got string message! %s", message));
+				// Log.d(TAG, String.format("Got string message! %s", message));
 				wampClient.handleIncomingMessage(message);
 				if ( wampClient.hasBeenWelcomed())
 					state = State.USUABLE;
@@ -44,7 +44,7 @@ public class BladenightWampClient {
 
 			@Override
 			public void onMessage(byte[] data) {
-				Log.d(TAG, String.format("Got binary message!"));
+				Log.e(TAG, String.format("Got binary message!"));
 				updateLastServerLifeSign();
 			}
 

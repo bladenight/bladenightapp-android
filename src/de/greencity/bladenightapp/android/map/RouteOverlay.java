@@ -86,8 +86,8 @@ public class RouteOverlay extends ListOverlay {
 
 	public void update(RouteMessage routeMessage) {
 
-		Log.i(TAG, "update: routeName=" + routeMessage.getRouteName());
-		Log.i(TAG, "update: routeMessage=" + routeMessage);
+		// Log.i(TAG, "update: routeName=" + routeMessage.getRouteName());
+		// Log.i(TAG, "update: routeMessage=" + routeMessage);
 
 		routeNodes = new ArrayList<GeoPoint>();
 		for (LatLong node : routeMessage.nod) {
@@ -103,7 +103,7 @@ public class RouteOverlay extends ListOverlay {
 
 	public void update(RealTimeUpdateData realTimeUpdateData) {
 
-		Log.i(TAG, "update: realTimeUpdateData=" + realTimeUpdateData);
+		// Log.i(TAG, "update: realTimeUpdateData=" + realTimeUpdateData);
 
 		List<GeoPoint> geoPoints = generateProcessionsGeopoints(realTimeUpdateData);
 		processionBoundingBox = computeBoundingBox(geoPoints);
@@ -206,7 +206,7 @@ public class RouteOverlay extends ListOverlay {
 
 	protected BoundingBox computeBoundingBox(List<GeoPoint> geoPoints) {
 		if ( geoPoints.size() == 0 ) {
-			Log.e(TAG, "computeBoundingBox: no nodes available");
+			// Log.w(TAG, "computeBoundingBox: no nodes available");
 			return new BoundingBox(0,0,0,0);
 		}
 		GeoPoint firstPoint = geoPoints.get(0);

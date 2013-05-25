@@ -2,7 +2,6 @@ package de.greencity.bladenightapp.android.selection;
 
 import java.util.Locale;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
@@ -34,21 +33,21 @@ public class EventFragment extends Fragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		Log.i(TAG, "onCreate: " + this);
+		// Log.i(TAG, "onCreate: " + this);
 	}
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		configureFromBundle(getArguments());
-		Log.i(TAG, "onActivityCreated: " + this);
+		// Log.i(TAG, "onActivityCreated: " + this);
 	}
 
 	public void configureFromBundle(Bundle bundle) {
-		Log.i(TAG, "configureFromBundle: savedInstanceState="+bundle);
+		// Log.i(TAG, "configureFromBundle: savedInstanceState="+bundle);
 		if ( bundle == null ) {
-			Log.i(TAG, "configureFromBundle: savedInstanceState="+bundle);
-			Log.i(TAG, "Trace: " + ExceptionUtils.getStackTrace( new Throwable()));
+			// Log.i(TAG, "configureFromBundle: savedInstanceState="+bundle);
+			// Log.i(TAG, "Trace: " + ExceptionUtils.getStackTrace( new Throwable()));
 			return;
 		}
 		event = (Event) bundle.getSerializable(PARAM_EVENT_MESSAGE);
@@ -61,7 +60,7 @@ public class EventFragment extends Fragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		Log.i(TAG, "onCreateView: this="+this);
+		// Log.i(TAG, "onCreateView: this="+this);
 
 		this.view = inflater.inflate(R.layout.event_view, container, false); 
 
@@ -121,8 +120,8 @@ public class EventFragment extends Fragment {
 
 
 	protected void setColor(int imageId, int color) {
-		Log.i(TAG, "imageId="+imageId);
-		Log.i(TAG, "color="+color);
+		// Log.i(TAG, "imageId="+imageId);
+		// Log.i(TAG, "color="+color);
 		ImageView imageView = (ImageView)view.findViewById(imageId);
 		if (imageView == null) {
 			Log.e(TAG, "Failed to get " + imageId + " has ImageView");
@@ -133,7 +132,7 @@ public class EventFragment extends Fragment {
 
 
 	private void updateUi(){
-		Log.i(TAG, "updateUi: event=" + event);
+		// Log.i(TAG, "updateUi: event=" + event);
 		if ( event == null ) {
 			Log.i(TAG, "Trace: " +Log.getStackTraceString(new Throwable()) );
 			return;
@@ -214,7 +213,6 @@ public class EventFragment extends Fragment {
 	private static DateTimeFormatter getDestinationDateFormatter(Locale locale) {
 		String country = locale.getISO3Country();
 		String localString = locale.toString();
-		Log.i(TAG,"localString="+localString + " / country="+country);
 		if ( localString.startsWith("de") ||  "DEU".equals(country) ) {
 			return DateTimeFormat.forPattern("dd. MMM YY, HH:mm").withLocale(locale);
 		}

@@ -31,8 +31,7 @@ public class Friends {
 	public void load() {
 		SharedPreferences settings = context.getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE);
 		String friendsJson = settings.getString(PREF_FRIENDS_JSON, "{}");
-		Log.i(TAG, "load: " + friendsJson);
-		// Log.i(TAG, "trace: " + Log.getStackTraceString(new Exception())); 
+		// Log.i(TAG, "load: " + friendsJson);
 		Type type = new TypeToken<Map<Integer, Friend>>() {}.getType();
 		try {
 			friends = gson.fromJson(friendsJson, type);

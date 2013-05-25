@@ -65,11 +65,11 @@ public class NetworkClient implements LocationListener {
 	}
 
 	private void connect() {
-		Log.i(TAG, "connect()");
+		// Log.d(TAG, "connect()");
 		if ( sharedState.bladenightWampClient.getState() == State.CONNECTING ||  sharedState.bladenightWampClient.getState() == State.SHAKING_HANDS ) {
-			Log.i(TAG, "Already connecting");
+			// Log.d(TAG, "Already connecting");
 			if ( System.currentTimeMillis() - sharedState.connectingSinceTimestamp > CONNECT_TIMEOUT)
-				Log.i(TAG, "Connection request timed out");
+				Log.w(TAG, "Connection request timed out");
 			else
 				return;
 		}
@@ -91,7 +91,7 @@ public class NetworkClient implements LocationListener {
 		sharedState.bladenightWampClient.setWelcomeListener(new WelcomeListener() {
 			@Override
 			public void onWelcome() {
-				Log.i(TAG, "onWelcome()");
+				// Log.d(TAG, "onWelcome()");
 				NetworkClient.processBacklog();
 			}
 		});
@@ -278,11 +278,11 @@ public class NetworkClient implements LocationListener {
 
 	private void callOrStore(BacklogItem item) {
 		if ( isConnectionUsable() ) {
-			Log.i(TAG, "callOrStore: calling " + item.url + " arguments:" + item.outgoingPayload);
+			// Log.i(TAG, "callOrStore: calling " + item.url + " arguments:" + item.outgoingPayload);
 			call(item);
 		}
 		else {
-			Log.i(TAG, "callOrStore: storing " + item.url + " arguments:" + item.outgoingPayload);
+			// Log.i(TAG, "callOrStore: storing " + item.url + " arguments:" + item.outgoingPayload);
 			item.timestamp = System.currentTimeMillis();
 			backlogItems.add(item);
 			connect();
@@ -300,7 +300,7 @@ public class NetworkClient implements LocationListener {
 	}
 
 	private static void processBacklog() {
-		Log.i(TAG, "processBacklog: " + backlogItems.size() + " items");
+		// Log.d(TAG, "processBacklog: " + backlogItems.size() + " items");
 		while ( backlogItems.size() > 0 ) {
 			BacklogItem item = backlogItems.remove(0);
 			if ( System.currentTimeMillis() - item.timestamp < 10000)

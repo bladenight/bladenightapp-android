@@ -51,7 +51,7 @@ import fr.ocroquette.wampoc.messages.CallErrorMessage;
 public class SelectionActivity extends FragmentActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		Log.i(TAG, "onCreate");
+		// Log.i(TAG, "onCreate");
 		super.onCreate(savedInstanceState);
 
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -70,7 +70,7 @@ public class SelectionActivity extends FragmentActivity {
 	protected void onStart() {
 		super.onStart();
 
-		Log.i(TAG, "onStart");
+		// Log.i(TAG, "onStart");
 
 		shakeHands();
 	}
@@ -95,7 +95,7 @@ public class SelectionActivity extends FragmentActivity {
 	@Override
 	protected void onStop() {
 		super.onStop();
-		Log.i(TAG, "onStop");
+		// Log.i(TAG, "onStop");
 
 		broadcastReceiversRegister.unregisterReceivers();
 	}
@@ -103,7 +103,7 @@ public class SelectionActivity extends FragmentActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		Log.i(TAG, "onResume");
+		// Log.i(TAG, "onResume");
 
 		configureActionBar();
 
@@ -178,7 +178,7 @@ public class SelectionActivity extends FragmentActivity {
 			if ( selectionActivity == null || selectionActivity.isFinishing() )
 				return;
 			EventListMessage eventsListMessage = (EventListMessage)msg.obj;
-			Log.i(TAG, "Updating event fragments from server data");
+			// Log.i(TAG, "Updating event fragments from server data");
 			selectionActivity.updateFragmentsFromEventList((EventListMessage)eventsListMessage);
 			selectionActivity.saveEventsToCache(eventsListMessage);
 		}
@@ -196,7 +196,7 @@ public class SelectionActivity extends FragmentActivity {
 				return;
 			CallErrorMessage errorMessage = (CallErrorMessage)msg.obj;
 			if ( errorMessage == null ) {
-				Log.i(TAG, "Failed to get the error message");
+				Log.w(TAG, "Failed to get the error message");
 				return;
 			}
 			if ( BladenightError.OUTDATED_CLIENT.getText().equals(errorMessage.getErrorUri())) {
@@ -236,7 +236,7 @@ public class SelectionActivity extends FragmentActivity {
 	private void getEventsFromCache() {
 		EventListMessage eventsListMessage = eventsCache.read();
 		if ( eventsListMessage != null) {
-			Log.i(TAG, "Updating event fragments from cached data");
+			// Log.i(TAG, "Updating event fragments from cached data");
 			updateFragmentsFromEventList(eventsListMessage);
 		}
 	}
@@ -251,7 +251,7 @@ public class SelectionActivity extends FragmentActivity {
 
 
 	private void updateFragmentsFromEventList(final EventListMessage eventListMessage) {
-		Log.i(TAG, "updateFragmentsFromEventList " + eventListMessage);
+		// Log.i(TAG, "updateFragmentsFromEventList " + eventListMessage);
 
 		eventsList = eventListMessage.convertToEventsList();
 		eventsList.sortByStartDate();
@@ -285,7 +285,7 @@ public class SelectionActivity extends FragmentActivity {
 			@Override
 			public void onPageSelected(int page) {
 				posEventShown = page;
-				Log.i(TAG, "onPageSelected: currentFragmentShown="+posEventShown);
+				// Log.i(TAG, "onPageSelected: currentFragmentShown="+posEventShown);
 			}
 			@Override
 			public void onPageScrolled(int arg0, float arg1, int arg2) {
@@ -305,8 +305,8 @@ public class SelectionActivity extends FragmentActivity {
 
 	private boolean tryToRestorePreviouslyShownEvent() {
 		int count = getFragmentCount();
-		Log.i(TAG, "restore: currentFragmentShown="+posEventShown);
-		Log.i(TAG, "restore: max="+count);
+		// Log.i(TAG, "restore: currentFragmentShown="+posEventShown);
+		// Log.i(TAG, "restore: max="+count);
 		if ( posEventShown >= 0 && posEventShown < count ) {
 			viewPager.setCurrentItem(posEventShown, false);
 			return true;
@@ -358,7 +358,6 @@ public class SelectionActivity extends FragmentActivity {
 	private void openHelpDialog(){
 		SharedPreferences settings = getSharedPreferences("HelpPrefs", 0);
 		boolean firstCreate = settings.getBoolean("firstCreate", true);
-		Log.i(TAG, "firstCreate is "+firstCreate);
 		if(firstCreate){
 			FragmentManager fm = getSupportFragmentManager();
 			HelpDialog helpDialog = new HelpDialog();

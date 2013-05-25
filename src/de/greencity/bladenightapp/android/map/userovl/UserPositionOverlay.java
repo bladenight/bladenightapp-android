@@ -78,13 +78,10 @@ public class UserPositionOverlay extends ListOverlay implements LocationListener
 	}
 	
 	public synchronized void update(RealTimeUpdateData data) {
-		Log.i(TAG, "update");
 		Set<Integer> depracatedFriendIds = new HashSet<Integer>(friendMarkers.keySet());
 		depracatedFriendIds.remove(SocialActivity.ID_ME);
 		for ( Integer friendId : data.fri.keySet() ) {
 			MovingPointMessage nvp = data.fri.get(friendId);
-
-			Log.i(TAG, friendId + " " + nvp);
 
 			FriendMarker friendMarker = getFriendMarker(friendId);
 			friendMarker.setRadius(nvp.getAccuracy());
