@@ -166,8 +166,8 @@ public class NetworkClient implements LocationListener {
 			sharedState.gpsInfo.setAccuracy((int)sharedState.lastKnownLocation.getAccuracy());
 
 			// TODO remove test coordinates
-			//			sharedState.gpsInfo.setLatitude( 48.160027);
-			//			sharedState.gpsInfo.setLongitude( 11.561509);
+			// sharedState.gpsInfo.setLatitude( 48.160027);
+			// sharedState.gpsInfo.setLongitude( 11.561509);
 		}
 
 		item.outgoingPayload = sharedState.gpsInfo;

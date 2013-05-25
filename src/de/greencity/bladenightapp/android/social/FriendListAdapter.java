@@ -1,5 +1,6 @@
 package de.greencity.bladenightapp.android.social;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -149,9 +150,18 @@ public class FriendListAdapter extends BaseAdapter {
 		return sign + string;
 	}
 
-	private String formatDistance(long meters){
-		String distance = Long.toString(meters) + "m";
-		return distance;
+	@SuppressLint("DefaultLocale")
+	private String formatDistance(long meters) {
+		String s = "-";
+		if ( Math.abs(meters) < 1000 ) {
+			s = Long.toString(meters) + "m";
+		}
+		else {
+			double km = meters / 1000.0; 
+			s = String.format("%.2fk", km);
+		}
+			
+		return s;
 	}
 
 	@SuppressWarnings("unused")
