@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import android.annotation.SuppressLint;
-import android.opengl.Visibility;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
@@ -14,8 +13,8 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+import de.greencity.bladenightapp.android.color_picker.ColorPickerDialog;
 import de.greencity.bladenightapp.dev.android.R;
-import de.greencity.bladenightapp.android.color_picker.*;
 
 
 @SuppressLint("UseSparseArrays")
