@@ -9,14 +9,24 @@
         style="@style/ActionBar" />
 
     <!-- Enable ProcessionProgressBar.setDemoData() if you want to see something in the progress bar in the editor -->
+
     <de.greencity.bladenightapp.android.map.ProcessionProgressBar
         android:id="@+id/progress_procession"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
         android:layout_height="50dip"
         android:max="200"
-        android:progressDrawable="@drawable/procession_progressbar"
-        />
+        android:progressDrawable="@drawable/procession_progressbar" />
+
+    <TextView
+        android:id="@+id/map_headline"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/bn_green"
+        android:textColor="@color/bn_white"
+        android:textSize="16sp"
+        tools:ignore="HardcodedText"
+        android:text="[map headline generated dynamicaly]" />
 
     <LinearLayout
         android:id="@+id/map_parent"

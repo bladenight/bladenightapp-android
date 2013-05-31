@@ -26,6 +26,7 @@ import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.Window;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.markupartist.android.widget.ActionBar;
@@ -66,7 +67,7 @@ public class BladenightMapActivity extends MapActivity {
 
 		downloadProgressDialog = new ProgressDialog(this);
 		processionProgressBar = (ProcessionProgressBar) findViewById(R.id.progress_procession);
-
+		mapHeadline = (TextView) findViewById(R.id.map_headline);
 	}
 
 	@Override
@@ -151,6 +152,12 @@ public class BladenightMapActivity extends MapActivity {
 
 		if ( ! isLive ) {
 			processionProgressBar.setVisibility(View.GONE);
+			mapHeadline.setVisibility(View.VISIBLE);
+			configureHeadline();
+		}
+		else {
+			processionProgressBar.setVisibility(View.VISIBLE);
+			mapHeadline.setVisibility(View.GONE);
 		}
 
 		// The auto-zooming of the fetched route requires to have the layout 
@@ -331,11 +338,13 @@ public class BladenightMapActivity extends MapActivity {
 		}
 		isRouteInfoAvailable = true;
 		routeName = routeMessage.getRouteName();
+		routeLength = routeMessage.getRouteLength();
 		routeOverlay.update(routeMessage);
 		if ( shallFitViewWhenPossible ) {
 			shallFitViewWhenPossible = false;
 			fitViewToRoute();
 		}
+		configureHeadline();
 	}
 
 	private void updateRouteFromCache() {
@@ -383,6 +392,10 @@ public class BladenightMapActivity extends MapActivity {
 		configurator.configure();
 	}
 
+	private void configureHeadline() {
+		String wordRoute = getResources().getString(R.string.word_route);
+		mapHeadline.setText(String.format("%s : %s %1.1fkm", wordRoute, routeName, routeLength / 1000.0));
+	}
 
 	public void createMapView() {
 
@@ -541,10 +554,12 @@ public class BladenightMapActivity extends MapActivity {
 	private final String mapRemotePath = "maps/munich.map";
 	private ProgressDialog downloadProgressDialog;
 	private String routeName = "";
+	private int routeLength;
 	private boolean isLive = false;
 	private RouteOverlay routeOverlay;
 	private BladenightMapView mapView;
 	private ProcessionProgressBar processionProgressBar;
+	private TextView mapHeadline;
 	private NetworkClient networkClient;
 	private final int updatePeriod = 3000;
 	private final Handler periodicHandler = new Handler();
