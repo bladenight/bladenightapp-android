@@ -59,6 +59,7 @@ public class SelectionActivity extends FragmentActivity {
 		setContentView(R.layout.activity_selection);
 
 		eventsCache = new EventsCache(this);
+		eventsList = new EventList(); // avoid NPE, will be replaced as soon as we get data from the network 
 
 		networkClient =  new NetworkClient(this);
 
