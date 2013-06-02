@@ -49,7 +49,7 @@ public class CirclePageIndicator extends View implements PageIndicator {
 	}
 
 	public CirclePageIndicator(Context context, AttributeSet attrs) {
-		this(context, attrs, R.attr.vpiCirclePageIndicatorStyle);
+		this(context, attrs, 0);
 	}
 
 	public CirclePageIndicator(Context context, AttributeSet attrs, int defStyle) {
@@ -67,6 +67,8 @@ public class CirclePageIndicator extends View implements PageIndicator {
 		
 		final ViewConfiguration configuration = ViewConfiguration.get(context);
 		touchSlop = ViewConfigurationCompat.getScaledPagingTouchSlop(configuration);
+		
+		referenceRadius = res.getDimensionPixelSize(R.dimen.cpi_reference_radius);
 	}
 
 	public void setColorResolver(ColorResolver colorResolver) {

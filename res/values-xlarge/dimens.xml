@@ -1,0 +1,5 @@
+<resources>
+
+    <dimen name="cpi_reference_radius">9dp</dimen>
+    
+</resources>
