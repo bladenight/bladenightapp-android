@@ -78,12 +78,13 @@ public class NetworkClientSharedState {
 		this.useSsl = useSsl;
 	}
 
-
 	public long 				lookingForServerTimestamp = 0;
 	public long 				connectingSinceTimestamp;
 	public String 				deviceId = null;
 	public final GpsInfo 		gpsInfo = new GpsInfo();
-	public Location 			lastKnownLocation;
+	
+	public 	Location 			lastKnownLocation;
+	
 	public BladenightWampClient bladenightWampClient = new BladenightWampClient();
 
 	private String 				server;

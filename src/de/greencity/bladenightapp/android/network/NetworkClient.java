@@ -4,9 +4,11 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
@@ -151,15 +153,29 @@ public class NetworkClient implements LocationListener {
 
 
 
-	public void getRealTimeData(Handler successHandler, Handler errorHandler) {
+	@SuppressLint("HandlerLeak")
+	public void getRealTimeData(final Handler successHandler, final Handler errorHandler) {
 		BacklogItem item = new BacklogItem();
+		
+		Handler eavesDroppersuccessHandler = new Handler() {
+
+			@Override
+			public void handleMessage(Message msg) {
+				RealTimeUpdateData realTimeUpdateData = (RealTimeUpdateData) msg.obj;
+				notifyRealTimeDataConsumers(realTimeUpdateData);
+				if ( successHandler != null )
+					successHandler.sendMessage(msg);
+			}
+		};
+		
 		item.url = BladenightUrl.GET_REALTIME_UPDATE.getText();
-		item.successHandler = successHandler;
+		item.successHandler = eavesDroppersuccessHandler;
 		item.errorHandler = errorHandler;
 		item.expectedReturnType = RealTimeUpdateData.class;
 
+		boolean isServiceRunning = ServiceUtils.isServiceRunning(context, GpsTrackerService.class);
 		sharedState.gpsInfo.setDeviceId(getDeviceId());
-		sharedState.gpsInfo.isParticipating(ServiceUtils.isServiceRunning(context, GpsTrackerService.class));
+		sharedState.gpsInfo.isParticipating(isServiceRunning);
 		if ( sharedState.lastKnownLocation != null ) {
 			sharedState.gpsInfo.setLatitude(sharedState.lastKnownLocation.getLatitude());
 			sharedState.gpsInfo.setLongitude(sharedState.lastKnownLocation.getLongitude());
@@ -171,6 +187,7 @@ public class NetworkClient implements LocationListener {
 		}
 
 		item.outgoingPayload = sharedState.gpsInfo;
+		
 		callOrStore(item);
 	}
 
@@ -290,7 +307,7 @@ public class NetworkClient implements LocationListener {
 	}
 
 	private boolean isConnectionUsable() {
-		if ( sharedState.bladenightWampClient.getState() != State.USUABLE )
+		if ( sharedState.bladenightWampClient.getState() != State.USEABLE )
 			return false;
 		if ( sharedState.bladenightWampClient.verifyTimeOut() ) {
 			Log.e(TAG, "Connection timed out");
@@ -355,6 +372,18 @@ public class NetworkClient implements LocationListener {
 		return sharedState.deviceId;
 	}
 
+	public boolean addRealTimeDataConsumer(RealTimeDataConsumer consumer) {
+		return realTimeDataConsumers.add(consumer);
+	}
+
+	public boolean removeRealTimeDataConsumer(RealTimeDataConsumer consumer) {
+		return realTimeDataConsumers.remove(consumer);
+	}
+
+	private void notifyRealTimeDataConsumers(RealTimeUpdateData realTimeUpdateData) {
+		for ( RealTimeDataConsumer consumer : realTimeDataConsumers)
+			consumer.consume(realTimeUpdateData);
+	}
 
 	private void findServer() {
 		if ( System.currentTimeMillis() - sharedState.lookingForServerTimestamp < 10000) {
@@ -378,12 +407,10 @@ public class NetworkClient implements LocationListener {
 		};
 		task.execute(port);
 	}
-
+	
 	protected void onServerFound() {
 		connect();
 	}
-
-
 
 	@Override
 	public void onLocationChanged(Location location) {
@@ -407,6 +434,8 @@ public class NetworkClient implements LocationListener {
 	static private NetworkClientSharedState sharedState = new NetworkClientSharedState();
 	private static final long CONNECT_TIMEOUT = 10000;
 	static final int port = 8081;
+	
+	static private Vector<RealTimeDataConsumer> realTimeDataConsumers = new Vector<RealTimeDataConsumer>();
 
 	static class BacklogItem {
 		public long 				timestamp;

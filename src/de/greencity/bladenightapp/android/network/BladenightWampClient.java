@@ -19,7 +19,7 @@ public class BladenightWampClient {
 		DISCONNECTED,
 		CONNECTING,
 		SHAKING_HANDS,
-		USUABLE
+		USEABLE
 	};
 	BladenightWampClient() {
 		adapter = new WebSocketClientChannelAdapter();
@@ -38,7 +38,7 @@ public class BladenightWampClient {
 				// Log.d(TAG, String.format("Got string message! %s", message));
 				wampClient.handleIncomingMessage(message);
 				if ( wampClient.hasBeenWelcomed())
-					state = State.USUABLE;
+					state = State.USEABLE;
 				updateLastServerLifeSign();
 			}
 

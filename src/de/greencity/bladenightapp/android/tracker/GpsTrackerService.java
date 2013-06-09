@@ -1,5 +1,8 @@
 package de.greencity.bladenightapp.android.tracker;
 
+import java.io.File;
+import java.io.IOException;
+
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -12,7 +15,11 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import de.greencity.bladenightapp.android.map.BladenightMapActivity;
 import de.greencity.bladenightapp.android.network.NetworkClient;
+import de.greencity.bladenightapp.android.network.RealTimeDataConsumer;
+import de.greencity.bladenightapp.android.utils.Paths;
 import de.greencity.bladenightapp.dev.android.R;
+import de.greencity.bladenightapp.network.messages.RealTimeUpdateData;
+import de.greencity.bladenightapp.tracking.TraceLogger;
 
 public class GpsTrackerService extends Service {
 
@@ -27,27 +34,44 @@ public class GpsTrackerService extends Service {
 		gpsListener = new GpsListener(this, locationListener);
 
 		gpsListener.requestLocationUpdates(5000);
+		
+		traceLogger = new TraceLogger(new File(Paths.getAppDataDirectory(), "gps-trace.txt"));
+		
+		realTimeDataConsumer = new RealTimeDataConsumer() {
+			@Override
+			public void consume(RealTimeUpdateData realTimeUpdateData) {
+				Log.i(TAG, "Consuming: " + realTimeUpdateData);
+				if ( realTimeUpdateData.isUserOnRoute() )
+					traceLogger.setLinearPosition(realTimeUpdateData.getUserPosition());
+				else
+					traceLogger.setLinearPosition(-1);
+				writeTraceEntry();
+			}
+		};
+		
+		networkClient.addRealTimeDataConsumer(realTimeDataConsumer);
 
 		setNotification();
 
-		periodicRunnable = new Runnable() {
+		periodicNetworkSenderRunnable = new Runnable() {
 			@Override
 			public void run() {
 				Log.i(TAG, "periodic task");
 				sendLocationUpdateToNetworkService();
-				handler.postDelayed(this, updatePeriod);
+				handler.postDelayed(this, SEND_PERIOD);
+				writeTraceEntry();
 			}
 		};
-		handler.postDelayed(periodicRunnable, updatePeriod);
-		
+		handler.post(periodicNetworkSenderRunnable);
 	}
 
 	@Override
 	public void onDestroy() {
 		Log.i(TAG, "onDestroy");
-		handler.removeCallbacks(periodicRunnable);
+		handler.removeCallbacks(periodicNetworkSenderRunnable);
 		gpsListener.cancelLocationUpdates();
 		stopForeground(true);
+		networkClient.removeRealTimeDataConsumer(realTimeDataConsumer);
 	}
 
 	@Override
@@ -90,16 +114,31 @@ public class GpsTrackerService extends Service {
 		networkClient.updateFromGpsTrackerService(lastKnownLocation);
 	}
 
+	private void writeTraceEntry() {
+		traceLogger.setAccuracy(lastKnownLocation.getAccuracy());
+		traceLogger.setLongitude(lastKnownLocation.getLongitude());
+		traceLogger.setLatitude(lastKnownLocation.getLatitude());
+		try {
+			traceLogger.writeWithTimeLimit(MIN_LOG_PERIOD);
+		} catch (IOException e) {
+			Log.e(TAG, "Failed to write trace entry: " + e);
+		}
+	}
+
 
 	private Location lastKnownLocation;
 	private BladenightLocationListener locationListener;
 	private GpsListener gpsListener;
 	private NetworkClient networkClient;
-	private Runnable periodicRunnable;
+	private Runnable periodicNetworkSenderRunnable;
+	private RealTimeDataConsumer realTimeDataConsumer;
+	private TraceLogger traceLogger;
+	
 	final Handler handler = new Handler();
-	static private final int updatePeriod = 10000;
+	static private final int SEND_PERIOD = 10000;
+	static private final int MIN_LOG_PERIOD = 2000;
 	static private final int NOTIFICATION_ID = 1;
-
+	
 	static final String TAG = "GpsTrackerService";
 	static final String INTENT_PERIODIC = "de.greencity.bladenightapp.android.gps.periodic";
 }

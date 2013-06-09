@@ -42,6 +42,7 @@ import de.greencity.bladenightapp.android.tracker.GpsListener;
 import de.greencity.bladenightapp.android.tracker.GpsTrackerService;
 import de.greencity.bladenightapp.android.utils.AsyncDownloadTaskHttpClient;
 import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
+import de.greencity.bladenightapp.android.utils.Paths;
 import de.greencity.bladenightapp.android.utils.ServiceUtils;
 import de.greencity.bladenightapp.dev.android.R;
 import de.greencity.bladenightapp.events.Event;
@@ -550,7 +551,7 @@ public class BladenightMapActivity extends MapActivity {
 
 	final static String TAG = "BladenightMapActivity";
 	private BroadcastReceiversRegister broadcastReceiversRegister = new BroadcastReceiversRegister(this); 
-	private final String mapLocalPath = Environment.getExternalStorageDirectory().getPath()+"/Bladenight/munich.map";
+	private final String mapLocalPath = new File(Paths.getAppDataDirectory(), "munich.map").getAbsolutePath();
 	private final String mapRemotePath = "maps/munich.map";
 	private ProgressDialog downloadProgressDialog;
 	private String routeName = "";
