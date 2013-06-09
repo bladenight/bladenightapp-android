@@ -163,8 +163,11 @@ public class NetworkClient implements LocationListener {
 			public void handleMessage(Message msg) {
 				RealTimeUpdateData realTimeUpdateData = (RealTimeUpdateData) msg.obj;
 				notifyRealTimeDataConsumers(realTimeUpdateData);
-				if ( successHandler != null )
-					successHandler.sendMessage(msg);
+				if ( successHandler != null ) {
+					Message clone = Message.obtain();
+					clone.copyFrom(msg);
+					successHandler.sendMessage(clone);
+				}
 			}
 		};
 		
