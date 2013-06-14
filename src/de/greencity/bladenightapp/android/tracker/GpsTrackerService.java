@@ -19,7 +19,6 @@ import de.greencity.bladenightapp.android.network.RealTimeDataConsumer;
 import de.greencity.bladenightapp.android.utils.Paths;
 import de.greencity.bladenightapp.dev.android.R;
 import de.greencity.bladenightapp.network.messages.RealTimeUpdateData;
-import de.greencity.bladenightapp.tracking.TraceLogger;
 
 public class GpsTrackerService extends Service {
 
@@ -35,7 +34,7 @@ public class GpsTrackerService extends Service {
 
 		gpsListener.requestLocationUpdates(5000);
 		
-		traceLogger = new TraceLogger(new File(Paths.getAppDataDirectory(), "gps-trace.txt"));
+		traceLogger = new GeoTraceLogger(new File(Paths.getAppDataDirectory(), "gps-trace.txt"));
 		
 		realTimeDataConsumer = new RealTimeDataConsumer() {
 			@Override
@@ -132,7 +131,7 @@ public class GpsTrackerService extends Service {
 	private NetworkClient networkClient;
 	private Runnable periodicNetworkSenderRunnable;
 	private RealTimeDataConsumer realTimeDataConsumer;
-	private TraceLogger traceLogger;
+	private GeoTraceLogger traceLogger;
 	
 	final Handler handler = new Handler();
 	static private final int SEND_PERIOD = 10000;
