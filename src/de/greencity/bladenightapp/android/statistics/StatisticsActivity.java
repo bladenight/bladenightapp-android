@@ -14,10 +14,11 @@ public class StatisticsActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
 		setContentView(R.layout.activity_statistics);
-		getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.titlebar);
-		ImageView titlebar = (ImageView)(findViewById(R.id.icon));
-		titlebar.setImageResource(R.drawable.ic_stats);
-		TextView titletext = (TextView)findViewById(R.id.title);
-		titletext.setText(R.string.title_statistics);
+		//TODO change to ActionBar
+//		getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.titlebar);
+//		ImageView titlebar = (ImageView)(findViewById(R.id.icon));
+//		titlebar.setImageResource(R.drawable.ic_stats);
+//		TextView titletext = (TextView)findViewById(R.id.title);
+//		titletext.setText(R.string.title_statistics);
 	}
 } 
