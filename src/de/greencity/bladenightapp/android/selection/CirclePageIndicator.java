@@ -63,7 +63,10 @@ public class CirclePageIndicator extends View implements PageIndicator {
 
 		strokePaint.setStyle(Style.STROKE);
 		strokePaint.setColor(res.getColor(R.color.bn_white));
-		strokePaint.setStrokeWidth(3);
+		
+		double scale = getResources().getDisplayMetrics().density;
+		int sizeInDp = (int) (2.0*scale);
+		strokePaint.setStrokeWidth(sizeInDp);
 		
 		final ViewConfiguration configuration = ViewConfiguration.get(context);
 		touchSlop = ViewConfigurationCompat.getScaledPagingTouchSlop(configuration);
