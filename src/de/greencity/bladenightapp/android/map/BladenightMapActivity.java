@@ -63,6 +63,7 @@ public class BladenightMapActivity extends MapActivity {
 
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_action);
+		checkSDCard();
 		createMapView();
 		createOverlays();
 
@@ -396,6 +397,13 @@ public class BladenightMapActivity extends MapActivity {
 	private void configureHeadline() {
 		String wordRoute = getResources().getString(R.string.word_route);
 		mapHeadline.setText(String.format("%s : %s %1.1fkm", wordRoute, routeName, routeLength / 1000.0));
+	}
+	
+	
+	private void checkSDCard(){
+		Boolean isSDPresent = android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
+		if(!isSDPresent)
+			Toast.makeText(this, R.string.msg_sd_card, Toast.LENGTH_LONG).show();
 	}
 
 	public void createMapView() {
