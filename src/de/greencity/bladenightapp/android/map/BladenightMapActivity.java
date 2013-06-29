@@ -70,6 +70,7 @@ public class BladenightMapActivity extends MapActivity {
 		downloadProgressDialog = new ProgressDialog(this);
 		processionProgressBar = (ProcessionProgressBar) findViewById(R.id.progress_procession);
 		mapHeadline = (TextView) findViewById(R.id.map_headline);
+		mapHeadlineSeparator = (View) findViewById(R.id.map_headline_separator);
 	}
 
 	@Override
@@ -155,11 +156,13 @@ public class BladenightMapActivity extends MapActivity {
 		if ( ! isLive ) {
 			processionProgressBar.setVisibility(View.GONE);
 			mapHeadline.setVisibility(View.VISIBLE);
+			mapHeadlineSeparator.setVisibility(View.VISIBLE);
 			configureHeadline();
 		}
 		else {
 			processionProgressBar.setVisibility(View.VISIBLE);
 			mapHeadline.setVisibility(View.GONE);
+			mapHeadlineSeparator.setVisibility(View.GONE);
 		}
 
 		// The auto-zooming of the fetched route requires to have the layout 
@@ -396,7 +399,32 @@ public class BladenightMapActivity extends MapActivity {
 
 	private void configureHeadline() {
 		String wordRoute = getResources().getString(R.string.word_route);
-		mapHeadline.setText(String.format("%s : %s %1.1fkm", wordRoute, routeName, routeLength / 1000.0));
+		mapHeadline.setText(String.format("%s: %s, %1.1fkm", wordRoute, routeNameToText(routeName), routeLength / 1000.0));
+	}
+	
+	private String routeNameToText(String routeName){
+		if (routeName.equals("Nord - kurz")){
+			return getResources().getString(R.string.course_north_short);
+		}
+		if (routeName.equals("Nord - lang")){
+			return getResources().getString(R.string.course_north_long);
+		}
+		if (routeName.equals("West - kurz")){
+			return getResources().getString(R.string.course_west_short);
+		}
+		if (routeName.equals("West - lang")){
+			return getResources().getString(R.string.course_west_long);
+		}
+		if (routeName.equals("Ost - kurz")){
+			return getResources().getString(R.string.course_east_short);
+		}
+		if (routeName.equals("Ost - lang")){
+			return getResources().getString(R.string.course_east_long);
+		}
+		if (routeName.equals("Familie")){
+			return getResources().getString(R.string.course_family);
+		}
+		return routeName;
 	}
 	
 	
@@ -569,6 +597,7 @@ public class BladenightMapActivity extends MapActivity {
 	private BladenightMapView mapView;
 	private ProcessionProgressBar processionProgressBar;
 	private TextView mapHeadline;
+	private View mapHeadlineSeparator;
 	private NetworkClient networkClient;
 	private final int updatePeriod = 3000;
 	private final Handler periodicHandler = new Handler();
