@@ -26,7 +26,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.Toast;
-import announcements.Announcement;
+import de.greencity.bladenightapp.announcements.*;
 
 import com.markupartist.android.widget.ActionBar;
 import com.markupartist.android.widget.ActionBar.Action;
