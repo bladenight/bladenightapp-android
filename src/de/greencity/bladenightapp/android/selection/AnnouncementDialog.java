@@ -47,12 +47,12 @@ public class AnnouncementDialog extends DialogFragment  {
     
     private void setValues(){
     	if(Locale.getDefault().getLanguage()=="de"){
-    		message = annoucement.getMessageD();
-    		headline = annoucement.getHeadlineD();
+    		message = annoucement.getMessageGerman();
+    		headline = annoucement.getHeadlineGerman();
     	}
     	else{
-    		message = annoucement.getMessageE();
-    		headline = annoucement.getHeadlineE();
+    		message = annoucement.getMessageEnglish();
+    		headline = annoucement.getHeadlineEnglish();
     	}
     	//TODO
 //    	switch (annoucement.getType()){
