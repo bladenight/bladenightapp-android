@@ -151,7 +151,7 @@ public class BladenightMapActivity extends MapActivity {
 				periodicHandler.postDelayed(this, updatePeriod);
 			}
 		};
-		periodicHandler.postDelayed(periodicTask, updatePeriod);
+		periodicHandler.post(periodicTask);
 
 		if ( ! isLive ) {
 			processionProgressBar.setVisibility(View.GONE);

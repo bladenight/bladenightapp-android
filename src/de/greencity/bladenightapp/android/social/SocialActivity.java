@@ -536,7 +536,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
 				periodicHandler.postDelayed(this, updatePeriod);
 			}
 		};
-		periodicHandler.postDelayed(periodicTask, updatePeriod);
+		periodicHandler.post(periodicTask);
 	}
 
 	private void cancelPeriodicTask() {
