@@ -440,6 +440,7 @@ public class SelectionActivity extends FragmentActivity {
 					eventsList.get(position),
 					hasLeft,
 					hasRight,
+					showStatisticsForEvent(event),
 					showStatusForEvent(event),
 					eventsList.isLive(event)
 					));
@@ -455,6 +456,11 @@ public class SelectionActivity extends FragmentActivity {
 		DateTime now = new DateTime();
 		Hours hoursToStart = Hours.hoursBetween(now, event.getStartDate());
 		return hoursToStart.getHours() <= 24 || now.isAfter(event.getStartDate());
+	}
+	
+	private static boolean showStatisticsForEvent(Event event) {
+		DateTime now = new DateTime();
+		return now.isAfter(event.getStartDate());
 	}
 
 

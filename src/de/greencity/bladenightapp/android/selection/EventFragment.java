@@ -18,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import de.greencity.bladenightapp.android.map.BladenightMapActivity;
+import de.greencity.bladenightapp.android.statistics.StatisticsActivity;
 import de.greencity.bladenightapp.android.tracker.GpsTrackerService;
 import de.greencity.bladenightapp.android.utils.ServiceUtils;
 import de.greencity.bladenightapp.dev.android.R;
@@ -53,6 +54,7 @@ public class EventFragment extends Fragment {
 		event = (Event) bundle.getSerializable(PARAM_EVENT_MESSAGE);
 		hasLeft = bundle.getBoolean(PARAM_HAS_LEFT);
 		hasRight = bundle.getBoolean(PARAM_HAS_RIGHT);
+		hasStatistics = bundle.getBoolean(PARAM_HAS_STATISTICS);
 		showStatus = bundle.getBoolean(PARAM_IS_SHOW_STATUS);
 		allowParticipate = bundle.getBoolean(PARAM_ALLOW_PARTICIPATE);
 		updateUi();
@@ -100,20 +102,30 @@ public class EventFragment extends Fragment {
 				startMapActivity();
 			}
 		});
+		
+		View statisticsImage = view.findViewById(R.id.image_event_statistics);
+		statisticsImage.setClickable(true);
+		statisticsImage.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				startStatisticsActivity();
+			}
+		});
 
 		return view;
 	}
 
-	public static Bundle prepareBundle(Event eventMessage, boolean hasLeft, boolean hasRight, boolean showStatus, boolean allowParticipate) {
-		return prepareBundle(new Bundle(), eventMessage, hasLeft, hasRight, showStatus, allowParticipate);
+	public static Bundle prepareBundle(Event eventMessage, boolean hasLeft, boolean hasRight, boolean hasStatistics, boolean showStatus, boolean allowParticipate) {
+		return prepareBundle(new Bundle(), eventMessage, hasLeft, hasRight, hasStatistics, showStatus, allowParticipate);
 	}
 
-	public static Bundle prepareBundle(Bundle bundle, Event eventMessage, boolean hasLeft, boolean hasRight, boolean showStatus, boolean allowParticipate) {
+	public static Bundle prepareBundle(Bundle bundle, Event eventMessage, boolean hasLeft, boolean hasRight, boolean hasStatistics, boolean showStatus, boolean allowParticipate) {
 		bundle.putSerializable(PARAM_EVENT_MESSAGE, eventMessage);
 		bundle.putBoolean(PARAM_HAS_LEFT, hasLeft);
 		bundle.putBoolean(PARAM_HAS_RIGHT, hasRight);
 		bundle.putBoolean(PARAM_IS_SHOW_STATUS, showStatus);
 		bundle.putBoolean(PARAM_ALLOW_PARTICIPATE, allowParticipate);
+		bundle.putBoolean(PARAM_HAS_STATISTICS, hasStatistics);
 		return bundle;
 	}
 
@@ -156,9 +168,8 @@ public class EventFragment extends Fragment {
 		TextView textViewRight = (TextView)view.findViewById(R.id.arrow_right);
 		textViewRight.setText(hasRight ? R.string.arrow_right : R.string.arrow_no);
 
-		//tmp till statistics implemented
-		//if ( ! hasStatistics )
-		view.findViewById(R.id.image_event_statistics).setEnabled(false);
+
+		view.findViewById(R.id.image_event_statistics).setEnabled(hasStatistics);
 
 		view.findViewById(R.id.image_event_participate).setEnabled(allowParticipate);
 
@@ -174,6 +185,11 @@ public class EventFragment extends Fragment {
 			return;
 		}
 		intent.putExtra(BladenightMapActivity.PARAM_EVENT_MESSAGE, EventGsonHelper.toJson(event));
+		view.getContext().startActivity(intent);
+	}
+	
+	private void startStatisticsActivity() {
+		Intent intent = new Intent(view.getContext(), StatisticsActivity.class);
 		view.getContext().startActivity(intent);
 	}
 
@@ -255,12 +271,14 @@ public class EventFragment extends Fragment {
 	private View view;
 	private boolean hasRight;
 	private boolean hasLeft;
+	private boolean hasStatistics;
 	private boolean showStatus;
 	private boolean allowParticipate;
 	private Event event;
 
 	static public final String PARAM_HAS_RIGHT = "hasRight";
 	static public final String PARAM_HAS_LEFT = "hasLeft";
+	static public final String PARAM_HAS_STATISTICS = "hasStatistics";
 	static public final String PARAM_IS_SHOW_STATUS = "showStatus";
 	static public final String PARAM_ALLOW_PARTICIPATE = "allowParticipate";
 	static public final String PARAM_EVENT_MESSAGE = "eventMessage";
