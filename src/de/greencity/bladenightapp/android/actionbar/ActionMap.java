@@ -11,7 +11,7 @@ import de.greencity.bladenightapp.android.map.BladenightMapActivity;
 public class ActionMap implements Action {
     @Override
     public int getDrawable() {
-        return R.drawable.ic_action_globe;
+        return R.drawable.ic_action_globe_dyn;
     }
 
 	@Override
