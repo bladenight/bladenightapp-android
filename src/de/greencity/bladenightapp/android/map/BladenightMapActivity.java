@@ -154,14 +154,11 @@ public class BladenightMapActivity extends MapActivity {
 		};
 		periodicHandler.post(periodicTask);
 
-		// TODO remove test code
-		isLive = true;
-		
 		if ( ! isLive ) {
 			processionProgressBar.setVisibility(View.GONE);
 			mapHeadline.setVisibility(View.VISIBLE);
 			mapHeadlineSeparator.setVisibility(View.VISIBLE);
-			updateHeadline();
+			updateHeadline(null);
 		}
 		else {
 			processionProgressBar.setVisibility(View.VISIBLE);
@@ -308,8 +305,7 @@ public class BladenightMapActivity extends MapActivity {
 	}
 
 	public void update(RealTimeUpdateData realTimeUpdateData) {
-		trackedParticipants = realTimeUpdateData.ust;
-		updateHeadline();
+		updateHeadline(realTimeUpdateData);
 	}
 
 	protected void requestRouteFromNetworkService() {
@@ -359,7 +355,7 @@ public class BladenightMapActivity extends MapActivity {
 			shallFitViewWhenPossible = false;
 			fitViewToRoute();
 		}
-		updateHeadline();
+		updateHeadline(null);
 	}
 
 	private void updateRouteFromCache() {
@@ -407,10 +403,9 @@ public class BladenightMapActivity extends MapActivity {
 		configurator.configure();
 	}
 
-	private void updateHeadline() {
-		// String wordRoute = getResources().getString(R.string.word_route);
-
+	private void updateHeadline(RealTimeUpdateData realTimeUpdateData) {
 		if ( isLive ) {
+			int trackedParticipants = ( realTimeUpdateData != null ? realTimeUpdateData.getUserTotal() : 0);
 			String trackedParticipantsString = getResources().getString(R.string.word_active_trackers);
 			String formattedText = String.format(Locale.getDefault(), "%s | %1.1fkm  |  %s: %d",
 					routeNameToText(routeName),
@@ -636,6 +631,4 @@ public class BladenightMapActivity extends MapActivity {
 	public static final String PARAM_EVENT_MESSAGE = "eventMessage";
 	private boolean isRunning = true;
 	private boolean shallFitViewWhenPossible = true;
-	private int trackedParticipants = 0;
-
 } 

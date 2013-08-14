@@ -101,5 +101,4 @@
     <string name="title_statistics">Statistics</string>
     <string name="title_activity_admin">AdminActivity</string>
     <string name="word_active_trackers">Trackers</string>
-    <string name="word_route">Route</string>
 </resources>
