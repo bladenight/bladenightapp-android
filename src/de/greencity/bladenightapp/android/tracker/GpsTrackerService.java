@@ -99,7 +99,7 @@ public class GpsTrackerService extends Service {
 		Notification notification = new  NotificationCompat.Builder(this)
 		.setContentTitle(getString(R.string.msg_tracking_running))
 		.setContentText(getString(R.string.app_name))
-		.setSmallIcon(R.drawable.ic_launcher_bn)
+		.setSmallIcon(R.drawable.application_prod)
 		.setContentIntent(contentIntent)
 		.build();
 		
