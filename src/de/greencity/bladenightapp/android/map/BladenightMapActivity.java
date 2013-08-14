@@ -3,6 +3,7 @@ package de.greencity.bladenightapp.android.map;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
+import java.util.Locale;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -153,15 +154,18 @@ public class BladenightMapActivity extends MapActivity {
 		};
 		periodicHandler.post(periodicTask);
 
+		// TODO remove test code
+		isLive = true;
+		
 		if ( ! isLive ) {
 			processionProgressBar.setVisibility(View.GONE);
 			mapHeadline.setVisibility(View.VISIBLE);
 			mapHeadlineSeparator.setVisibility(View.VISIBLE);
-			configureHeadline();
+			updateHeadline();
 		}
 		else {
 			processionProgressBar.setVisibility(View.VISIBLE);
-			mapHeadline.setVisibility(View.GONE);
+			mapHeadline.setVisibility(View.VISIBLE);
 			mapHeadlineSeparator.setVisibility(View.GONE);
 		}
 
@@ -291,6 +295,7 @@ public class BladenightMapActivity extends MapActivity {
 				bladenightMapActivity.routeOverlay.update(realTimeUpdateData);
 				bladenightMapActivity.processionProgressBar.update(realTimeUpdateData);
 				bladenightMapActivity.userPositionOverlay.update(realTimeUpdateData);
+				bladenightMapActivity.update(realTimeUpdateData);
 			}
 			else {
 				bladenightMapActivity.userPositionOverlay.update(realTimeUpdateData);
@@ -300,6 +305,11 @@ public class BladenightMapActivity extends MapActivity {
 
 	protected void getRealTimeDataFromServer() {
 		networkClient.getRealTimeData(new GetRealTimeDataFromServerHandler(this), null);
+	}
+
+	public void update(RealTimeUpdateData realTimeUpdateData) {
+		trackedParticipants = realTimeUpdateData.ust;
+		updateHeadline();
 	}
 
 	protected void requestRouteFromNetworkService() {
@@ -349,7 +359,7 @@ public class BladenightMapActivity extends MapActivity {
 			shallFitViewWhenPossible = false;
 			fitViewToRoute();
 		}
-		configureHeadline();
+		updateHeadline();
 	}
 
 	private void updateRouteFromCache() {
@@ -368,9 +378,9 @@ public class BladenightMapActivity extends MapActivity {
 	private void configureActionBar() {
 		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
 		ActionBarConfigurator configurator = new ActionBarConfigurator(actionBar);
-		
+
 		configurator.show(ActionItemType.FRIENDS);
-		
+
 		if ( isLive ) {
 			configurator
 			.show(ActionItemType.TRACKER_CONTROL)
@@ -379,7 +389,7 @@ public class BladenightMapActivity extends MapActivity {
 		else {
 			configurator.setTitle(R.string.title_map_default);
 		}
-		
+
 		configurator.setAction(ActionItemType.LOCATE_ME, new ActionLocateMe() {
 			@Override
 			public void performAction(View view) {
@@ -393,15 +403,32 @@ public class BladenightMapActivity extends MapActivity {
 		// to the Selection activity. 
 		if ( ServiceUtils.isServiceRunning(this, GpsTrackerService.class))
 			configurator.show(ActionItemType.TRACKER_CONTROL);
-		
+
 		configurator.configure();
 	}
 
-	private void configureHeadline() {
-		String wordRoute = getResources().getString(R.string.word_route);
-		mapHeadline.setText(String.format("%s: %s, %1.1fkm", wordRoute, routeNameToText(routeName), routeLength / 1000.0));
+	private void updateHeadline() {
+		// String wordRoute = getResources().getString(R.string.word_route);
+
+		if ( isLive ) {
+			String trackedParticipantsString = getResources().getString(R.string.word_active_trackers);
+			String formattedText = String.format(Locale.getDefault(), "%s | %1.1fkm  |  %s: %d",
+					routeNameToText(routeName),
+					routeLength / 1000.0,
+					trackedParticipantsString,
+					trackedParticipants
+					);
+			mapHeadline.setText(formattedText);
+		}
+		else {
+			String formattedText = String.format(Locale.getDefault(), "%s | %1.1fkm",
+					routeNameToText(routeName),
+					routeLength / 1000.0
+					);
+			mapHeadline.setText(formattedText);
+		}
 	}
-	
+
 	private String routeNameToText(String routeName){
 		if (routeName.equals("Nord - kurz")){
 			return getResources().getString(R.string.course_north_short);
@@ -426,8 +453,8 @@ public class BladenightMapActivity extends MapActivity {
 		}
 		return routeName;
 	}
-	
-	
+
+
 	private void checkSDCard(){
 		Boolean isSDPresent = android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
 		if(!isSDPresent)
@@ -507,7 +534,7 @@ public class BladenightMapActivity extends MapActivity {
 				activity.clearTileCache();
 				activity.setMapFile();
 			}
-			
+
 			public BladenightMapActivity getActivity(String tag) {
 				BladenightMapActivity activity = weakReference.get();
 				if (activity == null) {
@@ -520,7 +547,7 @@ public class BladenightMapActivity extends MapActivity {
 				}
 				return activity;
 			}
-			
+
 		};
 		networkClient.downloadFile(mapLocalPath, mapRemotePath, handler);
 	}
@@ -609,5 +636,6 @@ public class BladenightMapActivity extends MapActivity {
 	public static final String PARAM_EVENT_MESSAGE = "eventMessage";
 	private boolean isRunning = true;
 	private boolean shallFitViewWhenPossible = true;
+	private int trackedParticipants = 0;
 
 } 
