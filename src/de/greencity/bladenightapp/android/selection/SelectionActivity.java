@@ -26,7 +26,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.Toast;
-import de.greencity.bladenightapp.announcements.*;
 
 import com.markupartist.android.widget.ActionBar;
 import com.markupartist.android.widget.ActionBar.Action;
@@ -359,54 +358,50 @@ public class SelectionActivity extends FragmentActivity {
 
 	private void openDialog(){
 		SharedPreferences settings = getSharedPreferences("HelpPrefs", 0);
-		SharedPreferences.Editor editor = settings.edit();
+		// SharedPreferences.Editor editor = settings.edit();
 		boolean firstCreate = settings.getBoolean("firstCreate", true);
 		if(firstCreate){
 			FragmentManager fm = getSupportFragmentManager();
 			HelpDialog helpDialog = new HelpDialog();
 			helpDialog.show(fm, "fragment_help");
-			//for announcements
-			editor.putInt("announcementCounter", 0);
-			editor.putBoolean("firstCreate", false);
-			editor.commit();
+			// for announcements
+			// editor.putInt("announcementCounter", 0);
+			// editor.putBoolean("firstCreate", false);
+			// editor.commit();
 		}
 		else{		
-			openAnnouncement();
+			// openAnnouncement();
 		}
 
 	}
 	
-	private void openAnnouncement(){
-		//TODO: check if internet-connection, if not -> skip
-		//TODO: get the last anouncement from the server instead of the following
-		String message_e = "On the statistics view you can now see data about all " +
-				"past blade nights, e.g. the group velocity or the history of your " +
-				"position in the group. Simply press the statistics button located " +
-				"on the lower half of the screen on the right.";
-		String message_d = "Dasselbe auf deutsch. blablablablabalba";
-		String headline_e = "Statistics";
-		String headline_d = "Statistiken";
-		Announcement announcement = new Announcement(Announcement.Type.NEW_FEATURE, 1, message_d, headline_d,
-				message_e, headline_e);
-		
-		
-		SharedPreferences settings = getSharedPreferences("HelpPrefs", 0);
-		SharedPreferences.Editor editor = settings.edit();
-		int announcementCounter = settings.getInt("announcementCounter", -1);
-		
-		if (announcementCounter < announcement.getId()){
-			FragmentManager fm = getSupportFragmentManager();
-			AnnouncementDialog announcementDialog = new AnnouncementDialog();
-			announcementDialog.setAnnouncement(announcement);
-			announcementDialog.show(fm, "fragment_announcement");
-			editor.putInt("announcementCounter", announcement.getId());
-			editor.commit();
-		}
-		
-		
-		
-		
-	}
+//	private void openAnnouncement(){
+//		//TODO: check if internet-connection, if not -> skip
+//		//TODO: get the last anouncement from the server instead of the following
+//		String message_e = "On the statistics view you can now see data about all " +
+//				"past blade nights, e.g. the group velocity or the history of your " +
+//				"position in the group. Simply press the statistics button located " +
+//				"on the lower half of the screen on the right.";
+//		String message_d = "Dasselbe auf deutsch. blablablablabalba";
+//		String headline_e = "Statistics";
+//		String headline_d = "Statistiken";
+//		Announcement announcement = new Announcement(Announcement.Type.NEW_FEATURE, 1, message_d, headline_d,
+//				message_e, headline_e);
+//		
+//		
+//		SharedPreferences settings = getSharedPreferences("HelpPrefs", 0);
+//		SharedPreferences.Editor editor = settings.edit();
+//		int announcementCounter = settings.getInt("announcementCounter", -1);
+//		
+//		if (announcementCounter < announcement.getId()){
+//			FragmentManager fm = getSupportFragmentManager();
+//			AnnouncementDialog announcementDialog = new AnnouncementDialog();
+//			announcementDialog.setAnnouncement(announcement);
+//			announcementDialog.show(fm, "fragment_announcement");
+//			editor.putInt("announcementCounter", announcement.getId());
+//			editor.commit();
+//		}
+//	}
 
 	public static class ViewPagerAdapter extends FragmentStatePagerAdapter {
 		public ViewPagerAdapter(ViewPager viewPager, FragmentManager fm) {
