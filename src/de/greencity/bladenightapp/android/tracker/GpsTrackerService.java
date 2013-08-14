@@ -102,10 +102,11 @@ public class GpsTrackerService extends Service {
 
 		Bitmap icon = getNotificationIcon();
 		Log.i(TAG, icon.toString());
+
 		Notification notification = new  NotificationCompat.Builder(this)
 		.setContentTitle(getString(R.string.msg_tracking_running))
 		.setContentText(getString(R.string.app_name))
-		.setSmallIcon(R.drawable.application_prod)
+		.setSmallIcon(notificationIconId)
 		.setLargeIcon(getNotificationIcon())
 		.setContentIntent(contentIntent)
 		.build();
@@ -117,7 +118,7 @@ public class GpsTrackerService extends Service {
 
 	@SuppressLint("InlinedApi")
 	private Bitmap getNotificationIcon() {
-		Bitmap rawBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.application_prod);
+		Bitmap rawBitmap = BitmapFactory.decodeResource(getResources(), notificationIconId);
 
 		if (android.os.Build.VERSION.SDK_INT < 11) {
 			return rawBitmap;
@@ -160,6 +161,8 @@ public class GpsTrackerService extends Service {
 	static private final int SEND_PERIOD = 10000;
 	static private final int MIN_LOG_PERIOD = 2000;
 	static private final int NOTIFICATION_ID = 1;
+
+	static private final int notificationIconId = R.drawable.application_prod;
 
 	static final String TAG = "GpsTrackerService";
 	static final String INTENT_PERIODIC = "de.greencity.bladenightapp.android.gps.periodic";
