@@ -64,7 +64,7 @@ public class EventFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		// Log.i(TAG, "onCreateView: this="+this);
 
-		this.view = inflater.inflate(R.layout.event_view, container, false); 
+		this.view = inflater.inflate(R.layout.selection_event_fragment, container, false); 
 
 		View leftArrowView = view.findViewById(R.id.arrow_left);
 		leftArrowView.setClickable(true);
@@ -132,8 +132,6 @@ public class EventFragment extends Fragment {
 
 
 	protected void setColor(int imageId, int color) {
-		// Log.i(TAG, "imageId="+imageId);
-		// Log.i(TAG, "color="+color);
 		ImageView imageView = (ImageView)view.findViewById(imageId);
 		if (imageView == null) {
 			Log.e(TAG, "Failed to get " + imageId + " has ImageView");
@@ -150,17 +148,18 @@ public class EventFragment extends Fragment {
 			return;
 		}
 
-		TextView textViewCourse = (TextView)view.findViewById(R.id.course);
+		TextView textViewCourse = (TextView)view.findViewById(R.id.route_name);
 		textViewCourse.setText(routeNameToText(event.getRouteName()));
 
 		TextView textViewDate = (TextView)view.findViewById(R.id.date);
 		textViewDate.setText(toDateFormat.print(event.getStartDate()));
 
-		// not sure anymore if participants are necessary on the main screen
-//		if ( eventMessage.getParticipants() > 0 ) {
-//			TextView textViewParticipants = (TextView)view.findViewById(R.id.participants);
-//			textViewParticipants.setText(eventMessage.getParticipants() + " " + getActivity().getResources().getString(R.string.msg_participants));
-//		}
+		int numberParticipants = event.getParticipants();
+		if ( numberParticipants > 0 ) {
+			TextView numberParticipantsTextView = (TextView)view.findViewById(R.id.number_participants);
+			String text = getActivity().getResources().getString(R.string.msg_participants);
+			numberParticipantsTextView.setText(numberParticipants + " " + text);
+		}
 
 		TextView textViewLeft = (TextView)view.findViewById(R.id.arrow_left);
 		textViewLeft.setText(hasLeft ? R.string.arrow_left : R.string.arrow_no);
@@ -282,6 +281,7 @@ public class EventFragment extends Fragment {
 	static public final String PARAM_IS_SHOW_STATUS = "showStatus";
 	static public final String PARAM_ALLOW_PARTICIPATE = "allowParticipate";
 	static public final String PARAM_EVENT_MESSAGE = "eventMessage";
+	static public final String PARAM_NUMBER_PARTICIPANTS = "numberParticipants";
 
 
 	private static DateTimeFormatter toDateFormat = getDestinationDateFormatter(Locale.getDefault());
