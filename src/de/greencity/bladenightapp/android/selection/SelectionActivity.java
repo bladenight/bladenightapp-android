@@ -454,8 +454,9 @@ public class SelectionActivity extends FragmentActivity {
 	}
 	
 	private static boolean showStatisticsForEvent(Event event) {
-		DateTime now = new DateTime();
-		return now.isAfter(event.getStartDate());
+		// no statistics available for now
+		// later, this boolean will be provided by the server
+		return false;
 	}
 
 
