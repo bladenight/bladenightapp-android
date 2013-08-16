@@ -1,17 +1,13 @@
 package de.greencity.bladenightapp.android.statistics;
 
 
-import com.markupartist.android.widget.ActionBar;
-import com.markupartist.android.widget.ActionBar.Action;
-
 import android.app.Activity;
 import android.os.Bundle;
-import android.view.View;
 import android.view.Window;
-import android.widget.ImageView;
-import android.widget.TextView;
+
+import com.markupartist.android.widget.ActionBar;
+
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
-import de.greencity.bladenightapp.android.actionbar.ActionEventSelection;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator.ActionItemType;
 import de.greencity.bladenightapp.dev.android.R;
 
