@@ -79,32 +79,7 @@
         android:layout_weight="1" 
         android:shrinkColumns="*"  
         android:stretchColumns="*">     
-        
-        <TableRow  
-            android:id="@+id/tableRow2"  
-            android:layout_height="wrap_content"  
-            android:layout_width="match_parent"  
-            android:gravity="center_horizontal">  
-            
-            <TextView
-                android:layout_weight="0.32"
-                android:layout_height="wrap_content"
-                android:layout_width="0px"
-                android:textSize="18dip"
-                android:padding="5dp"
-                android:textColor="@color/bn_white"
-                android:text="Status" />
-            
-            <TextView
-                android:layout_weight="0.18"
-                android:layout_height="wrap_content"
-                android:layout_width="0px"
-                android:textSize="18dip"
-                android:padding="5dp"
-                android:textColor="@color/bn_white"
-                android:text="OK" />
- 
-        </TableRow>
+                
             
         <TableRow  
 	        android:id="@+id/tableRow1"  
@@ -122,6 +97,7 @@
 	            android:text="Participants" />
 	        
 	        <TextView
+	            android:id="@+id/statistics_participants"
 	            android:layout_weight="0.18"
 	            android:layout_height="wrap_content"
 	            android:layout_width="0px"
@@ -149,6 +125,7 @@
                 android:text="BNA Users" />
             
             <TextView
+                android:id="@+id/statistics_users"
                 android:layout_weight="0.18"
                 android:layout_height="wrap_content"
                 android:layout_width="0px"
@@ -174,6 +151,7 @@
                 android:text="Avg Speed" />
             
             <TextView
+                android:id="@+id/statistics_avg_speed"
                 android:layout_weight="0.18"
                 android:layout_height="wrap_content"
                 android:layout_width="0px"

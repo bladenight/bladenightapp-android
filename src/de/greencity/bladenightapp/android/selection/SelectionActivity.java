@@ -454,9 +454,9 @@ public class SelectionActivity extends FragmentActivity {
 	}
 	
 	private static boolean showStatisticsForEvent(Event event) {
-		// no statistics available for now
+		// TODO statistics in development, switch off for release  
 		// later, this boolean will be provided by the server
-		return false;
+		return true;
 	}
 
 
