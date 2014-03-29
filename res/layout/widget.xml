@@ -17,11 +17,26 @@
         android:text="Static Text" >
     </TextView>
 
-    <ProgressBar
+<!--     <ProgressBar
         android:id="@+id/progress_procession"
         style="@style/CustomProgressBarHorizontal"
         android:layout_width="match_parent"
-        android:layout_height="150dip"
+        android:layout_height="50dip"
         android:max="100" />
+
+    <FrameLayout
+        android:id="@+id/progress_procession_2"
+        android:layout_width="match_parent"
+        android:layout_height="50dip"
+        android:background="@color/bn_orange" >
+    </FrameLayout>
+ -->
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="wrap_content"
+        android:layout_height="50dip"
+        android:background="@color/bn_red"
+        android:scaleType="fitXY"
+        />
 
 </LinearLayout>

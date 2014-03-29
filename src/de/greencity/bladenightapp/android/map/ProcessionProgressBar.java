@@ -12,7 +12,6 @@ import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.GradientDrawable.Orientation;
 import android.graphics.drawable.LayerDrawable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.TypedValue;
 import android.widget.ProgressBar;
 import de.greencity.bladenightapp.android.social.Friends;
@@ -47,7 +46,6 @@ public class ProcessionProgressBar extends ProgressBar {
 	}
 	
 	private void init(Context context) {
-		Log.i(TAG,"init");
 		this.context = context;
 		textPaint = new Paint();  
 		textPaint.setColor(Color.BLACK);
