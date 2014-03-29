@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="de.greencity.bladenightapp.dev.android"
+    android:installLocation="auto"
     android:versionCode="1"
-    android:versionName="DEV"
-    android:installLocation="auto" >
+    android:versionName="DEV" >
 
     <uses-sdk
         android:minSdkVersion="8"
-        android:targetSdkVersion="15" />
+        android:targetSdkVersion="19" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -16,9 +16,9 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
+        android:allowBackup="false"
         android:icon="@drawable/application_dev"
         android:label="@string/app_name_dev"
-        android:allowBackup="false"
         android:theme="@style/customTheme" >
         <service
             android:name="de.greencity.bladenightapp.android.network.NetworkService"
@@ -29,8 +29,8 @@
 
         <activity
             android:name="de.greencity.bladenightapp.android.selection.SelectionActivity"
-            android:label="@string/app_name" 
-            android:screenOrientation="portrait">
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -39,8 +39,7 @@
         </activity>
         <activity
             android:name="de.greencity.bladenightapp.android.selection.SplashActivity"
-            android:screenOrientation="portrait">
-            
+            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name="de.greencity.bladenightapp.android.options.OptionsActivity"
@@ -49,18 +48,18 @@
         </activity>
         <activity
             android:name="de.greencity.bladenightapp.android.statistics.StatisticsActivity"
-            android:label="@string/app_name" 
-            android:screenOrientation="portrait">
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name="de.greencity.bladenightapp.android.map.BladenightMapActivity"
-            android:label="@string/app_name" 
-            android:screenOrientation="portrait">
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name="de.greencity.bladenightapp.android.social.SocialActivity"
-            android:label="@string/app_name" 
-            android:screenOrientation="portrait">
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name="de.greencity.bladenightapp.android.admin.AdminActivity"
@@ -69,9 +68,22 @@
         </activity>
         <activity
             android:name="de.greencity.bladenightapp.android.about.AboutActivity"
-            android:label="@string/title_about" 
-            android:screenOrientation="portrait">
+            android:label="@string/title_about"
+            android:screenOrientation="portrait" >
         </activity>
-        </application>
+
+        <receiver
+            android:name="de.greencity.bladenightapp.android.widget.WidgetProvider"
+            android:icon="@drawable/application_dev"
+            android:label="Blade Night Widget" >
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_info" />
+        </receiver>
+    </application>
 
 </manifest>

@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources> 
-   <style name="WindowTitleBackground">     
-        <item name="android:background">@color/bn_green</item>                   
+<resources>
+
+    <style name="WindowTitleBackground">
+        <item name="android:background">@color/bn_green</item>
     </style>
+
+    <style name="CustomProgressBarHorizontal" parent="android:Widget.ProgressBar.Horizontal">
+        <item name="android:minHeight">100dip</item>
+        <item name="android:maxHeight">200dip</item>
+    </style>
+
 </resources>
