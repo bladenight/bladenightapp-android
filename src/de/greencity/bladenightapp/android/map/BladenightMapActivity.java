@@ -24,7 +24,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -79,8 +78,6 @@ public class BladenightMapActivity extends MapActivity {
 		processionProgressBar = (ProcessionProgressBar) findViewById(R.id.progress_procession);
 		mapHeadline = (TextView) findViewById(R.id.map_headline);
 		mapHeadlineSeparator = (View) findViewById(R.id.map_headline_separator);
-		
-		realTimeDataBroadcastReceiver = new RealTimeDataBroadcastReceiver();
 	}
 
 	@Override
@@ -125,10 +122,20 @@ public class BladenightMapActivity extends MapActivity {
 	public void cancelAllAutomaticTasks() {
 		if ( periodicTask != null )
 			periodicHandler.removeCallbacks(periodicTask);
-		if ( gpsListenerForPositionOverlay != null)
-			gpsListenerForPositionOverlay.cancelLocationUpdates();
-		if ( gpsListenerForNetworkClient != null )
-			gpsListenerForNetworkClient.cancelLocationUpdates();
+		if ( gpsListener != null )
+			gpsListener.cancelLocationUpdates();
+	}
+	
+	public void registerGpsListener() {
+		destroyGpsListener();
+		gpsListener = new GpsListener(this, globalStateAccess);
+		gpsListener.requestLocationUpdates(updatePeriod);
+	}
+	
+	public void destroyGpsListener() {
+		if ( gpsListener != null )
+			gpsListener.cancelLocationUpdates();
+		gpsListener = null;
 	}
 
 	@Override
@@ -139,15 +146,7 @@ public class BladenightMapActivity extends MapActivity {
 		userPositionOverlay.onResume();
 		processionProgressBar.onResume();
 
-		if ( gpsListenerForPositionOverlay != null )
-			gpsListenerForPositionOverlay.cancelLocationUpdates();
-		gpsListenerForPositionOverlay = new GpsListener(this, userPositionOverlay);
-		gpsListenerForPositionOverlay.requestLocationUpdates(updatePeriod);
-
-		if ( gpsListenerForNetworkClient != null )
-			gpsListenerForNetworkClient.cancelLocationUpdates();
-		gpsListenerForNetworkClient = new GpsListener(this, networkClient);
-		gpsListenerForNetworkClient.requestLocationUpdates(updatePeriod);
+		registerGpsListener();
 
 		periodicTask = new Runnable() {
 			@Override
@@ -191,8 +190,8 @@ public class BladenightMapActivity extends MapActivity {
 			triggerInitialRouteDataFetch();
 		}
 
-		// Register mMessageReceiver to receive messages.
 		broadcastReceiversRegister.registerReceiver(new IntentFilter(LocalBroadcast.GOT_REALTIME_DATA.toString()), new RealTimeDataBroadcastReceiver());
+		broadcastReceiversRegister.registerReceiver(new IntentFilter(LocalBroadcast.GOT_GPS_UPDATE.toString()), new LocationBroadcastReceiver());
 
 		isRunning = true;
 	}
@@ -319,7 +318,7 @@ public class BladenightMapActivity extends MapActivity {
 			final BladenightMapActivity bladenightMapActivity = BladenightMapActivity.this;
 			if ( bladenightMapActivity == null || bladenightMapActivity.isFinishing() || ! bladenightMapActivity.isRunning )
 				return;
-			RealTimeUpdateData realTimeUpdateData = new GlobalStateAccess(context).getRealTimeUpdateData();
+			RealTimeUpdateData realTimeUpdateData = globalStateAccess.getRealTimeUpdateData();
 			String liveRouteName = realTimeUpdateData.getRouteName();
 			if ( bladenightMapActivity.isLive ) {
 				if ( ! liveRouteName.equals(bladenightMapActivity.routeName) ) {
@@ -340,6 +339,17 @@ public class BladenightMapActivity extends MapActivity {
 			else {
 				bladenightMapActivity.userPositionOverlay.update(realTimeUpdateData);
 			}
+		}
+	}
+
+	class LocationBroadcastReceiver extends BroadcastReceiver {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			Log.i(TAG, "LocationBroadcastReceiver.onReceive");
+			final BladenightMapActivity bladenightMapActivity = BladenightMapActivity.this;
+			Location location = globalStateAccess.getLocationFromGps();
+			bladenightMapActivity.userPositionOverlay.onLocationChanged(location);
+			bladenightMapActivity.networkClient.onLocationChanged(location);
 		}
 	}
 
@@ -654,7 +664,6 @@ public class BladenightMapActivity extends MapActivity {
 	private GlobalStateAccess globalStateAccess;
 	private NetworkClient networkClient;
 	private LocalBroadcastReceiversRegister broadcastReceiversRegister = new LocalBroadcastReceiversRegister(this); 
-	private BroadcastReceiver realTimeDataBroadcastReceiver;
 	private final String mapLocalPath = new File(Paths.getAppDataDirectory(), "munich.map").getAbsolutePath();
 	private final String mapRemotePath = "maps/munich.map";
 	private ProgressDialog downloadProgressDialog;
@@ -670,8 +679,7 @@ public class BladenightMapActivity extends MapActivity {
 	private final Handler periodicHandler = new Handler();
 	private Runnable periodicTask;
 	private UserPositionOverlay userPositionOverlay;
-	private GpsListener gpsListenerForPositionOverlay;
-	private GpsListener gpsListenerForNetworkClient;
+	private GpsListener gpsListener;
 	private boolean isRouteInfoAvailable = false;
 	public static final String PARAM_EVENT_MESSAGE = "eventMessage";
 	private boolean isRunning = true;
