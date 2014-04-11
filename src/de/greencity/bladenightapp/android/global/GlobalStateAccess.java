@@ -8,11 +8,13 @@ import android.location.LocationListener;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import de.greencity.bladenightapp.android.network.NetworkClient;
 import de.greencity.bladenightapp.android.tracker.GpsTrackerService;
 import de.greencity.bladenightapp.android.utils.DeviceId;
 import de.greencity.bladenightapp.android.utils.ServiceUtils;
 import de.greencity.bladenightapp.events.EventList;
+import de.greencity.bladenightapp.network.messages.EventListMessage;
 import de.greencity.bladenightapp.network.messages.GpsInfo;
 import de.greencity.bladenightapp.network.messages.RealTimeUpdateData;
 import static de.greencity.bladenightapp.android.global.LocalBroadcast.*;
@@ -77,6 +79,22 @@ public class GlobalStateAccess implements LocationListener {
 		networkClient.getRealTimeData(gpsInfo, new RealTimeUpdateDataHandler(this), null);
 	}
 	
+	static class EventListHandler extends Handler {
+		private WeakReference<GlobalStateAccess> globalStateAccess;
+		public EventListHandler(GlobalStateAccess outerObject) {
+			globalStateAccess = new WeakReference<GlobalStateAccess>(outerObject);
+		}
+		@Override
+		public void handleMessage(Message msg) {
+			EventListMessage eventListMessage = (EventListMessage) msg.obj;
+			globalStateAccess.get().setEventList(eventListMessage.convertToEventsList());
+		}
+	};
+	
+	public void requestEventList() {
+		networkClient.getAllEvents(new EventListHandler(this), null);
+	}
+	
 	public EventList getEventList() {
 		return globalStateSingleton.getEventList();
 	}
@@ -110,4 +128,5 @@ public class GlobalStateAccess implements LocationListener {
 	static private GlobalState globalStateSingleton;
 	final private Context context;
 	private NetworkClient networkClient;
+	private static final String TAG = "GlobalStateAccess";
 }

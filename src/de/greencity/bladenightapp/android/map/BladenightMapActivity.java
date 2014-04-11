@@ -18,7 +18,6 @@ import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Environment;
@@ -190,23 +189,29 @@ public class BladenightMapActivity extends MapActivity {
 			triggerInitialRouteDataFetch();
 		}
 
-		broadcastReceiversRegister.registerReceiver(new IntentFilter(LocalBroadcast.GOT_REALTIME_DATA.toString()), new RealTimeDataBroadcastReceiver());
-		broadcastReceiversRegister.registerReceiver(new IntentFilter(LocalBroadcast.GOT_GPS_UPDATE.toString()), new LocationBroadcastReceiver());
+		broadcastReceiversRegister.registerReceiver(LocalBroadcast.GOT_REALTIME_DATA, new RealTimeDataBroadcastReceiver());
+		broadcastReceiversRegister.registerReceiver(LocalBroadcast.GOT_GPS_UPDATE, new LocationBroadcastReceiver());
 
 		isRunning = true;
-	}
-
-	private void triggerInitialRouteDataFetch() {
-		Log.i(TAG, "triggerInitialRouteDataFetch");
-		updateRouteFromCache();
-		requestRouteFromServer();
 	}
 
 	@Override
 	public void onStop() {
 		super.onStop();
 		cancelAllAutomaticTasks();
+		broadcastReceiversRegister.unregisterReceivers();
 		isRunning = false;
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+	}
+
+	private void triggerInitialRouteDataFetch() {
+		Log.i(TAG, "triggerInitialRouteDataFetch");
+		updateRouteFromCache();
+		requestRouteFromServer();
 	}
 
 
@@ -416,12 +421,6 @@ public class BladenightMapActivity extends MapActivity {
 		if ( message != null ) {
 			updateRouteFromRouteMessage(message);
 		}
-	}
-
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-		broadcastReceiversRegister.unregisterReceivers();
 	}
 
 	private void configureActionBar() {

@@ -1,13 +1,11 @@
 package de.greencity.bladenightapp.android.global;
 
 import android.location.Location;
+import android.util.Log;
 import de.greencity.bladenightapp.events.EventList;
 import de.greencity.bladenightapp.network.messages.RealTimeUpdateData;
 
 public class GlobalState {
-	GlobalState() {
-	}
-
 	public Location getLocationFromGps() {
 		return locationFromGps;
 	}
@@ -30,12 +28,14 @@ public class GlobalState {
 	}
 
 	public void setEventList(EventList eventList) {
+		Log.i(TAG, "setEventList: " + eventList);
 		this.eventList = eventList;
 	}
 	
 	private Location 			locationFromGps;
 	private RealTimeUpdateData 	realTimeUpdateDataFromServer;
 	private EventList			eventList;
+	private static final String TAG = "GlobalState";
 
 	// private Context				context;
 

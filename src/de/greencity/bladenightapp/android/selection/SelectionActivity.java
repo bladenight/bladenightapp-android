@@ -6,6 +6,8 @@ import java.lang.ref.WeakReference;
 import org.joda.time.DateTime;
 import org.joda.time.Hours;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
@@ -38,9 +40,11 @@ import de.greencity.bladenightapp.android.actionbar.ActionEventSelection;
 import de.greencity.bladenightapp.android.admin.AdminActivity;
 import de.greencity.bladenightapp.android.admin.AdminUtilities;
 import de.greencity.bladenightapp.android.cache.EventsCache;
+import de.greencity.bladenightapp.android.global.GlobalStateAccess;
+import de.greencity.bladenightapp.android.global.LocalBroadcast;
 import de.greencity.bladenightapp.android.network.NetworkClient;
-import de.greencity.bladenightapp.android.utils.LocalBroadcastReceiversRegister;
 import de.greencity.bladenightapp.android.utils.DeviceId;
+import de.greencity.bladenightapp.android.utils.LocalBroadcastReceiversRegister;
 import de.greencity.bladenightapp.dev.android.R;
 import de.greencity.bladenightapp.events.Event;
 import de.greencity.bladenightapp.events.EventList;
@@ -60,9 +64,10 @@ public class SelectionActivity extends FragmentActivity {
 		setContentView(R.layout.activity_selection);
 
 		eventsCache = new EventsCache(this);
-		eventsList = new EventList(); // avoid NPE, will be replaced as soon as we get data from the network 
+		// avoid NPE, will be replaced as soon as we get data from the network or the cache:
+		eventList = new EventList(); 
 
-		networkClient =  new NetworkClient(this);
+		globalStateAccess = new GlobalStateAccess(this);
 
 		openDialog();
 
@@ -76,6 +81,32 @@ public class SelectionActivity extends FragmentActivity {
 
 		shakeHands();
 	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		// Log.i(TAG, "onResume");
+
+		broadcastReceiversRegister.registerReceiver(LocalBroadcast.GOT_EVENT_LIST, new EventListBroadcastReceiver());
+
+		configureActionBar();
+
+		getEventsFromCache();
+
+		globalStateAccess.requestEventList();
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		broadcastReceiversRegister.unregisterReceivers();
+	}
+
 
 	private void configureActionBar() {
 		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
@@ -94,26 +125,14 @@ public class SelectionActivity extends FragmentActivity {
 
 	}
 
-	@Override
-	protected void onStop() {
-		super.onStop();
-	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
-		// Log.i(TAG, "onResume");
-
-		configureActionBar();
-
-		getEventsFromCache();
-
-		getEventsFromServer();
-	}
-
-	@Override
-	protected void onPause() {
-		super.onPause();
+	class EventListBroadcastReceiver extends BroadcastReceiver {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			Log.i(TAG, "EventListBroadcastReceiver.onReceive");
+			eventList = globalStateAccess.getEventList();
+			updateFragmentsFromEventList();
+			saveEventsToCache(eventList);
+		}
 	}
 
 	// Will be called via the onClick attribute
@@ -166,23 +185,6 @@ public class SelectionActivity extends FragmentActivity {
 		return false;
 	}
 
-	static class GetEventsFromServerHandler extends Handler {
-		private WeakReference<SelectionActivity> reference;
-		GetEventsFromServerHandler(SelectionActivity activity) {
-			this.reference = new WeakReference<SelectionActivity>(activity);
-		}
-		@Override
-		public void handleMessage(Message msg) {
-			final SelectionActivity selectionActivity = reference.get();
-			if ( selectionActivity == null || selectionActivity.isFinishing() )
-				return;
-			EventListMessage eventsListMessage = (EventListMessage)msg.obj;
-			// Log.i(TAG, "Updating event fragments from server data");
-			selectionActivity.updateFragmentsFromEventList((EventListMessage)eventsListMessage);
-			selectionActivity.saveEventsToCache(eventsListMessage);
-		}
-	}
-
 	static class HandshakeErrorHandler extends Handler {
 		private WeakReference<SelectionActivity> reference;
 		HandshakeErrorHandler(SelectionActivity activity) {
@@ -222,12 +224,12 @@ public class SelectionActivity extends FragmentActivity {
 					phoneManufacturer,
 					phoneModel,
 					androidRelease);
-			networkClient.shakeHands(msg, null, new HandshakeErrorHandler(this));
+			new NetworkClient(this).shakeHands(msg, null, new HandshakeErrorHandler(this));
 		} catch (Exception e) {
 			Log.e(TAG, "shakeHands failed to gather and send information: " + e.toString());
 		}
 	}
-	
+
 	private int getDeviceVersionCode() {
 		PackageManager manager = this.getPackageManager();
 		PackageInfo info;
@@ -242,27 +244,21 @@ public class SelectionActivity extends FragmentActivity {
 
 
 	private void getEventsFromCache() {
-		EventListMessage eventsListMessage = eventsCache.read();
-		if ( eventsListMessage != null) {
-			// Log.i(TAG, "Updating event fragments from cached data");
-			updateFragmentsFromEventList(eventsListMessage);
+		EventListMessage eventListFromCache = eventsCache.read();
+		if ( eventListFromCache != null) {
+			this.eventList = eventListFromCache.convertToEventsList();
+			updateFragmentsFromEventList();
 		}
 	}
 
-	private void saveEventsToCache(EventListMessage eventsListMessage) {
-		eventsCache.write(eventsListMessage);
+	private void saveEventsToCache(EventList eventList) {
+		eventsCache.write(EventListMessage.newFromEventsList(eventList));
 	}
 
-	private void getEventsFromServer() {
-		networkClient.getAllEvents(new GetEventsFromServerHandler(this), null);
-	}
+	private void updateFragmentsFromEventList() {
+		// Log.i(TAG, "updateFragmentsFromEventList eventList=" + eventList);
 
-
-	private void updateFragmentsFromEventList(final EventListMessage eventListMessage) {
-		// Log.i(TAG, "updateFragmentsFromEventList " + eventListMessage);
-
-		eventsList = eventListMessage.convertToEventsList();
-		eventsList.sortByStartDate();
+		eventList.sortByStartDate();
 
 		viewPager = (ViewPager) findViewById(R.id.pager);
 		viewPagerAdapter = new ViewPagerAdapter(viewPager, getSupportFragmentManager());
@@ -271,10 +267,10 @@ public class SelectionActivity extends FragmentActivity {
 		CirclePageIndicator circlePageIndicator = (CirclePageIndicator)findViewById(R.id.page_indicator);
 		circlePageIndicator.setViewPager(viewPager);
 		circlePageIndicator.setColorResolver(new CirclePageIndicator.ColorResolver() {
-			
+
 			@Override
 			public int resolve(int index) {
-				Event event = eventsList.get(index);
+				Event event = eventList.get(index);
 				if ( event == null || ! showStatusForEvent(event) )
 					return -1;
 				switch(event.getStatus() ) {
@@ -304,7 +300,7 @@ public class SelectionActivity extends FragmentActivity {
 		});
 
 
-		viewPagerAdapter.setEventList(eventsList);
+		viewPagerAdapter.setEventList(eventList);
 		updatePositionEventCurrent();
 		if ( ! tryToRestorePreviouslyShownEvent() ) {
 			showUpcomingEvent();
@@ -324,9 +320,9 @@ public class SelectionActivity extends FragmentActivity {
 
 	private void updatePositionEventCurrent() {
 		posEventCurrent = -1;
-		Event nextEvent = eventsList.getNextEvent();
+		Event nextEvent = eventList.getNextEvent();
 		if ( nextEvent != null ) {
-			posEventCurrent = eventsList.indexOf(nextEvent);
+			posEventCurrent = eventList.indexOf(nextEvent);
 		}
 	}
 
@@ -335,9 +331,9 @@ public class SelectionActivity extends FragmentActivity {
 	}
 
 	private void showUpcomingEvent() {
-		Event nextEvent = eventsList.getNextEvent();
+		Event nextEvent = eventList.getNextEvent();
 		if ( isValidFragmentPosition(posEventCurrent) ) {
-			int startFragment = eventsList.indexOf(nextEvent);
+			int startFragment = eventList.indexOf(nextEvent);
 			viewPager.setCurrentItem(startFragment);
 		}
 	}
@@ -358,9 +354,9 @@ public class SelectionActivity extends FragmentActivity {
 	}
 
 	protected Event getEventShown() {
-		if ( posEventShown < 0 || posEventShown >= eventsList.size() )
+		if ( posEventShown < 0 || posEventShown >= eventList.size() )
 			return null;
-		return eventsList.get(posEventShown);
+		return eventList.get(posEventShown);
 	}
 
 	private void openDialog(){
@@ -381,49 +377,49 @@ public class SelectionActivity extends FragmentActivity {
 		}
 
 	}
-	
-//	private void openAnnouncement(){
-//		//TODO: check if internet-connection, if not -> skip
-//		//TODO: get the last anouncement from the server instead of the following
-//		String message_e = "On the statistics view you can now see data about all " +
-//				"past blade nights, e.g. the group velocity or the history of your " +
-//				"position in the group. Simply press the statistics button located " +
-//				"on the lower half of the screen on the right.";
-//		String message_d = "Dasselbe auf deutsch. blablablablabalba";
-//		String headline_e = "Statistics";
-//		String headline_d = "Statistiken";
-//		Announcement announcement = new Announcement(Announcement.Type.NEW_FEATURE, 1, message_d, headline_d,
-//				message_e, headline_e);
-//		
-//		
-//		SharedPreferences settings = getSharedPreferences("HelpPrefs", 0);
-//		SharedPreferences.Editor editor = settings.edit();
-//		int announcementCounter = settings.getInt("announcementCounter", -1);
-//		
-//		if (announcementCounter < announcement.getId()){
-//			FragmentManager fm = getSupportFragmentManager();
-//			AnnouncementDialog announcementDialog = new AnnouncementDialog();
-//			announcementDialog.setAnnouncement(announcement);
-//			announcementDialog.show(fm, "fragment_announcement");
-//			editor.putInt("announcementCounter", announcement.getId());
-//			editor.commit();
-//		}
-//	}
+
+	//	private void openAnnouncement(){
+	//		//TODO: check if internet-connection, if not -> skip
+	//		//TODO: get the last anouncement from the server instead of the following
+	//		String message_e = "On the statistics view you can now see data about all " +
+	//				"past blade nights, e.g. the group velocity or the history of your " +
+	//				"position in the group. Simply press the statistics button located " +
+	//				"on the lower half of the screen on the right.";
+	//		String message_d = "Dasselbe auf deutsch. blablablablabalba";
+	//		String headline_e = "Statistics";
+	//		String headline_d = "Statistiken";
+	//		Announcement announcement = new Announcement(Announcement.Type.NEW_FEATURE, 1, message_d, headline_d,
+	//				message_e, headline_e);
+	//		
+	//		
+	//		SharedPreferences settings = getSharedPreferences("HelpPrefs", 0);
+	//		SharedPreferences.Editor editor = settings.edit();
+	//		int announcementCounter = settings.getInt("announcementCounter", -1);
+	//		
+	//		if (announcementCounter < announcement.getId()){
+	//			FragmentManager fm = getSupportFragmentManager();
+	//			AnnouncementDialog announcementDialog = new AnnouncementDialog();
+	//			announcementDialog.setAnnouncement(announcement);
+	//			announcementDialog.show(fm, "fragment_announcement");
+	//			editor.putInt("announcementCounter", announcement.getId());
+	//			editor.commit();
+	//		}
+	//	}
 
 	public static class ViewPagerAdapter extends FragmentStatePagerAdapter {
 		public ViewPagerAdapter(ViewPager viewPager, FragmentManager fm) {
 			super(fm);
 		}
 
-		public void setEventList(EventList eventsList) {
-			this.eventsList = eventsList;
+		public void setEventList(EventList eventList) {
+			this.eventList = eventList;
 			notifyDataSetChanged();
 		}
 
 		@Override
 		public int getCount() {
 			//			Log.d(TAG, "getCount");
-			return eventsList.size();
+			return eventList.size();
 		}
 
 		@Override
@@ -434,24 +430,24 @@ public class SelectionActivity extends FragmentActivity {
 
 		@Override
 		public Fragment getItem(int position) {
-			Event event = eventsList.get(position);
+			Event event = eventList.get(position);
 			boolean hasRight = position < getCount()-1;
 			boolean hasLeft = position > 0;
 			EventFragment fragment = new EventFragment();
 			fragment.setArguments(EventFragment.prepareBundle(
-					eventsList.get(position),
+					eventList.get(position),
 					hasLeft,
 					hasRight,
 					showStatisticsForEvent(event),
 					showStatusForEvent(event),
-					eventsList.isLive(event)
+					eventList.isLive(event)
 					));
 			return fragment;      
 		}
 
 		final private String TAG = "SelectionActivity.MyAdapter"; 
 
-		public EventList eventsList = new EventList();
+		public EventList eventList = new EventList();
 	}
 
 	private static boolean showStatusForEvent(Event event) {
@@ -459,7 +455,7 @@ public class SelectionActivity extends FragmentActivity {
 		Hours hoursToStart = Hours.hoursBetween(now, event.getStartDate());
 		return hoursToStart.getHours() <= 24 || now.isAfter(event.getStartDate());
 	}
-	
+
 	private static boolean showStatisticsForEvent(Event event) {
 		// no statistics available for now
 		// later, this boolean will be provided by the server
@@ -472,7 +468,8 @@ public class SelectionActivity extends FragmentActivity {
 	private final static String TAG = "SelectionActivity"; 
 	private static int posEventShown = -1;
 	private static int posEventCurrent = -1;
-	private EventList eventsList;
-	private NetworkClient networkClient;
+	private EventList eventList;
 	private EventsCache eventsCache;
+	private GlobalStateAccess globalStateAccess;
+	private LocalBroadcastReceiversRegister broadcastReceiversRegister = new LocalBroadcastReceiversRegister(this); 
 } 

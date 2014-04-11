@@ -3,6 +3,7 @@ package de.greencity.bladenightapp.android.utils;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.greencity.bladenightapp.android.global.LocalBroadcast;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.IntentFilter;
@@ -14,7 +15,8 @@ public class LocalBroadcastReceiversRegister {
 		this.context = context;
 	}
 
-	public void registerReceiver(IntentFilter intentFilter, BroadcastReceiver receiver) {
+	public void registerReceiver(LocalBroadcast broadcast, BroadcastReceiver receiver) {
+		IntentFilter intentFilter = new IntentFilter(broadcast.toString());
 		LocalBroadcastManager.getInstance(context).registerReceiver(receiver,intentFilter);
 		registeredReceivers.add(receiver);
 		Log.i(TAG,"Registered receiver: " + receiver);

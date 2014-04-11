@@ -9,10 +9,10 @@ public class EventsCache {
 		this.context = context;
 	}
 
-	public void write(EventListMessage routeMessage) {
+	public void write(EventListMessage eventListMessage) {
 		Log.i(TAG, "Saving events to cache " + FILE);
 		JsonCacheAccess<EventListMessage> routeCache = newCacheAccess();
-		routeCache.set(routeMessage);
+		routeCache.set(eventListMessage);
 	}
 
 	public EventListMessage read() {
