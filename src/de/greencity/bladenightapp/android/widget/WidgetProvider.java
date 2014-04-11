@@ -14,32 +14,38 @@ import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.widget.RemoteViews;
+import de.greencity.bladenightapp.android.network.NetworkClient;
 import de.greencity.bladenightapp.dev.android.R;
 
 public class WidgetProvider extends AppWidgetProvider {
-	private static final String ACTION_CLICK = "ACTION_CLICK";
 	private Drawable background;
 	private Drawable progressBar;
 	private final String TAG = "WidgetProvider";
 	private final int renderingWidth = 500;
 	private final int renderingHeight = 100;
+	private NetworkClient networkClient;
 
+	@Override
+	public void onEnabled(Context context) {
+		networkClient = new NetworkClient(context);
+	}
+	
 	@Override
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
 
 		// Get all ids
-		ComponentName thisWidget = new ComponentName(context,
-				WidgetProvider.class);
+		ComponentName thisWidget = new ComponentName(context, WidgetProvider.class);
 		int[] allWidgetIds = appWidgetManager.getAppWidgetIds(thisWidget);
 		for (int widgetId : allWidgetIds) {
 			// create some random data
 			int number = (new Random().nextInt(100));
 
-			RemoteViews remoteViews = new RemoteViews(context.getPackageName(),
-					R.layout.widget);
+			RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget);
+			
 			Log.i("WidgetExample", String.valueOf(number));
+			
 			// Set the text
-			remoteViews.setTextViewText(R.id.update, String.valueOf(number));
+			remoteViews.setTextViewText(R.id.widgetText, String.valueOf(number));
 
 			remoteViews.setProgressBar(R.id.progress_procession, 100, number, false);
 			
@@ -54,16 +60,21 @@ public class WidgetProvider extends AppWidgetProvider {
 			remoteViews.setImageViewBitmap(R.id.imageView1, bitmap); 
 			
 			// Register an onClickListener
-			Intent intent = new Intent(context, WidgetProvider.class);
-
-			intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
-			intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);
-
-			PendingIntent pendingIntent = PendingIntent.getBroadcast(context,
-					0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-			remoteViews.setOnClickPendingIntent(R.id.update, pendingIntent);
+			setOnClickListener(context, appWidgetIds, remoteViews);
+			
 			appWidgetManager.updateAppWidget(widgetId, remoteViews);
 		}
+	}
+
+	private void setOnClickListener(Context context, int[] appWidgetIds,
+			RemoteViews remoteViews) {
+		Intent intent = new Intent(context, WidgetProvider.class);
+
+		intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+		intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);
+
+		PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+		remoteViews.setOnClickPendingIntent(R.id.widgetText, pendingIntent);
 	}
 	
 	private void drawProgressBar(Context context, Canvas canvas, int number) {

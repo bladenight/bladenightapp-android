@@ -33,6 +33,7 @@ import de.greencity.bladenightapp.network.messages.EventMessage;
 import de.greencity.bladenightapp.network.messages.EventMessage.EventStatus;
 import de.greencity.bladenightapp.network.messages.EventListMessage;
 import de.greencity.bladenightapp.network.messages.FriendsMessage;
+import de.greencity.bladenightapp.network.messages.GpsInfo;
 import de.greencity.bladenightapp.network.messages.HandshakeClientMessage;
 import de.greencity.bladenightapp.network.messages.RealTimeUpdateData;
 import de.greencity.bladenightapp.network.messages.RelationshipInputMessage;
@@ -157,7 +158,7 @@ public class NetworkClient implements LocationListener {
 	public void getRealTimeData(final Handler successHandler, final Handler errorHandler) {
 		BacklogItem item = new BacklogItem();
 		
-		Handler eavesDroppersuccessHandler = new Handler() {
+		Handler eavesDropperSuccessHandler = new Handler() {
 
 			@Override
 			public void handleMessage(Message msg) {
@@ -172,7 +173,7 @@ public class NetworkClient implements LocationListener {
 		};
 		
 		item.url = BladenightUrl.GET_REALTIME_UPDATE.getText();
-		item.successHandler = eavesDroppersuccessHandler;
+		item.successHandler = eavesDropperSuccessHandler;
 		item.errorHandler = errorHandler;
 		item.expectedReturnType = RealTimeUpdateData.class;
 
@@ -190,6 +191,19 @@ public class NetworkClient implements LocationListener {
 		}
 
 		item.outgoingPayload = sharedState.gpsInfo;
+		
+		callOrStore(item);
+	}
+
+	public void getRealTimeData(GpsInfo gpsInfo, final Handler successHandler, final Handler errorHandler) {
+		BacklogItem item = new BacklogItem();
+		
+		item.url = BladenightUrl.GET_REALTIME_UPDATE.getText();
+		item.successHandler = successHandler;
+		item.errorHandler = errorHandler;
+		item.expectedReturnType = RealTimeUpdateData.class;
+
+		item.outgoingPayload = gpsInfo;
 		
 		callOrStore(item);
 	}

@@ -15,12 +15,16 @@ import org.mapsforge.core.model.MapPosition;
 import org.mapsforge.map.reader.header.FileOpenResult;
 
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -37,12 +41,14 @@ import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator.Action
 import de.greencity.bladenightapp.android.actionbar.ActionLocateMe;
 import de.greencity.bladenightapp.android.cache.EventsCache;
 import de.greencity.bladenightapp.android.cache.RoutesCache;
+import de.greencity.bladenightapp.android.global.GlobalStateAccess;
+import de.greencity.bladenightapp.android.global.LocalBroadcast;
 import de.greencity.bladenightapp.android.map.userovl.UserPositionOverlay;
 import de.greencity.bladenightapp.android.network.NetworkClient;
 import de.greencity.bladenightapp.android.tracker.GpsListener;
 import de.greencity.bladenightapp.android.tracker.GpsTrackerService;
 import de.greencity.bladenightapp.android.utils.AsyncDownloadTaskHttpClient;
-import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
+import de.greencity.bladenightapp.android.utils.LocalBroadcastReceiversRegister;
 import de.greencity.bladenightapp.android.utils.Paths;
 import de.greencity.bladenightapp.android.utils.ServiceUtils;
 import de.greencity.bladenightapp.dev.android.R;
@@ -60,18 +66,21 @@ public class BladenightMapActivity extends MapActivity {
 
 		Log.i(TAG, "onCreate");
 
-		networkClient = new NetworkClient(this);
-
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_action);
 		checkSDCard();
 		createMapView();
 		createOverlays();
 
+		globalStateAccess = new GlobalStateAccess(this);
+		networkClient = new NetworkClient(this);
+
 		downloadProgressDialog = new ProgressDialog(this);
 		processionProgressBar = (ProcessionProgressBar) findViewById(R.id.progress_procession);
 		mapHeadline = (TextView) findViewById(R.id.map_headline);
 		mapHeadlineSeparator = (View) findViewById(R.id.map_headline_separator);
+		
+		realTimeDataBroadcastReceiver = new RealTimeDataBroadcastReceiver();
 	}
 
 	@Override
@@ -147,7 +156,7 @@ public class BladenightMapActivity extends MapActivity {
 					return;
 				// Log.i(TAG, "periodic task");
 				if ( ! isRouteInfoAvailable )
-					requestRouteFromNetworkService();
+					requestRouteFromServer();
 				getRealTimeDataFromServer();
 				periodicHandler.postDelayed(this, updatePeriod);
 			}
@@ -182,13 +191,16 @@ public class BladenightMapActivity extends MapActivity {
 			triggerInitialRouteDataFetch();
 		}
 
+		// Register mMessageReceiver to receive messages.
+		broadcastReceiversRegister.registerReceiver(new IntentFilter(LocalBroadcast.GOT_REALTIME_DATA.toString()), new RealTimeDataBroadcastReceiver());
+
 		isRunning = true;
 	}
 
 	private void triggerInitialRouteDataFetch() {
 		Log.i(TAG, "triggerInitialRouteDataFetch");
 		updateRouteFromCache();
-		requestRouteFromNetworkService();
+		requestRouteFromServer();
 	}
 
 	@Override
@@ -287,7 +299,38 @@ public class BladenightMapActivity extends MapActivity {
 						Toast.makeText(bladenightMapActivity, text + " " + liveRouteName, Toast.LENGTH_LONG).show();
 					}
 					bladenightMapActivity.routeName = liveRouteName;
-					bladenightMapActivity.requestRouteFromNetworkService();
+					bladenightMapActivity.requestRouteFromServer();
+				}
+				bladenightMapActivity.routeOverlay.update(realTimeUpdateData);
+				bladenightMapActivity.processionProgressBar.update(realTimeUpdateData);
+				bladenightMapActivity.userPositionOverlay.update(realTimeUpdateData);
+				bladenightMapActivity.update(realTimeUpdateData);
+			}
+			else {
+				bladenightMapActivity.userPositionOverlay.update(realTimeUpdateData);
+			}
+		}
+	}
+
+	class RealTimeDataBroadcastReceiver extends BroadcastReceiver {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			Log.i(TAG, "RealTimeDataBroadcastReceiver.onReceive");
+			final BladenightMapActivity bladenightMapActivity = BladenightMapActivity.this;
+			if ( bladenightMapActivity == null || bladenightMapActivity.isFinishing() || ! bladenightMapActivity.isRunning )
+				return;
+			RealTimeUpdateData realTimeUpdateData = new GlobalStateAccess(context).getRealTimeUpdateData();
+			String liveRouteName = realTimeUpdateData.getRouteName();
+			if ( bladenightMapActivity.isLive ) {
+				if ( ! liveRouteName.equals(bladenightMapActivity.routeName) ) {
+					if ( bladenightMapActivity.routeName != null ) {
+						// the route has changed, typically Lang -> Kurz
+						Log.i(TAG, "GetRealTimeDataFromServerHandler: route has changed: " + bladenightMapActivity.routeName + " -> " + liveRouteName);
+						String text = bladenightMapActivity.getResources().getString(R.string.msg_route_has_changed);
+						Toast.makeText(bladenightMapActivity, text + " " + liveRouteName, Toast.LENGTH_LONG).show();
+					}
+					bladenightMapActivity.routeName = liveRouteName;
+					bladenightMapActivity.requestRouteFromServer();
 				}
 				bladenightMapActivity.routeOverlay.update(realTimeUpdateData);
 				bladenightMapActivity.processionProgressBar.update(realTimeUpdateData);
@@ -301,14 +344,14 @@ public class BladenightMapActivity extends MapActivity {
 	}
 
 	protected void getRealTimeDataFromServer() {
-		networkClient.getRealTimeData(new GetRealTimeDataFromServerHandler(this), null);
+		globalStateAccess.requestRealTimeUpdateData();
 	}
 
 	public void update(RealTimeUpdateData realTimeUpdateData) {
 		updateHeadline(realTimeUpdateData);
 	}
 
-	protected void requestRouteFromNetworkService() {
+	protected void requestRouteFromServer() {
 		if ( routeName.length() > 0 )
 			getSpecificRouteFromServer(routeName);
 		else
@@ -608,7 +651,10 @@ public class BladenightMapActivity extends MapActivity {
 	}
 
 	final static String TAG = "BladenightMapActivity";
-	private BroadcastReceiversRegister broadcastReceiversRegister = new BroadcastReceiversRegister(this); 
+	private GlobalStateAccess globalStateAccess;
+	private NetworkClient networkClient;
+	private LocalBroadcastReceiversRegister broadcastReceiversRegister = new LocalBroadcastReceiversRegister(this); 
+	private BroadcastReceiver realTimeDataBroadcastReceiver;
 	private final String mapLocalPath = new File(Paths.getAppDataDirectory(), "munich.map").getAbsolutePath();
 	private final String mapRemotePath = "maps/munich.map";
 	private ProgressDialog downloadProgressDialog;
@@ -620,7 +666,6 @@ public class BladenightMapActivity extends MapActivity {
 	private ProcessionProgressBar processionProgressBar;
 	private TextView mapHeadline;
 	private View mapHeadlineSeparator;
-	private NetworkClient networkClient;
 	private final int updatePeriod = 3000;
 	private final Handler periodicHandler = new Handler();
 	private Runnable periodicTask;

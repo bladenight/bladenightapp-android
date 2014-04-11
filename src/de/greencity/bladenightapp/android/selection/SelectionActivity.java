@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -38,7 +39,7 @@ import de.greencity.bladenightapp.android.admin.AdminActivity;
 import de.greencity.bladenightapp.android.admin.AdminUtilities;
 import de.greencity.bladenightapp.android.cache.EventsCache;
 import de.greencity.bladenightapp.android.network.NetworkClient;
-import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
+import de.greencity.bladenightapp.android.utils.LocalBroadcastReceiversRegister;
 import de.greencity.bladenightapp.android.utils.DeviceId;
 import de.greencity.bladenightapp.dev.android.R;
 import de.greencity.bladenightapp.events.Event;
@@ -96,9 +97,6 @@ public class SelectionActivity extends FragmentActivity {
 	@Override
 	protected void onStop() {
 		super.onStop();
-		// Log.i(TAG, "onStop");
-
-		broadcastReceiversRegister.unregisterReceivers();
 	}
 
 	@Override
@@ -210,12 +208,9 @@ public class SelectionActivity extends FragmentActivity {
 	}
 
 	private void shakeHands() {
-		PackageManager manager = this.getPackageManager();
-		PackageInfo info;
 		try {
-			info = manager.getPackageInfo(this.getPackageName(), 0);
 			String deviceId = DeviceId.getDeviceId(this);
-			int clientBuild = info.versionCode;
+			int clientBuild = getDeviceVersionCode();
 
 			String phoneManufacturer = android.os.Build.MANUFACTURER;
 			String phoneModel = android.os.Build.MODEL;
@@ -230,6 +225,18 @@ public class SelectionActivity extends FragmentActivity {
 			networkClient.shakeHands(msg, null, new HandshakeErrorHandler(this));
 		} catch (Exception e) {
 			Log.e(TAG, "shakeHands failed to gather and send information: " + e.toString());
+		}
+	}
+	
+	private int getDeviceVersionCode() {
+		PackageManager manager = this.getPackageManager();
+		PackageInfo info;
+		try {
+			info = manager.getPackageInfo(this.getPackageName(), 0);
+			return info.versionCode;
+		} catch (NameNotFoundException e) {
+			Log.e(TAG, "Failed to get device version code: " + e.toString());
+			return 0;
 		}
 	}
 
@@ -463,7 +470,6 @@ public class SelectionActivity extends FragmentActivity {
 	private ViewPager viewPager;
 	private ViewPagerAdapter viewPagerAdapter;
 	private final static String TAG = "SelectionActivity"; 
-	private BroadcastReceiversRegister broadcastReceiversRegister = new BroadcastReceiversRegister(this);
 	private static int posEventShown = -1;
 	private static int posEventCurrent = -1;
 	private EventList eventsList;

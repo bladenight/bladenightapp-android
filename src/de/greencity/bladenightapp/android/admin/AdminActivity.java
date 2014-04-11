@@ -32,7 +32,6 @@ import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator.ActionItemType;
 import de.greencity.bladenightapp.android.actionbar.ActionReload;
 import de.greencity.bladenightapp.android.network.NetworkClient;
-import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
 import de.greencity.bladenightapp.dev.android.R;
 import de.greencity.bladenightapp.network.messages.EventMessage;
 import de.greencity.bladenightapp.network.messages.EventMessage.EventStatus;
@@ -309,7 +308,6 @@ public class AdminActivity extends Activity {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		broadcastReceiversRegister.unregisterReceivers();
 	}
 
 	private void configureActionBar() {
@@ -350,7 +348,6 @@ public class AdminActivity extends Activity {
 	}
 
 	final static String TAG = "AdminActivity";
-	private BroadcastReceiversRegister broadcastReceiversRegister = new BroadcastReceiversRegister(this); 
 	private NetworkClient networkClient;
 	private ArrayAdapter<CharSequence> spinnerRouteNameAdapter;
 	private ArrayAdapter<CharSequence> spinnerStatusAdapter;

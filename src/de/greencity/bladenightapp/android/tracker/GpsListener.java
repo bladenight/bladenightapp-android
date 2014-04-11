@@ -22,7 +22,7 @@ public class GpsListener {
 		}
 		catch(Exception e) {
 			Log.e(this.toString(), "Failed to subscribe some of the location listeners",e);
-			Toast.makeText(context, "Fehler in dem Ortsbestimmungssystem. Die Position kann ungenau oder unverfübar sein", Toast.LENGTH_LONG).show();
+			Toast.makeText(context, "Fehler in dem Ortsbestimmungssystem. Die Position kann ungenau oder unverf√ºgbar sein", Toast.LENGTH_LONG).show();
 		}
 
 	}

@@ -60,7 +60,7 @@ public class GpsTrackerService extends Service {
 			@Override
 			public void run() {
 				Log.i(TAG, "periodic task");
-				sendLocationUpdateToNetworkService();
+				sendLocationUpdateToServer();
 				handler.postDelayed(this, SEND_PERIOD);
 				writeTraceEntry();
 			}
@@ -132,7 +132,7 @@ public class GpsTrackerService extends Service {
 		}
 	}
 
-	private void sendLocationUpdateToNetworkService() {
+	private void sendLocationUpdateToServer() {
 		Log.i(TAG, "Sending: "+lastKnownLocation);
 		networkClient.updateFromGpsTrackerService(lastKnownLocation);
 	}
