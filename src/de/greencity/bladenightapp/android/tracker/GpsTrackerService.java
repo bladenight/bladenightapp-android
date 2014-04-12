@@ -17,6 +17,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import de.greencity.bladenightapp.android.global.GlobalStateAccess;
 import de.greencity.bladenightapp.android.map.BladenightMapActivity;
 import de.greencity.bladenightapp.android.network.NetworkClient;
 import de.greencity.bladenightapp.android.network.RealTimeDataConsumer;
@@ -40,6 +41,8 @@ public class GpsTrackerService extends Service {
 
 		traceLogger = new GeoTraceLogger(new File(Paths.getAppDataDirectory(), "gps-trace.txt"));
 
+		globalStateAccess = new GlobalStateAccess(this);
+		
 		realTimeDataConsumer = new RealTimeDataConsumer() {
 			@Override
 			public void consume(RealTimeUpdateData realTimeUpdateData) {
@@ -60,7 +63,9 @@ public class GpsTrackerService extends Service {
 			@Override
 			public void run() {
 				Log.i(TAG, "periodic task");
-				sendLocationUpdateToServer();
+				globalStateAccess.setLocationFromGps(lastKnownLocation);
+				globalStateAccess.requestRealTimeUpdateData();
+				// sendLocationUpdateToServer();
 				handler.postDelayed(this, SEND_PERIOD);
 				writeTraceEntry();
 			}
@@ -149,6 +154,7 @@ public class GpsTrackerService extends Service {
 	}
 
 
+	private GlobalStateAccess globalStateAccess;
 	private Location lastKnownLocation;
 	private BladenightLocationListener locationListener;
 	private GpsListener gpsListener;

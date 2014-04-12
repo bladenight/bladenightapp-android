@@ -92,52 +92,6 @@ public class BladenightMapActivity extends MapActivity {
 	}
 
 	@Override
-	protected void onNewIntent(Intent intent) {
-		super.onNewIntent(intent);
-
-		Log.i(TAG, "onNewIntent");
-
-		setIntent(intent);
-		configureBasedOnIntent();
-	}
-
-	private void configureBasedOnIntent() {
-
-		Log.i(TAG, "configureBasedOnIntent");
-
-		getActivityParametersFromIntentOrDefault(getIntent());
-
-		configureActionBar();
-	}
-
-
-	@Override
-	public void onPause() {
-		super.onPause();
-		cancelAllAutomaticTasks();
-		isRunning = false;
-	}
-
-	public void cancelAllAutomaticTasks() {
-		if ( periodicTask != null )
-			periodicHandler.removeCallbacks(periodicTask);
-		if ( gpsListener != null )
-			gpsListener.cancelLocationUpdates();
-	}
-	
-	public void registerGpsListener() {
-		destroyGpsListener();
-		gpsListener = new GpsListener(this, globalStateAccess);
-		gpsListener.requestLocationUpdates(updatePeriod);
-	}
-	
-	public void destroyGpsListener() {
-		if ( gpsListener != null )
-			gpsListener.cancelLocationUpdates();
-		gpsListener = null;
-	}
-
-	@Override
 	public void onResume() {
 		super.onResume();
 
@@ -207,6 +161,53 @@ public class BladenightMapActivity extends MapActivity {
 	public void onDestroy() {
 		super.onDestroy();
 	}
+
+	@Override
+	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+
+		Log.i(TAG, "onNewIntent");
+
+		setIntent(intent);
+		configureBasedOnIntent();
+	}
+
+	private void configureBasedOnIntent() {
+
+		Log.i(TAG, "configureBasedOnIntent");
+
+		getActivityParametersFromIntentOrDefault(getIntent());
+
+		configureActionBar();
+	}
+
+
+	@Override
+	public void onPause() {
+		super.onPause();
+		cancelAllAutomaticTasks();
+		isRunning = false;
+	}
+
+	public void cancelAllAutomaticTasks() {
+		if ( periodicTask != null )
+			periodicHandler.removeCallbacks(periodicTask);
+		if ( gpsListener != null )
+			gpsListener.cancelLocationUpdates();
+	}
+	
+	public void registerGpsListener() {
+		destroyGpsListener();
+		gpsListener = new GpsListener(this, globalStateAccess);
+		gpsListener.requestLocationUpdates(updatePeriod);
+	}
+	
+	public void destroyGpsListener() {
+		if ( gpsListener != null )
+			gpsListener.cancelLocationUpdates();
+		gpsListener = null;
+	}
+
 
 	private void triggerInitialRouteDataFetch() {
 		Log.i(TAG, "triggerInitialRouteDataFetch");

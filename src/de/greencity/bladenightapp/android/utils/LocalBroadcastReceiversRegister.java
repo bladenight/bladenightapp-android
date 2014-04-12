@@ -33,6 +33,10 @@ public class LocalBroadcastReceiversRegister {
 			}
 		}
 	}
+	
+	public int getNumberORegisteredReceivers() {
+		return registeredReceivers.size();
+	}
 
 	private List<BroadcastReceiver> registeredReceivers = new ArrayList<BroadcastReceiver>();
 	private Context context;
