@@ -3,9 +3,7 @@ package de.greencity.bladenightapp.android.network;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import android.location.Location;
 import android.util.Log;
-import de.greencity.bladenightapp.network.messages.GpsInfo;
 
 public class NetworkClientSharedState {
 	
@@ -80,13 +78,7 @@ public class NetworkClientSharedState {
 
 	public long 				lookingForServerTimestamp = 0;
 	public long 				connectingSinceTimestamp;
-	public String 				deviceId = null;
-	public final GpsInfo 		gpsInfo = new GpsInfo();
 	
-	public 	Location 			lastKnownLocation;
-	
-	public BladenightWampClient bladenightWampClient = new BladenightWampClient();
-
 	private String 				server;
 	private int 				port;
 	private boolean				useSsl;

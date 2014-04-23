@@ -75,8 +75,10 @@ public class BladenightWampClient {
 	}
 
 	public void disconnect() {
-		webSocketClient.disconnect();
-		wampClient.reset();
+		if ( webSocketClient != null )
+			webSocketClient.disconnect();
+		if ( wampClient != null )
+			wampClient.reset();
 		state = State.DISCONNECTED;
 	}
 

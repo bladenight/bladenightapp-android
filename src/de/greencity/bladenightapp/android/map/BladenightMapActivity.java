@@ -355,7 +355,7 @@ public class BladenightMapActivity extends MapActivity {
 			final BladenightMapActivity bladenightMapActivity = BladenightMapActivity.this;
 			Location location = globalStateAccess.getLocationFromGps();
 			bladenightMapActivity.userPositionOverlay.onLocationChanged(location);
-			bladenightMapActivity.networkClient.onLocationChanged(location);
+			globalStateAccess.onLocationChanged(location);
 		}
 	}
 

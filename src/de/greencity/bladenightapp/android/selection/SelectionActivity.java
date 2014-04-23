@@ -7,8 +7,10 @@ import org.joda.time.DateTime;
 import org.joda.time.Hours;
 
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -16,6 +18,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -39,10 +42,12 @@ import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator.Action
 import de.greencity.bladenightapp.android.actionbar.ActionEventSelection;
 import de.greencity.bladenightapp.android.admin.AdminActivity;
 import de.greencity.bladenightapp.android.admin.AdminUtilities;
+import de.greencity.bladenightapp.android.background.BackgroundHelper;
 import de.greencity.bladenightapp.android.cache.EventsCache;
-import de.greencity.bladenightapp.android.global.GlobalStateAccess;
 import de.greencity.bladenightapp.android.global.LocalBroadcast;
+import de.greencity.bladenightapp.android.network.GlobalStateService;
 import de.greencity.bladenightapp.android.network.NetworkClient;
+import de.greencity.bladenightapp.android.network.GlobalStateService.NetworkServiceBinder;
 import de.greencity.bladenightapp.android.utils.DeviceId;
 import de.greencity.bladenightapp.android.utils.LocalBroadcastReceiversRegister;
 import de.greencity.bladenightapp.dev.android.R;
@@ -67,10 +72,13 @@ public class SelectionActivity extends FragmentActivity {
 		// avoid NPE, will be replaced as soon as we get data from the network or the cache:
 		eventList = new EventList(); 
 
-		globalStateAccess = new GlobalStateAccess(this);
-
 		openDialog();
-
+		
+		new BackgroundHelper(this).scheduleNext();
+		// Intent intent = new Intent(this, B)
+		Intent intent = new Intent();
+		intent.setAction("de.vogella.android.mybroadcast");
+		sendBroadcast(intent); 
 	}
 
 	@Override
@@ -92,22 +100,51 @@ public class SelectionActivity extends FragmentActivity {
 		super.onResume();
 		// Log.i(TAG, "onResume");
 
+		bindToGlobalStateService();
+		
 		broadcastReceiversRegister.registerReceiver(LocalBroadcast.GOT_EVENT_LIST, new EventListBroadcastReceiver());
 
 		configureActionBar();
 
 		getEventsFromCache();
-
-		globalStateAccess.requestEventList();
 	}
 
 	@Override
 	protected void onPause() {
 		super.onPause();
+		unbindFromGlobalStateService();
 		broadcastReceiversRegister.unregisterReceivers();
 	}
 
 
+	private ServiceConnection globalStateServiceConnection = new ServiceConnection() {
+		@Override
+		public void onServiceConnected(ComponentName name, IBinder binder) {
+			globalStateService = ((NetworkServiceBinder)binder).getService();
+			globalStateService.requestEventList();
+			Log.i(TAG, "onServiceConnected name="+name);
+		}
+
+		@Override
+		public void onServiceDisconnected(ComponentName name) {
+			Log.i(TAG, "onServiceDisconnected name="+name);
+		}
+	};
+
+	private void unbindFromGlobalStateService() {
+		if (globalStateServiceConnection != null) {
+            unbindService(globalStateServiceConnection);
+            globalStateServiceConnection = null;
+        }
+	}
+
+	private void bindToGlobalStateService() {
+		Intent bindIntent = new Intent(this, GlobalStateService.class);
+		bindService(bindIntent, globalStateServiceConnection, Context.BIND_AUTO_CREATE);
+	}
+
+
+	
 	private void configureActionBar() {
 		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
 		Action actionGoToCurrentEvent = new ActionEventSelection() {
@@ -129,7 +166,7 @@ public class SelectionActivity extends FragmentActivity {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			Log.i(TAG, "EventListBroadcastReceiver.onReceive");
-			eventList = globalStateAccess.getEventList();
+			eventList = globalStateService.getGlobalState().getEventList();
 			updateFragmentsFromEventList();
 			saveEventsToCache(eventList);
 		}
@@ -470,6 +507,7 @@ public class SelectionActivity extends FragmentActivity {
 	private static int posEventCurrent = -1;
 	private EventList eventList;
 	private EventsCache eventsCache;
-	private GlobalStateAccess globalStateAccess;
 	private LocalBroadcastReceiversRegister broadcastReceiversRegister = new LocalBroadcastReceiversRegister(this); 
+	private GlobalStateService globalStateService;
+
 } 

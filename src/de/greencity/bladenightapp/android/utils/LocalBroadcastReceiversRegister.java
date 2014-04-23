@@ -19,7 +19,7 @@ public class LocalBroadcastReceiversRegister {
 		IntentFilter intentFilter = new IntentFilter(broadcast.toString());
 		LocalBroadcastManager.getInstance(context).registerReceiver(receiver,intentFilter);
 		registeredReceivers.add(receiver);
-		Log.i(TAG,"Registered receiver: " + receiver);
+		Log.i(TAG,"Registered receiver for " + broadcast.toString() + "; " + receiver);
 	}
 
 	public void unregisterReceivers() {

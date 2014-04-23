@@ -112,7 +112,7 @@ public class WidgetProvider extends AppWidgetProvider {
 		background.draw(canvas);
 
 		RealTimeUpdateData realTimeUpdateData = globalStateAccess.getRealTimeUpdateData();
-		Log.i(TAG, "realTimeUpdateData="+realTimeUpdateData);
+		// Log.i(TAG, "realTimeUpdateData="+realTimeUpdateData);
 		if ( realTimeUpdateData == null ) {
 			return; // no data available
 		}
@@ -122,9 +122,6 @@ public class WidgetProvider extends AppWidgetProvider {
 
 		int yMin = (int)(0.0 * renderingHeight);
 		int yMax = (int)(1.0 * renderingHeight);
-
-		Log.i(TAG, "xMin="+xMin);
-		Log.i(TAG, "xMax="+xMax);
 
 		Drawable progressBar = getProgressBar(context);
 		progressBar.setBounds(xMin, yMin, xMax, yMax);

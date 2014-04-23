@@ -137,11 +137,6 @@ public class GpsTrackerService extends Service {
 		}
 	}
 
-	private void sendLocationUpdateToServer() {
-		Log.i(TAG, "Sending: "+lastKnownLocation);
-		networkClient.updateFromGpsTrackerService(lastKnownLocation);
-	}
-
 	private void writeTraceEntry() {
 		traceLogger.setAccuracy(lastKnownLocation.getAccuracy());
 		traceLogger.setLongitude(lastKnownLocation.getLongitude());

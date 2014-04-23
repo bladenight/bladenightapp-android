@@ -31,6 +31,7 @@ import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator.ActionItemType;
 import de.greencity.bladenightapp.android.actionbar.ActionReload;
 import de.greencity.bladenightapp.android.cache.FriendsCache;
+import de.greencity.bladenightapp.android.global.GlobalStateAccess;
 import de.greencity.bladenightapp.android.network.NetworkClient;
 import de.greencity.bladenightapp.android.social.ChangeFriendDialog.ChangeFriendDialogListener;
 import de.greencity.bladenightapp.android.social.ConfirmFriendDialog.ConfirmFriendDialogListener;
@@ -305,6 +306,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
 		getFriendsListFromServer();
 	}
 
+	// TODO: replace this deprecated code by a broadcast receiver
 	static class GetRealTimeDataFromServerHandler extends Handler {
 		private WeakReference<SocialActivity> reference;
 		GetRealTimeDataFromServerHandler(SocialActivity activity) {
@@ -321,7 +323,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
 	}
 
 	private void getRealTimeDataFromServer(){
-		networkClient.getRealTimeData(new GetRealTimeDataFromServerHandler(this), null);
+		new GlobalStateAccess(this).requestRealTimeUpdateData();
 	}
 
 	static class DeleteFriendOnServerHandler extends Handler {
