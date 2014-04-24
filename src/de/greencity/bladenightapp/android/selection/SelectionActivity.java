@@ -44,8 +44,8 @@ import de.greencity.bladenightapp.android.admin.AdminActivity;
 import de.greencity.bladenightapp.android.admin.AdminUtilities;
 import de.greencity.bladenightapp.android.background.BackgroundHelper;
 import de.greencity.bladenightapp.android.cache.EventsCache;
+import de.greencity.bladenightapp.android.global.GlobalStateAccess;
 import de.greencity.bladenightapp.android.global.LocalBroadcast;
-import de.greencity.bladenightapp.android.network.GlobalStateService;
 import de.greencity.bladenightapp.android.network.NetworkClient;
 import de.greencity.bladenightapp.android.network.GlobalStateService.NetworkServiceBinder;
 import de.greencity.bladenightapp.android.utils.DeviceId;
@@ -79,6 +79,8 @@ public class SelectionActivity extends FragmentActivity {
 		Intent intent = new Intent();
 		intent.setAction("de.vogella.android.mybroadcast");
 		sendBroadcast(intent); 
+		
+		globalStateAccess = new GlobalStateAccess(this);
 	}
 
 	@Override
@@ -100,7 +102,9 @@ public class SelectionActivity extends FragmentActivity {
 		super.onResume();
 		// Log.i(TAG, "onResume");
 
-		bindToGlobalStateService();
+		// bindToGlobalStateService();
+		
+		globalStateAccess.requestEventList();
 		
 		broadcastReceiversRegister.registerReceiver(LocalBroadcast.GOT_EVENT_LIST, new EventListBroadcastReceiver());
 
@@ -112,36 +116,36 @@ public class SelectionActivity extends FragmentActivity {
 	@Override
 	protected void onPause() {
 		super.onPause();
-		unbindFromGlobalStateService();
+		// unbindFromGlobalStateService();
 		broadcastReceiversRegister.unregisterReceivers();
 	}
 
 
-	private ServiceConnection globalStateServiceConnection = new ServiceConnection() {
-		@Override
-		public void onServiceConnected(ComponentName name, IBinder binder) {
-			globalStateService = ((NetworkServiceBinder)binder).getService();
-			globalStateService.requestEventList();
-			Log.i(TAG, "onServiceConnected name="+name);
-		}
+//	private ServiceConnection globalStateServiceConnection = new ServiceConnection() {
+//		@Override
+//		public void onServiceConnected(ComponentName name, IBinder binder) {
+//			globalStateService = ((NetworkServiceBinder)binder).getService();
+//			globalStateService.requestEventList();
+//			Log.i(TAG, "onServiceConnected name="+name);
+//		}
+//
+//		@Override
+//		public void onServiceDisconnected(ComponentName name) {
+//			Log.i(TAG, "onServiceDisconnected name="+name);
+//		}
+//	};
 
-		@Override
-		public void onServiceDisconnected(ComponentName name) {
-			Log.i(TAG, "onServiceDisconnected name="+name);
-		}
-	};
+//	private void unbindFromGlobalStateService() {
+//		if (globalStateServiceConnection != null) {
+//            unbindService(globalStateServiceConnection);
+//            globalStateServiceConnection = null;
+//        }
+//	}
 
-	private void unbindFromGlobalStateService() {
-		if (globalStateServiceConnection != null) {
-            unbindService(globalStateServiceConnection);
-            globalStateServiceConnection = null;
-        }
-	}
-
-	private void bindToGlobalStateService() {
-		Intent bindIntent = new Intent(this, GlobalStateService.class);
-		bindService(bindIntent, globalStateServiceConnection, Context.BIND_AUTO_CREATE);
-	}
+//	private void bindToGlobalStateService() {
+//		Intent bindIntent = new Intent(this, GlobalStateService.class);
+//		bindService(bindIntent, globalStateServiceConnection, Context.BIND_AUTO_CREATE);
+//	}
 
 
 	
@@ -166,7 +170,7 @@ public class SelectionActivity extends FragmentActivity {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			Log.i(TAG, "EventListBroadcastReceiver.onReceive");
-			eventList = globalStateService.getGlobalState().getEventList();
+			eventList = globalStateAccess.getEventList();
 			updateFragmentsFromEventList();
 			saveEventsToCache(eventList);
 		}
@@ -508,6 +512,7 @@ public class SelectionActivity extends FragmentActivity {
 	private EventList eventList;
 	private EventsCache eventsCache;
 	private LocalBroadcastReceiversRegister broadcastReceiversRegister = new LocalBroadcastReceiversRegister(this); 
-	private GlobalStateService globalStateService;
+	// private GlobalStateService globalStateService;
+	GlobalStateAccess globalStateAccess;
 
 } 

@@ -163,6 +163,10 @@ public class WebSocketClient {
         });
     }
 
+	public void destroy() {
+		mHandlerThread.quit();
+	}
+
     public void send(String data) {
         sendFrame(mParser.frame(data));
     }
@@ -254,4 +258,5 @@ public class WebSocketClient {
 	public static void setCustomSslFactory(SSLSocketFactory sslSocketFactory) {
 		sslFactory = sslSocketFactory;
 	}
+
 }

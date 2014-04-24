@@ -6,12 +6,6 @@ import android.content.Intent;
 
 public class BootBroadcastReceiver extends BroadcastReceiver {
 
-	// incoming events:
-	final static String INTENT_GET_EVENTS = "get-events";
-
-	// outgoing events:
-	final static String INTENT_GOT_EVENTS = "got-events";
-
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		if (intent.getAction().equals("android.intent.action.BOOT_COMPLETED")) {

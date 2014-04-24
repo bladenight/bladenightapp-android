@@ -12,6 +12,7 @@ import android.location.LocationListener;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import de.greencity.bladenightapp.android.app.BladeNightApplication;
 import de.greencity.bladenightapp.android.cache.EventsCache;
 import de.greencity.bladenightapp.android.network.NetworkClient;
 import de.greencity.bladenightapp.android.tracker.GpsTrackerService;
@@ -30,7 +31,7 @@ public class GlobalStateAccess implements LocationListener {
 				globalStateSingleton = new GlobalState();
 		}
 		this.context = context;
-		this.networkClient = new NetworkClient(context);
+		this.networkClient = BladeNightApplication.networkClient;
 	}
 
 	public Location getLocationFromGps() {

@@ -82,6 +82,13 @@ public class BladenightWampClient {
 		state = State.DISCONNECTED;
 	}
 
+	public void destroy() {
+		disconnect();
+		webSocketClient.destroy();
+	}
+
+
+
 	public State getState() {
 		return state;
 	}
@@ -142,6 +149,5 @@ public class BladenightWampClient {
 			client.send(message);
 		}
 	}
-
 
 }

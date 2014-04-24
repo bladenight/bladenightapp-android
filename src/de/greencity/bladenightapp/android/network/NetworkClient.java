@@ -48,6 +48,7 @@ public class NetworkClient {
 		if ( ! sharedState.isServerConfigured() )
 			getUrlFromConfiguration();
 		Log.i(TAG, "Initialized NetworkClient from thread " + Thread.currentThread().getId());
+		Log.i(TAG, "networkClient.this="+this);
 	}
 
 	private void getUrlFromConfiguration() {
@@ -369,6 +370,10 @@ public class NetworkClient {
 
 	protected void onServerFound() {
 		connect();
+	}
+
+	public void destroy() {
+		bladenightWampClient.destroy();
 	}
 
 	private Context context;
