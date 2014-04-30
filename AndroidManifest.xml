@@ -106,7 +106,7 @@
             android:name="de.greencity.bladenightapp.android.cache.CacheWriterReceiver"
             android:exported="false" >
             <intent-filter>
-                <action android:name="gotevents" />
+                <action android:name="de.greencity.bladenightapp.android.global.gotevents" />
             </intent-filter>
         </receiver>
     </application>

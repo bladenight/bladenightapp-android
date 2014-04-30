@@ -16,7 +16,7 @@ import android.util.Log;
 import android.widget.RemoteViews;
 import de.greencity.bladenightapp.android.global.GlobalStateAccess;
 import de.greencity.bladenightapp.android.global.LocalBroadcast;
-import de.greencity.bladenightapp.android.utils.LocalBroadcastReceiversRegister;
+import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
 import de.greencity.bladenightapp.dev.android.R;
 import de.greencity.bladenightapp.network.messages.RealTimeUpdateData;
 
@@ -26,7 +26,7 @@ public class WidgetProvider extends AppWidgetProvider {
 	private final String TAG = "WidgetProvider";
 	private final int renderingWidth = 500;
 	private final int renderingHeight = 100;
-	private LocalBroadcastReceiversRegister localBroadcastReceiversRegister;
+	private BroadcastReceiversRegister localBroadcastReceiversRegister;
 
 
 	@Override
@@ -41,9 +41,9 @@ public class WidgetProvider extends AppWidgetProvider {
 		getLocalBroadcastReceiversRegister(context).unregisterReceivers();
 	}
 
-	private LocalBroadcastReceiversRegister getLocalBroadcastReceiversRegister(Context context) {
+	private BroadcastReceiversRegister getLocalBroadcastReceiversRegister(Context context) {
 		if ( localBroadcastReceiversRegister == null )
-			localBroadcastReceiversRegister = new LocalBroadcastReceiversRegister(context);
+			localBroadcastReceiversRegister = new BroadcastReceiversRegister(context);
 		return localBroadcastReceiversRegister;
 	}
 	

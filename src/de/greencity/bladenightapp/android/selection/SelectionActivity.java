@@ -46,7 +46,7 @@ import de.greencity.bladenightapp.android.global.GlobalStateAccess;
 import de.greencity.bladenightapp.android.global.LocalBroadcast;
 import de.greencity.bladenightapp.android.network.NetworkClient;
 import de.greencity.bladenightapp.android.utils.DeviceId;
-import de.greencity.bladenightapp.android.utils.LocalBroadcastReceiversRegister;
+import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
 import de.greencity.bladenightapp.dev.android.R;
 import de.greencity.bladenightapp.events.Event;
 import de.greencity.bladenightapp.events.EventList;
@@ -505,7 +505,7 @@ public class SelectionActivity extends FragmentActivity {
 	private static int posEventCurrent = -1;
 	private EventList eventList;
 	private EventsMessageCache eventsCache;
-	private LocalBroadcastReceiversRegister broadcastReceiversRegister = new LocalBroadcastReceiversRegister(this); 
+	private BroadcastReceiversRegister broadcastReceiversRegister = new BroadcastReceiversRegister(this); 
 	// private GlobalStateService globalStateService;
 	GlobalStateAccess globalStateAccess;
 

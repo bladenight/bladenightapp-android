@@ -10,13 +10,13 @@ import android.os.SystemClock;
 import android.util.Log;
 import de.greencity.bladenightapp.android.global.GlobalStateAccess;
 import de.greencity.bladenightapp.android.global.LocalBroadcast;
-import de.greencity.bladenightapp.android.utils.LocalBroadcastReceiversRegister;
+import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
 import de.greencity.bladenightapp.events.EventList;
 
 public class BackgroundService extends IntentService {
 
 	private static final String TAG = "BackgroundService";
-	private LocalBroadcastReceiversRegister broadcastReceiversRegister;
+	private BroadcastReceiversRegister broadcastReceiversRegister;
 	private GlobalStateAccess globalStateAccess;
 
 	private boolean gotEventList = false;
@@ -114,7 +114,7 @@ public class BackgroundService extends IntentService {
 	}
 
 	private void createAndRegisterBroadcastReceiver() {
-		broadcastReceiversRegister = new LocalBroadcastReceiversRegister(this);
+		broadcastReceiversRegister = new BroadcastReceiversRegister(this);
 		broadcastReceiversRegister.registerReceiver(LocalBroadcast.GOT_EVENT_LIST, new BroadcastReceiver() {
 			@Override
 			public void onReceive(Context context, Intent intent) {

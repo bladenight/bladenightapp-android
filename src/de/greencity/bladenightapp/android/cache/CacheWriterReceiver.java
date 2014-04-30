@@ -24,5 +24,4 @@ public class CacheWriterReceiver extends BroadcastReceiver {
 		new EventsCache(context).write(new GlobalStateAccess(context).getEventList());
 	}
 
-
 }
