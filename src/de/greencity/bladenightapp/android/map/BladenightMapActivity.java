@@ -37,7 +37,7 @@ import com.markupartist.android.widget.ActionBar;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator.ActionItemType;
 import de.greencity.bladenightapp.android.actionbar.ActionLocateMe;
-import de.greencity.bladenightapp.android.cache.EventsCache;
+import de.greencity.bladenightapp.android.cache.EventsMessageCache;
 import de.greencity.bladenightapp.android.cache.RoutesCache;
 import de.greencity.bladenightapp.android.global.GlobalStateAccess;
 import de.greencity.bladenightapp.android.global.LocalBroadcast;
@@ -268,7 +268,7 @@ public class BladenightMapActivity extends MapActivity {
 	}
 
 	private EventList getEventListFromCacheOrEmptyList() {
-		EventListMessage eventListMessage = new EventsCache(this).read();
+		EventListMessage eventListMessage = new EventsMessageCache(this).read();
 		if ( eventListMessage == null )
 			return new EventList();
 		return eventListMessage.convertToEventsList();

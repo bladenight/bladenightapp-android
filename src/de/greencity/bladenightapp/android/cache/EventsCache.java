@@ -1,28 +1,28 @@
 package de.greencity.bladenightapp.android.cache;
 
+import de.greencity.bladenightapp.events.EventList;
 import android.content.Context;
 import android.util.Log;
-import de.greencity.bladenightapp.network.messages.EventListMessage;
 
 public class EventsCache {
 	public EventsCache(Context context) {
 		this.context = context;
 	}
 
-	public void write(EventListMessage eventListMessage) {
+	public void write(EventList EventList) {
 		Log.i(TAG, "Saving events to cache " + FILE);
-		JsonCacheAccess<EventListMessage> routeCache = newCacheAccess();
-		routeCache.set(eventListMessage);
+		JsonCacheAccess<EventList> routeCache = newCacheAccess();
+		routeCache.set(EventList);
 	}
 
-	public EventListMessage read() {
+	public EventList read() {
 		Log.i(TAG, "Getting cache for events.");
-		JsonCacheAccess<EventListMessage> routeCache = newCacheAccess();
+		JsonCacheAccess<EventList> routeCache = newCacheAccess();
 		return routeCache.get();
 	}
 
-	private JsonCacheAccess<EventListMessage> newCacheAccess() {
-		return new JsonCacheAccess<EventListMessage>(context, EventListMessage.class, FILE);
+	private JsonCacheAccess<EventList> newCacheAccess() {
+		return new JsonCacheAccess<EventList>(context, EventList.class, FILE);
 	}
 	
 

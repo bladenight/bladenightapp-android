@@ -17,7 +17,6 @@ public class BackgroundService extends IntentService {
 
 	private static final String TAG = "BackgroundService";
 	private LocalBroadcastReceiversRegister broadcastReceiversRegister;
-	// private GlobalStateService globalStateService;
 	private GlobalStateAccess globalStateAccess;
 
 	private boolean gotEventList = false;
@@ -29,22 +28,7 @@ public class BackgroundService extends IntentService {
 		globalStateAccess = new GlobalStateAccess(this);
 	}
 
-	//	private ServiceConnection globalStateServiceConnection = new ServiceConnection() {
-	//		@Override
-	//		public void onServiceConnected(ComponentName name, IBinder binder) {
-	//			globalStateService = ((NetworkServiceBinder)binder).getService();
-	//			globalStateService.requestEventList();
-	//			Log.i(TAG, "onServiceConnected name="+name);
-	//		}
-	//
-	//		@Override
-	//		public void onServiceDisconnected(ComponentName name) {
-	//			Log.i(TAG, "onServiceDisconnected name="+name);
-	//		}
-	//	};
-
-	public Handler mHandler;
-
+	private Handler handler;
 
 	class LooperThread extends HandlerThread {
 		public LooperThread(String name) {
@@ -53,7 +37,6 @@ public class BackgroundService extends IntentService {
 
 		@Override
 		protected void onLooperPrepared() {
-			Log.i(TAG, "onLooperPrepared");
 			super.onLooperPrepared();
 		}
 	}
@@ -63,32 +46,43 @@ public class BackgroundService extends IntentService {
 
 		Log.i(TAG, "BackgroundService.onHandleIntent");
 
-		// bindToGlobalStateService();
+		createAndRegisterBroadcastReceiver();
 
-		broadcastReceiversRegister = new LocalBroadcastReceiversRegister(this);
-		broadcastReceiversRegister.registerReceiver(LocalBroadcast.GOT_EVENT_LIST, new BroadcastReceiver() {
-			@Override
-			public void onReceive(Context context, Intent intent) {
-				Log.i(TAG, "onReceive got event list");
-				gotEventList = true;
-			}
-		});
+		LooperThread thread = requestEventListInBackground();
+		waitForServerResponse();
+		killBackgroundThread(thread);
+		
+		if ( gotEventList ) {
+			processEventList(new GlobalStateAccess(this).getEventList());
+		}
+		else {
+			Log.w(TAG, "Timeout while retrieving event list.");
+		}
 
-		LooperThread thread = new LooperThread("LooperThread");
-		Log.i(TAG, "thread.start()");
-		thread.start();
-		Log.i(TAG, "thread.getLooper()");
-		thread.getLooper();
-		Log.i(TAG, "mHandler.post");
-		mHandler = new Handler(thread.getLooper());
-		mHandler.post(new Runnable() {
-			@Override
-			public void run() {
-				globalStateAccess.requestEventList();
-			}
-		});
+		Log.i(TAG, "Completed service @ " + SystemClock.elapsedRealtime());
 
+		scheduleNextExecution();
 
+		unregisterReceiver();
+		
+		releaseWakeLockIfRequired(intent);
+	}
+
+	private void unregisterReceiver() {
+		broadcastReceiversRegister.unregisterReceivers();
+	}
+
+	private void scheduleNextExecution() {
+		new BackgroundHelper(this).scheduleNext();
+	}
+
+	private void killBackgroundThread(LooperThread thread) {
+		// Make sure that the thread will wake up at quit:
+		handler.sendEmptyMessageAtTime(1, System.currentTimeMillis()+5000);
+		thread.quit();
+	}
+
+	private void waitForServerResponse() {
 		int i = 1;
 		int imax = 10;
 		while ( ! gotEventList && i < imax ) {
@@ -100,39 +94,36 @@ public class BackgroundService extends IntentService {
 			} catch (InterruptedException e) {
 			}
 		}
-
-		mHandler.sendEmptyMessageAtTime(1, System.currentTimeMillis()+2000);
-		thread.quit();
-		if ( gotEventList ) {
-			processEventList(new GlobalStateAccess(this).getEventList());
-		}
-		else {
-			Log.w(TAG, "Timeout while retrieving event list.");
-		}
-
-		Log.i(TAG, "Completed service @ " + SystemClock.elapsedRealtime());
-
-		new BackgroundHelper(this).scheduleNext();
-
-		releaseWakeLockIfRequired(intent);
-		broadcastReceiversRegister.unregisterReceivers();
-
-		// unbindFromGlobalStateService();
-
 	}
 
-	//	private void unbindFromGlobalStateService() {
-	//		if (globalStateServiceConnection != null) {
-	//            unbindService(globalStateServiceConnection);
-	//            globalStateServiceConnection = null;
-	//        }
-	//	}
-	//
-	//	private void bindToGlobalStateService() {
-	//		Intent bindIntent = new Intent(this, GlobalStateService.class);
-	//		bindService(bindIntent, globalStateServiceConnection, Context.BIND_AUTO_CREATE);
-	//	}
-	//
+	private LooperThread requestEventListInBackground() {
+		LooperThread thread = new LooperThread("LooperThread");
+		Log.i(TAG, "thread.start()");
+		thread.start();
+		Log.i(TAG, "thread.getLooper()");
+		thread.getLooper(); // will block until the looper is ready
+		Log.i(TAG, "mHandler.post");
+		handler = new Handler(thread.getLooper());
+		handler.post(new Runnable() {
+			@Override
+			public void run() {
+				globalStateAccess.requestEventList();
+			}
+		});
+		return thread;
+	}
+
+	private void createAndRegisterBroadcastReceiver() {
+		broadcastReceiversRegister = new LocalBroadcastReceiversRegister(this);
+		broadcastReceiversRegister.registerReceiver(LocalBroadcast.GOT_EVENT_LIST, new BroadcastReceiver() {
+			@Override
+			public void onReceive(Context context, Intent intent) {
+				Log.i(TAG, "onReceive got event list");
+				gotEventList = true;
+			}
+		});
+	}
+
 	private void releaseWakeLockIfRequired(Intent intent) {
 		if ( intent.getBooleanExtra(EXTRA_RELEASE_WAKELOCK, true)) {
 			Log.i(TAG, "Releasing wake lock");

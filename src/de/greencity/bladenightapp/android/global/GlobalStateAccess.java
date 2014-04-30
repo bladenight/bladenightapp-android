@@ -12,8 +12,9 @@ import android.location.LocationListener;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import de.greencity.bladenightapp.android.app.BladeNightApplication;
-import de.greencity.bladenightapp.android.cache.EventsCache;
+import de.greencity.bladenightapp.android.cache.EventsMessageCache;
 import de.greencity.bladenightapp.android.network.NetworkClient;
 import de.greencity.bladenightapp.android.tracker.GpsTrackerService;
 import de.greencity.bladenightapp.android.utils.DeviceId;
@@ -53,14 +54,19 @@ public class GlobalStateAccess implements LocationListener {
 	}
 
 	static class RealTimeUpdateDataHandler extends Handler {
-		private WeakReference<GlobalStateAccess> globalStateAccess;
+		private WeakReference<GlobalStateAccess> globalStateAccessRef;
 		public RealTimeUpdateDataHandler(GlobalStateAccess outerObject) {
-			globalStateAccess = new WeakReference<GlobalStateAccess>(outerObject);
+			globalStateAccessRef = new WeakReference<GlobalStateAccess>(outerObject);
 		}
 		@Override
 		public void handleMessage(Message msg) {
 			RealTimeUpdateData realTimeUpdateData = (RealTimeUpdateData) msg.obj;
-			globalStateAccess.get().setRealTimeUpdateData(realTimeUpdateData);
+			GlobalStateAccess globalStateAccess = globalStateAccessRef.get();
+			if ( globalStateAccess == null ) {
+				Log.i(TAG, "access to globalStateAccess vanished (RealTimeUpdateDataHandler)");
+				return;
+			}
+			globalStateAccess.setRealTimeUpdateData(realTimeUpdateData);
 		}
 	};
 	
@@ -92,9 +98,13 @@ public class GlobalStateAccess implements LocationListener {
 		public void handleMessage(Message msg) {
 			// Log.i(TAG, "EventListHandler.handleMessage");
 			GlobalStateAccess globalStateAccess = globalStateAccessRef.get();
+			if ( globalStateAccess == null ) {
+				Log.i(TAG, "access to globalStateAccess vanished (EventListHandler)");
+				return;
+			}
 			EventListMessage eventListMessage = (EventListMessage) msg.obj;
 			globalStateAccess.setEventList(eventListMessage.convertToEventsList());
-			new EventsCache(globalStateAccess.context).write(eventListMessage);
+			new EventsMessageCache(globalStateAccess.context).write(eventListMessage);
 			globalStateAccess.sendBroadcast(GOT_EVENT_LIST);
 		}
 	};
@@ -140,5 +150,6 @@ public class GlobalStateAccess implements LocationListener {
 	static private GlobalState globalStateSingleton;
 	final private Context context;
 	private NetworkClient networkClient;
+	@SuppressWarnings("unused")
 	private static final String TAG = "GlobalStateAccess";
 }

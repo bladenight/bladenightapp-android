@@ -7,10 +7,8 @@ import org.joda.time.DateTime;
 import org.joda.time.Hours;
 
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -18,7 +16,6 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
 import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -42,12 +39,12 @@ import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator.Action
 import de.greencity.bladenightapp.android.actionbar.ActionEventSelection;
 import de.greencity.bladenightapp.android.admin.AdminActivity;
 import de.greencity.bladenightapp.android.admin.AdminUtilities;
+import de.greencity.bladenightapp.android.app.BladeNightApplication;
 import de.greencity.bladenightapp.android.background.BackgroundHelper;
-import de.greencity.bladenightapp.android.cache.EventsCache;
+import de.greencity.bladenightapp.android.cache.EventsMessageCache;
 import de.greencity.bladenightapp.android.global.GlobalStateAccess;
 import de.greencity.bladenightapp.android.global.LocalBroadcast;
 import de.greencity.bladenightapp.android.network.NetworkClient;
-import de.greencity.bladenightapp.android.network.GlobalStateService.NetworkServiceBinder;
 import de.greencity.bladenightapp.android.utils.DeviceId;
 import de.greencity.bladenightapp.android.utils.LocalBroadcastReceiversRegister;
 import de.greencity.bladenightapp.dev.android.R;
@@ -68,17 +65,13 @@ public class SelectionActivity extends FragmentActivity {
 
 		setContentView(R.layout.activity_selection);
 
-		eventsCache = new EventsCache(this);
+		eventsCache = new EventsMessageCache(this);
 		// avoid NPE, will be replaced as soon as we get data from the network or the cache:
 		eventList = new EventList(); 
 
 		openDialog();
 		
 		new BackgroundHelper(this).scheduleNext();
-		// Intent intent = new Intent(this, B)
-		Intent intent = new Intent();
-		intent.setAction("de.vogella.android.mybroadcast");
-		sendBroadcast(intent); 
 		
 		globalStateAccess = new GlobalStateAccess(this);
 	}
@@ -265,7 +258,7 @@ public class SelectionActivity extends FragmentActivity {
 					phoneManufacturer,
 					phoneModel,
 					androidRelease);
-			new NetworkClient(this).shakeHands(msg, null, new HandshakeErrorHandler(this));
+			BladeNightApplication.networkClient.shakeHands(msg, null, new HandshakeErrorHandler(this));
 		} catch (Exception e) {
 			Log.e(TAG, "shakeHands failed to gather and send information: " + e.toString());
 		}
@@ -282,6 +275,7 @@ public class SelectionActivity extends FragmentActivity {
 			return 0;
 		}
 	}
+
 
 
 	private void getEventsFromCache() {
@@ -510,7 +504,7 @@ public class SelectionActivity extends FragmentActivity {
 	private static int posEventShown = -1;
 	private static int posEventCurrent = -1;
 	private EventList eventList;
-	private EventsCache eventsCache;
+	private EventsMessageCache eventsCache;
 	private LocalBroadcastReceiversRegister broadcastReceiversRegister = new LocalBroadcastReceiversRegister(this); 
 	// private GlobalStateService globalStateService;
 	GlobalStateAccess globalStateAccess;

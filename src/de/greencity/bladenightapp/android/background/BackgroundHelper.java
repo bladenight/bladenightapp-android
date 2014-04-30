@@ -19,7 +19,7 @@ public class BackgroundHelper {
 
 		Log.i(TAG, "scheduleNext");
 		Log.i(TAG, "SystemClock.elapsedRealtime()="+SystemClock.elapsedRealtime());
-
+		
 		Intent intent = new Intent(context, BackgroundWakefulReceiver.class);
 		intent.setAction("android.intent.action.NOTIFY");
 		
@@ -31,7 +31,7 @@ public class BackgroundHelper {
 		AlarmManager alarmMgr = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
 		alarmMgr.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,
 				SystemClock.elapsedRealtime() +
-				10 * 1000, alarmIntent);
+				12 * 3600 * 1000, alarmIntent);
 	}
 
 }

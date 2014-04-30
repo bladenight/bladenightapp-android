@@ -6,10 +6,10 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 public enum LocalBroadcast {
-	GOT_EVENT_LIST("got-events"),
-	GOT_ANNOUNCEMENTS("got-announcements"),
-	GOT_REALTIME_DATA("got-realtime-data"),
-	GOT_GPS_UPDATE("got-gps-update")
+	GOT_EVENT_LIST("gotevents"),
+	GOT_ANNOUNCEMENTS("gotannouncements"),
+	GOT_REALTIME_DATA("gotrealtimedata"),
+	GOT_GPS_UPDATE("gotgpsupdate")
 	;
 	
 	private LocalBroadcast(String text) {
