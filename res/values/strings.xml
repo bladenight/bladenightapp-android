@@ -61,6 +61,7 @@
     <string name="msg_impressum">Betreiber und Veranstalter:\nGreen City Projekt GmbH\nGoethestraße 34 / Rgb.\n80336 München\nRegistergericht München HRB 148908\nhttp://www.greencity-projekt.de\nbladenight@greencity.de</string>
     <string name="msg_loading_code">Loading add-friend code</string>
     <string name="msg_locate">Centering view on me</string>
+    <string name="msg_connection_problem">Could not connect to the server. Please check your network settings, or check the documentation.</string>
     <string name="msg_new_code">Give this code to</string>
     <string name="msg_no">No</string>
     <string name="msg_outdated_client">This version of the app is outdate. Please update it.</string>

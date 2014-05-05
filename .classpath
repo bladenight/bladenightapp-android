@@ -3,7 +3,7 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="resources"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
-	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
+	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry exported="true" kind="lib" path="libs/joda-time-2.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-lang3-3.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/gson-2.2.2.jar"/>
@@ -12,5 +12,6 @@
 	<classpathentry exported="true" kind="lib" path="libs/jackson-mapper-asl-1.9.12.jar" sourcepath="/Volumes/DD500/ocroquette/Desktop/SVN/jackson/tags/1.9/1.9.10"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/bladenightapp-common"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/wampoc"/>
+	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.DEPENDENCIES"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

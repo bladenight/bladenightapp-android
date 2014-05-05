@@ -74,10 +74,11 @@ public class SelectionActivity extends FragmentActivity {
 		// Log.i(TAG, "onStart");
 
 		shakeHands();
+		
 	}
 
 	private void configureActionBar() {
-		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
+		final ActionBar actionBar = getCustomActionBar();
 		Action actionGoToCurrentEvent = new ActionEventSelection() {
 			@Override
 			public void performAction(View view) {
@@ -90,7 +91,6 @@ public class SelectionActivity extends FragmentActivity {
 		.show(ActionItemType.TRACKER_CONTROL)
 		.setTitle(R.string.title_selection)
 		.configure();
-
 	}
 
 	@Override
@@ -168,9 +168,14 @@ public class SelectionActivity extends FragmentActivity {
 		return false;
 	}
 
-	static class GetEventsFromServerHandler extends Handler {
+	private ActionBar getCustomActionBar() {
+		return (ActionBar) findViewById(R.id.actionbar);
+	}
+
+
+	static class GetEventsFromServerSuccessHandler extends Handler {
 		private WeakReference<SelectionActivity> reference;
-		GetEventsFromServerHandler(SelectionActivity activity) {
+		GetEventsFromServerSuccessHandler(SelectionActivity activity) {
 			this.reference = new WeakReference<SelectionActivity>(activity);
 		}
 		@Override
@@ -182,6 +187,23 @@ public class SelectionActivity extends FragmentActivity {
 			// Log.i(TAG, "Updating event fragments from server data");
 			selectionActivity.updateFragmentsFromEventList((EventListMessage)eventsListMessage);
 			selectionActivity.saveEventsToCache(eventsListMessage);
+			selectionActivity.getCustomActionBar().setProgressBarVisibility(View.INVISIBLE);
+		}
+	}
+
+	static class GetEventsFromServerErrorHandler extends Handler {
+		private WeakReference<SelectionActivity> reference;
+		GetEventsFromServerErrorHandler(SelectionActivity activity) {
+			this.reference = new WeakReference<SelectionActivity>(activity);
+		}
+		@Override
+		public void handleMessage(Message msg) {
+			final SelectionActivity selectionActivity = reference.get();
+			if ( selectionActivity == null || selectionActivity.isFinishing() )
+				return;
+			
+			Toast.makeText(selectionActivity, R.string.msg_connection_problem , Toast.LENGTH_LONG).show();
+			Log.e(TAG, "Error while getting events from the server: " + msg.toString());
 		}
 	}
 
@@ -247,7 +269,8 @@ public class SelectionActivity extends FragmentActivity {
 	}
 
 	private void getEventsFromServer() {
-		networkClient.getAllEvents(new GetEventsFromServerHandler(this), null);
+		getCustomActionBar().setProgressBarVisibility(View.VISIBLE);
+		networkClient.getAllEvents(new GetEventsFromServerSuccessHandler(this), null);
 	}
 
 
