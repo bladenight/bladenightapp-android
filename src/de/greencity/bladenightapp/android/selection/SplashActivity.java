@@ -17,11 +17,9 @@ public class SplashActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		this.requestWindowFeature(Window.FEATURE_NO_TITLE); // Removes title bar
+		this.requestWindowFeature(Window.FEATURE_NO_TITLE); // Hide title bar
 		this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-				WindowManager.LayoutParams.FLAG_FULLSCREEN); // Removes
-																// notification
-																// bar
+				WindowManager.LayoutParams.FLAG_FULLSCREEN); // Hide notification bar
 
 		setContentView(R.layout.splash_screen);
 
@@ -33,7 +31,7 @@ public class SplashActivity extends Activity {
 	private class IntentLauncher extends Thread {
 		@Override
 		/**
-		 * Sleep for some time and than start new activity.
+		 * Sleep for some time and then start new activity.
 		 */
 		public void run() {
 			try {
