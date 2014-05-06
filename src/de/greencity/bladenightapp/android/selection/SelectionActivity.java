@@ -6,6 +6,7 @@ import java.lang.ref.WeakReference;
 import org.joda.time.DateTime;
 import org.joda.time.Hours;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
@@ -25,6 +26,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.markupartist.android.widget.ActionBar;
@@ -74,10 +76,11 @@ public class SelectionActivity extends FragmentActivity {
 		// Log.i(TAG, "onStart");
 
 		shakeHands();
+		
 	}
 
 	private void configureActionBar() {
-		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
+		final ActionBar actionBar = getCustomActionBar();
 		Action actionGoToCurrentEvent = new ActionEventSelection() {
 			@Override
 			public void performAction(View view) {
@@ -90,7 +93,6 @@ public class SelectionActivity extends FragmentActivity {
 		.show(ActionItemType.TRACKER_CONTROL)
 		.setTitle(R.string.title_selection)
 		.configure();
-
 	}
 
 	@Override
@@ -108,6 +110,7 @@ public class SelectionActivity extends FragmentActivity {
 
 		configureActionBar();
 
+		// TODO reenable cache
 		getEventsFromCache();
 
 		getEventsFromServer();
@@ -168,9 +171,14 @@ public class SelectionActivity extends FragmentActivity {
 		return false;
 	}
 
-	static class GetEventsFromServerHandler extends Handler {
+	private ActionBar getCustomActionBar() {
+		return (ActionBar) findViewById(R.id.actionbar);
+	}
+
+
+	static class GetEventsFromServerSuccessHandler extends Handler {
 		private WeakReference<SelectionActivity> reference;
-		GetEventsFromServerHandler(SelectionActivity activity) {
+		GetEventsFromServerSuccessHandler(SelectionActivity activity) {
 			this.reference = new WeakReference<SelectionActivity>(activity);
 		}
 		@Override
@@ -182,6 +190,23 @@ public class SelectionActivity extends FragmentActivity {
 			// Log.i(TAG, "Updating event fragments from server data");
 			selectionActivity.updateFragmentsFromEventList((EventListMessage)eventsListMessage);
 			selectionActivity.saveEventsToCache(eventsListMessage);
+			selectionActivity.hideOngoingProgress();
+		}
+	}
+
+	static class GetEventsFromServerErrorHandler extends Handler {
+		private WeakReference<SelectionActivity> reference;
+		GetEventsFromServerErrorHandler(SelectionActivity activity) {
+			this.reference = new WeakReference<SelectionActivity>(activity);
+		}
+		@Override
+		public void handleMessage(Message msg) {
+			final SelectionActivity selectionActivity = reference.get();
+			if ( selectionActivity == null || selectionActivity.isFinishing() )
+				return;
+			
+			Toast.makeText(selectionActivity, R.string.msg_connection_problem , Toast.LENGTH_LONG).show();
+			Log.e(TAG, "Error while getting events from the server: " + msg.toString());
 		}
 	}
 
@@ -247,9 +272,23 @@ public class SelectionActivity extends FragmentActivity {
 	}
 
 	private void getEventsFromServer() {
-		networkClient.getAllEvents(new GetEventsFromServerHandler(this), null);
+		showOngoingProgress();
+		networkClient.getAllEvents(new GetEventsFromServerSuccessHandler(this), null);
 	}
 
+	private void showOngoingProgress() {
+		getCustomActionBar().setProgressBarVisibility(View.VISIBLE);
+		getRetrievingTextView().setVisibility(View.VISIBLE);
+	}
+
+	private void hideOngoingProgress() {
+		getCustomActionBar().setProgressBarVisibility(View.INVISIBLE);
+		getRetrievingTextView().setVisibility(View.GONE);
+	}
+
+	private TextView getRetrievingTextView() {
+		return (TextView)findViewById(R.id.retrieving_text_view);
+	}
 
 	private void updateFragmentsFromEventList(final EventListMessage eventListMessage) {
 		// Log.i(TAG, "updateFragmentsFromEventList " + eventListMessage);
@@ -358,7 +397,7 @@ public class SelectionActivity extends FragmentActivity {
 
 	private void openDialog(){
 		SharedPreferences settings = getSharedPreferences("HelpPrefs", 0);
-		// SharedPreferences.Editor editor = settings.edit();
+		SharedPreferences.Editor editor = settings.edit();
 		boolean firstCreate = settings.getBoolean("firstCreate", true);
 		if(firstCreate){
 			FragmentManager fm = getSupportFragmentManager();
@@ -366,8 +405,8 @@ public class SelectionActivity extends FragmentActivity {
 			helpDialog.show(fm, "fragment_help");
 			// for announcements
 			// editor.putInt("announcementCounter", 0);
-			// editor.putBoolean("firstCreate", false);
-			// editor.commit();
+			editor.putBoolean("firstCreate", false);
+			editor.commit();
 		}
 		else{		
 			// openAnnouncement();
