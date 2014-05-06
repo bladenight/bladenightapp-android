@@ -66,6 +66,7 @@
     <string name="msg_no">No</string>
     <string name="msg_outdated_client">This version of the app is outdate. Please update it.</string>
     <string name="msg_participants">participants</string>
+    <string name="msg_retrieving_events">Retrieving events from server...</string>
     <string name="msg_route_has_changed">The route has changed. We will now go for the route</string>
     <string name="msg_sd_card">Your device needs an SD card to use this feature.</string>
     <string name="msg_status">Status</string>

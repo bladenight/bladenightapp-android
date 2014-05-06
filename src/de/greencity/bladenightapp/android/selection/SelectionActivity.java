@@ -6,6 +6,7 @@ import java.lang.ref.WeakReference;
 import org.joda.time.DateTime;
 import org.joda.time.Hours;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
@@ -25,6 +26,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.markupartist.android.widget.ActionBar;
@@ -108,6 +110,7 @@ public class SelectionActivity extends FragmentActivity {
 
 		configureActionBar();
 
+		// TODO reenable cache
 		getEventsFromCache();
 
 		getEventsFromServer();
@@ -187,7 +190,7 @@ public class SelectionActivity extends FragmentActivity {
 			// Log.i(TAG, "Updating event fragments from server data");
 			selectionActivity.updateFragmentsFromEventList((EventListMessage)eventsListMessage);
 			selectionActivity.saveEventsToCache(eventsListMessage);
-			selectionActivity.getCustomActionBar().setProgressBarVisibility(View.INVISIBLE);
+			selectionActivity.hideOngoingProgress();
 		}
 	}
 
@@ -269,10 +272,23 @@ public class SelectionActivity extends FragmentActivity {
 	}
 
 	private void getEventsFromServer() {
-		getCustomActionBar().setProgressBarVisibility(View.VISIBLE);
+		showOngoingProgress();
 		networkClient.getAllEvents(new GetEventsFromServerSuccessHandler(this), null);
 	}
 
+	private void showOngoingProgress() {
+		getCustomActionBar().setProgressBarVisibility(View.VISIBLE);
+		getRetrievingTextView().setVisibility(View.VISIBLE);
+	}
+
+	private void hideOngoingProgress() {
+		getCustomActionBar().setProgressBarVisibility(View.INVISIBLE);
+		getRetrievingTextView().setVisibility(View.GONE);
+	}
+
+	private TextView getRetrievingTextView() {
+		return (TextView)findViewById(R.id.retrieving_text_view);
+	}
 
 	private void updateFragmentsFromEventList(final EventListMessage eventListMessage) {
 		// Log.i(TAG, "updateFragmentsFromEventList " + eventListMessage);

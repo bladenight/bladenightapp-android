@@ -11,6 +11,14 @@
         style="@style/ActionBar"
         />
 
+    <TextView
+        android:id="@+id/retrieving_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/msg_retrieving_events"
+        android:visibility="gone"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
     <android.support.v4.view.ViewPager
         android:id="@+id/pager"
         android:layout_width="match_parent"
