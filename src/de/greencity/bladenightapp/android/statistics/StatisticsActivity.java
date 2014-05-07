@@ -89,7 +89,8 @@ public class StatisticsActivity extends Activity {
 
 		course.setText(routeNameToText(event.getRouteName()));	
 		participants.setText(event.getParticipants() + "");
-		date.setText(event.getStartDateAsString());
+		// date.setText(event.getStartDateAsString());
+		date.setText("TO BE FIXED");
 		
 	}
 	

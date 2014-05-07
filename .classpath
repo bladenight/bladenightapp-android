@@ -13,5 +13,6 @@
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/bladenightapp-common"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/wampoc"/>
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.DEPENDENCIES"/>
+	<classpathentry exported="true" kind="lib" path="libs/achartengine-1.1.0.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

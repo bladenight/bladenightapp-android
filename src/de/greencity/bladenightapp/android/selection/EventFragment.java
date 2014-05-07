@@ -102,7 +102,7 @@ public class EventFragment extends Fragment {
 				startMapActivity();
 			}
 		});
-		
+
 		View statisticsImage = view.findViewById(R.id.image_event_statistics);
 		statisticsImage.setClickable(true);
 		statisticsImage.setOnClickListener(new OnClickListener() {
@@ -152,8 +152,8 @@ public class EventFragment extends Fragment {
 		textViewCourse.setText(routeNameToText(event.getRouteName()));
 
 		TextView textViewDate = (TextView)view.findViewById(R.id.date);
-		textViewDate.setText(event.getStartDateAsString());
-
+		textViewDate.setText(toDateFormat.print(event.getStartDate()));
+		
 		int numberParticipants = event.getParticipants();
 		if ( numberParticipants > 0 ) {
 			TextView numberParticipantsTextView = (TextView)view.findViewById(R.id.number_participants);
@@ -186,7 +186,7 @@ public class EventFragment extends Fragment {
 		intent.putExtra(BladenightMapActivity.PARAM_EVENT_MESSAGE, EventGsonHelper.toJson(event));
 		view.getContext().startActivity(intent);
 	}
-	
+
 	private void startStatisticsActivity() {
 		Intent intent = new Intent(view.getContext(), StatisticsActivity.class);
 		intent.putExtra(StatisticsActivity.PARAM_EVENT_MESSAGE, EventGsonHelper.toJson(event));
@@ -226,7 +226,7 @@ public class EventFragment extends Fragment {
 		return event.getStartDate().isAfterNow();
 	}
 
-	
+
 	private String routeNameToText(String routeName){
 		if (routeName.equals("Nord - kurz")){
 			return view.getResources().getString(R.string.course_north_short);
@@ -252,6 +252,24 @@ public class EventFragment extends Fragment {
 		return routeName;
 	}
 
+
+	private static DateTimeFormatter getDestinationDateFormatter(Locale locale) {
+		String country = locale.getISO3Country();
+		String localString = locale.toString();
+		if ( localString.startsWith("de") ||  "DEU".equals(country) ) {
+			return DateTimeFormat.forPattern("dd. MMM YY, HH:mm").withLocale(locale);
+		}
+		if ( localString.startsWith("fr") ||  "FRA".equals(country) ) {
+			return DateTimeFormat.forPattern("dd MMM YY, HH:mm").withLocale(locale);
+		}
+		if ( localString.startsWith("en") ||  "USA".equals(country) ) {
+			return DateTimeFormat.forStyle("MS").withLocale(locale);
+		}
+		else {
+			return DateTimeFormat.forStyle("MS").withLocale(locale);
+		}
+	}
+	
 	private View view;
 	private boolean hasRight;
 	private boolean hasLeft;
@@ -260,6 +278,8 @@ public class EventFragment extends Fragment {
 	private boolean allowParticipate;
 	private Event event;
 
+	private static DateTimeFormatter toDateFormat = getDestinationDateFormatter(Locale.getDefault());
+	
 	static public final String PARAM_HAS_RIGHT = "hasRight";
 	static public final String PARAM_HAS_LEFT = "hasLeft";
 	static public final String PARAM_HAS_STATISTICS = "hasStatistics";
