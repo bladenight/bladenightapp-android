@@ -17,6 +17,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import de.greencity.bladenightapp.android.app.BladeNightApplication;
 import de.greencity.bladenightapp.android.global.GlobalStateAccess;
 import de.greencity.bladenightapp.android.map.BladenightMapActivity;
 import de.greencity.bladenightapp.android.network.NetworkClient;
@@ -31,7 +32,7 @@ public class GpsTrackerService extends Service {
 	public void onCreate() {
 		Log.d(TAG, "onCreate");
 
-		networkClient = new NetworkClient(this);
+		networkClient = BladeNightApplication.networkClient;
 
 		lastKnownLocation = new Location("INTERNAL");
 		locationListener = new BladenightLocationListener(lastKnownLocation);

@@ -31,6 +31,7 @@ import com.markupartist.android.widget.ActionBar.Action;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator.ActionItemType;
 import de.greencity.bladenightapp.android.actionbar.ActionReload;
+import de.greencity.bladenightapp.android.app.BladeNightApplication;
 import de.greencity.bladenightapp.android.network.NetworkClient;
 import de.greencity.bladenightapp.dev.android.R;
 import de.greencity.bladenightapp.network.messages.EventMessage;
@@ -42,7 +43,7 @@ public class AdminActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		networkClient = new NetworkClient(this);
+		networkClient = BladeNightApplication.networkClient;
 
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_admin);

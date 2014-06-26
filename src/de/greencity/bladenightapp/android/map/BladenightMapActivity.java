@@ -37,6 +37,7 @@ import com.markupartist.android.widget.ActionBar;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator.ActionItemType;
 import de.greencity.bladenightapp.android.actionbar.ActionLocateMe;
+import de.greencity.bladenightapp.android.app.BladeNightApplication;
 import de.greencity.bladenightapp.android.cache.EventsMessageCache;
 import de.greencity.bladenightapp.android.cache.RoutesCache;
 import de.greencity.bladenightapp.android.global.GlobalStateAccess;
@@ -58,6 +59,31 @@ import de.greencity.bladenightapp.network.messages.RealTimeUpdateData;
 import de.greencity.bladenightapp.network.messages.RouteMessage;
 
 public class BladenightMapActivity extends MapActivity {
+	final static String TAG = "BladenightMapActivity";
+	private GlobalStateAccess globalStateAccess;
+	private NetworkClient networkClient;
+	private BroadcastReceiversRegister broadcastReceiversRegister = new BroadcastReceiversRegister(this); 
+	private final String mapLocalPath = new File(Paths.getAppDataDirectory(), "munich.map").getAbsolutePath();
+	private final String mapRemotePath = "maps/munich.map";
+	private ProgressDialog downloadProgressDialog;
+	private String routeName = "";
+	private int routeLength;
+	private boolean isLive = false;
+	private RouteOverlay routeOverlay;
+	private BladenightMapView mapView;
+	private ProcessionProgressBar processionProgressBar;
+	private TextView mapHeadline;
+	private View mapHeadlineSeparator;
+	private final int updatePeriod = 3000;
+	private final Handler periodicHandler = new Handler();
+	private Runnable periodicTask;
+	private UserPositionOverlay userPositionOverlay;
+	private GpsListener gpsListener;
+	private boolean isRouteInfoAvailable = false;
+	public static final String PARAM_EVENT_MESSAGE = "eventMessage";
+	private boolean isRunning = true;
+	private boolean shallFitViewWhenPossible = true;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -71,7 +97,7 @@ public class BladenightMapActivity extends MapActivity {
 		createOverlays();
 
 		globalStateAccess = new GlobalStateAccess(this);
-		networkClient = new NetworkClient(this);
+		networkClient = BladeNightApplication.networkClient;
 
 		downloadProgressDialog = new ProgressDialog(this);
 		processionProgressBar = (ProcessionProgressBar) findViewById(R.id.progress_procession);
@@ -659,29 +685,4 @@ public class BladenightMapActivity extends MapActivity {
 			Log.w(TAG, "Failed to clear the MapsForge cache",e);
 		}
 	}
-
-	final static String TAG = "BladenightMapActivity";
-	private GlobalStateAccess globalStateAccess;
-	private NetworkClient networkClient;
-	private BroadcastReceiversRegister broadcastReceiversRegister = new BroadcastReceiversRegister(this); 
-	private final String mapLocalPath = new File(Paths.getAppDataDirectory(), "munich.map").getAbsolutePath();
-	private final String mapRemotePath = "maps/munich.map";
-	private ProgressDialog downloadProgressDialog;
-	private String routeName = "";
-	private int routeLength;
-	private boolean isLive = false;
-	private RouteOverlay routeOverlay;
-	private BladenightMapView mapView;
-	private ProcessionProgressBar processionProgressBar;
-	private TextView mapHeadline;
-	private View mapHeadlineSeparator;
-	private final int updatePeriod = 3000;
-	private final Handler periodicHandler = new Handler();
-	private Runnable periodicTask;
-	private UserPositionOverlay userPositionOverlay;
-	private GpsListener gpsListener;
-	private boolean isRouteInfoAvailable = false;
-	public static final String PARAM_EVENT_MESSAGE = "eventMessage";
-	private boolean isRunning = true;
-	private boolean shallFitViewWhenPossible = true;
 } 

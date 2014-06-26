@@ -26,6 +26,11 @@ import de.greencity.bladenightapp.network.messages.RealTimeUpdateData;
 
 public class GlobalStateAccess implements LocationListener {
 
+	static private GlobalState globalStateSingleton;
+	final private Context context;
+	private NetworkClient networkClient;
+	private static final String TAG = "GlobalStateAccess";
+	
 	public GlobalStateAccess(Context context) {
 		synchronized (this) {
 			if (globalStateSingleton == null)
@@ -122,6 +127,8 @@ public class GlobalStateAccess implements LocationListener {
 		sendBroadcast(GOT_EVENT_LIST);
 	}
 	
+	
+	
 	private void sendBroadcast(LocalBroadcast localBroadcast) {
 		localBroadcast.send(context);
 	}
@@ -146,10 +153,4 @@ public class GlobalStateAccess implements LocationListener {
 	public void disconnect() {
 		networkClient.disconnect();
 	}
-
-	static private GlobalState globalStateSingleton;
-	final private Context context;
-	private NetworkClient networkClient;
-	@SuppressWarnings("unused")
-	private static final String TAG = "GlobalStateAccess";
 }

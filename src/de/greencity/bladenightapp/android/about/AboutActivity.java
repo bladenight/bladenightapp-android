@@ -22,6 +22,7 @@ import com.markupartist.android.widget.ActionBar;
 
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
 import de.greencity.bladenightapp.android.admin.AdminUtilities;
+import de.greencity.bladenightapp.android.app.BladeNightApplication;
 import de.greencity.bladenightapp.android.network.NetworkClient;
 import de.greencity.bladenightapp.android.utils.MetaInfo;
 import de.greencity.bladenightapp.dev.android.R;
@@ -148,7 +149,8 @@ public class AboutActivity extends Activity {
 		progressDialog.setMessage("Checking password...");
 		progressDialog.show();
 
-		NetworkClient networkClient = new NetworkClient(this);
+		NetworkClient networkClient = BladeNightApplication.networkClient;
+
 		networkClient.verifyAdminPassword(password,
 				new VerificationSuccessHandler(this, progressDialog, password),
 				new VerificationFailureHandler(this, progressDialog, password));

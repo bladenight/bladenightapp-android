@@ -30,6 +30,7 @@ import com.markupartist.android.widget.ActionBar.Action;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator.ActionItemType;
 import de.greencity.bladenightapp.android.actionbar.ActionReload;
+import de.greencity.bladenightapp.android.app.BladeNightApplication;
 import de.greencity.bladenightapp.android.cache.FriendsCache;
 import de.greencity.bladenightapp.android.global.GlobalStateAccess;
 import de.greencity.bladenightapp.android.network.NetworkClient;
@@ -49,6 +50,21 @@ import de.greencity.bladenightapp.network.messages.RelationshipOutputMessage;
 public class SocialActivity extends FragmentActivity implements InviteFriendDialogListener, 
 ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListener {
 
+	private ListView listView;
+	Friends friends;
+	List<Integer> sortedFriendIdsToDisplay = new ArrayList<Integer>();
+	private final static String TAG = "SocialActivity"; 
+	private NetworkClient networkClient;
+	private final Handler periodicHandler = new Handler();
+	private Runnable periodicTask;
+	private long updatePeriod = 2000;
+	FriendColorsHelper friendColorsHelper;
+
+	public final static Integer ID_HEAD 	= -3;
+	public final static Integer ID_ME 		= -2;
+	public final static Integer ID_TAIL 	= -1;
+
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		Log.i(TAG, "onCreate");
@@ -58,7 +74,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
 
 		listView = (ListView)findViewById(R.id.listview);
 
-		networkClient = new NetworkClient(this);
+		networkClient = BladeNightApplication.networkClient;
 
 		friendColorsHelper = new FriendColorsHelper(this);
 	}
@@ -549,19 +565,5 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
 	public static String formatRequestId(long requestId) {
 		return Long.toString(requestId).replaceAll("(\\d\\d)","$1 ");
 	}
-
-	private ListView listView;
-	Friends friends;
-	List<Integer> sortedFriendIdsToDisplay = new ArrayList<Integer>();
-	private final static String TAG = "SocialActivity"; 
-	private NetworkClient networkClient;
-	private final Handler periodicHandler = new Handler();
-	private Runnable periodicTask;
-	private long updatePeriod = 2000;
-	FriendColorsHelper friendColorsHelper;
-
-	public final static Integer ID_HEAD 	= -3;
-	public final static Integer ID_ME 		= -2;
-	public final static Integer ID_TAIL 	= -1;
 
 } 
