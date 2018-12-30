@@ -1,0 +1,11 @@
+rootProject.name = 'bladenightapp-android'
+
+include ":bladenightappcommon"
+project(':bladenightappcommon').projectDir = new File(settingsDir, '../bladenightapp-common')
+
+include ":wampoc"
+project(':wampoc').projectDir = new File(settingsDir, '../wampoc')
+
+include ":androidactionbar"
+project(':androidactionbar').projectDir = new File(settingsDir, '../android-actionbar/actionbar')
+
