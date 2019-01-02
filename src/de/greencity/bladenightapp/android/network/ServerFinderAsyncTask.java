@@ -20,7 +20,7 @@ public class ServerFinderAsyncTask extends AsyncTask<Integer, Integer, String> {
 		scanner.setTimeout(1000);
 
 		Log.i(TAG, "BUILD_PRODUCT=" + Build.PRODUCT);
-		if ( "google_sdk".equals( Build.PRODUCT ) || "sdk".equals( Build.PRODUCT ) ) {
+		if ( Build.PRODUCT.contains("sdk") ) {
 			// Assume we are running in the emulator, and the server runs on the development host
 			scanner.addHost("10.0.2.2");
 		}
