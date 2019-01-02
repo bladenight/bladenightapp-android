@@ -135,6 +135,7 @@ public class GlobalStateAccess implements LocationListener {
 
 	@Override
 	public void onLocationChanged(Location location) {
+		// Log.i(TAG, "location=" + location.toString());
 		setLocationFromGps(location);
 	}
 
