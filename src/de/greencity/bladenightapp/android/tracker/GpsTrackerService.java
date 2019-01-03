@@ -5,18 +5,23 @@ import java.io.IOException;
 
 import android.annotation.SuppressLint;
 import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+
 import de.greencity.bladenightapp.android.app.BladeNightApplication;
 import de.greencity.bladenightapp.android.global.GlobalStateAccess;
 import de.greencity.bladenightapp.android.map.BladenightMapActivity;
@@ -48,7 +53,7 @@ public class GpsTrackerService extends Service {
             @Override
             public void consume(RealTimeUpdateData realTimeUpdateData) {
                 Log.i(TAG, "Consuming: " + realTimeUpdateData);
-                if ( realTimeUpdateData.isUserOnRoute() )
+                if (realTimeUpdateData.isUserOnRoute())
                     traceLogger.setLinearPosition(realTimeUpdateData.getUserPosition());
                 else
                     traceLogger.setLinearPosition(-1);
@@ -109,13 +114,36 @@ public class GpsTrackerService extends Service {
         Bitmap icon = getNotificationIcon();
         Log.i(TAG, icon.toString());
 
-        Notification notification = new  NotificationCompat.Builder(this)
-        .setContentTitle(getString(R.string.msg_tracking_running))
-        .setContentText(getString(R.string.app_name))
-        .setSmallIcon(notificationIconId)
-        .setLargeIcon(getNotificationIcon())
-        .setContentIntent(contentIntent)
-        .build();
+        String NOTIFICATION_CHANNEL_ID = "com.example.simpleapp";
+        String channelName = "My Background Service";
+
+        Notification notification;
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            NotificationChannel chan = null;
+            chan = new NotificationChannel(NOTIFICATION_CHANNEL_ID, channelName, NotificationManager.IMPORTANCE_NONE);
+            chan.setLightColor(Color.BLUE);
+            chan.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+            NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            manager.createNotificationChannel(chan);
+
+            // Don't forget to keep legacy code up to date below (different builder class)
+            notification = new Notification.Builder(this, NOTIFICATION_CHANNEL_ID)
+                    .setContentTitle(getString(R.string.msg_tracking_running))
+                    .setContentText(getString(R.string.app_name))
+                    .setSmallIcon(R.drawable.ic_notification_tracking)
+                    .setContentIntent(contentIntent)
+                    .build();
+
+        } else {
+            // Don't forget to keep main code up to date above (different builder class)
+            notification = new NotificationCompat.Builder(this)
+                    .setContentTitle(getString(R.string.msg_tracking_running))
+                    .setContentText(getString(R.string.app_name))
+                    .setSmallIcon(R.drawable.ic_notification_tracking)
+                    .setContentIntent(contentIntent)
+                    .build();
+        }
 
         notification.flags |= Notification.FLAG_FOREGROUND_SERVICE;
 
@@ -128,8 +156,7 @@ public class GpsTrackerService extends Service {
 
         if (android.os.Build.VERSION.SDK_INT < 11) {
             return rawBitmap;
-        }
-        else {
+        } else {
             Resources res = getResources();
             int height = (int) res.getDimension(android.R.dimen.notification_large_icon_height);
             int width = (int) res.getDimension(android.R.dimen.notification_large_icon_width);
