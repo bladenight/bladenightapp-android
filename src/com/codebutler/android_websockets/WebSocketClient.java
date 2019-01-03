@@ -43,7 +43,7 @@ public class WebSocketClient {
     private final Object mSendLock = new Object();
 
     @SuppressWarnings("unused")
-	private static TrustManager[] sTrustManagers;
+    private static TrustManager[] sTrustManagers;
 
     public static void setTrustManagers(TrustManager[] tm) {
         sTrustManagers = tm;
@@ -143,12 +143,12 @@ public class WebSocketClient {
     }
 
     public void disconnect() {
-    	final Socket socket = mSocket;
-    	mSocket = null;
+        final Socket socket = mSocket;
+        mSocket = null;
         if (socket != null)
-        	disconnect(socket);
+            disconnect(socket);
     }
-    
+
     private void disconnect(final Socket socket) {
         mHandler.post(new Runnable() {
             @Override
@@ -163,9 +163,9 @@ public class WebSocketClient {
         });
     }
 
-	public void destroy() {
-		mHandlerThread.quit();
-	}
+    public void destroy() {
+        mHandlerThread.quit();
+    }
 
     public void send(String data) {
         sendFrame(mParser.frame(data));
@@ -220,10 +220,10 @@ public class WebSocketClient {
             public void run() {
                 try {
                     synchronized (mSendLock) {
-                    	if ( mSocket == null ) {
-                    		Log.e(TAG, "mSocket==null");
-                    		return;
-                    	}
+                        if ( mSocket == null ) {
+                            Log.e(TAG, "mSocket==null");
+                            return;
+                        }
                         OutputStream outputStream = mSocket.getOutputStream();
                         outputStream.write(frame);
                         outputStream.flush();
@@ -243,20 +243,20 @@ public class WebSocketClient {
         public void onError(Exception error);
     }
 
-	private Socket getSocket(String host, int port) throws IOException {
-		if ( mURI.getScheme().equals("wss") || mURI.getScheme().equals("https") ) {
-			// return sslFactory.connectSocket(null, host, port, null, 0, new BasicHttpParams());
-			return sslFactory.createSocket(host, port);
-		}
-		else {
-			return SocketFactory.getDefault().createSocket(host, port);
-		}
-	}
-	
-	static SocketFactory sslFactory = SSLSocketFactory.getDefault();
+    private Socket getSocket(String host, int port) throws IOException {
+        if ( mURI.getScheme().equals("wss") || mURI.getScheme().equals("https") ) {
+            // return sslFactory.connectSocket(null, host, port, null, 0, new BasicHttpParams());
+            return sslFactory.createSocket(host, port);
+        }
+        else {
+            return SocketFactory.getDefault().createSocket(host, port);
+        }
+    }
 
-	public static void setCustomSslFactory(SSLSocketFactory sslSocketFactory) {
-		sslFactory = sslSocketFactory;
-	}
+    static SocketFactory sslFactory = SSLSocketFactory.getDefault();
+
+    public static void setCustomSslFactory(SSLSocketFactory sslSocketFactory) {
+        sslFactory = sslSocketFactory;
+    }
 
 }

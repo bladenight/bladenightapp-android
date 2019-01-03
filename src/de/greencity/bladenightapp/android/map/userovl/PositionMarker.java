@@ -11,27 +11,27 @@ import de.greencity.bladenightapp.dev.android.R;
 
 public class PositionMarker {
 
-	public PositionMarker(Context context, int color) {
-		int resourceIdentifier = R.drawable.user_symbol;
-		Drawable drawable = context.getResources().getDrawable(resourceIdentifier);
+    public PositionMarker(Context context, int color) {
+        int resourceIdentifier = R.drawable.user_symbol;
+        Drawable drawable = context.getResources().getDrawable(resourceIdentifier);
 
-		drawable.mutate().setColorFilter(color, Mode.MULTIPLY);
+        drawable.mutate().setColorFilter(color, Mode.MULTIPLY);
 
-		marker = new Marker(new GeoPoint(0, 0), Marker.boundCenter(drawable));
-	}
-	
-	public OverlayItem getOverlayItem() {
-		return marker;
-	}
+        marker = new Marker(new GeoPoint(0, 0), Marker.boundCenter(drawable));
+    }
 
-	public void setColor(int color) {
-		marker.getDrawable().setColorFilter(color, Mode.MULTIPLY);
-	}
+    public OverlayItem getOverlayItem() {
+        return marker;
+    }
 
-	public void setGeoPoint(GeoPoint geoPoint) {
-		marker.setGeoPoint(geoPoint);
-	}
+    public void setColor(int color) {
+        marker.getDrawable().setColorFilter(color, Mode.MULTIPLY);
+    }
 
-	private Marker marker;
+    public void setGeoPoint(GeoPoint geoPoint) {
+        marker.setGeoPoint(geoPoint);
+    }
+
+    private Marker marker;
 
 }

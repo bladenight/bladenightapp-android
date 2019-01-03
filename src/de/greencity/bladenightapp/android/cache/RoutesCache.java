@@ -7,37 +7,37 @@ import android.util.Log;
 import de.greencity.bladenightapp.network.messages.RouteMessage;
 
 public class RoutesCache {
-	
-	public RoutesCache(Context context) {
-		this.context = context;
-	}
 
-	public void write(RouteMessage routeMessage) {
-		Log.i(TAG, "Saving " + routeMessage.getRouteName() + " to cache");
-		JsonCacheAccess<RouteMessage> routeCache = newCacheAccess(routeMessage.getRouteName());
-		routeCache.set(routeMessage);
-	}
+    public RoutesCache(Context context) {
+        this.context = context;
+    }
 
-	public RouteMessage read(String routeName) {
-		Log.i(TAG, "Getting cache for route named \"" + routeName + "\"");
-		if ( routeName == null) {
-			Log.i(TAG, "Trace: " + ExceptionUtils.getStackTrace( new Throwable()));
-			return null;
-		}
-		JsonCacheAccess<RouteMessage> routeCache = newCacheAccess(routeName);
-		return routeCache.get();
-	}
+    public void write(RouteMessage routeMessage) {
+        Log.i(TAG, "Saving " + routeMessage.getRouteName() + " to cache");
+        JsonCacheAccess<RouteMessage> routeCache = newCacheAccess(routeMessage.getRouteName());
+        routeCache.set(routeMessage);
+    }
 
-	private static String getNameForRoute(String routeName) {
-		return PREFIX + routeName;
-	}
-	
-	private JsonCacheAccess<RouteMessage> newCacheAccess(String routeName) {
-		return new JsonCacheAccess<RouteMessage>(context, RouteMessage.class, getNameForRoute(routeName));
-	}
-	
+    public RouteMessage read(String routeName) {
+        Log.i(TAG, "Getting cache for route named \"" + routeName + "\"");
+        if ( routeName == null) {
+            Log.i(TAG, "Trace: " + ExceptionUtils.getStackTrace( new Throwable()));
+            return null;
+        }
+        JsonCacheAccess<RouteMessage> routeCache = newCacheAccess(routeName);
+        return routeCache.get();
+    }
 
-	public static final String PREFIX = "jsoncache-route-";
-	private static final String TAG = "JsonRouteCache";
-	private Context context;
+    private static String getNameForRoute(String routeName) {
+        return PREFIX + routeName;
+    }
+
+    private JsonCacheAccess<RouteMessage> newCacheAccess(String routeName) {
+        return new JsonCacheAccess<RouteMessage>(context, RouteMessage.class, getNameForRoute(routeName));
+    }
+
+
+    public static final String PREFIX = "jsoncache-route-";
+    private static final String TAG = "JsonRouteCache";
+    private Context context;
 }

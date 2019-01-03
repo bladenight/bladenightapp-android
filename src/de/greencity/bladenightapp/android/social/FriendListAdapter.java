@@ -15,157 +15,157 @@ import de.greencity.bladenightapp.android.utils.ServiceUtils;
 import de.greencity.bladenightapp.dev.android.R;
 
 public class FriendListAdapter extends BaseAdapter {
-	private static LayoutInflater inflater=null;
-	private SocialActivity activity;
-	private boolean isServiceRunning;
+    private static LayoutInflater inflater=null;
+    private SocialActivity activity;
+    private boolean isServiceRunning;
 
-	public FriendListAdapter(Activity activity) {
-		this.activity = (SocialActivity) activity;
-		inflater = (LayoutInflater)activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-	}
+    public FriendListAdapter(Activity activity) {
+        this.activity = (SocialActivity) activity;
+        inflater = (LayoutInflater)activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    }
 
-	public int getCount() {
-		return activity.sortedFriendIdsToDisplay.size();
-	}
+    public int getCount() {
+        return activity.sortedFriendIdsToDisplay.size();
+    }
 
-	public Object getItem(int position) {
-		return position;
-	}
+    public Object getItem(int position) {
+        return position;
+    }
 
-	public long getItemId(int position) {
-		return position;
-	}
+    public long getItemId(int position) {
+        return position;
+    }
 
-	public View getView(int position, View convertView, ViewGroup parent) {
-		View view=convertView;
-		int friendId = activity.sortedFriendIdsToDisplay.get(position);
-		Friend friend = activity.friends.get(friendId);
+    public View getView(int position, View convertView, ViewGroup parent) {
+        View view=convertView;
+        int friendId = activity.sortedFriendIdsToDisplay.get(position);
+        Friend friend = activity.friends.get(friendId);
 
-		//		Log.i(TAG, "friend="+friend);
+        //      Log.i(TAG, "friend="+friend);
 
-		isServiceRunning = ServiceUtils.isServiceRunning(activity, GpsTrackerService.class);
-		if( isServiceRunning ){
-			view = inflateActionRow(friendId, friend);
-		}
-		else{
-			view = inflateOfflineRow(friendId, friend);
-		}
+        isServiceRunning = ServiceUtils.isServiceRunning(activity, GpsTrackerService.class);
+        if( isServiceRunning ){
+            view = inflateActionRow(friendId, friend);
+        }
+        else{
+            view = inflateOfflineRow(friendId, friend);
+        }
 
-		LinearLayout row = (LinearLayout)view.findViewById(R.id.row_friend);
-		row.setTag(friendId);
+        LinearLayout row = (LinearLayout)view.findViewById(R.id.row_friend);
+        row.setTag(friendId);
 
-		return view;
-	}
+        return view;
+    }
 
 
-	private View inflateActionRow(int friendId, Friend friend){
-		View view = inflater.inflate(R.layout.friend_list_row_action, null);
+    private View inflateActionRow(int friendId, Friend friend){
+        View view = inflater.inflate(R.layout.friend_list_row_action, null);
 
-		TextView name = (TextView)view.findViewById(R.id.action_row_friend_name); 
-		TextView textViewRelativeTime = (TextView)view.findViewById(R.id.action_row_time_rel); 
-		TextView textViewRelativeDistance = (TextView)view.findViewById(R.id.action_row_distance_rel); 
-		TextView textViewAbsolutePosition = (TextView)view.findViewById(R.id.action_row_distance_abs); 
+        TextView name = (TextView)view.findViewById(R.id.action_row_friend_name);
+        TextView textViewRelativeTime = (TextView)view.findViewById(R.id.action_row_time_rel);
+        TextView textViewRelativeDistance = (TextView)view.findViewById(R.id.action_row_distance_rel);
+        TextView textViewAbsolutePosition = (TextView)view.findViewById(R.id.action_row_distance_abs);
 
-		
-		if(friendId==SocialActivity.ID_HEAD||friendId==SocialActivity.ID_TAIL){
-			View row = (View)view.findViewById(R.id.row_friend);
-			row.setBackgroundColor(view.getResources().getColor(R.color.dialog_grey));
-		}
-		if(friendId==SocialActivity.ID_ME){
-			int color = Friends.getFriendColorOrDefault(activity, friendId, friend);
-			friend.setColor(color);
-			textViewRelativeTime.setTextColor(color);
-			textViewRelativeDistance.setTextColor(color);
-			textViewAbsolutePosition.setTextColor(color);
-		}
-		
-		ImageView colorBlockImageView = (ImageView)view.findViewById(R.id.action_color_block);
-		setColorForBlock(colorBlockImageView, friendId, friend);
 
-		name.setText(friend.getName());
-		if ( friend.getRelativeTime() != null)
-			textViewRelativeTime.setText(formatTime(friend.getRelativeTime()));
-		else
-			textViewRelativeTime.setText("-");
-		if ( friend.getRelativeDistance() != null)
-			textViewRelativeDistance.setText(formatDistance(friend.getRelativeDistance()));
-		else
-			textViewRelativeDistance.setText("-");
-		if ( friend.getAbsolutePosition() != null)
-			textViewAbsolutePosition.setText(formatDistance(friend.getAbsolutePosition()));
-		else
-			textViewAbsolutePosition.setText("-");
-		return view;
-	}
+        if(friendId==SocialActivity.ID_HEAD||friendId==SocialActivity.ID_TAIL){
+            View row = (View)view.findViewById(R.id.row_friend);
+            row.setBackgroundColor(view.getResources().getColor(R.color.dialog_grey));
+        }
+        if(friendId==SocialActivity.ID_ME){
+            int color = Friends.getFriendColorOrDefault(activity, friendId, friend);
+            friend.setColor(color);
+            textViewRelativeTime.setTextColor(color);
+            textViewRelativeDistance.setTextColor(color);
+            textViewAbsolutePosition.setTextColor(color);
+        }
 
-	private View inflateOfflineRow(int friendId, Friend friend){
+        ImageView colorBlockImageView = (ImageView)view.findViewById(R.id.action_color_block);
+        setColorForBlock(colorBlockImageView, friendId, friend);
 
-		View view = inflater.inflate(R.layout.friend_list_row, null);
+        name.setText(friend.getName());
+        if ( friend.getRelativeTime() != null)
+            textViewRelativeTime.setText(formatTime(friend.getRelativeTime()));
+        else
+            textViewRelativeTime.setText("-");
+        if ( friend.getRelativeDistance() != null)
+            textViewRelativeDistance.setText(formatDistance(friend.getRelativeDistance()));
+        else
+            textViewRelativeDistance.setText("-");
+        if ( friend.getAbsolutePosition() != null)
+            textViewAbsolutePosition.setText(formatDistance(friend.getAbsolutePosition()));
+        else
+            textViewAbsolutePosition.setText("-");
+        return view;
+    }
 
-		ImageView colorBlockImageView = (ImageView)view.findViewById(R.id.color_block);
-		setColorForBlock(colorBlockImageView, friendId, friend);
+    private View inflateOfflineRow(int friendId, Friend friend){
 
-		TextView textViewName = (TextView)view.findViewById(R.id.row_friend_name); 
-		TextView textViewStatus = (TextView)view.findViewById(R.id.row_friend_status); 
+        View view = inflater.inflate(R.layout.friend_list_row, null);
 
-		// Setting all values in listview
-		textViewName.setText(friend.getName());
-		updateStatus(friend, textViewStatus );
+        ImageView colorBlockImageView = (ImageView)view.findViewById(R.id.color_block);
+        setColorForBlock(colorBlockImageView, friendId, friend);
 
-		return view;
-	}
+        TextView textViewName = (TextView)view.findViewById(R.id.row_friend_name);
+        TextView textViewStatus = (TextView)view.findViewById(R.id.row_friend_status);
 
-	private void setColorForBlock(ImageView colorBlockImageView, int friendId, Friend friend) {
-		if ( friendId == SocialActivity.ID_HEAD ||  friendId == SocialActivity.ID_TAIL )
-			colorBlockImageView.setVisibility(View.INVISIBLE);
-		else
-			colorBlockImageView.setBackgroundColor(Friends.getFriendColorOrDefault(activity, friendId, friend));
-	}
+        // Setting all values in listview
+        textViewName.setText(friend.getName());
+        updateStatus(friend, textViewStatus );
 
-	private void updateStatus(Friend friend, TextView textViewStatus) {
-		String statustext = textViewStatus.getResources().getString(R.string.status_active);
-		if ( ! friend.isValid() ) {
-			statustext = textViewStatus.getResources().getString(R.string.status_obsolete);
-		}
-		else if ( friend.getRequestId() > 0 ) {
-			statustext = textViewStatus.getResources().getString(R.string.status_pending) + " (" + SocialActivity.formatRequestId(friend.getRequestId()) + ")";
-		}
-		else if ( ! friend.isActive() ) {
-			statustext = textViewStatus.getResources().getString(R.string.status_inactive);
-		}
-		//		else if ( friend.isOnline() )
-		//			statustext = "online";
-		//		else
-		//			statustext = "offline";
-		textViewStatus.setText(statustext);
-	}
+        return view;
+    }
 
-	private String formatTime(long timeInMilliseconds){
-		String sign = ( timeInMilliseconds >=0 ? "" : "-");
-		long timeInSeconds = Math.abs(timeInMilliseconds/1000);
-		String sec = Long.toString(timeInSeconds%60);
-		if (sec.length()==1)
-			sec = "0" + sec;
-		String string = Long.toString(timeInSeconds/60) + ":" + sec;
-		return sign + string;
-	}
+    private void setColorForBlock(ImageView colorBlockImageView, int friendId, Friend friend) {
+        if ( friendId == SocialActivity.ID_HEAD ||  friendId == SocialActivity.ID_TAIL )
+            colorBlockImageView.setVisibility(View.INVISIBLE);
+        else
+            colorBlockImageView.setBackgroundColor(Friends.getFriendColorOrDefault(activity, friendId, friend));
+    }
 
-	@SuppressLint("DefaultLocale")
-	private String formatDistance(long meters) {
-		String s = "-";
-		if ( Math.abs(meters) < 1000 ) {
-			s = Long.toString(meters) + "m";
-		}
-		else {
-			double km = meters / 1000.0; 
-			s = String.format("%.2fk", km);
-		}
-			
-		return s;
-	}
+    private void updateStatus(Friend friend, TextView textViewStatus) {
+        String statustext = textViewStatus.getResources().getString(R.string.status_active);
+        if ( ! friend.isValid() ) {
+            statustext = textViewStatus.getResources().getString(R.string.status_obsolete);
+        }
+        else if ( friend.getRequestId() > 0 ) {
+            statustext = textViewStatus.getResources().getString(R.string.status_pending) + " (" + SocialActivity.formatRequestId(friend.getRequestId()) + ")";
+        }
+        else if ( ! friend.isActive() ) {
+            statustext = textViewStatus.getResources().getString(R.string.status_inactive);
+        }
+        //      else if ( friend.isOnline() )
+        //          statustext = "online";
+        //      else
+        //          statustext = "offline";
+        textViewStatus.setText(statustext);
+    }
 
-	@SuppressWarnings("unused")
-	private static final String TAG = "FriendListAdapter"; 
+    private String formatTime(long timeInMilliseconds){
+        String sign = ( timeInMilliseconds >=0 ? "" : "-");
+        long timeInSeconds = Math.abs(timeInMilliseconds/1000);
+        String sec = Long.toString(timeInSeconds%60);
+        if (sec.length()==1)
+            sec = "0" + sec;
+        String string = Long.toString(timeInSeconds/60) + ":" + sec;
+        return sign + string;
+    }
+
+    @SuppressLint("DefaultLocale")
+    private String formatDistance(long meters) {
+        String s = "-";
+        if ( Math.abs(meters) < 1000 ) {
+            s = Long.toString(meters) + "m";
+        }
+        else {
+            double km = meters / 1000.0;
+            s = String.format("%.2fk", km);
+        }
+
+        return s;
+    }
+
+    @SuppressWarnings("unused")
+    private static final String TAG = "FriendListAdapter";
 
 }
 

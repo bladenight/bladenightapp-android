@@ -21,133 +21,133 @@ import de.greencity.bladenightapp.dev.android.R;
 import de.greencity.bladenightapp.network.messages.RealTimeUpdateData;
 
 public class WidgetProvider extends AppWidgetProvider {
-	private Drawable background;
-	private Drawable progressBar;
-	private final String TAG = "WidgetProvider";
-	private final int renderingWidth = 500;
-	private final int renderingHeight = 100;
-	private BroadcastReceiversRegister localBroadcastReceiversRegister;
+    private Drawable background;
+    private Drawable progressBar;
+    private final String TAG = "WidgetProvider";
+    private final int renderingWidth = 500;
+    private final int renderingHeight = 100;
+    private BroadcastReceiversRegister localBroadcastReceiversRegister;
 
 
-	@Override
-	public void onEnabled(Context context) {
-		Log.i(TAG, "onEnabled");
-		registerLocalBroadcastReceiversIfRequired(context);
-	}
+    @Override
+    public void onEnabled(Context context) {
+        Log.i(TAG, "onEnabled");
+        registerLocalBroadcastReceiversIfRequired(context);
+    }
 
-	@Override
-	public void onDisabled(Context context) {
-		Log.i(TAG, "onDisabled");
-		getLocalBroadcastReceiversRegister(context).unregisterReceivers();
-	}
+    @Override
+    public void onDisabled(Context context) {
+        Log.i(TAG, "onDisabled");
+        getLocalBroadcastReceiversRegister(context).unregisterReceivers();
+    }
 
-	private BroadcastReceiversRegister getLocalBroadcastReceiversRegister(Context context) {
-		if ( localBroadcastReceiversRegister == null )
-			localBroadcastReceiversRegister = new BroadcastReceiversRegister(context);
-		return localBroadcastReceiversRegister;
-	}
-	
-	private void registerLocalBroadcastReceiversIfRequired(Context context) {
-		if ( getLocalBroadcastReceiversRegister(context).getNumberORegisteredReceivers() == 0 ) {
-			Log.i(TAG, "Registering receiver for GOT_REALTIME_DATA");
-			getLocalBroadcastReceiversRegister(context).registerReceiver(LocalBroadcast.GOT_REALTIME_DATA, this);
-		}
-	}
-	
-	@Override
-	public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-		// onEnabled() is not always called, so make sure we have registered to broadcast at the 
-		// latest when we update the widget
-		registerLocalBroadcastReceiversIfRequired(context);
-		
-		ComponentName componentName = new ComponentName(context, WidgetProvider.class);
-		int[] allWidgetIds = appWidgetManager.getAppWidgetIds(componentName);
-		for (int widgetId : allWidgetIds) {
-			// create some random data
-			int number = (new Random().nextInt(100));
+    private BroadcastReceiversRegister getLocalBroadcastReceiversRegister(Context context) {
+        if ( localBroadcastReceiversRegister == null )
+            localBroadcastReceiversRegister = new BroadcastReceiversRegister(context);
+        return localBroadcastReceiversRegister;
+    }
 
-			RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget);
+    private void registerLocalBroadcastReceiversIfRequired(Context context) {
+        if ( getLocalBroadcastReceiversRegister(context).getNumberORegisteredReceivers() == 0 ) {
+            Log.i(TAG, "Registering receiver for GOT_REALTIME_DATA");
+            getLocalBroadcastReceiversRegister(context).registerReceiver(LocalBroadcast.GOT_REALTIME_DATA, this);
+        }
+    }
 
-			Log.i(TAG, "onUpdate");
+    @Override
+    public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
+        // onEnabled() is not always called, so make sure we have registered to broadcast at the
+        // latest when we update the widget
+        registerLocalBroadcastReceiversIfRequired(context);
 
-			// Set the text
-			remoteViews.setTextViewText(R.id.widgetText, String.valueOf(number));
+        ComponentName componentName = new ComponentName(context, WidgetProvider.class);
+        int[] allWidgetIds = appWidgetManager.getAppWidgetIds(componentName);
+        for (int widgetId : allWidgetIds) {
+            // create some random data
+            int number = (new Random().nextInt(100));
 
-			// remoteViews.setProgressBar(R.id.progress_procession, 100, number, false);
+            RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget);
 
-			Bitmap bitmap = Bitmap.createBitmap(renderingWidth, renderingHeight, Config.ARGB_8888);
-			bitmap.eraseColor(R.color.bn_orange);
+            Log.i(TAG, "onUpdate");
 
-			//create a canvas from existent bitmap that will be used for drawing  
-			Canvas canvas = new Canvas(bitmap);  
+            // Set the text
+            remoteViews.setTextViewText(R.id.widgetText, String.valueOf(number));
 
-			drawProgressBar(context, canvas, number);
+            // remoteViews.setProgressBar(R.id.progress_procession, 100, number, false);
 
-			remoteViews.setImageViewBitmap(R.id.imageView1, bitmap); 
+            Bitmap bitmap = Bitmap.createBitmap(renderingWidth, renderingHeight, Config.ARGB_8888);
+            bitmap.eraseColor(R.color.bn_orange);
 
-			// Register an onClickListener
-			setOnClickListener(context, appWidgetIds, remoteViews);
+            //create a canvas from existent bitmap that will be used for drawing
+            Canvas canvas = new Canvas(bitmap);
 
-			appWidgetManager.updateAppWidget(widgetId, remoteViews);
-		}
-	}
+            drawProgressBar(context, canvas, number);
 
-	private void setOnClickListener(Context context, int[] appWidgetIds,
-			RemoteViews remoteViews) {
-		Intent intent = new Intent(context, WidgetProvider.class);
+            remoteViews.setImageViewBitmap(R.id.imageView1, bitmap);
 
-		intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
-		intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);
+            // Register an onClickListener
+            setOnClickListener(context, appWidgetIds, remoteViews);
 
-		PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-		remoteViews.setOnClickPendingIntent(R.id.widgetText, pendingIntent);
-	}
+            appWidgetManager.updateAppWidget(widgetId, remoteViews);
+        }
+    }
 
-	private void drawProgressBar(Context context, Canvas canvas, int number) {
+    private void setOnClickListener(Context context, int[] appWidgetIds,
+            RemoteViews remoteViews) {
+        Intent intent = new Intent(context, WidgetProvider.class);
 
-		GlobalStateAccess globalStateAccess = new GlobalStateAccess(context);
+        intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);
 
-		Drawable background = getBackground(context);
-		background.setBounds(0, 0, renderingWidth, renderingHeight);
-		background.draw(canvas);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        remoteViews.setOnClickPendingIntent(R.id.widgetText, pendingIntent);
+    }
 
-		RealTimeUpdateData realTimeUpdateData = globalStateAccess.getRealTimeUpdateData();
-		// Log.i(TAG, "realTimeUpdateData="+realTimeUpdateData);
-		if ( realTimeUpdateData == null ) {
-			return; // no data available
-		}
+    private void drawProgressBar(Context context, Canvas canvas, int number) {
 
-		int xMin = (int)(1.0 * renderingWidth * realTimeUpdateData.getTailPosition() / realTimeUpdateData.getRouteLength());
-		int xMax = (int)(1.0 * renderingWidth * realTimeUpdateData.getHeadPosition() / realTimeUpdateData.getRouteLength());
+        GlobalStateAccess globalStateAccess = new GlobalStateAccess(context);
 
-		int yMin = (int)(0.0 * renderingHeight);
-		int yMax = (int)(1.0 * renderingHeight);
+        Drawable background = getBackground(context);
+        background.setBounds(0, 0, renderingWidth, renderingHeight);
+        background.draw(canvas);
 
-		Drawable progressBar = getProgressBar(context);
-		progressBar.setBounds(xMin, yMin, xMax, yMax);
-		progressBar.draw(canvas);
-	}
+        RealTimeUpdateData realTimeUpdateData = globalStateAccess.getRealTimeUpdateData();
+        // Log.i(TAG, "realTimeUpdateData="+realTimeUpdateData);
+        if ( realTimeUpdateData == null ) {
+            return; // no data available
+        }
 
-	private Drawable getBackground(Context context) {
-		if ( background == null )
-			background = context.getResources().getDrawable(R.drawable.progression_background);
-		Log.i(TAG, background.getClass().getName());
-		return background;
-	}
+        int xMin = (int)(1.0 * renderingWidth * realTimeUpdateData.getTailPosition() / realTimeUpdateData.getRouteLength());
+        int xMax = (int)(1.0 * renderingWidth * realTimeUpdateData.getHeadPosition() / realTimeUpdateData.getRouteLength());
 
-	private Drawable getProgressBar(Context context) {
-		if ( progressBar == null )
-			progressBar = context.getResources().getDrawable(R.drawable.procession_progressbar);
-		return progressBar;
-	}
+        int yMin = (int)(0.0 * renderingHeight);
+        int yMax = (int)(1.0 * renderingHeight);
 
-	@Override
-	public void onReceive(Context context, Intent intent) {
-		super.onReceive(context, intent);
-		Log.i(TAG, "onReceive: " + intent.getAction());
-		AppWidgetManager manager = AppWidgetManager.getInstance(context);
-		ComponentName componentName = new ComponentName(context, WidgetProvider.class);
-		onUpdate(context, manager, manager.getAppWidgetIds(componentName)); 
-	}
+        Drawable progressBar = getProgressBar(context);
+        progressBar.setBounds(xMin, yMin, xMax, yMax);
+        progressBar.draw(canvas);
+    }
+
+    private Drawable getBackground(Context context) {
+        if ( background == null )
+            background = context.getResources().getDrawable(R.drawable.progression_background);
+        Log.i(TAG, background.getClass().getName());
+        return background;
+    }
+
+    private Drawable getProgressBar(Context context) {
+        if ( progressBar == null )
+            progressBar = context.getResources().getDrawable(R.drawable.procession_progressbar);
+        return progressBar;
+    }
+
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        super.onReceive(context, intent);
+        Log.i(TAG, "onReceive: " + intent.getAction());
+        AppWidgetManager manager = AppWidgetManager.getInstance(context);
+        ComponentName componentName = new ComponentName(context, WidgetProvider.class);
+        onUpdate(context, manager, manager.getAppWidgetIds(componentName));
+    }
 
 }

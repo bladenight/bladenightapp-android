@@ -8,68 +8,68 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 public class DeviceId {
-	static final private String KEY_DEVICEID = "deviceId";
-	static final private int LENGTH = 20;
+    static final private String KEY_DEVICEID = "deviceId";
+    static final private int LENGTH = 20;
 
-	static public String getDeviceId(Context context) {
-		
-		if ( isValid(inMemoryCache) )
-			return inMemoryCache;
+    static public String getDeviceId(Context context) {
 
-		String fromPreferences = getFromPreferences(context);
-		if ( isValid(fromPreferences) ) {
-			inMemoryCache = fromPreferences;
-			return fromPreferences;
-		}
-				
-		String deviceId = generateDeviceId(context);
+        if ( isValid(inMemoryCache) )
+            return inMemoryCache;
 
-		saveToPreferences(context, deviceId);
-		inMemoryCache = deviceId;
+        String fromPreferences = getFromPreferences(context);
+        if ( isValid(fromPreferences) ) {
+            inMemoryCache = fromPreferences;
+            return fromPreferences;
+        }
 
-		Log.d(TAG, " New id : " + deviceId);
+        String deviceId = generateDeviceId(context);
 
-		return deviceId;
-	}
+        saveToPreferences(context, deviceId);
+        inMemoryCache = deviceId;
 
-	private static void saveToPreferences(Context context, String deviceId) {
-		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
-		SharedPreferences.Editor editor = settings.edit();
-		editor.putString(KEY_DEVICEID, deviceId);
-		editor.commit();
-	}
-	
-	static private String getFromPreferences(Context context) {
-		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
-		String unsetString = "";
-		String currentId = settings.getString(KEY_DEVICEID, unsetString);
-		if ( currentId != unsetString && currentId.length() > 0 ) {
-			Log.d(TAG, " cached device id : " + currentId);
-			return currentId;
-		}
-		return null;
-	}
+        Log.d(TAG, " New id : " + deviceId);
 
-	static private String generateDeviceId(Context context) {
-		Log.d(TAG, " Generating a new id...");
-		Random random = new Random();
-		String id = "";
-		while ( id.length() < LENGTH ) {
-			id = id + Long.toHexString(random.nextLong());
-		}
-		return id.substring(0, LENGTH);
-	}
-	
-	static boolean isValid(String deviceId) {
-		if ( deviceId == null )
-			return false;
-		if ( deviceId.length() <= 0)
-			return false;
-		return true;
-	}
+        return deviceId;
+    }
 
-	final static String TAG = "DeviceId";
-	static String inMemoryCache;
+    private static void saveToPreferences(Context context, String deviceId) {
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString(KEY_DEVICEID, deviceId);
+        editor.commit();
+    }
+
+    static private String getFromPreferences(Context context) {
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
+        String unsetString = "";
+        String currentId = settings.getString(KEY_DEVICEID, unsetString);
+        if ( currentId != unsetString && currentId.length() > 0 ) {
+            Log.d(TAG, " cached device id : " + currentId);
+            return currentId;
+        }
+        return null;
+    }
+
+    static private String generateDeviceId(Context context) {
+        Log.d(TAG, " Generating a new id...");
+        Random random = new Random();
+        String id = "";
+        while ( id.length() < LENGTH ) {
+            id = id + Long.toHexString(random.nextLong());
+        }
+        return id.substring(0, LENGTH);
+    }
+
+    static boolean isValid(String deviceId) {
+        if ( deviceId == null )
+            return false;
+        if ( deviceId.length() <= 0)
+            return false;
+        return true;
+    }
+
+    final static String TAG = "DeviceId";
+    static String inMemoryCache;
 }
 
 

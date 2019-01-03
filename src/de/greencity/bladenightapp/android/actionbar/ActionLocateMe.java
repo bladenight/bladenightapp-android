@@ -12,7 +12,7 @@ public class ActionLocateMe implements Action {
         return R.drawable.ic_action_location;
     }
 
-	@Override
-	public void performAction(View view) {
-	}
+    @Override
+    public void performAction(View view) {
+    }
 }

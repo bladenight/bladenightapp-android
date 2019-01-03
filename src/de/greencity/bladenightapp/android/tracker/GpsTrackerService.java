@@ -28,144 +28,144 @@ import de.greencity.bladenightapp.network.messages.RealTimeUpdateData;
 
 public class GpsTrackerService extends Service {
 
-	@Override
-	public void onCreate() {
-		Log.d(TAG, "onCreate");
+    @Override
+    public void onCreate() {
+        Log.d(TAG, "onCreate");
 
-		networkClient = BladeNightApplication.networkClient;
+        networkClient = BladeNightApplication.networkClient;
 
-		lastKnownLocation = new Location("INTERNAL");
-		locationListener = new BladenightLocationListener(lastKnownLocation);
-		gpsListener = new GpsListener(this, locationListener);
+        lastKnownLocation = new Location("INTERNAL");
+        locationListener = new BladenightLocationListener(lastKnownLocation);
+        gpsListener = new GpsListener(this, locationListener);
 
-		gpsListener.requestLocationUpdates(5000);
+        gpsListener.requestLocationUpdates(5000);
 
-		traceLogger = new GeoTraceLogger(new File(Paths.getAppDataDirectory(), "gps-trace.txt"));
+        traceLogger = new GeoTraceLogger(new File(Paths.getAppDataDirectory(), "gps-trace.txt"));
 
-		globalStateAccess = new GlobalStateAccess(this);
-		
-		realTimeDataConsumer = new RealTimeDataConsumer() {
-			@Override
-			public void consume(RealTimeUpdateData realTimeUpdateData) {
-				Log.i(TAG, "Consuming: " + realTimeUpdateData);
-				if ( realTimeUpdateData.isUserOnRoute() )
-					traceLogger.setLinearPosition(realTimeUpdateData.getUserPosition());
-				else
-					traceLogger.setLinearPosition(-1);
-				writeTraceEntry();
-			}
-		};
+        globalStateAccess = new GlobalStateAccess(this);
 
-		networkClient.addRealTimeDataConsumer(realTimeDataConsumer);
+        realTimeDataConsumer = new RealTimeDataConsumer() {
+            @Override
+            public void consume(RealTimeUpdateData realTimeUpdateData) {
+                Log.i(TAG, "Consuming: " + realTimeUpdateData);
+                if ( realTimeUpdateData.isUserOnRoute() )
+                    traceLogger.setLinearPosition(realTimeUpdateData.getUserPosition());
+                else
+                    traceLogger.setLinearPosition(-1);
+                writeTraceEntry();
+            }
+        };
 
-		setNotification();
+        networkClient.addRealTimeDataConsumer(realTimeDataConsumer);
 
-		periodicNetworkSenderRunnable = new Runnable() {
-			@Override
-			public void run() {
-				Log.i(TAG, "periodic task");
-				globalStateAccess.setLocationFromGps(lastKnownLocation);
-				globalStateAccess.requestRealTimeUpdateData();
-				// sendLocationUpdateToServer();
-				handler.postDelayed(this, SEND_PERIOD);
-				writeTraceEntry();
-			}
-		};
-		handler.post(periodicNetworkSenderRunnable);
-	}
+        setNotification();
 
-	@Override
-	public void onDestroy() {
-		Log.i(TAG, "onDestroy");
-		handler.removeCallbacks(periodicNetworkSenderRunnable);
-		gpsListener.cancelLocationUpdates();
-		stopForeground(true);
-		networkClient.removeRealTimeDataConsumer(realTimeDataConsumer);
-	}
+        periodicNetworkSenderRunnable = new Runnable() {
+            @Override
+            public void run() {
+                Log.i(TAG, "periodic task");
+                globalStateAccess.setLocationFromGps(lastKnownLocation);
+                globalStateAccess.requestRealTimeUpdateData();
+                // sendLocationUpdateToServer();
+                handler.postDelayed(this, SEND_PERIOD);
+                writeTraceEntry();
+            }
+        };
+        handler.post(periodicNetworkSenderRunnable);
+    }
 
-	@Override
-	public int onStartCommand(Intent intent, int flags, int startId) {
-		Log.d(TAG, "onStartCommand");
-		// If we get killed, restart
-		return START_STICKY;
-	}
+    @Override
+    public void onDestroy() {
+        Log.i(TAG, "onDestroy");
+        handler.removeCallbacks(periodicNetworkSenderRunnable);
+        gpsListener.cancelLocationUpdates();
+        stopForeground(true);
+        networkClient.removeRealTimeDataConsumer(realTimeDataConsumer);
+    }
 
-	@Override
-	public IBinder onBind(Intent intent) {
-		return new Binder();
-	}
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.d(TAG, "onStartCommand");
+        // If we get killed, restart
+        return START_STICKY;
+    }
 
-	@Override
-	public boolean onUnbind(Intent intent) {
-		Log.i(TAG, "onUnbind");
+    @Override
+    public IBinder onBind(Intent intent) {
+        return new Binder();
+    }
 
-		return super.onUnbind(intent);
-	}
+    @Override
+    public boolean onUnbind(Intent intent) {
+        Log.i(TAG, "onUnbind");
 
-	private void setNotification() {
-		Intent notificationIntent = new Intent(this, BladenightMapActivity.class);
-		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+        return super.onUnbind(intent);
+    }
 
-		Bitmap icon = getNotificationIcon();
-		Log.i(TAG, icon.toString());
+    private void setNotification() {
+        Intent notificationIntent = new Intent(this, BladenightMapActivity.class);
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
-		Notification notification = new  NotificationCompat.Builder(this)
-		.setContentTitle(getString(R.string.msg_tracking_running))
-		.setContentText(getString(R.string.app_name))
-		.setSmallIcon(notificationIconId)
-		.setLargeIcon(getNotificationIcon())
-		.setContentIntent(contentIntent)
-		.build();
+        Bitmap icon = getNotificationIcon();
+        Log.i(TAG, icon.toString());
 
-		notification.flags |= Notification.FLAG_FOREGROUND_SERVICE;
+        Notification notification = new  NotificationCompat.Builder(this)
+        .setContentTitle(getString(R.string.msg_tracking_running))
+        .setContentText(getString(R.string.app_name))
+        .setSmallIcon(notificationIconId)
+        .setLargeIcon(getNotificationIcon())
+        .setContentIntent(contentIntent)
+        .build();
 
-		startForeground(NOTIFICATION_ID, notification);
-	}
+        notification.flags |= Notification.FLAG_FOREGROUND_SERVICE;
 
-	@SuppressLint("InlinedApi")
-	private Bitmap getNotificationIcon() {
-		Bitmap rawBitmap = BitmapFactory.decodeResource(getResources(), notificationIconId);
+        startForeground(NOTIFICATION_ID, notification);
+    }
 
-		if (android.os.Build.VERSION.SDK_INT < 11) {
-			return rawBitmap;
-		}
-		else {
-			Resources res = getResources();
-			int height = (int) res.getDimension(android.R.dimen.notification_large_icon_height);
-			int width = (int) res.getDimension(android.R.dimen.notification_large_icon_width);
-			
-			return Bitmap.createScaledBitmap(rawBitmap, width, height, false);
-		}
-	}
+    @SuppressLint("InlinedApi")
+    private Bitmap getNotificationIcon() {
+        Bitmap rawBitmap = BitmapFactory.decodeResource(getResources(), notificationIconId);
 
-	private void writeTraceEntry() {
-		traceLogger.setAccuracy(lastKnownLocation.getAccuracy());
-		traceLogger.setLongitude(lastKnownLocation.getLongitude());
-		traceLogger.setLatitude(lastKnownLocation.getLatitude());
-		try {
-			traceLogger.writeWithTimeLimit(MIN_LOG_PERIOD);
-		} catch (IOException e) {
-			Log.e(TAG, "Failed to write trace entry: " + e);
-		}
-	}
+        if (android.os.Build.VERSION.SDK_INT < 11) {
+            return rawBitmap;
+        }
+        else {
+            Resources res = getResources();
+            int height = (int) res.getDimension(android.R.dimen.notification_large_icon_height);
+            int width = (int) res.getDimension(android.R.dimen.notification_large_icon_width);
+
+            return Bitmap.createScaledBitmap(rawBitmap, width, height, false);
+        }
+    }
+
+    private void writeTraceEntry() {
+        traceLogger.setAccuracy(lastKnownLocation.getAccuracy());
+        traceLogger.setLongitude(lastKnownLocation.getLongitude());
+        traceLogger.setLatitude(lastKnownLocation.getLatitude());
+        try {
+            traceLogger.writeWithTimeLimit(MIN_LOG_PERIOD);
+        } catch (IOException e) {
+            Log.e(TAG, "Failed to write trace entry: " + e);
+        }
+    }
 
 
-	private GlobalStateAccess globalStateAccess;
-	private Location lastKnownLocation;
-	private BladenightLocationListener locationListener;
-	private GpsListener gpsListener;
-	private NetworkClient networkClient;
-	private Runnable periodicNetworkSenderRunnable;
-	private RealTimeDataConsumer realTimeDataConsumer;
-	private GeoTraceLogger traceLogger;
+    private GlobalStateAccess globalStateAccess;
+    private Location lastKnownLocation;
+    private BladenightLocationListener locationListener;
+    private GpsListener gpsListener;
+    private NetworkClient networkClient;
+    private Runnable periodicNetworkSenderRunnable;
+    private RealTimeDataConsumer realTimeDataConsumer;
+    private GeoTraceLogger traceLogger;
 
-	final Handler handler = new Handler();
-	static private final int SEND_PERIOD = 10000;
-	static private final int MIN_LOG_PERIOD = 2000;
-	static private final int NOTIFICATION_ID = 1;
+    final Handler handler = new Handler();
+    static private final int SEND_PERIOD = 10000;
+    static private final int MIN_LOG_PERIOD = 2000;
+    static private final int NOTIFICATION_ID = 1;
 
-	static private final int notificationIconId = R.drawable.application_prod;
+    static private final int notificationIconId = R.drawable.application_prod;
 
-	static final String TAG = "GpsTrackerService";
-	static final String INTENT_PERIODIC = "de.greencity.bladenightapp.android.gps.periodic";
+    static final String TAG = "GpsTrackerService";
+    static final String INTENT_PERIODIC = "de.greencity.bladenightapp.android.gps.periodic";
 }

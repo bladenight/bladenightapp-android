@@ -10,34 +10,34 @@ import android.util.Log;
 import de.greencity.bladenightapp.android.global.LocalBroadcast;
 
 public class BroadcastReceiversRegister {
-	public BroadcastReceiversRegister(Context context) {
-		this.context = context;
-	}
+    public BroadcastReceiversRegister(Context context) {
+        this.context = context;
+    }
 
-	public void registerReceiver(LocalBroadcast broadcast, BroadcastReceiver receiver) {
-		IntentFilter intentFilter = new IntentFilter(broadcast.toString());
-		context.registerReceiver(receiver, intentFilter);
-		registeredReceivers.add(receiver);
-		Log.i(TAG,"Registered receiver for " + broadcast.toString() + "; " + receiver);
-	}
+    public void registerReceiver(LocalBroadcast broadcast, BroadcastReceiver receiver) {
+        IntentFilter intentFilter = new IntentFilter(broadcast.toString());
+        context.registerReceiver(receiver, intentFilter);
+        registeredReceivers.add(receiver);
+        Log.i(TAG,"Registered receiver for " + broadcast.toString() + "; " + receiver);
+    }
 
-	public void unregisterReceivers() {
-		while ( registeredReceivers.size() > 0 ) {
-			BroadcastReceiver r = registeredReceivers.remove(0);
-			try { 
-				context.unregisterReceiver(r);
-			}
-			catch (IllegalArgumentException e) {
-				Log.e(TAG,"Failed to unregister receiver " + r + "\n" + e);
-			}
-		}
-	}
-	
-	public int getNumberORegisteredReceivers() {
-		return registeredReceivers.size();
-	}
+    public void unregisterReceivers() {
+        while ( registeredReceivers.size() > 0 ) {
+            BroadcastReceiver r = registeredReceivers.remove(0);
+            try {
+                context.unregisterReceiver(r);
+            }
+            catch (IllegalArgumentException e) {
+                Log.e(TAG,"Failed to unregister receiver " + r + "\n" + e);
+            }
+        }
+    }
 
-	private List<BroadcastReceiver> registeredReceivers = new ArrayList<BroadcastReceiver>();
-	private Context context;
-	private final String TAG = "BroadcastReceiversRegister";
+    public int getNumberORegisteredReceivers() {
+        return registeredReceivers.size();
+    }
+
+    private List<BroadcastReceiver> registeredReceivers = new ArrayList<BroadcastReceiver>();
+    private Context context;
+    private final String TAG = "BroadcastReceiversRegister";
 }

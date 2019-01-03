@@ -14,45 +14,45 @@ import de.greencity.bladenightapp.dev.android.R;
 
 public class ShowCodeDialog extends DialogFragment  {
 
-	public ShowCodeDialog() {
-	}
+    public ShowCodeDialog() {
+    }
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-		Bundle arguments = getArguments();
-		if ( arguments != null ) {
-			this.friendName = arguments.getString(ARG_NICKNAME);
-			this.code = arguments.getLong(ARG_CODE);
-		}
-		else {
-			Log.e(TAG, "arguments="+arguments);
-		}
+        Bundle arguments = getArguments();
+        if ( arguments != null ) {
+            this.friendName = arguments.getString(ARG_NICKNAME);
+            this.code = arguments.getLong(ARG_CODE);
+        }
+        else {
+            Log.e(TAG, "arguments="+arguments);
+        }
 
-		View view = inflater.inflate(R.layout.show_code_dialog, container);
+        View view = inflater.inflate(R.layout.show_code_dialog, container);
 
-		String text = getResources().getString(R.string.msg_new_code) + " " + friendName;
-		getDialog().setTitle(text);
-		
-		ClipboardUtils.copy(getActivity(), Long.toString(code));
+        String text = getResources().getString(R.string.msg_new_code) + " " + friendName;
+        getDialog().setTitle(text);
 
-		TextView codetext = (TextView) view.findViewById(R.id.code_text);
-		codetext.setText(SocialActivity.formatRequestId(code));
+        ClipboardUtils.copy(getActivity(), Long.toString(code));
 
-		Button confirmButton = (Button) view.findViewById(R.id.show_code_confirm);
-		confirmButton.setOnClickListener(new Button.OnClickListener() {
-			public void onClick(View v) {
-				dismiss();
-			}
-		});
+        TextView codetext = (TextView) view.findViewById(R.id.code_text);
+        codetext.setText(SocialActivity.formatRequestId(code));
 
-		return view;
-	}
+        Button confirmButton = (Button) view.findViewById(R.id.show_code_confirm);
+        confirmButton.setOnClickListener(new Button.OnClickListener() {
+            public void onClick(View v) {
+                dismiss();
+            }
+        });
+
+        return view;
+    }
 
 
-	final private static String TAG = "ShowCodeDialog"; 
-	final public static String ARG_CODE = "code";
-	final public static String ARG_NICKNAME = "nickname";
-	private String friendName;
-	private long code;
+    final private static String TAG = "ShowCodeDialog";
+    final public static String ARG_CODE = "code";
+    final public static String ARG_NICKNAME = "nickname";
+    private String friendName;
+    private long code;
 }

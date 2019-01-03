@@ -332,7 +332,7 @@ public class HybiParser {
         }
         return (int) i;
     }
-    
+
     /**
      * Copied from AOSP Arrays.java.
      */
@@ -371,9 +371,9 @@ public class HybiParser {
     }
 
     public static class ProtocolError extends IOException {
-		private static final long serialVersionUID = 3235810088403426201L;
+        private static final long serialVersionUID = 3235810088403426201L;
 
-		public ProtocolError(String detailMessage) {
+        public ProtocolError(String detailMessage) {
             super(detailMessage);
         }
     }

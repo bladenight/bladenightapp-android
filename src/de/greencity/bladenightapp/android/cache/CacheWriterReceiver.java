@@ -9,19 +9,19 @@ import android.util.Log;
 
 public class CacheWriterReceiver extends BroadcastReceiver {
 
-	final static private String TAG = "CacheWriterReceiver";
-	
-	@Override
-	public void onReceive(Context context, Intent intent) {
-		Log.i(TAG, "Got intent="+intent.getAction());
-		if ( LocalBroadcast.GOT_EVENT_LIST.toString().equals(intent.getAction()) ) {
-			onGotEventList(context, intent);
-		}
-	}
+    final static private String TAG = "CacheWriterReceiver";
 
-	private void onGotEventList(Context context, Intent intent) {
-		Log.i(TAG,"onGotEventList");
-		new EventsCache(context).write(new GlobalStateAccess(context).getEventList());
-	}
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        Log.i(TAG, "Got intent="+intent.getAction());
+        if ( LocalBroadcast.GOT_EVENT_LIST.toString().equals(intent.getAction()) ) {
+            onGotEventList(context, intent);
+        }
+    }
+
+    private void onGotEventList(Context context, Intent intent) {
+        Log.i(TAG,"onGotEventList");
+        new EventsCache(context).write(new GlobalStateAccess(context).getEventList());
+    }
 
 }

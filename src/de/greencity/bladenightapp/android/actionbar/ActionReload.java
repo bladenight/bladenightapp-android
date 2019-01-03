@@ -13,8 +13,8 @@ public class ActionReload implements Action {
         return R.drawable.ic_action_reload;
     }
 
-	@Override
-	public void performAction(View view) {
+    @Override
+    public void performAction(View view) {
         Toast.makeText(view.getContext(), "Example action", Toast.LENGTH_LONG).show();
-	}
+    }
 }

@@ -14,9 +14,9 @@ public class ActionEventSelection implements Action {
         return R.drawable.ic_action_home;
     }
 
-	@Override
-	public void performAction(View view) {
-	    Intent intent = new Intent(view.getContext(), SelectionActivity.class);
-	    view.getContext().startActivity(intent);
-	}
+    @Override
+    public void performAction(View view) {
+        Intent intent = new Intent(view.getContext(), SelectionActivity.class);
+        view.getContext().startActivity(intent);
+    }
 }

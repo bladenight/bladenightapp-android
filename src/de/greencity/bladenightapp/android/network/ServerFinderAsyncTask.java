@@ -10,69 +10,69 @@ import android.util.Log;
 import de.greencity.bladenightapp.network.scanner.PortScanner;
 
 public class ServerFinderAsyncTask extends AsyncTask<Integer, Integer, String> {
-	ServerFinderAsyncTask(Context context) {
-		this.context = context;
-	}
-	
-	protected String doInBackground(Integer... ports) {
-		PortScanner scanner = new PortScanner(ports[0]);
+    ServerFinderAsyncTask(Context context) {
+        this.context = context;
+    }
 
-		scanner.setTimeout(1000);
+    protected String doInBackground(Integer... ports) {
+        PortScanner scanner = new PortScanner(ports[0]);
 
-		Log.i(TAG, "BUILD_PRODUCT=" + Build.PRODUCT);
-		if ( Build.PRODUCT.contains("sdk") ) {
-			// Assume we are running in the emulator, and the server runs on the development host
-			scanner.addHost("10.0.2.2");
-		}
+        scanner.setTimeout(1000);
 
-		String wifiSubnet = getWifiSubnetAsString();
-		Log.i(TAG, "wifiSubnet=" + wifiSubnet);
-		if ( wifiSubnet != null )
-			scanner.addIpRange(wifiSubnet, 1, 254);
+        Log.i(TAG, "BUILD_PRODUCT=" + Build.PRODUCT);
+        if ( Build.PRODUCT.contains("sdk") ) {
+            // Assume we are running in the emulator, and the server runs on the development host
+            scanner.addHost("10.0.2.2");
+        }
 
-		try {
-			scanner.scan();
-		} catch (InterruptedException e) {
-			Log.e("TAG", "While scanning: ",e);
-		}
+        String wifiSubnet = getWifiSubnetAsString();
+        Log.i(TAG, "wifiSubnet=" + wifiSubnet);
+        if ( wifiSubnet != null )
+            scanner.addIpRange(wifiSubnet, 1, 254);
 
-		Log.i(TAG, "doInBackground result=" + scanner.getFoundHost());
+        try {
+            scanner.scan();
+        } catch (InterruptedException e) {
+            Log.e("TAG", "While scanning: ",e);
+        }
 
-		return scanner.getFoundHost();
-	}
+        Log.i(TAG, "doInBackground result=" + scanner.getFoundHost());
 
-	@Override
-	protected void onProgressUpdate(Integer... progress) {
-		// setProgressPercent(progress[0]);
-	}
+        return scanner.getFoundHost();
+    }
 
-	@Override
-	protected void onPostExecute(String result) {
-		// showDialog("Downloaded " + result + " bytes");
-	}
+    @Override
+    protected void onProgressUpdate(Integer... progress) {
+        // setProgressPercent(progress[0]);
+    }
 
-	protected int getWifiIp() {
-		WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
-		WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-		return wifiInfo.getIpAddress();
-	}
+    @Override
+    protected void onPostExecute(String result) {
+        // showDialog("Downloaded " + result + " bytes");
+    }
 
-	@SuppressLint("DefaultLocale")
-	protected String getWifiSubnetAsString() {
-		int ip = getWifiIp();
+    protected int getWifiIp() {
+        WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+        WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+        return wifiInfo.getIpAddress();
+    }
 
-		if ( ip == 0)
-			return null;
+    @SuppressLint("DefaultLocale")
+    protected String getWifiSubnetAsString() {
+        int ip = getWifiIp();
 
-		String ipString = String.format(
-				"%d.%d.%d",
-				(ip & 0xff),
-				(ip >> 8 & 0xff),
-				(ip >> 16 & 0xff) );
+        if ( ip == 0)
+            return null;
 
-		return ipString;
-	}
+        String ipString = String.format(
+                "%d.%d.%d",
+                (ip & 0xff),
+                (ip >> 8 & 0xff),
+                (ip >> 16 & 0xff) );
 
-	private Context context;
-	final static String TAG = "ServerFinderAsyncTask";
+        return ipString;
+    }
+
+    private Context context;
+    final static String TAG = "ServerFinderAsyncTask";
 }

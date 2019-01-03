@@ -1,6 +1,6 @@
 /*
  * Based on original work from:
- * 
+ *
  * Copyright (C) 2011 Patrik Akerfeldt
  * Copyright (C) 2011 Jake Wharton
  *
@@ -40,415 +40,415 @@ import de.greencity.bladenightapp.dev.android.R;
  * others are only stroked.
  */
 public class CirclePageIndicator extends View implements PageIndicator {
-	interface ColorResolver {
-		int resolve(int index);
-	}
+    interface ColorResolver {
+        int resolve(int index);
+    }
 
-	public CirclePageIndicator(Context context) {
-		this(context, null);
-	}
+    public CirclePageIndicator(Context context) {
+        this(context, null);
+    }
 
-	public CirclePageIndicator(Context context, AttributeSet attrs) {
-		this(context, attrs, 0);
-	}
+    public CirclePageIndicator(Context context, AttributeSet attrs) {
+        this(context, attrs, 0);
+    }
 
-	public CirclePageIndicator(Context context, AttributeSet attrs, int defStyle) {
-		super(context, attrs, defStyle);
-		if (isInEditMode()) return;
+    public CirclePageIndicator(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
+        if (isInEditMode()) return;
 
-		final Resources res = getResources();
+        final Resources res = getResources();
 
-		defaultFillPaint.setStyle(Style.FILL);
-		defaultFillPaint.setColor(res.getColor(R.color.black));
+        defaultFillPaint.setStyle(Style.FILL);
+        defaultFillPaint.setColor(res.getColor(R.color.black));
 
-		strokePaint.setStyle(Style.STROKE);
-		strokePaint.setColor(res.getColor(R.color.bn_white));
-		
-		double scale = getResources().getDisplayMetrics().density;
-		int sizeInDp = (int) (2.0*scale);
-		strokePaint.setStrokeWidth(sizeInDp);
-		
-		final ViewConfiguration configuration = ViewConfiguration.get(context);
-		touchSlop = ViewConfigurationCompat.getScaledPagingTouchSlop(configuration);
-		
-		referenceRadius = res.getDimensionPixelSize(R.dimen.cpi_reference_radius);
-	}
+        strokePaint.setStyle(Style.STROKE);
+        strokePaint.setColor(res.getColor(R.color.bn_white));
 
-	public void setColorResolver(ColorResolver colorResolver) {
-		this.colorResolver = colorResolver;
-	}
+        double scale = getResources().getDisplayMetrics().density;
+        int sizeInDp = (int) (2.0*scale);
+        strokePaint.setStrokeWidth(sizeInDp);
 
-	@Override
-	protected void onDraw(Canvas canvas) {
-		super.onDraw(canvas);
+        final ViewConfiguration configuration = ViewConfiguration.get(context);
+        touchSlop = ViewConfigurationCompat.getScaledPagingTouchSlop(configuration);
 
-		if (viewPager == null) {
-			return;
-		}
-		final int count = getNumberOfItems();
-		if (count == 0) {
-			return;
-		}
+        referenceRadius = res.getDimensionPixelSize(R.dimen.cpi_reference_radius);
+    }
 
-		if (pageIndex >= count) {
-			setCurrentItem(count - 1);
-			return;
-		}
+    public void setColorResolver(ColorResolver colorResolver) {
+        this.colorResolver = colorResolver;
+    }
 
-		int longPaddingBefore;
-		int longPaddingAfter;
-		int shortPaddingBefore;
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
 
-		longPaddingBefore = getPaddingLeft();
-		longPaddingAfter = getPaddingRight();
-		shortPaddingBefore = getPaddingTop();
+        if (viewPager == null) {
+            return;
+        }
+        final int count = getNumberOfItems();
+        if (count == 0) {
+            return;
+        }
 
-		float longPaddingBetween = referenceRadius * paddingFactor;
+        if (pageIndex >= count) {
+            setCurrentItem(count - 1);
+            return;
+        }
 
-		float drawLong = longPaddingBefore;
+        int longPaddingBefore;
+        int longPaddingAfter;
+        int shortPaddingBefore;
 
-		final float shortOffset = shortPaddingBefore + referenceRadius;
+        longPaddingBefore = getPaddingLeft();
+        longPaddingAfter = getPaddingRight();
+        shortPaddingBefore = getPaddingTop();
 
-		final float availableLongSize = ( getWidth() - longPaddingAfter - longPaddingBefore);
-		final float requiredLongSize = getRequiredLongSizeWithoutPadding();
-		drawLong += (availableLongSize-requiredLongSize) / 2.0f;
+        float longPaddingBetween = referenceRadius * paddingFactor;
 
-		for (int iLoop = 0; iLoop < count; iLoop++) {
-			Paint paint = resolveFillPaintForIndex(iLoop);
-			final float growthFactor = getGrowthFactor(iLoop);
-			final float pitch = (referenceRadius + longPaddingBetween / 2.0f) * growthFactor; 
+        float drawLong = longPaddingBefore;
 
-			drawLong += pitch;
+        final float shortOffset = shortPaddingBefore + referenceRadius;
 
-			float dX = drawLong;
-			float dY = shortOffset;
+        final float availableLongSize = ( getWidth() - longPaddingAfter - longPaddingBefore);
+        final float requiredLongSize = getRequiredLongSizeWithoutPadding();
+        drawLong += (availableLongSize-requiredLongSize) / 2.0f;
 
-			final float dynamicRadius = referenceRadius * growthFactor;
-			// Only paint fill if not completely transparent
-			if (paint.getAlpha() > 0) {
-				canvas.drawCircle(dX, dY, dynamicRadius, paint);
-			}
+        for (int iLoop = 0; iLoop < count; iLoop++) {
+            Paint paint = resolveFillPaintForIndex(iLoop);
+            final float growthFactor = getGrowthFactor(iLoop);
+            final float pitch = (referenceRadius + longPaddingBetween / 2.0f) * growthFactor;
 
-			canvas.drawCircle(dX, dY, dynamicRadius, strokePaint);
-			drawLong += pitch;
-		}
-	}
-	
-	private int getRequiredLongSizeWithoutPadding() {
-		final float longPaddingBetween = referenceRadius * 0.4f;
-		final float referencePitch = 2.0f * referenceRadius + longPaddingBetween;
-		final int count = getNumberOfItems();
-		return (int) (( count - 1 ) * referencePitch + referencePitch * ( 1.0f + radiusGrowthPotential));
-	}
-	
-	private int getNumberOfItems() {
-		return viewPager.getAdapter().getCount();
-	}
+            drawLong += pitch;
 
-	private float getGrowthFactor(int circleIndex) {
-		float subFactor = (float)0.0;
-		if ( circleIndex == pageIndex )
-			subFactor = 1 - pagePositionOffset;
-		else if ( circleIndex == pageIndex + 1)
-			subFactor = pagePositionOffset;
-		return 1.0f + radiusGrowthPotential * subFactor;
-	}
+            float dX = drawLong;
+            float dY = shortOffset;
 
-	private Paint resolveFillPaintForIndex(int iLoop) {
-		if (colorResolver == null)
-			return defaultFillPaint;
-		int color = colorResolver.resolve(iLoop);
-		if (color < 0 )
-			return defaultFillPaint;
-		Paint paint = new Paint(ANTI_ALIAS_FLAG);
-		paint.setStyle(Style.FILL);
-		paint.setColor(getResources().getColor(color));
-		return paint;
-	}
+            final float dynamicRadius = referenceRadius * growthFactor;
+            // Only paint fill if not completely transparent
+            if (paint.getAlpha() > 0) {
+                canvas.drawCircle(dX, dY, dynamicRadius, paint);
+            }
 
-	public boolean onTouchEvent(android.view.MotionEvent ev) {
-		if (super.onTouchEvent(ev)) {
-			return true;
-		}
-		if ((viewPager == null) || (getNumberOfItems() == 0)) {
-			return false;
-		}
+            canvas.drawCircle(dX, dY, dynamicRadius, strokePaint);
+            drawLong += pitch;
+        }
+    }
 
-		final int action = ev.getAction() & MotionEventCompat.ACTION_MASK;
-		switch (action) {
-		case MotionEvent.ACTION_DOWN:
-			activePointerId = MotionEventCompat.getPointerId(ev, 0);
-			lastMotionX = ev.getX();
-			break;
+    private int getRequiredLongSizeWithoutPadding() {
+        final float longPaddingBetween = referenceRadius * 0.4f;
+        final float referencePitch = 2.0f * referenceRadius + longPaddingBetween;
+        final int count = getNumberOfItems();
+        return (int) (( count - 1 ) * referencePitch + referencePitch * ( 1.0f + radiusGrowthPotential));
+    }
 
-		case MotionEvent.ACTION_MOVE: {
-			final int activePointerIndex = MotionEventCompat.findPointerIndex(ev, activePointerId);
-			final float x = MotionEventCompat.getX(ev, activePointerIndex);
-			final float deltaX = x - lastMotionX;
+    private int getNumberOfItems() {
+        return viewPager.getAdapter().getCount();
+    }
 
-			if (!isDragging) {
-				if (Math.abs(deltaX) > touchSlop) {
-					isDragging = true;
-				}
-			}
+    private float getGrowthFactor(int circleIndex) {
+        float subFactor = (float)0.0;
+        if ( circleIndex == pageIndex )
+            subFactor = 1 - pagePositionOffset;
+        else if ( circleIndex == pageIndex + 1)
+            subFactor = pagePositionOffset;
+        return 1.0f + radiusGrowthPotential * subFactor;
+    }
 
-			if (isDragging) {
-				lastMotionX = x;
-				if (viewPager.isFakeDragging() || viewPager.beginFakeDrag()) {
-					viewPager.fakeDragBy(deltaX);
-				}
-			}
+    private Paint resolveFillPaintForIndex(int iLoop) {
+        if (colorResolver == null)
+            return defaultFillPaint;
+        int color = colorResolver.resolve(iLoop);
+        if (color < 0 )
+            return defaultFillPaint;
+        Paint paint = new Paint(ANTI_ALIAS_FLAG);
+        paint.setStyle(Style.FILL);
+        paint.setColor(getResources().getColor(color));
+        return paint;
+    }
 
-			break;
-		}
+    public boolean onTouchEvent(android.view.MotionEvent ev) {
+        if (super.onTouchEvent(ev)) {
+            return true;
+        }
+        if ((viewPager == null) || (getNumberOfItems() == 0)) {
+            return false;
+        }
 
-		case MotionEvent.ACTION_CANCEL:
-		case MotionEvent.ACTION_UP:
-			if (!isDragging) {
-				final int count = getNumberOfItems();
-				final int width = getWidth();
-				final float halfWidth = width / 2f;
-				final float sixthWidth = width / 6f;
+        final int action = ev.getAction() & MotionEventCompat.ACTION_MASK;
+        switch (action) {
+        case MotionEvent.ACTION_DOWN:
+            activePointerId = MotionEventCompat.getPointerId(ev, 0);
+            lastMotionX = ev.getX();
+            break;
 
-				if ((pageIndex > 0) && (ev.getX() < halfWidth - sixthWidth)) {
-					if (action != MotionEvent.ACTION_CANCEL) {
-						viewPager.setCurrentItem(pageIndex - 1);
-					}
-					return true;
-				} else if ((pageIndex < count - 1) && (ev.getX() > halfWidth + sixthWidth)) {
-					if (action != MotionEvent.ACTION_CANCEL) {
-						viewPager.setCurrentItem(pageIndex + 1);
-					}
-					return true;
-				}
-			}
+        case MotionEvent.ACTION_MOVE: {
+            final int activePointerIndex = MotionEventCompat.findPointerIndex(ev, activePointerId);
+            final float x = MotionEventCompat.getX(ev, activePointerIndex);
+            final float deltaX = x - lastMotionX;
 
-			isDragging = false;
-			activePointerId = INVALID_POINTER;
-			if (viewPager.isFakeDragging()) viewPager.endFakeDrag();
-			break;
+            if (!isDragging) {
+                if (Math.abs(deltaX) > touchSlop) {
+                    isDragging = true;
+                }
+            }
 
-		case MotionEventCompat.ACTION_POINTER_DOWN: {
-			final int index = MotionEventCompat.getActionIndex(ev);
-			lastMotionX = MotionEventCompat.getX(ev, index);
-			activePointerId = MotionEventCompat.getPointerId(ev, index);
-			break;
-		}
+            if (isDragging) {
+                lastMotionX = x;
+                if (viewPager.isFakeDragging() || viewPager.beginFakeDrag()) {
+                    viewPager.fakeDragBy(deltaX);
+                }
+            }
 
-		case MotionEventCompat.ACTION_POINTER_UP:
-			final int pointerIndex = MotionEventCompat.getActionIndex(ev);
-			final int pointerId = MotionEventCompat.getPointerId(ev, pointerIndex);
-			if (pointerId == activePointerId) {
-				final int newPointerIndex = pointerIndex == 0 ? 1 : 0;
-				activePointerId = MotionEventCompat.getPointerId(ev, newPointerIndex);
-			}
-			lastMotionX = MotionEventCompat.getX(ev, MotionEventCompat.findPointerIndex(ev, activePointerId));
-			break;
-		}
+            break;
+        }
 
-		return true;
-	}
+        case MotionEvent.ACTION_CANCEL:
+        case MotionEvent.ACTION_UP:
+            if (!isDragging) {
+                final int count = getNumberOfItems();
+                final int width = getWidth();
+                final float halfWidth = width / 2f;
+                final float sixthWidth = width / 6f;
 
-	@Override
-	public void setViewPager(ViewPager view) {
-		if (viewPager == view) {
-			return;
-		}
-		if (viewPager != null) {
-			viewPager.setOnPageChangeListener(null);
-		}
-		if (view.getAdapter() == null) {
-			throw new IllegalStateException("ViewPager does not have adapter instance.");
-		}
-		viewPager = view;
-		viewPager.setOnPageChangeListener(this);
-		invalidate();
-	}
+                if ((pageIndex > 0) && (ev.getX() < halfWidth - sixthWidth)) {
+                    if (action != MotionEvent.ACTION_CANCEL) {
+                        viewPager.setCurrentItem(pageIndex - 1);
+                    }
+                    return true;
+                } else if ((pageIndex < count - 1) && (ev.getX() > halfWidth + sixthWidth)) {
+                    if (action != MotionEvent.ACTION_CANCEL) {
+                        viewPager.setCurrentItem(pageIndex + 1);
+                    }
+                    return true;
+                }
+            }
 
-	@Override
-	public void setViewPager(ViewPager view, int initialPosition) {
-		setViewPager(view);
-		setCurrentItem(initialPosition);
-	}
+            isDragging = false;
+            activePointerId = INVALID_POINTER;
+            if (viewPager.isFakeDragging()) viewPager.endFakeDrag();
+            break;
 
-	@Override
-	public void setCurrentItem(int item) {
-		if (viewPager == null) {
-			throw new IllegalStateException("ViewPager has not been bound.");
-		}
-		viewPager.setCurrentItem(item);
-		pageIndex = item;
-		invalidate();
-	}
+        case MotionEventCompat.ACTION_POINTER_DOWN: {
+            final int index = MotionEventCompat.getActionIndex(ev);
+            lastMotionX = MotionEventCompat.getX(ev, index);
+            activePointerId = MotionEventCompat.getPointerId(ev, index);
+            break;
+        }
 
-	@Override
-	public void notifyDataSetChanged() {
-		invalidate();
-	}
+        case MotionEventCompat.ACTION_POINTER_UP:
+            final int pointerIndex = MotionEventCompat.getActionIndex(ev);
+            final int pointerId = MotionEventCompat.getPointerId(ev, pointerIndex);
+            if (pointerId == activePointerId) {
+                final int newPointerIndex = pointerIndex == 0 ? 1 : 0;
+                activePointerId = MotionEventCompat.getPointerId(ev, newPointerIndex);
+            }
+            lastMotionX = MotionEventCompat.getX(ev, MotionEventCompat.findPointerIndex(ev, activePointerId));
+            break;
+        }
 
-	@Override
-	public void onPageScrollStateChanged(int state) {
-		scrollState = state;
+        return true;
+    }
 
-		if (onPageChangeListener != null) {
-			onPageChangeListener.onPageScrollStateChanged(state);
-		}
-	}
+    @Override
+    public void setViewPager(ViewPager view) {
+        if (viewPager == view) {
+            return;
+        }
+        if (viewPager != null) {
+            viewPager.setOnPageChangeListener(null);
+        }
+        if (view.getAdapter() == null) {
+            throw new IllegalStateException("ViewPager does not have adapter instance.");
+        }
+        viewPager = view;
+        viewPager.setOnPageChangeListener(this);
+        invalidate();
+    }
 
-	@Override
-	public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-		// Log.i("OnPageScrolled", "position="+position+" positionOffset="+positionOffset+" positionOffsetPixels="+positionOffsetPixels);
-		pageIndex = position;
-		pagePositionOffset = positionOffset;
-		invalidate();
+    @Override
+    public void setViewPager(ViewPager view, int initialPosition) {
+        setViewPager(view);
+        setCurrentItem(initialPosition);
+    }
 
-		if (onPageChangeListener != null) {
-			onPageChangeListener.onPageScrolled(position, positionOffset, positionOffsetPixels);
-		}
-	}
+    @Override
+    public void setCurrentItem(int item) {
+        if (viewPager == null) {
+            throw new IllegalStateException("ViewPager has not been bound.");
+        }
+        viewPager.setCurrentItem(item);
+        pageIndex = item;
+        invalidate();
+    }
 
-	@Override
-	public void onPageSelected(int position) {
-		if ( scrollState == ViewPager.SCROLL_STATE_IDLE) {
-			pageIndex = position;
-			invalidate();
-		}
+    @Override
+    public void notifyDataSetChanged() {
+        invalidate();
+    }
 
-		if (onPageChangeListener != null) {
-			onPageChangeListener.onPageSelected(position);
-		}
-	}
+    @Override
+    public void onPageScrollStateChanged(int state) {
+        scrollState = state;
 
-	@Override
-	public void setOnPageChangeListener(ViewPager.OnPageChangeListener listener) {
-		onPageChangeListener = listener;
-	}
+        if (onPageChangeListener != null) {
+            onPageChangeListener.onPageScrollStateChanged(state);
+        }
+    }
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see android.view.View#onMeasure(int, int)
-	 */
-	@Override
-	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-		setMeasuredDimension(measureLong(widthMeasureSpec), measureShort(heightMeasureSpec));
-	}
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+        // Log.i("OnPageScrolled", "position="+position+" positionOffset="+positionOffset+" positionOffsetPixels="+positionOffsetPixels);
+        pageIndex = position;
+        pagePositionOffset = positionOffset;
+        invalidate();
 
-	/**
-	 * Determines the width of this view
-	 *
-	 * @param measureSpec
-	 *            A measureSpec packed into an int
-	 * @return The width of the view, honoring constraints from measureSpec
-	 */
-	private int measureLong(int measureSpec) {
-		int result;
-		int specMode = MeasureSpec.getMode(measureSpec);
-		int specSize = MeasureSpec.getSize(measureSpec);
+        if (onPageChangeListener != null) {
+            onPageChangeListener.onPageScrolled(position, positionOffset, positionOffsetPixels);
+        }
+    }
 
-		if ((specMode == MeasureSpec.EXACTLY) || (viewPager == null)) {
-			//We were told how big to be
-			result = specSize;
-		} else {
-			result = (int) (getPaddingLeft() + getPaddingRight() + getRequiredLongSizeWithoutPadding());
-			//Respect AT_MOST value if that was what is called for by measureSpec
-			if (specMode == MeasureSpec.AT_MOST) {
-				result = Math.min(result, specSize);
-			}
-		}
-		return result;
-	}
+    @Override
+    public void onPageSelected(int position) {
+        if ( scrollState == ViewPager.SCROLL_STATE_IDLE) {
+            pageIndex = position;
+            invalidate();
+        }
 
-	/**
-	 * Determines the height of this view
-	 *
-	 * @param measureSpec
-	 *            A measureSpec packed into an int
-	 * @return The height of the view, honoring constraints from measureSpec
-	 */
-	private int measureShort(int measureSpec) {
-		int result;
-		int specMode = MeasureSpec.getMode(measureSpec);
-		int specSize = MeasureSpec.getSize(measureSpec);
+        if (onPageChangeListener != null) {
+            onPageChangeListener.onPageSelected(position);
+        }
+    }
 
-		if (specMode == MeasureSpec.EXACTLY) {
-			//We were told how big to be
-			result = specSize;
-		} else {
-			//Measure the height
-			result = (int)(2 * referenceRadius + getPaddingTop() + getPaddingBottom() + 1);
-			//Respect AT_MOST value if that was what is called for by measureSpec
-			if (specMode == MeasureSpec.AT_MOST) {
-				result = Math.min(result, specSize);
-			}
-		}
-		return result;
-	}
+    @Override
+    public void setOnPageChangeListener(ViewPager.OnPageChangeListener listener) {
+        onPageChangeListener = listener;
+    }
 
-	@Override
-	public void onRestoreInstanceState(Parcelable state) {
-		SavedState savedState = (SavedState)state;
-		super.onRestoreInstanceState(savedState.getSuperState());
-		pageIndex = savedState.currentPage;
-		requestLayout();
-	}
+    /*
+     * (non-Javadoc)
+     *
+     * @see android.view.View#onMeasure(int, int)
+     */
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        setMeasuredDimension(measureLong(widthMeasureSpec), measureShort(heightMeasureSpec));
+    }
 
-	@Override
-	public Parcelable onSaveInstanceState() {
-		Parcelable superState = super.onSaveInstanceState();
-		SavedState savedState = new SavedState(superState);
-		savedState.currentPage = pageIndex;
-		return savedState;
-	}
+    /**
+     * Determines the width of this view
+     *
+     * @param measureSpec
+     *            A measureSpec packed into an int
+     * @return The width of the view, honoring constraints from measureSpec
+     */
+    private int measureLong(int measureSpec) {
+        int result;
+        int specMode = MeasureSpec.getMode(measureSpec);
+        int specSize = MeasureSpec.getSize(measureSpec);
 
-	static class SavedState extends BaseSavedState {
-		int currentPage;
+        if ((specMode == MeasureSpec.EXACTLY) || (viewPager == null)) {
+            //We were told how big to be
+            result = specSize;
+        } else {
+            result = (int) (getPaddingLeft() + getPaddingRight() + getRequiredLongSizeWithoutPadding());
+            //Respect AT_MOST value if that was what is called for by measureSpec
+            if (specMode == MeasureSpec.AT_MOST) {
+                result = Math.min(result, specSize);
+            }
+        }
+        return result;
+    }
 
-		public SavedState(Parcelable superState) {
-			super(superState);
-		}
+    /**
+     * Determines the height of this view
+     *
+     * @param measureSpec
+     *            A measureSpec packed into an int
+     * @return The height of the view, honoring constraints from measureSpec
+     */
+    private int measureShort(int measureSpec) {
+        int result;
+        int specMode = MeasureSpec.getMode(measureSpec);
+        int specSize = MeasureSpec.getSize(measureSpec);
 
-		private SavedState(Parcel in) {
-			super(in);
-			currentPage = in.readInt();
-		}
+        if (specMode == MeasureSpec.EXACTLY) {
+            //We were told how big to be
+            result = specSize;
+        } else {
+            //Measure the height
+            result = (int)(2 * referenceRadius + getPaddingTop() + getPaddingBottom() + 1);
+            //Respect AT_MOST value if that was what is called for by measureSpec
+            if (specMode == MeasureSpec.AT_MOST) {
+                result = Math.min(result, specSize);
+            }
+        }
+        return result;
+    }
 
-		@Override
-		public void writeToParcel(Parcel dest, int flags) {
-			super.writeToParcel(dest, flags);
-			dest.writeInt(currentPage);
-		}
+    @Override
+    public void onRestoreInstanceState(Parcelable state) {
+        SavedState savedState = (SavedState)state;
+        super.onRestoreInstanceState(savedState.getSuperState());
+        pageIndex = savedState.currentPage;
+        requestLayout();
+    }
 
-		public static final Parcelable.Creator<SavedState> CREATOR = new Parcelable.Creator<SavedState>() {
-			@Override
-			public SavedState createFromParcel(Parcel in) {
-				return new SavedState(in);
-			}
+    @Override
+    public Parcelable onSaveInstanceState() {
+        Parcelable superState = super.onSaveInstanceState();
+        SavedState savedState = new SavedState(superState);
+        savedState.currentPage = pageIndex;
+        return savedState;
+    }
 
-			@Override
-			public SavedState[] newArray(int size) {
-				return new SavedState[size];
-			}
-		};
-	}
+    static class SavedState extends BaseSavedState {
+        int currentPage;
 
-	private static final int INVALID_POINTER = -1;
+        public SavedState(Parcelable superState) {
+            super(superState);
+        }
 
-	private float referenceRadius = 8.0f;
-	private float radiusGrowthPotential = 0.5f;
-	private float paddingFactor = 0.4f;
-	
-	private final Paint defaultFillPaint = new Paint(ANTI_ALIAS_FLAG);
-	private final Paint strokePaint = new Paint(ANTI_ALIAS_FLAG);
-	private ViewPager viewPager;
-	private ViewPager.OnPageChangeListener onPageChangeListener;
-	private int pageIndex;
-	private float pagePositionOffset;
-	private int scrollState;
+        private SavedState(Parcel in) {
+            super(in);
+            currentPage = in.readInt();
+        }
 
-	private int touchSlop;
-	private float lastMotionX = -1;
-	private int activePointerId = INVALID_POINTER;
-	private boolean isDragging;
-	private ColorResolver colorResolver;
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            super.writeToParcel(dest, flags);
+            dest.writeInt(currentPage);
+        }
+
+        public static final Parcelable.Creator<SavedState> CREATOR = new Parcelable.Creator<SavedState>() {
+            @Override
+            public SavedState createFromParcel(Parcel in) {
+                return new SavedState(in);
+            }
+
+            @Override
+            public SavedState[] newArray(int size) {
+                return new SavedState[size];
+            }
+        };
+    }
+
+    private static final int INVALID_POINTER = -1;
+
+    private float referenceRadius = 8.0f;
+    private float radiusGrowthPotential = 0.5f;
+    private float paddingFactor = 0.4f;
+
+    private final Paint defaultFillPaint = new Paint(ANTI_ALIAS_FLAG);
+    private final Paint strokePaint = new Paint(ANTI_ALIAS_FLAG);
+    private ViewPager viewPager;
+    private ViewPager.OnPageChangeListener onPageChangeListener;
+    private int pageIndex;
+    private float pagePositionOffset;
+    private int scrollState;
+
+    private int touchSlop;
+    private float lastMotionX = -1;
+    private int activePointerId = INVALID_POINTER;
+    private boolean isDragging;
+    private ColorResolver colorResolver;
 }

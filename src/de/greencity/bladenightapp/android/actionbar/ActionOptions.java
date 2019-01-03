@@ -14,9 +14,9 @@ public class ActionOptions implements Action {
         return R.drawable.ic_action_gear;
     }
 
-	@Override
-	public void performAction(View view) {
-	    Intent intent = new Intent(view.getContext(), OptionsActivity.class);
-	    view.getContext().startActivity(intent);
-	}
+    @Override
+    public void performAction(View view) {
+        Intent intent = new Intent(view.getContext(), OptionsActivity.class);
+        view.getContext().startActivity(intent);
+    }
 }

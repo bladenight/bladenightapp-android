@@ -14,33 +14,33 @@ import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
 public class OptionsActivity extends Activity {
 
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		setContentView(R.layout.activity_options);
-	}
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        setContentView(R.layout.activity_options);
+    }
 
-	@Override
-	public void onStart() {
-		super.onStart();
-		configureActionBar();
-	}
+    @Override
+    public void onStart() {
+        super.onStart();
+        configureActionBar();
+    }
 
-	private void configureActionBar() {
-		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
-		new ActionBarConfigurator(actionBar)
-			.setTitle(R.string.title_options)
-			.configure();
-	}
+    private void configureActionBar() {
+        final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
+        new ActionBarConfigurator(actionBar)
+            .setTitle(R.string.title_options)
+            .configure();
+    }
 
-	// Will be called via the onClick attribute
-	// of the buttons in main.xml
-	public void onClick(View view) {	  
-		switch (view.getId()) {
-		//	    case R.id.next: goUp();
-		//	      break;
+    // Will be called via the onClick attribute
+    // of the buttons in main.xml
+    public void onClick(View view) {
+        switch (view.getId()) {
+        //      case R.id.next: goUp();
+        //        break;
 
-		}
-	}
-} 
+        }
+    }
+}

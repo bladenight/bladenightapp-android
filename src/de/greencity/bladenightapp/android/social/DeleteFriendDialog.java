@@ -12,49 +12,49 @@ import de.greencity.bladenightapp.dev.android.R;
 
 public class DeleteFriendDialog extends DialogFragment  {
 
-	public interface DeleteFriendDialogListener {
+    public interface DeleteFriendDialogListener {
         void onFinishDeleteFriendDialog(int friendId);
     }
-	
-	private View rootView;
-	
+
+    private View rootView;
+
     private TextView text;
     private Friend friend;
     private int friendId;
-    
-    
+
+
     public static final String KEY_FRIENDOBJ = "friend";
     public static final String KEY_FRIENDID = "friendId";
-    
+
     public DeleteFriendDialog() {
         // Empty constructor required for DialogFragment
     }
-    
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    	
-    	this.friend = (Friend)getArguments().getSerializable(KEY_FRIENDOBJ);
-    	this.friendId = getArguments().getInt(KEY_FRIENDID);
-    	
+
+        this.friend = (Friend)getArguments().getSerializable(KEY_FRIENDOBJ);
+        this.friendId = getArguments().getInt(KEY_FRIENDID);
+
         rootView = inflater.inflate(R.layout.delete_friend_dialog, container);
-        
+
         getDialog().setTitle(getResources().getString(R.string.title_friend_delete));
-        
+
         text = (TextView) rootView.findViewById(R.id.deleteFriend_text);
-        
-        
+
+
         text.setText(getResources().getString(R.string.text_friend_delete) + " " +  friend.getName() + "?");
 
         setButtonListeners(rootView);
-        
+
         return rootView;
     }
-    
+
     private void setButtonListeners(View view){
-    	Button confirmButton = (Button) view.findViewById(R.id.deleteFriend_confirm);
+        Button confirmButton = (Button) view.findViewById(R.id.deleteFriend_confirm);
         confirmButton.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View view) {
-            	DeleteFriendDialogListener activity = (DeleteFriendDialogListener) getActivity();
+                DeleteFriendDialogListener activity = (DeleteFriendDialogListener) getActivity();
                 activity.onFinishDeleteFriendDialog(friendId);
                 dismiss();
             }
@@ -62,12 +62,12 @@ public class DeleteFriendDialog extends DialogFragment  {
         Button cancelButton = (Button) view.findViewById(R.id.deleteFriend_cancel);
         cancelButton.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View view) {
-            	dismiss();
+                dismiss();
             }
         });
     }
-    
-  
-    
+
+
+
 
 }

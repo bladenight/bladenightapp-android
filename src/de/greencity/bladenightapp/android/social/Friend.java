@@ -8,111 +8,111 @@ import android.graphics.Color;
 
 public class Friend implements Comparable<Friend>, Serializable {
 
-	private static final long serialVersionUID = 3261795661099426411L;
+    private static final long serialVersionUID = 3261795661099426411L;
 
-	private String name;
-	private boolean isActive;
-	private int color;
-	transient private Long relativeTime = null;
-	transient private Long relativeDistance  = null;
-	transient private Long absolutePosition  = null;
-	private boolean isOnline = false;
-	private boolean isValid = false;
-	private long requestId;
-	
-	public Friend(String name){
-		this.name = name;
-		this.color = Color.BLACK;
-		this.isActive = true;
-		resetPositionData();
-	}
-	
-	public void resetPositionData() {
-		relativeTime = null;
-		relativeDistance  = null;
-		absolutePosition  = null;
-	}
+    private String name;
+    private boolean isActive;
+    private int color;
+    transient private Long relativeTime = null;
+    transient private Long relativeDistance  = null;
+    transient private Long absolutePosition  = null;
+    private boolean isOnline = false;
+    private boolean isValid = false;
+    private long requestId;
 
-	public void setName(String name){
-		this.name = name;
-	}
+    public Friend(String name){
+        this.name = name;
+        this.color = Color.BLACK;
+        this.isActive = true;
+        resetPositionData();
+    }
 
-	public String getName(){
-		return name;
-	}
-		
-	public void setColor(int color){
-		this.color = color;
-	}
+    public void resetPositionData() {
+        relativeTime = null;
+        relativeDistance  = null;
+        absolutePosition  = null;
+    }
 
-	public int getColor(){
-		return color;
-	}
-	
-	public Long getRelativeTime() {
-		return relativeTime;
-	}
+    public void setName(String name){
+        this.name = name;
+    }
 
-	public void setRelativeTime(Long relativeTime) {
-		this.relativeTime = relativeTime;
-	}
+    public String getName(){
+        return name;
+    }
 
-	public Long getRelativeDistance() {
-		return relativeDistance;
-	}
+    public void setColor(int color){
+        this.color = color;
+    }
 
-	public void setRelativeDistance(Long relativeDistance) {
-		this.relativeDistance = relativeDistance;
-	}
+    public int getColor(){
+        return color;
+    }
 
-	public Long getAbsolutePosition() {
-		return absolutePosition;
-	}
+    public Long getRelativeTime() {
+        return relativeTime;
+    }
 
-	public void setAbsolutePosition(Long absolutePosition) {
-		this.absolutePosition = absolutePosition;
-	}
+    public void setRelativeTime(Long relativeTime) {
+        this.relativeTime = relativeTime;
+    }
 
-	public void setRequestId(long requestId) {
-		this.requestId = requestId;
-	}
+    public Long getRelativeDistance() {
+        return relativeDistance;
+    }
 
-	public long getRequestId() {
-		return requestId;
-	}
+    public void setRelativeDistance(Long relativeDistance) {
+        this.relativeDistance = relativeDistance;
+    }
 
-	public boolean isActive() {
-		return isActive;
-	}
+    public Long getAbsolutePosition() {
+        return absolutePosition;
+    }
 
-	public void isActive(boolean isActive) {
-		this.isActive = isActive;
-	}
+    public void setAbsolutePosition(Long absolutePosition) {
+        this.absolutePosition = absolutePosition;
+    }
 
-	public boolean isOnline() {
-		return isOnline;
-	}
+    public void setRequestId(long requestId) {
+        this.requestId = requestId;
+    }
 
-	public void isOnline(boolean isOnline) {
-		this.isOnline = isOnline;
-	}
+    public long getRequestId() {
+        return requestId;
+    }
 
-	public boolean isValid() {
-		return isValid;
-	}
+    public boolean isActive() {
+        return isActive;
+    }
 
-	public void isValid(boolean isValid) {
-		this.isValid = isValid;
-	}
+    public void isActive(boolean isActive) {
+        this.isActive = isActive;
+    }
+
+    public boolean isOnline() {
+        return isOnline;
+    }
+
+    public void isOnline(boolean isOnline) {
+        this.isOnline = isOnline;
+    }
+
+    public boolean isValid() {
+        return isValid;
+    }
+
+    public void isValid(boolean isValid) {
+        this.isValid = isValid;
+    }
 
 
-	public String toString(){
-		return ToStringBuilder.reflectionToString(this);
-	}
+    public String toString(){
+        return ToStringBuilder.reflectionToString(this);
+    }
 
-	@Override
-	public int compareTo(Friend another) {
-		return  name.toLowerCase().compareTo(another.getName().toLowerCase());
-	}
-	
+    @Override
+    public int compareTo(Friend another) {
+        return  name.toLowerCase().compareTo(another.getName().toLowerCase());
+    }
+
 }

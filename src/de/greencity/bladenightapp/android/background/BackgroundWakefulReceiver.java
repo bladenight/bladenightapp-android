@@ -9,11 +9,11 @@ import android.support.v4.content.WakefulBroadcastReceiver;
 public class BackgroundWakefulReceiver extends WakefulBroadcastReceiver {
     private static final String TAG = "BackgroundWakefulReceiver";
 
-	@Override
+    @Override
     public void onReceive(Context context, Intent intent) {
-    	Log.i(TAG, "BackgroundWakefulReceiver got intent: " + intent.toString());
-        
-    	Intent startServiceIntent = new Intent(context, BackgroundService.class);
+        Log.i(TAG, "BackgroundWakefulReceiver got intent: " + intent.toString());
+
+        Intent startServiceIntent = new Intent(context, BackgroundService.class);
         startServiceIntent.putExtra(BackgroundService.EXTRA_RELEASE_WAKELOCK, true);
 
         // Start the service, keeping the device awake while it is launching.

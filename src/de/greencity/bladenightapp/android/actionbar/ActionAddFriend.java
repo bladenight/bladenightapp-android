@@ -15,10 +15,10 @@ public class ActionAddFriend implements Action {
         return R.drawable.ic_action_add;
     }
 
-	@Override
-	public void performAction(View view) {
-	    FragmentManager fm = ((SocialActivity) view.getContext()).getSupportFragmentManager();
-	    AddFriendDialog addFriendDialog = new AddFriendDialog();
-		addFriendDialog.show(fm, "fragment_add_friend");
-	}
+    @Override
+    public void performAction(View view) {
+        FragmentManager fm = ((SocialActivity) view.getContext()).getSupportFragmentManager();
+        AddFriendDialog addFriendDialog = new AddFriendDialog();
+        addFriendDialog.show(fm, "fragment_add_friend");
+    }
 }

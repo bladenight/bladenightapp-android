@@ -13,10 +13,10 @@ import de.greencity.bladenightapp.dev.android.R;
 
 public class ConfirmFriendDialog extends DialogFragment  {
 
-	public interface ConfirmFriendDialogListener {
+    public interface ConfirmFriendDialogListener {
         void onFinishConfirmFriendDialog(String friendsName, String code);
     }
-	
+
     public ConfirmFriendDialog() {
         // Empty constructor required for DialogFragment
     }
@@ -28,17 +28,17 @@ public class ConfirmFriendDialog extends DialogFragment  {
         editName = (EditText) view.findViewById(R.id.confirm_friendsName);
         editCode = (EditText) view.findViewById(R.id.confirm_code);
         getDialog().setTitle(getResources().getString(R.string.title_friend_confirm));
-        
+
         setDefaultName();
-        
+
      // Show soft keyboard automatically
         editName.requestFocus();
         getDialog().getWindow().setSoftInputMode(LayoutParams.SOFT_INPUT_STATE_VISIBLE);
-        
+
         Button confirmButton = (Button) view.findViewById(R.id.confirmFriend_confirm);
         confirmButton.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
-            	ConfirmFriendDialogListener activity = (ConfirmFriendDialogListener) getActivity();
+                ConfirmFriendDialogListener activity = (ConfirmFriendDialogListener) getActivity();
                 activity.onFinishConfirmFriendDialog(editName.getText().toString(),editCode.getText().toString());
                 dismiss();
             }
@@ -46,19 +46,19 @@ public class ConfirmFriendDialog extends DialogFragment  {
         Button cancelButton = (Button) view.findViewById(R.id.confirmFriend_cancel);
         cancelButton.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
-            	dismiss();
+                dismiss();
             }
         });
-        
+
         return view;
     }
-    
-	public void setDefaultName() {
-		int friendId = Friends.generateId(getActivity());
-		if ( friendId > 0)
-			editName.setText(getResources().getString(R.string.default_friend_name)+friendId);
-	}
 
-	private EditText editCode;
+    public void setDefaultName() {
+        int friendId = Friends.generateId(getActivity());
+        if ( friendId > 0)
+            editName.setText(getResources().getString(R.string.default_friend_name)+friendId);
+    }
+
+    private EditText editCode;
     private EditText editName;
 }

@@ -10,67 +10,67 @@ import de.greencity.bladenightapp.valuelogger.ValueLogger;
 
 public class GeoTraceLogger {
 
-	public enum FIELD {
-		LATITUDE("la"),
-	    LONGITUDE("lo"),
-	    ACCURACY("ac"),
-	    LINEAR_POSITION("lp"),
-	    ;
-	    /**
-	     * @param text
-	     */
-	    private FIELD(final String text) {
-	        this.text = text;
-	    }
+    public enum FIELD {
+        LATITUDE("la"),
+        LONGITUDE("lo"),
+        ACCURACY("ac"),
+        LINEAR_POSITION("lp"),
+        ;
+        /**
+         * @param text
+         */
+        private FIELD(final String text) {
+            this.text = text;
+        }
 
-	    private final String text;
+        private final String text;
 
-	    @Override
-	    public String toString() {
-	        return text;
-	    }
-	}
-	
-	public GeoTraceLogger(File traceFile) {
-		this.valueLogger = new ValueLogger(traceFile);
-	}
-	
-	public void setLatitude(double latitude) {
-		valueLogger.setValue(FIELD.LATITUDE.toString(), Double.toString(latitude));
-	}
+        @Override
+        public String toString() {
+            return text;
+        }
+    }
 
-	public void setLongitude(double longitude) {
-		valueLogger.setValue(FIELD.LONGITUDE.toString(), Double.toString(longitude));
-	}
+    public GeoTraceLogger(File traceFile) {
+        this.valueLogger = new ValueLogger(traceFile);
+    }
 
-	public void setAccuracy(double accuracy) {
-		valueLogger.setValue(FIELD.ACCURACY.toString(), Double.toString(accuracy));
-	}
+    public void setLatitude(double latitude) {
+        valueLogger.setValue(FIELD.LATITUDE.toString(), Double.toString(latitude));
+    }
 
-	public void setLinearPosition(double linearPosition) {
-		valueLogger.setValue(FIELD.LINEAR_POSITION.toString(), Double.toString(linearPosition));
-	}
+    public void setLongitude(double longitude) {
+        valueLogger.setValue(FIELD.LONGITUDE.toString(), Double.toString(longitude));
+    }
 
-	public void flushAllValues() {
-		valueLogger.flushAllValues();
-	}
+    public void setAccuracy(double accuracy) {
+        valueLogger.setValue(FIELD.ACCURACY.toString(), Double.toString(accuracy));
+    }
 
-	public void setTimestamp(DateTime dateTime) {
-		valueLogger.setTimestamp(dateTime);
-	}
+    public void setLinearPosition(double linearPosition) {
+        valueLogger.setValue(FIELD.LINEAR_POSITION.toString(), Double.toString(linearPosition));
+    }
 
-	public void setValue(String key, String value) {
-		valueLogger.setValue(key, value);
-	}
+    public void flushAllValues() {
+        valueLogger.flushAllValues();
+    }
 
-	public void write() throws IOException {
-		valueLogger.write();
-	}
+    public void setTimestamp(DateTime dateTime) {
+        valueLogger.setTimestamp(dateTime);
+    }
 
-	public void writeWithTimeLimit(long timeLimitInMs) throws IOException {
-		valueLogger.writeWithTimeLimit(timeLimitInMs);
-	}
+    public void setValue(String key, String value) {
+        valueLogger.setValue(key, value);
+    }
 
-	private ValueLogger valueLogger;
+    public void write() throws IOException {
+        valueLogger.write();
+    }
+
+    public void writeWithTimeLimit(long timeLimitInMs) throws IOException {
+        valueLogger.writeWithTimeLimit(timeLimitInMs);
+    }
+
+    private ValueLogger valueLogger;
 
 }
