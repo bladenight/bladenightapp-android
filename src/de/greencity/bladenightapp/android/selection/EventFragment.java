@@ -212,11 +212,11 @@ public class EventFragment extends Fragment {
     private void updateSchedule(){
         LinearLayout topgroup = (LinearLayout) view.findViewById(R.id.group_top);
         if(isUpcoming()){
-            topgroup.setBackgroundResource(R.drawable.border_green);
+            // topgroup.setBackgroundResource(R.drawable.border_green);
             topgroup.setTag("upcoming");
         }
         else{
-            topgroup.setBackgroundResource(R.drawable.border_green);
+            // topgroup.setBackgroundResource(R.drawable.border_green);
             topgroup.setTag("old");
         }
     }
