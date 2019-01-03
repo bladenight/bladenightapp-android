@@ -25,9 +25,13 @@ android {
     compileSdkVersion 27
     buildToolsVersion "28.0.3"
 
+    // TODO use HttpURLConnection in the future
+    // See https://developer.android.com/about/versions/marshmallow/android-6.0-changes#behavior-apache-http-client
+    useLibrary 'org.apache.http.legacy'
+
     defaultConfig {
         applicationId "de.greencity.bladenightapp.dev.android"
-        minSdkVersion 10
+        minSdkVersion 14
         targetSdkVersion 27
         multiDexEnabled true
 
@@ -37,7 +41,7 @@ android {
     buildTypes {
         release {
             minifyEnabled true
-            // proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-project.txt'
         }
         debug {
             minifyEnabled false
@@ -82,7 +86,7 @@ dependencies {
     compile project(':androidactionbar')
     compile project(':bladenightappcommon')
     compile project(':wampoc')
-    compile 'com.android.support:support-v4:19.1.0'
+    compile 'com.android.support:support-v4:27.0.0'
     compile 'com.google.code.gson:gson:2.2.2'
     compile 'joda-time:joda-time:2.1'
     compile 'org.apache.commons:commons-lang3:3.1'
