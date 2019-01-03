@@ -21,9 +21,9 @@
     
     <color name="new_background">#8DBE9D</color>
     <color name="new_bar">#22A04D</color>
-    <color name="new_route">#96cc00ff</color>
-    <color name="new_route_frame">#80FAFCFB</color>
-    <color name="new_procession">#C0009834</color>
+    <color name="map_route_fill">#500022ff</color>
+    <color name="map_route_outline">#80fafcfb</color>
+    <color name="map_procession_fill">#FF0022ff</color>
     <color name="new_friend1">#454DE7</color>
     <color name="new_friend2">#FE100D</color>
     <color name="new_friend3">#02E5FC</color>

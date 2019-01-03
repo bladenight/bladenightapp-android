@@ -50,8 +50,7 @@ public class RouteOverlay extends ListOverlay {
 
         Paint paintStroke = new Paint(Paint.ANTI_ALIAS_FLAG);
         paintStroke.setStyle(Paint.Style.STROKE);
-        paintStroke.setColor(mapView.getResources().getColor(R.color.new_route));
-        //>paintStroke.setAlpha(100);
+        paintStroke.setColor(mapView.getResources().getColor(R.color.map_route_fill));
         paintStroke.setStrokeWidth(12);
         paintStroke.setStrokeCap(Cap.ROUND);
 
@@ -64,7 +63,7 @@ public class RouteOverlay extends ListOverlay {
 
         Paint paintStroke = new Paint(Paint.ANTI_ALIAS_FLAG);
         paintStroke.setStyle(Paint.Style.STROKE);
-        paintStroke.setColor(mapView.getResources().getColor(R.color.new_route_frame));
+        paintStroke.setColor(mapView.getResources().getColor(R.color.map_route_outline));
         //>paintStroke.setAlpha(100);
         paintStroke.setStrokeWidth(16);
         paintStroke.setStrokeCap(Cap.ROUND);
@@ -77,7 +76,7 @@ public class RouteOverlay extends ListOverlay {
 
         Paint paintStroke = new Paint(Paint.ANTI_ALIAS_FLAG);
         paintStroke.setStyle(Paint.Style.STROKE);
-        paintStroke.setColor(mapView.getResources().getColor(R.color.new_procession));
+        paintStroke.setColor(mapView.getResources().getColor(R.color.map_procession_fill));
         paintStroke.setStrokeWidth(12);
         paintStroke.setStrokeCap(Cap.ROUND);
 
