@@ -30,6 +30,8 @@ android {
         minSdkVersion 10
         targetSdkVersion 27
         multiDexEnabled true
+
+        buildConfigField "long", "BUILD_TIMESTAMP", System.currentTimeMillis() + "L"
     }
 
     buildTypes {
