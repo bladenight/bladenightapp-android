@@ -81,7 +81,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
 
     @Override
     protected void onResume() {
-        super.onStart();
+        super.onResume();
 
         Log.i(TAG, "onResume");
         configureActionBar();
