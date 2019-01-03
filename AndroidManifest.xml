@@ -5,8 +5,6 @@
     android:versionCode="1"
     android:versionName="DEV" >
 
-    <uses-sdk android:targetSdkVersion="19" />
-
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -18,7 +16,7 @@
     <application
         android:name="de.greencity.bladenightapp.android.app.BladeNightApplication"
         android:allowBackup="false"
-        android:icon="@drawable/application_dev"
+        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name_dev"
         android:theme="@style/customTheme" >
         <service
