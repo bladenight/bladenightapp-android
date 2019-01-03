@@ -395,7 +395,7 @@ public class SelectionActivity extends FragmentActivity {
 
     private void openDialog(){
         SharedPreferences settings = getSharedPreferences("HelpPrefs", 0);
-        // SharedPreferences.Editor editor = settings.edit();
+        SharedPreferences.Editor editor = settings.edit();
         boolean firstCreate = settings.getBoolean("firstCreate", true);
         if(firstCreate){
             FragmentManager fm = getSupportFragmentManager();
@@ -403,8 +403,8 @@ public class SelectionActivity extends FragmentActivity {
             helpDialog.show(fm, "fragment_help");
             // for announcements
             // editor.putInt("announcementCounter", 0);
-            // editor.putBoolean("firstCreate", false);
-            // editor.commit();
+            editor.putBoolean("firstCreate", false);
+            editor.commit();
         }
         else{
             // openAnnouncement();
