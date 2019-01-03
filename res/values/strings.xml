@@ -66,7 +66,6 @@
     <string name="msg_outdated_client">This version of the app is outdate. Please update it.</string>
     <string name="msg_participants">participants</string>
     <string name="msg_route_has_changed">The route has changed. We will now go for the route</string>
-    <string name="msg_sd_card">Your device needs an SD card to use this feature.</string>
     <string name="msg_status">Status</string>
     <string name="msg_tracker_confirm_stop">Your friend will miss you, and track recording will stop. Are you sure ?</string>
     <string name="msg_tracking_running">Tracking is on</string>

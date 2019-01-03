@@ -33,7 +33,6 @@ public class ActionTrackerControl implements Action {
                 Log.i(TAG, "Service has been started in the meantime");
             }
             else {
-                checkSDCard();
                 ServiceUtils.startService(context, trackerServiceClass);
                 updateImage(view, true);
             }
@@ -94,12 +93,6 @@ public class ActionTrackerControl implements Action {
 
     protected boolean isTrackerRunning() {
         return ServiceUtils.isServiceRunning(context, GpsTrackerService.class);
-    }
-
-    private void checkSDCard(){
-        Boolean isSDPresent = android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
-        if(!isSDPresent)
-            Toast.makeText(context, R.string.msg_sd_card, Toast.LENGTH_LONG).show();
     }
 
     private Context context;

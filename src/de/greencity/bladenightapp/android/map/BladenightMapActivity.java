@@ -63,7 +63,7 @@ public class BladenightMapActivity extends MapActivity {
     private GlobalStateAccess globalStateAccess;
     private NetworkClient networkClient;
     private BroadcastReceiversRegister broadcastReceiversRegister = new BroadcastReceiversRegister(this);
-    private final String mapLocalPath = new File(Paths.getAppDataDirectory(), "munich.map").getAbsolutePath();
+    private String mapLocalPath;
     private final String mapRemotePath = "maps/munich.map";
     private ProgressDialog downloadProgressDialog;
     private String routeName = "";
@@ -90,9 +90,10 @@ public class BladenightMapActivity extends MapActivity {
 
         Log.i(TAG, "onCreate");
 
+        mapLocalPath = new File(Paths.getAppDataDirectory(this), "munich.map").getAbsolutePath();
+
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_action);
-        checkSDCard();
         createMapView();
         createOverlays();
 
@@ -527,12 +528,6 @@ public class BladenightMapActivity extends MapActivity {
         return routeName;
     }
 
-
-    private void checkSDCard(){
-        Boolean isSDPresent = android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
-        if(!isSDPresent)
-            Toast.makeText(this, R.string.msg_sd_card, Toast.LENGTH_LONG).show();
-    }
 
     public void createMapView() {
 

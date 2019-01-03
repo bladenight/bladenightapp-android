@@ -40,7 +40,7 @@ public class GpsTrackerService extends Service {
 
         gpsListener.requestLocationUpdates(5000);
 
-        traceLogger = new GeoTraceLogger(new File(Paths.getAppDataDirectory(), "gps-trace.txt"));
+        traceLogger = new GeoTraceLogger(new File(Paths.getAppDataDirectory(this), "gps-trace.txt"));
 
         globalStateAccess = new GlobalStateAccess(this);
 
