@@ -9,6 +9,9 @@ import java.util.List;
 import java.util.Set;
 
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -33,12 +36,15 @@ import de.greencity.bladenightapp.android.actionbar.ActionReload;
 import de.greencity.bladenightapp.android.app.BladeNightApplication;
 import de.greencity.bladenightapp.android.cache.FriendsCache;
 import de.greencity.bladenightapp.android.global.GlobalStateAccess;
+import de.greencity.bladenightapp.android.global.LocalBroadcast;
+import de.greencity.bladenightapp.android.map.BladenightMapActivity;
 import de.greencity.bladenightapp.android.network.NetworkClient;
 import de.greencity.bladenightapp.android.social.ChangeFriendDialog.ChangeFriendDialogListener;
 import de.greencity.bladenightapp.android.social.ConfirmFriendDialog.ConfirmFriendDialogListener;
 import de.greencity.bladenightapp.android.social.DeleteFriendDialog.DeleteFriendDialogListener;
 import de.greencity.bladenightapp.android.social.InviteFriendDialog.InviteFriendDialogListener;
 import de.greencity.bladenightapp.android.tracker.GpsTrackerService;
+import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
 import de.greencity.bladenightapp.android.utils.ServiceUtils;
 import de.greencity.bladenightapp.dev.android.R;
 import de.greencity.bladenightapp.network.messages.FriendMessage;
@@ -59,6 +65,8 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
     private Runnable periodicTask;
     private long updatePeriod = 2000;
     FriendColorsHelper friendColorsHelper;
+    private GlobalStateAccess globalStateAccess;
+    private BroadcastReceiversRegister broadcastReceiversRegister = new BroadcastReceiversRegister(this);
 
     public final static Integer ID_HEAD     = -3;
     public final static Integer ID_ME       = -2;
@@ -77,6 +85,8 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
         networkClient = BladeNightApplication.networkClient;
 
         friendColorsHelper = new FriendColorsHelper(this);
+
+        globalStateAccess = new GlobalStateAccess(this);
     }
 
     @Override
@@ -99,12 +109,15 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
             View sep = (View) findViewById(R.id.social_live_sep);
             sep.setVisibility(View.VISIBLE);
         }
+
+        broadcastReceiversRegister.registerReceiver(LocalBroadcast.GOT_REALTIME_DATA, new SocialActivity.RealTimeDataBroadcastReceiver());
     }
 
     @Override
     protected void onPause() {
-        super.onStop();
+        super.onPause();
         cancelPeriodicTask();
+        broadcastReceiversRegister.unregisterReceivers();
     }
 
     private void configureActionBar() {
@@ -322,24 +335,19 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
         getFriendsListFromServer();
     }
 
-    // TODO: replace this deprecated code by a broadcast receiver
-    static class GetRealTimeDataFromServerHandler extends Handler {
-        private WeakReference<SocialActivity> reference;
-        GetRealTimeDataFromServerHandler(SocialActivity activity) {
-            this.reference = new WeakReference<SocialActivity>(activity);
-        }
+    class RealTimeDataBroadcastReceiver extends BroadcastReceiver {
         @Override
-        public void handleMessage(Message msg) {
-            final SocialActivity socialActivity = reference.get();
-            if ( socialActivity == null || socialActivity.isFinishing())
+        public void onReceive(Context context, Intent intent) {
+            final SocialActivity socialActivity = SocialActivity.this;
+            if ( socialActivity == null || socialActivity.isFinishing() )
                 return;
-            RealTimeUpdateData realTimeUpdateData = (RealTimeUpdateData)msg.obj;
+            RealTimeUpdateData realTimeUpdateData = globalStateAccess.getRealTimeUpdateData();
             socialActivity.updateGuiFromRealTimeUpdateData(realTimeUpdateData);
         }
     }
 
     private void getRealTimeDataFromServer(){
-        new GlobalStateAccess(this).requestRealTimeUpdateData();
+        globalStateAccess.requestRealTimeUpdateData();
     }
 
     static class DeleteFriendOnServerHandler extends Handler {
