@@ -81,7 +81,7 @@
         android:stretchColumns="*">     
         
         <TableRow  
-            android:id="@+id/tableRow2"  
+            android:id="@+id/tableRow1"
             android:layout_height="wrap_content"  
             android:layout_width="match_parent"  
             android:gravity="center_horizontal">  
@@ -107,7 +107,7 @@
         </TableRow>
             
         <TableRow  
-	        android:id="@+id/tableRow1"  
+	        android:id="@+id/tableRow2"
 	        android:layout_height="wrap_content"  
 	        android:layout_width="match_parent"  
 	        android:gravity="center_horizontal">  
@@ -134,7 +134,7 @@
        
         
         <TableRow  
-            android:id="@+id/tableRow2"  
+            android:id="@+id/tableRow3"
             android:layout_height="wrap_content"  
             android:layout_width="match_parent"  
             android:gravity="center_horizontal">  
@@ -159,7 +159,7 @@
         </TableRow>
         
          <TableRow  
-            android:id="@+id/tableRow2"  
+            android:id="@+id/tableRow4"
             android:layout_height="wrap_content"  
             android:layout_width="match_parent"  
             android:gravity="center_horizontal">  
