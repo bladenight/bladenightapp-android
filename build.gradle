@@ -83,18 +83,18 @@ dependencies {
     repositories {
         mavenCentral()
     }
-    compile project(':android-actionbar')
-    compile project(':bladenightapp-common')
-    compile project(':wampoc')
-    compile 'com.android.support:support-v4:27.0.0'
-    compile 'com.google.code.gson:gson:2.2.2'
-    compile 'joda-time:joda-time:2.1'
-    compile 'org.apache.commons:commons-lang3:3.1'
-    compile 'commons-io:commons-io:2.4'
-    compile files('libs/jackson-core-asl-1.9.12.jar')
-    compile files('libs/jackson-mapper-asl-1.9.12.jar')
-    compile files('libs/mapsforge-map-0.3.1-SNAPSHOT-jar-with-dependencies.jar')
-    compile 'com.android.support:multidex:1.0.3'
+    implementation project(':android-actionbar')
+    implementation project(':bladenightapp-common')
+    implementation project(':wampoc')
+    implementation 'com.android.support:support-v4:27.0.0'
+    implementation 'com.google.code.gson:gson:2.2.2'
+    implementation 'joda-time:joda-time:2.1'
+    implementation 'org.apache.commons:commons-lang3:3.1'
+    implementation 'commons-io:commons-io:2.4'
+    implementation files('libs/jackson-core-asl-1.9.12.jar')
+    implementation files('libs/jackson-mapper-asl-1.9.12.jar')
+    implementation files('libs/mapsforge-map-0.3.1-SNAPSHOT-jar-with-dependencies.jar')
+    implementation 'com.android.support:multidex:1.0.3'
 }
 
 task wrapper(type: Wrapper) {
