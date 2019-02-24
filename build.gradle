@@ -33,7 +33,6 @@ android {
         applicationId "de.greencity.bladenightapp.dev.android"
         minSdkVersion 14
         targetSdkVersion 27
-        multiDexEnabled true
 
         buildConfigField "long", "BUILD_TIMESTAMP", System.currentTimeMillis() + "L"
     }
@@ -94,7 +93,13 @@ dependencies {
     implementation files('libs/jackson-core-asl-1.9.12.jar')
     implementation files('libs/jackson-mapper-asl-1.9.12.jar')
     implementation files('libs/mapsforge-map-0.3.1-SNAPSHOT-jar-with-dependencies.jar')
-    implementation 'com.android.support:multidex:1.0.3'
+}
+
+configurations {
+    all {
+        // Provided the Android runtime:
+        exclude module: 'commons-logging'
+    }
 }
 
 task wrapper(type: Wrapper) {

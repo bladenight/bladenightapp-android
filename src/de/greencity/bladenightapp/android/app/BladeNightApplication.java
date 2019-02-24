@@ -1,10 +1,10 @@
 package de.greencity.bladenightapp.android.app;
 
-import de.greencity.bladenightapp.android.network.NetworkClient;
 import android.app.Application;
-import android.support.multidex.MultiDexApplication;
 
-public class BladeNightApplication extends MultiDexApplication {
+import de.greencity.bladenightapp.android.network.NetworkClient;
+
+public class BladeNightApplication extends Application {
     public static NetworkClient networkClient;
     @Override
     public void onCreate() {
