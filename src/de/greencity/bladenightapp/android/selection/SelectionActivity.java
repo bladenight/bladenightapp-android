@@ -6,6 +6,8 @@ import java.lang.ref.WeakReference;
 import org.joda.time.DateTime;
 import org.joda.time.Hours;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -17,6 +19,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -73,6 +76,9 @@ public class SelectionActivity extends FragmentActivity {
         new BackgroundHelper(this).scheduleNext();
 
         globalStateAccess = new GlobalStateAccess(this);
+
+        // Request permissions from user as soon as possible, so that we have them when needed
+        verifyStoragePermissions();
     }
 
     @Override
@@ -411,6 +417,29 @@ public class SelectionActivity extends FragmentActivity {
         }
 
     }
+
+    /**
+     * Verify storage permissions for MapsForge and request them from the users if required.
+     */
+    private void verifyStoragePermissions() {
+        // Storage Permissions required for MapsForge tile cache.
+        int permission = ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            // We don't have permission so prompt the user
+            final int REQUEST_EXTERNAL_STORAGE_ID = 1;
+            final String[] PERMISSIONS_STORAGE = {
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+            };
+            ActivityCompat.requestPermissions(
+                    this,
+                    PERMISSIONS_STORAGE,
+                    REQUEST_EXTERNAL_STORAGE_ID
+            );
+        }
+    }
+
 
     //  private void openAnnouncement(){
     //      //TODO: check if internet-connection, if not -> skip

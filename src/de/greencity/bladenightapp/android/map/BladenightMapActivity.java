@@ -1,19 +1,6 @@
 package de.greencity.bladenightapp.android.map;
 
 
-import java.io.File;
-import java.lang.ref.WeakReference;
-import java.util.Locale;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.mapsforge.android.maps.MapActivity;
-import org.mapsforge.android.maps.mapgenerator.TileCache;
-import org.mapsforge.core.model.BoundingBox;
-import org.mapsforge.core.model.GeoPoint;
-import org.mapsforge.core.model.MapPosition;
-import org.mapsforge.map.reader.header.FileOpenResult;
-
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -33,6 +20,19 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.markupartist.android.widget.ActionBar;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.mapsforge.android.maps.MapActivity;
+import org.mapsforge.android.maps.mapgenerator.TileCache;
+import org.mapsforge.core.model.BoundingBox;
+import org.mapsforge.core.model.GeoPoint;
+import org.mapsforge.core.model.MapPosition;
+import org.mapsforge.map.reader.header.FileOpenResult;
+
+import java.io.File;
+import java.lang.ref.WeakReference;
+import java.util.Locale;
 
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator.ActionItemType;
@@ -83,6 +83,7 @@ public class BladenightMapActivity extends MapActivity {
     public static final String PARAM_EVENT_MESSAGE = "eventMessage";
     private boolean isRunning = true;
     private boolean shallFitViewWhenPossible = true;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -560,6 +561,7 @@ public class BladenightMapActivity extends MapActivity {
     }
 
     private void verifyMapFile() {
+        // TODO provide a way to delete the file in case it is corrupted
         if ( ! new File(mapLocalPath).exists() ) {
             startMapFileDownload();
         }
