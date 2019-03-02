@@ -51,8 +51,7 @@
     <string name="msg_code_not_valid">Code is not valid</string>
     <string name="msg_color_of_this_friend">Color of this friend</string>
     <string name="msg_current_position_unknown">Current position is unknown</string>
-    <string name="msg_download_maps">Downloading map data (10MB)</string>
-    <string name="msg_failed_to_load_map">Failed to load the map</string>
+    <string name="msg_failed_to_extract_map">Failed to extract the map</string>
     <string name="msg_feedback">You feedback is welcome.\nSend us an email:\napp@aok-bladenight.de</string>
     <string name="msg_friend_active">activ</string>
     <string name="msg_friend_added">was added</string>
@@ -101,4 +100,5 @@
     <string name="title_activity_admin">AdminActivity</string>
     <string name="word_active_trackers">Trackers</string>
     <string name="word_route">Route</string>
+    <string name="msg_failed_to_load_map">Failed to extract map</string>
 </resources>
