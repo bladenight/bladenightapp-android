@@ -92,6 +92,10 @@ dependencies {
     implementation 'commons-io:commons-io:2.4'
     implementation files('libs/jackson-core-asl-1.9.12.jar')
     implementation files('libs/jackson-mapper-asl-1.9.12.jar')
+
+    // MapsForge 0.3.1 is outdated, however an upgrade is not trivial since the version 0.4
+    // brought many breaking changes. Version 0.3.1 is not available online, so we have our
+    // own JAR in the repository.
     implementation files('libs/mapsforge-map-0.3.1-SNAPSHOT-jar-with-dependencies.jar')
 }
 
