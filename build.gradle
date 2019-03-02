@@ -109,3 +109,9 @@ configurations {
 task wrapper(type: Wrapper) {
     gradleVersion = '4.10.3'
 }
+
+task copyMapFile(type: Copy) {
+    from file("$projectDir/../bladenightapp-map/munich.map")
+    into file("$projectDir/resources/map")
+}
+preBuild.dependsOn copyMapFile
