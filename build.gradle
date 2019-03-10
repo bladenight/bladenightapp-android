@@ -85,7 +85,7 @@ dependencies {
     implementation project(':android-actionbar')
     implementation project(':bladenightapp-common')
     implementation project(':wampoc')
-    implementation 'com.android.support:support-v4:27.0.0'
+    implementation 'com.android.support:appcompat-v7:27.0.0'
     implementation 'com.google.code.gson:gson:2.2.2'
     implementation 'joda-time:joda-time:2.1'
     implementation 'org.apache.commons:commons-lang3:3.1'
