@@ -1,67 +1,36 @@
 package de.greencity.bladenightapp.android.map;
 
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.location.Location;
+import android.app.Activity;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewTreeObserver;
-import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.Window;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.markupartist.android.widget.ActionBar;
+import org.mapsforge.core.model.LatLong;
+import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
+import org.mapsforge.map.android.util.AndroidUtil;
+import org.mapsforge.map.android.view.MapView;
+import org.mapsforge.map.datastore.MapDataStore;
+import org.mapsforge.map.layer.cache.TileCache;
+import org.mapsforge.map.layer.renderer.TileRendererLayer;
+import org.mapsforge.map.reader.MapFile;
+import org.mapsforge.map.rendertheme.InternalRenderTheme;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.mapsforge.android.maps.MapActivity;
-import org.mapsforge.android.maps.mapgenerator.TileCache;
-import org.mapsforge.core.model.BoundingBox;
-import org.mapsforge.core.model.GeoPoint;
-import org.mapsforge.core.model.MapPosition;
-import org.mapsforge.map.reader.header.FileOpenResult;
-
-import java.io.Closeable;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.lang.ref.WeakReference;
-import java.util.Locale;
 
-import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
-import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator.ActionItemType;
-import de.greencity.bladenightapp.android.actionbar.ActionLocateMe;
 import de.greencity.bladenightapp.android.app.BladeNightApplication;
-import de.greencity.bladenightapp.android.cache.EventsMessageCache;
-import de.greencity.bladenightapp.android.cache.RoutesCache;
 import de.greencity.bladenightapp.android.global.GlobalStateAccess;
-import de.greencity.bladenightapp.android.global.LocalBroadcast;
-import de.greencity.bladenightapp.android.map.userovl.UserPositionOverlay;
 import de.greencity.bladenightapp.android.network.NetworkClient;
 import de.greencity.bladenightapp.android.tracker.GpsListener;
-import de.greencity.bladenightapp.android.tracker.GpsTrackerService;
 import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
 import de.greencity.bladenightapp.android.utils.Paths;
-import de.greencity.bladenightapp.android.utils.ServiceUtils;
 import de.greencity.bladenightapp.dev.android.R;
-import de.greencity.bladenightapp.events.Event;
-import de.greencity.bladenightapp.events.EventGsonHelper;
-import de.greencity.bladenightapp.events.EventList;
-import de.greencity.bladenightapp.network.messages.EventListMessage;
-import de.greencity.bladenightapp.network.messages.RealTimeUpdateData;
-import de.greencity.bladenightapp.network.messages.RouteMessage;
 
-public class BladenightMapActivity extends MapActivity {
+public class BladenightMapActivity extends Activity {
+
     final static String TAG = "BladenightMapActivity";
 
     public static final String MAP_RESOURCE_PATH = "map/munich.map";
@@ -73,15 +42,15 @@ public class BladenightMapActivity extends MapActivity {
     private String routeName = "";
     private int routeLength;
     private boolean isLive = false;
-    private RouteOverlay routeOverlay;
-    private BladenightMapView mapView;
+    // private RouteOverlay routeOverlay;
+    // private BladenightMapView mapView;
     private ProcessionProgressBar processionProgressBar;
     private TextView mapHeadline;
     private View mapHeadlineSeparator;
     private final int updatePeriod = 3000;
     private final Handler periodicHandler = new Handler();
     private Runnable periodicTask;
-    private UserPositionOverlay userPositionOverlay;
+    // private UserPositionOverlay userPositionOverlay;
     private GpsListener gpsListener;
     private boolean isRouteInfoAvailable = false;
     public static final String PARAM_EVENT_MESSAGE = "eventMessage";
@@ -89,9 +58,10 @@ public class BladenightMapActivity extends MapActivity {
     private boolean shallFitViewWhenPossible = true;
     private File mapLocalFile;
 
+    private MapView mapView;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         Log.i(TAG, "onCreate");
@@ -101,10 +71,10 @@ public class BladenightMapActivity extends MapActivity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_action);
 
-        verifyMapFile();
+        // verifyMapFile();
 
-        createMapView();
-        createOverlays();
+        // createMapView();
+        // createOverlays();
 
         globalStateAccess = new GlobalStateAccess(this);
         networkClient = BladeNightApplication.networkClient;
@@ -112,567 +82,76 @@ public class BladenightMapActivity extends MapActivity {
         processionProgressBar = (ProcessionProgressBar) findViewById(R.id.progress_procession);
         mapHeadline = (TextView) findViewById(R.id.map_headline);
         mapHeadlineSeparator = (View) findViewById(R.id.map_headline_separator);
-    }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        Log.i(TAG, "onStart");
-
-        configureBasedOnIntent();
-
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        // Friend colors and stuff like that could have been changed in the meantime, so re-create the overlays
-        userPositionOverlay.onResume();
-        processionProgressBar.onResume();
-
-        registerGpsListener();
-
-        periodicTask = new Runnable() {
-            @Override
-            public void run() {
-                if (!isRunning)
-                    return;
-                // Log.i(TAG, "periodic task");
-                if (!isRouteInfoAvailable)
-                    requestRouteFromServer();
-                getRealTimeDataFromServer();
-                periodicHandler.postDelayed(this, updatePeriod);
-            }
-        };
-        periodicHandler.post(periodicTask);
-
-        if (!isLive) {
-            processionProgressBar.setVisibility(View.GONE);
-            mapHeadline.setVisibility(View.VISIBLE);
-            mapHeadlineSeparator.setVisibility(View.VISIBLE);
-            updateHeadline(null);
-        } else {
-            processionProgressBar.setVisibility(View.VISIBLE);
-            mapHeadline.setVisibility(View.VISIBLE);
-            mapHeadlineSeparator.setVisibility(View.GONE);
-        }
-
-        // The auto-zooming of the fetched route requires to have the layout
-        if (mapView.getWidth() == 0 || mapView.getHeight() == 0) {
-            Log.i(TAG, "scheduling triggerInitialRouteDataFetch");
-            ViewTreeObserver vto = mapView.getViewTreeObserver();
-            vto.addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
-                @Override
-                public void onGlobalLayout() {
-                    triggerInitialRouteDataFetch();
-                    mapView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                }
-            });
-        } else {
-            triggerInitialRouteDataFetch();
-        }
-
-        broadcastReceiversRegister.registerReceiver(LocalBroadcast.GOT_REALTIME_DATA, new RealTimeDataBroadcastReceiver());
-        broadcastReceiversRegister.registerReceiver(LocalBroadcast.GOT_GPS_UPDATE, new LocationBroadcastReceiver());
-
-        isRunning = true;
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        cancelAllAutomaticTasks();
-        broadcastReceiversRegister.unregisterReceivers();
-        isRunning = false;
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-
-        Log.i(TAG, "onNewIntent");
-
-        setIntent(intent);
-        configureBasedOnIntent();
-    }
-
-    private void configureBasedOnIntent() {
-
-        Log.i(TAG, "configureBasedOnIntent");
-
-        getActivityParametersFromIntentOrDefault(getIntent());
-
-        configureActionBar();
-    }
-
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        cancelAllAutomaticTasks();
-        isRunning = false;
-    }
-
-    public void cancelAllAutomaticTasks() {
-        if (periodicTask != null)
-            periodicHandler.removeCallbacks(periodicTask);
-        if (gpsListener != null)
-            gpsListener.cancelLocationUpdates();
-    }
-
-    public void registerGpsListener() {
-        destroyGpsListener();
-        gpsListener = new GpsListener(this, globalStateAccess);
-        gpsListener.requestLocationUpdates(updatePeriod);
-    }
-
-    public void destroyGpsListener() {
-        if (gpsListener != null)
-            gpsListener.cancelLocationUpdates();
-        gpsListener = null;
-    }
-
-
-    private void triggerInitialRouteDataFetch() {
-        Log.i(TAG, "triggerInitialRouteDataFetch");
-        updateRouteFromCache();
-        requestRouteFromServer();
-    }
-
-
-    private boolean getActivityParametersFromIntentOrDefault(Intent intent) {
-        if (getActivityParametersFromIntent(intent))
-            return true;
-        Event nextEvent = getEventListFromCacheOrEmptyList().getNextEvent();
-        if (nextEvent == null)
-            return false;
-        getActivityParametersFromEvent(nextEvent);
-        return true;
-    }
-
-    private boolean getActivityParametersFromIntent(Intent intent) {
-        Log.i(TAG, "getActivityParametersFromIntent intent=" + intent);
-
-        if (intent == null)
-            return false;
-
-        Bundle bundle = intent.getExtras();
-        if (bundle == null) {
-            Log.i(TAG, "getActivityParametersFromIntent bundle=" + bundle);
-            return false;
-        }
-        String json = bundle.getString(PARAM_EVENT_MESSAGE);
-        if (json == null) {
-            Log.i(TAG, "getActivityParametersFromIntent json=" + json);
-            return false;
-        }
-
-        Log.i(TAG, "json=" + json);
-        Event event = EventGsonHelper.getGson().fromJson(json, Event.class);
-
-        if (event == null) {
-            Log.i(TAG, "getActivityParametersFromIntent eventMessage=" + event);
-            return false;
-        }
-
-        getActivityParametersFromEvent(event);
-
-        Log.i(TAG, "getActivityParametersFromIntent DONE routeName=" + routeName);
-        Log.i(TAG, "isLive=" + isLive);
-        return true;
-    }
-
-    private void getActivityParametersFromEvent(Event event) {
-        setRoute(event.getRouteName());
-        isLive = false;
-        EventList eventList = getEventListFromCacheOrEmptyList();
-        if (eventList.isLive(event)) {
-            isLive = true;
-        }
-    }
-
-    private EventList getEventListFromCacheOrEmptyList() {
-        EventListMessage eventListMessage = new EventsMessageCache(this).read();
-        if (eventListMessage == null)
-            return new EventList();
-        return eventListMessage.convertToEventsList();
-    }
-
-    private void setRoute(String routeName) {
-        if (!routeName.equals(this.routeName)) {
-            // Activity will now display a new new route, request automatic zooming
-            shallFitViewWhenPossible = true;
-            isRouteInfoAvailable = false;
-        }
-        this.routeName = routeName;
-    }
-
-    static class GetRealTimeDataFromServerHandler extends Handler {
-        private WeakReference<BladenightMapActivity> reference;
-
-        GetRealTimeDataFromServerHandler(BladenightMapActivity activity) {
-            this.reference = new WeakReference<BladenightMapActivity>(activity);
-        }
-
-        @Override
-        public void handleMessage(Message msg) {
-            final BladenightMapActivity bladenightMapActivity = reference.get();
-            if (bladenightMapActivity == null || bladenightMapActivity.isFinishing() || !bladenightMapActivity.isRunning)
-                return;
-            RealTimeUpdateData realTimeUpdateData = (RealTimeUpdateData) msg.obj;
-            String liveRouteName = realTimeUpdateData.getRouteName();
-            if (bladenightMapActivity.isLive) {
-                if (!liveRouteName.equals(bladenightMapActivity.routeName)) {
-                    if (bladenightMapActivity.routeName != null) {
-                        // the route has changed, typically Lang -> Kurz
-                        Log.i(TAG, "GetRealTimeDataFromServerHandler: route has changed: " + bladenightMapActivity.routeName + " -> " + liveRouteName);
-                        String text = bladenightMapActivity.getResources().getString(R.string.msg_route_has_changed);
-                        Toast.makeText(bladenightMapActivity, text + " " + liveRouteName, Toast.LENGTH_LONG).show();
-                    }
-                    bladenightMapActivity.routeName = liveRouteName;
-                    bladenightMapActivity.requestRouteFromServer();
-                }
-                bladenightMapActivity.routeOverlay.update(realTimeUpdateData);
-                bladenightMapActivity.processionProgressBar.update(realTimeUpdateData);
-                bladenightMapActivity.userPositionOverlay.update(realTimeUpdateData);
-                bladenightMapActivity.update(realTimeUpdateData);
-            } else {
-                bladenightMapActivity.userPositionOverlay.update(realTimeUpdateData);
-            }
-        }
-    }
-
-    class RealTimeDataBroadcastReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Log.i(TAG, "RealTimeDataBroadcastReceiver.onReceive");
-            final BladenightMapActivity bladenightMapActivity = BladenightMapActivity.this;
-            if (bladenightMapActivity == null || bladenightMapActivity.isFinishing() || !bladenightMapActivity.isRunning)
-                return;
-            RealTimeUpdateData realTimeUpdateData = globalStateAccess.getRealTimeUpdateData();
-            String liveRouteName = realTimeUpdateData.getRouteName();
-            if (bladenightMapActivity.isLive) {
-                if (!liveRouteName.equals(bladenightMapActivity.routeName)) {
-                    if (bladenightMapActivity.routeName != null) {
-                        // the route has changed, typically Lang -> Kurz
-                        Log.i(TAG, "GetRealTimeDataFromServerHandler: route has changed: " + bladenightMapActivity.routeName + " -> " + liveRouteName);
-                        String text = bladenightMapActivity.getResources().getString(R.string.msg_route_has_changed);
-                        Toast.makeText(bladenightMapActivity, text + " " + liveRouteName, Toast.LENGTH_LONG).show();
-                    }
-                    bladenightMapActivity.routeName = liveRouteName;
-                    bladenightMapActivity.requestRouteFromServer();
-                }
-                bladenightMapActivity.routeOverlay.update(realTimeUpdateData);
-                bladenightMapActivity.processionProgressBar.update(realTimeUpdateData);
-                bladenightMapActivity.userPositionOverlay.update(realTimeUpdateData);
-                bladenightMapActivity.update(realTimeUpdateData);
-            } else {
-                bladenightMapActivity.userPositionOverlay.update(realTimeUpdateData);
-            }
-        }
-    }
-
-    class LocationBroadcastReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Log.i(TAG, "LocationBroadcastReceiver.onReceive");
-            final BladenightMapActivity bladenightMapActivity = BladenightMapActivity.this;
-            Location location = globalStateAccess.getLocationFromGps();
-            bladenightMapActivity.userPositionOverlay.onLocationChanged(location);
-        }
-    }
-
-    protected void getRealTimeDataFromServer() {
-        globalStateAccess.requestRealTimeUpdateData();
-    }
-
-    public void update(RealTimeUpdateData realTimeUpdateData) {
-        updateHeadline(realTimeUpdateData);
-    }
-
-    protected void requestRouteFromServer() {
-        if (routeName.length() > 0)
-            getSpecificRouteFromServer(routeName);
-        else
-            getNextRouteFromServer();
-    }
-
-    static class GetRouteFromServerHandler extends Handler {
-        private WeakReference<BladenightMapActivity> reference;
-
-        GetRouteFromServerHandler(BladenightMapActivity activity) {
-            this.reference = new WeakReference<BladenightMapActivity>(activity);
-        }
-
-        @Override
-        public void handleMessage(Message msg) {
-            final BladenightMapActivity bladenightMapActivity = reference.get();
-            if (bladenightMapActivity == null || bladenightMapActivity.isFinishing() || !bladenightMapActivity.isRunning)
-                return;
-            RouteMessage routeMessage = (RouteMessage) msg.obj;
-            bladenightMapActivity.updateRouteFromRouteMessage(routeMessage);
-            new RoutesCache(bladenightMapActivity).write(routeMessage);
-        }
-    }
-
-    private void getSpecificRouteFromServer(String routeName) {
-        Log.i(TAG, "getSpecificRouteFromServer routeName=" + routeName);
-        networkClient.getRoute(routeName, new GetRouteFromServerHandler(this), null);
-    }
-
-    private void getNextRouteFromServer() {
-        Log.i(TAG, "getNextRouteFromServer");
-        networkClient.getActiveRoute(new GetRouteFromServerHandler(this), null);
-    }
-
-
-    private void updateRouteFromRouteMessage(RouteMessage routeMessage) {
-        if (!routeMessage.getRouteName().equals(routeName)) {
-            Log.e(TAG, "Inconsistency: Got \"" + routeMessage.getRouteName() + "\" but expected: \"" + routeName + "\"");
-            Log.i(TAG, "Trace: " + ExceptionUtils.getStackTrace(new Throwable()));
-        }
-        isRouteInfoAvailable = true;
-        routeName = routeMessage.getRouteName();
-        routeLength = routeMessage.getRouteLength();
-        routeOverlay.update(routeMessage);
-        if (shallFitViewWhenPossible) {
-            shallFitViewWhenPossible = false;
-            fitViewToRoute();
-        }
-        updateHeadline(null);
-    }
-
-    private void updateRouteFromCache() {
-        RouteMessage message = new RoutesCache(this).read(routeName);
-        if (message != null) {
-            updateRouteFromRouteMessage(message);
-        }
-    }
-
-    private void configureActionBar() {
-        final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
-        ActionBarConfigurator configurator = new ActionBarConfigurator(actionBar);
-
-        configurator.show(ActionItemType.FRIENDS);
-
-        if (isLive) {
-            configurator
-                    .show(ActionItemType.TRACKER_CONTROL)
-                    .setTitle(R.string.title_map_live);
-        } else {
-            configurator.setTitle(R.string.title_map_default);
-        }
-
-        configurator.setAction(ActionItemType.LOCATE_ME, new ActionLocateMe() {
-            @Override
-            public void performAction(View view) {
-                Toast.makeText(view.getContext(), view.getResources().getString(R.string.msg_locate), Toast.LENGTH_SHORT).show();
-                BladenightMapActivity.this.centerViewOnLastKnownLocation();
-            }
-        });
-
-        // If the tracker is currently running, show the control in the activity
-        // to give a chance to the user to stop it from here without having to go
-        // to the Selection activity.
-        if (ServiceUtils.isServiceRunning(this, GpsTrackerService.class))
-            configurator.show(ActionItemType.TRACKER_CONTROL);
-
-        configurator.configure();
-    }
-
-    private void updateHeadline(RealTimeUpdateData realTimeUpdateData) {
-        if (isLive) {
-            int trackedParticipants = (realTimeUpdateData != null ? realTimeUpdateData.getUserTotal() : 0);
-            String trackedParticipantsString = getResources().getString(R.string.word_active_trackers);
-            String formattedText = String.format(Locale.getDefault(), "%s | %1.1fkm  |  %s: %d",
-                    routeNameToText(routeName),
-                    routeLength / 1000.0,
-                    trackedParticipantsString,
-                    trackedParticipants
-            );
-            mapHeadline.setText(formattedText);
-        } else {
-            String formattedText = String.format(Locale.getDefault(), "%s | %1.1fkm",
-                    routeNameToText(routeName),
-                    routeLength / 1000.0
-            );
-            mapHeadline.setText(formattedText);
-        }
-    }
-
-    private String routeNameToText(String routeName) {
-        if (routeName.equals("Nord - kurz")) {
-            return getResources().getString(R.string.course_north_short);
-        }
-        if (routeName.equals("Nord - lang")) {
-            return getResources().getString(R.string.course_north_long);
-        }
-        if (routeName.equals("West - kurz")) {
-            return getResources().getString(R.string.course_west_short);
-        }
-        if (routeName.equals("West - lang")) {
-            return getResources().getString(R.string.course_west_long);
-        }
-        if (routeName.equals("Ost - kurz")) {
-            return getResources().getString(R.string.course_east_short);
-        }
-        if (routeName.equals("Ost - lang")) {
-            return getResources().getString(R.string.course_east_long);
-        }
-        if (routeName.equals("Familie")) {
-            return getResources().getString(R.string.course_family);
-        }
-        return routeName;
-    }
-
-
-    public void createMapView() {
-
-        mapView = new BladenightMapView(this);
+        /*
+         * Before you make any calls on the mapsforge library, you need to initialize the
+         * AndroidGraphicFactory. Behind the scenes, this initialization process gathers a bit of
+         * information on your device, such as the screen resolution, that allows mapsforge to
+         * automatically adapt the rendering for the device.
+         * If you forget this step, your app will crash. You can place this code, like in the
+         * Samples app, in the Android Application class. This ensures it is created before any
+         * specific activity. But it can also be created in the onCreate() method in your activity.
+         */
+        AndroidGraphicFactory.createInstance(getApplication());
+
+        /*
+         * A MapView is an Android View (or ViewGroup) that displays a mapsforge map. You can have
+         * multiple MapViews in your app or even a single Activity. Have a look at the mapviewer.xml
+         * on how to create a MapView using the Android XML Layout definitions. Here we create a
+         * MapView on the fly and make the content view of the activity the MapView. This means
+         * that no other elements make up the content of this activity.
+         */
+        mapView = new MapView(this);
+        setContentView(mapView);
+
+        /*
+         * We then make some simple adjustments, such as showing a scale bar and zoom controls.
+         */
         mapView.setClickable(true);
+        mapView.getMapScaleBar().setVisible(true);
         mapView.setBuiltInZoomControls(true);
-        mapView.setRenderTheme(CustomRenderTheme.CUSTOM_RENDER);
 
-        setMapFile();
+        /*
+         * To avoid redrawing all the tiles all the time, we need to set up a tile cache with an
+         * utility method.
+         */
+        TileCache tileCache = AndroidUtil.createTileCache(this, "mapcache",
+                mapView.getModel().displayModel.getTileSize(), 1f,
+                mapView.getModel().frameBufferModel.getOverdrawFactor());
 
-        LinearLayout parent = (LinearLayout) findViewById(R.id.map_parent);
-        parent.removeAllViews();
+        /*
+         * Now we need to set up the process of displaying a map. A map can have several layers,
+         * stacked on top of each other. A layer can be a map or some visual elements, such as
+         * markers. Here we only show a map based on a mapsforge map file. For this we need a
+         * TileRendererLayer. A TileRendererLayer needs a TileCache to hold the generated map
+         * tiles, a map file from which the tiles are generated and Rendertheme that defines the
+         * appearance of the map.
+         */
+        MapDataStore mapDataStore = new MapFile(mapLocalFile);
+        TileRendererLayer tileRendererLayer = new TileRendererLayer(tileCache, mapDataStore,
+                mapView.getModel().mapViewPosition, AndroidGraphicFactory.INSTANCE);
+        tileRendererLayer.setXmlRenderTheme(CustomRenderTheme.CUSTOM_RENDER);
+        // tileRendererLayer.setXmlRenderTheme();
+        // tileRendererLayer.setXmlRenderTheme(InternalRenderTheme.DEFAULT);
 
-        parent.addView(mapView);
+        /*
+         * On its own a tileRendererLayer does not know where to display the map, so we need to
+         * associate it with our mapView.
+         */
+        mapView.getLayerManager().getLayers().add(tileRendererLayer);
 
-        TileCache fileSystemTileCache = mapView.getFileSystemTileCache();
-        fileSystemTileCache.setPersistent(true);
-        fileSystemTileCache.setCapacity(100);
-
-        centerViewOnCoordinates(new GeoPoint(48.132491, 11.543474), (byte) 13);
+        mapView.setCenter(new LatLong(48.1351, 11.5820));
+        mapView.setZoomLevel((byte) 12);
     }
 
-    public void createOverlays() {
-        if (routeOverlay != null)
-            mapView.getOverlays().remove(routeOverlay);
-        routeOverlay = new RouteOverlay(mapView);
-        if (userPositionOverlay != null)
-            mapView.getOverlays().remove(userPositionOverlay);
-        userPositionOverlay = new UserPositionOverlay(this, mapView);
-    }
-
-    private void verifyMapFile() {
-        // TODO provide a way to delete the file in case it is corrupted
-        if (! mapLocalFile.exists() || mapLocalFile.length() == 0) {
-            if(extractMapFile()) {
-                // Toast.makeText(this, "Extracted map file", Toast.LENGTH_LONG).show();
-            }
-            else {
-                Toast.makeText(this, R.string.msg_failed_to_extract_map, Toast.LENGTH_LONG).show();
-            }
-        }
-    }
-
-    private void closeSafely(Closeable closeable) {
-        if (closeable != null) {
-            try {
-                closeable.close();
-            } catch (IOException e) {
-            }
-        }
-    }
-
-    private boolean extractMapFile() {
-        InputStream in = null;
-        OutputStream out = null;
-
-        boolean success = false;
-
-        try {
-            in = Thread.currentThread().getContextClassLoader().getResourceAsStream(MAP_RESOURCE_PATH);
-
-            if (in == null) {
-                Log.e(TAG, "Failed to open resource: " + MAP_RESOURCE_PATH);
-            }
-            else {
-                out = new FileOutputStream(mapLocalFile);
-                byte[] buffer = new byte[8 * 1024];
-                int bytesRead;
-                while ((bytesRead = in.read(buffer)) != -1) {
-                    out.write(buffer, 0, bytesRead);
-                }
-                success = true;
-            }
-        } catch (IOException e) {
-            Log.e(TAG, "Failed to extract map file", e);
-        }
-
-        closeSafely(in);
-        closeSafely(out);
-
-        if (!success) {
-            mapLocalFile.delete();
-        }
-        return success;
-    }
-
-    private void setMapFile() {
-        if (mapView.setMapFile(mapLocalFile) == FileOpenResult.SUCCESS) {
-            mapView.redraw();
-            // mapView.getMapViewPosition().setZoomLevel((byte) 15);
-            fitViewToRoute();
-        } else {
-            Log.e(TAG, "Failed to set map file: " + mapLocalFile.toString());
-        }
-    }
-
-    protected void fitViewToBoundingBox(BoundingBox boundingBox) {
-        if (boundingBox != null && boundingBox.getLatitudeSpan() > 0 && boundingBox.getLongitudeSpan() > 0)
-            mapView.fitViewToBoundingBox(boundingBox);
-    }
-
-    protected void fitViewToRoute() {
-        if (routeOverlay != null) {
-            shallFitViewWhenPossible = false;
-            fitViewToBoundingBox(routeOverlay.getRouteBoundingBox());
-        }
-    }
-
-    protected void fitViewToProcession() {
-        if (routeOverlay != null) {
-            fitViewToBoundingBox(routeOverlay.getProcessionBoundingBox());
-        }
-    }
-
-
-    protected void centerViewOnCoordinates(GeoPoint center, byte zoomLevel) {
-        mapView.getMapViewPosition().setMapPosition(new MapPosition(center, zoomLevel));
-    }
-
-    protected void centerViewOnLastKnownLocation() {
-        Location location = userPositionOverlay.getLastOwnLocation();
-        if (location != null) {
-            GeoPoint pos = new GeoPoint(location.getLatitude(), location.getLongitude());
-            this.mapView.getMapViewPosition().setCenter(pos);
-        } else {
-            String text = getResources().getString(R.string.msg_current_position_unknown);
-            Toast.makeText(this, text, Toast.LENGTH_LONG).show();
-        }
-    }
-
-
-    private void clearTileCache() {
-        try {
-            Log.i(TAG, "Clearing Mapsforge cache...");
-            String externalStorageDirectory = Environment.getExternalStorageDirectory().getAbsolutePath();
-            String CACHE_DIRECTORY = "/Android/data/org.mapsforge.android.maps/cache/";
-            String cacheDirectoryPath = externalStorageDirectory + CACHE_DIRECTORY;
-            Log.i(TAG, "cacheDirectoryPath=" + cacheDirectoryPath);
-            FileUtils.deleteDirectory(new File(cacheDirectoryPath));
-        } catch (Exception e) {
-            Log.w(TAG, "Failed to clear the MapsForge cache", e);
-        }
+    @Override
+    protected void onDestroy() {
+        /*
+         * Whenever your activity exits, some cleanup operations have to be performed lest your app
+         * runs out of memory.
+         */
+        mapView.destroyAll();
+        AndroidGraphicFactory.clearResourceMemoryCache();
+        super.onDestroy();
     }
 }

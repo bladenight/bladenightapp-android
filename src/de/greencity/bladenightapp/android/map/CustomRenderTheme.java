@@ -3,6 +3,7 @@ package de.greencity.bladenightapp.android.map;
 import java.io.InputStream;
 
 import org.mapsforge.map.rendertheme.XmlRenderTheme;
+import org.mapsforge.map.rendertheme.XmlRenderThemeMenuCallback;
 
 public enum CustomRenderTheme implements XmlRenderTheme {
     /**
@@ -21,12 +22,26 @@ public enum CustomRenderTheme implements XmlRenderTheme {
     }
 
     @Override
+    public XmlRenderThemeMenuCallback getMenuCallback() {
+        throw new RuntimeException("Not implemented");
+    }
+
+    @Override
     public String getRelativePathPrefix() {
         return this.absolutePath;
     }
 
     @Override
     public InputStream getRenderThemeAsStream() {
-        return Thread.currentThread().getClass().getResourceAsStream(this.absolutePath + this.file);
+        String completePath  = this.absolutePath + this.file;
+        InputStream is = getClass().getResourceAsStream(completePath);
+        if(is == null)
+            throw new IllegalStateException("Could not open resource: \"" + completePath + "\"");
+        return is;
+    }
+
+    @Override
+    public void setMenuCallback(XmlRenderThemeMenuCallback menuCallback) {
+
     }
 }
