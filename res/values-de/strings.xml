@@ -82,4 +82,7 @@
     <string name="title_impressum">Impressum</string>
     <string name="title_activity_admin">AdminActivity</string>
     <string name="word_active_trackers">Trackers</string>
+    <string name="title_main">K2 Blade Night</string>
+    <string name="msg_impressum">Betreiber und Veranstalter: Green City Projekt GmbH Goethestraße 34 / Rgb. 80336 München Registergericht München HRB 148908 http://www.greencity-projekt.de bladenight@greencity.de</string>
+    <string name="msg_status">Status</string>
 </resources>

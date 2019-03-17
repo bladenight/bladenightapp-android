@@ -94,7 +94,7 @@ public class AsyncDownloadTask extends AsyncTask<String, Long, Boolean> {
             output.close();
             input.close();
         } catch (Exception e) {
-            Log.e(TAG, "Got exception: ", e);
+            Log.e(TAG, "Got exception: " + e.toString(), e);
             return false;
         }
         return true;
