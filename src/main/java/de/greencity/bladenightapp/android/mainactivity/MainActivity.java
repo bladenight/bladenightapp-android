@@ -1,5 +1,6 @@
 package de.greencity.bladenightapp.android.mainactivity;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.app.Activity;
 import android.os.Handler;
@@ -31,6 +32,9 @@ public class MainActivity extends Activity {
 
         webView = (WebView) findViewById(R.id.main_webview);
         webView.loadUrl("file://" + getLandingPageLocalPath());
+
+        webView.setBackgroundColor(Color.TRANSPARENT);
+        webView.setLayerType(WebView.LAYER_TYPE_SOFTWARE, null);
     }
 
 

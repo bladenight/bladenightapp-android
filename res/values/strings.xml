@@ -103,4 +103,7 @@
     <string name="msg_failed_to_load_map">Failed to extract map</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="title_main">K2 Blade Night</string>
+    <string name="text_next_event">Next event:</string>
+    <string name="text_route_name">Route name</string>
+    <string name="event_date">Event date</string>
 </resources>
