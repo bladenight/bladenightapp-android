@@ -84,10 +84,6 @@ public class SelectionActivity extends FragmentActivity {
     @Override
     protected void onStart() {
         super.onStart();
-
-        // Log.i(TAG, "onStart");
-
-        shakeHands();
     }
 
     @Override
@@ -117,35 +113,6 @@ public class SelectionActivity extends FragmentActivity {
         // unbindFromGlobalStateService();
         broadcastReceiversRegister.unregisterReceivers();
     }
-
-
-//  private ServiceConnection globalStateServiceConnection = new ServiceConnection() {
-//      @Override
-//      public void onServiceConnected(ComponentName name, IBinder binder) {
-//          globalStateService = ((NetworkServiceBinder)binder).getService();
-//          globalStateService.requestEventList();
-//          Log.i(TAG, "onServiceConnected name="+name);
-//      }
-//
-//      @Override
-//      public void onServiceDisconnected(ComponentName name) {
-//          Log.i(TAG, "onServiceDisconnected name="+name);
-//      }
-//  };
-
-//  private void unbindFromGlobalStateService() {
-//      if (globalStateServiceConnection != null) {
-//            unbindService(globalStateServiceConnection);
-//            globalStateServiceConnection = null;
-//        }
-//  }
-
-//  private void bindToGlobalStateService() {
-//      Intent bindIntent = new Intent(this, GlobalStateService.class);
-//      bindService(bindIntent, globalStateServiceConnection, Context.BIND_AUTO_CREATE);
-//  }
-
-
 
     private void configureActionBar() {
         final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
@@ -223,65 +190,6 @@ public class SelectionActivity extends FragmentActivity {
         }
         return false;
     }
-
-    static class HandshakeErrorHandler extends Handler {
-        private WeakReference<SelectionActivity> reference;
-        HandshakeErrorHandler(SelectionActivity activity) {
-            this.reference = new WeakReference<SelectionActivity>(activity);
-        }
-        @Override
-        public void handleMessage(Message msg) {
-            final SelectionActivity selectionActivity = reference.get();
-            if ( selectionActivity == null || selectionActivity.isFinishing() )
-                return;
-            CallErrorMessage errorMessage = (CallErrorMessage)msg.obj;
-            if ( errorMessage == null ) {
-                Log.w(TAG, "Failed to get the error message");
-                return;
-            }
-            if ( BladenightError.OUTDATED_CLIENT.getText().equals(errorMessage.getErrorUri())) {
-                Toast.makeText(selectionActivity, R.string.msg_outdated_client , Toast.LENGTH_LONG).show();
-            }
-            else {
-                Log.e(TAG, "Unknown error occured in the handshake with the server: " + errorMessage);
-            }
-        }
-    }
-
-    private void shakeHands() {
-        try {
-            String deviceId = DeviceId.getDeviceId(this);
-            int clientBuild = getDeviceVersionCode();
-
-            String phoneManufacturer = android.os.Build.MANUFACTURER;
-            String phoneModel = android.os.Build.MODEL;
-            String androidRelease = Build.VERSION.RELEASE;
-
-            HandshakeClientMessage msg = new HandshakeClientMessage(
-                    deviceId,
-                    clientBuild,
-                    phoneManufacturer,
-                    phoneModel,
-                    androidRelease);
-            BladeNightApplication.networkClient.shakeHands(msg, null, new HandshakeErrorHandler(this));
-        } catch (Exception e) {
-            Log.e(TAG, "shakeHands failed to gather and send information: " + e.toString());
-        }
-    }
-
-    private int getDeviceVersionCode() {
-        PackageManager manager = this.getPackageManager();
-        PackageInfo info;
-        try {
-            info = manager.getPackageInfo(this.getPackageName(), 0);
-            return info.versionCode;
-        } catch (NameNotFoundException e) {
-            Log.e(TAG, "Failed to get device version code: " + e.toString());
-            return 0;
-        }
-    }
-
-
 
     private void getEventsFromCache() {
         EventListMessage eventListFromCache = eventsCache.read();
