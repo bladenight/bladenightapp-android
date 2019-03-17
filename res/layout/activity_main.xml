@@ -26,14 +26,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="32dp"
-            app:layout_constraintBottom_toTopOf="@+id/textView"
+            app:layout_constraintBottom_toTopOf="@+id/textview_next_event_label"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/actionbar">
             app:layout_marginBottom="100dp"</WebView>
 
         <TextView
-            android:id="@+id/textView"
+            android:id="@+id/textview_next_event_label"
             android:layout_width="match_parent"
             android:layout_height="54dp"
             android:layout_weight="0.5"
@@ -43,14 +43,14 @@
             android:textIsSelectable="false"
             android:textSize="25sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/route_name"
+            app:layout_constraintEnd_toStartOf="@+id/textview_route_name"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/main_webview"></TextView>
 
 
         <TextView
-            android:id="@+id/route_name"
+            android:id="@+id/textview_route_name"
             android:layout_width="match_parent"
             android:layout_height="54dp"
             android:layout_weight="0.5"
@@ -60,14 +60,14 @@
             android:textIsSelectable="false"
             android:textSize="30sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/date"
+            app:layout_constraintEnd_toStartOf="@+id/textview_event_date"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/textView"
+            app:layout_constraintStart_toEndOf="@+id/textview_next_event_label"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView"></TextView>
+            app:layout_constraintTop_toBottomOf="@+id/textview_next_event_label"></TextView>
 
         <TextView
-            android:id="@+id/date"
+            android:id="@+id/textview_event_date"
             android:layout_width="match_parent"
             android:layout_height="54dp"
             android:layout_weight="0.5"
@@ -77,14 +77,14 @@
             android:textIsSelectable="false"
             android:textSize="25sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/status"
+            app:layout_constraintEnd_toStartOf="@+id/textview_event_status"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/route_name"
+            app:layout_constraintStart_toEndOf="@+id/textview_route_name"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/route_name"></TextView>
+            app:layout_constraintTop_toBottomOf="@+id/textview_route_name"></TextView>
 
         <TextView
-            android:id="@+id/status"
+            android:id="@+id/textview_event_status"
             android:layout_width="match_parent"
             android:layout_height="55dp"
             android:layout_weight="0.5"
@@ -95,9 +95,9 @@
             android:textSize="30sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/date"
+            app:layout_constraintStart_toEndOf="@+id/textview_event_date"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/date"></TextView>
+            app:layout_constraintTop_toBottomOf="@+id/textview_event_date"></TextView>
 
         <!--
             -->

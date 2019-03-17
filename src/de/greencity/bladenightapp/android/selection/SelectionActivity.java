@@ -374,7 +374,6 @@ public class SelectionActivity extends FragmentActivity {
     private EventList eventList;
     private EventsMessageCache eventsCache;
     private BroadcastReceiversRegister broadcastReceiversRegister = new BroadcastReceiversRegister(this);
-    // private GlobalStateService globalStateService;
-    GlobalStateAccess globalStateAccess;
+    private GlobalStateAccess globalStateAccess;
 
 }

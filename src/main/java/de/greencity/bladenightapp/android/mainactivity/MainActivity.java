@@ -1,12 +1,17 @@
 package de.greencity.bladenightapp.android.mainactivity;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.app.Activity;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.markupartist.android.widget.ActionBar;
@@ -15,36 +20,85 @@ import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
 import de.greencity.bladenightapp.android.actionbar.ActionEventSelection;
 import de.greencity.bladenightapp.android.actionbar.ActionHome;
 import de.greencity.bladenightapp.android.app.BladeNightApplication;
+import de.greencity.bladenightapp.android.cache.EventsMessageCache;
+import de.greencity.bladenightapp.android.global.GlobalStateAccess;
+import de.greencity.bladenightapp.android.global.LocalBroadcast;
+import de.greencity.bladenightapp.android.selection.SelectionActivity;
 import de.greencity.bladenightapp.android.utils.AsyncDownloadTaskHttpClient;
+import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
+import de.greencity.bladenightapp.android.utils.DateFormatter;
 import de.greencity.bladenightapp.android.utils.Paths;
 import de.greencity.bladenightapp.android.utils.Permissions;
 import de.greencity.bladenightapp.dev.android.R;
+import de.greencity.bladenightapp.events.Event;
+import de.greencity.bladenightapp.events.EventList;
+import de.greencity.bladenightapp.network.messages.EventListMessage;
 
 public class MainActivity extends Activity {
 
-    static private final String LANDING_PAGE_REMOTE_PATH = "landing.html";
-    static WebView webView;
+    private static final String LANDING_PAGE_REMOTE_PATH = "landing.html";
+
+    private WebView webView;
+    private TextView textViewNext;
+    private TextView textViewRouteName;
+    private TextView textViewEventDate;
+    private TextView textViewEventStatus;
+
+    private GlobalStateAccess globalStateAccess;
+    private BroadcastReceiversRegister broadcastReceiversRegister = new BroadcastReceiversRegister(this);
+    private EventList eventList;
+    private EventsMessageCache eventsCache;
+    private static final String TAG = "MainActivity";
+
+    private DateFormatter dateFormatter = new DateFormatter();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
         configureActionBar();
 
         Permissions.verifyPermissionsForApp(this);
 
+        broadcastReceiversRegister.registerReceiver(LocalBroadcast.GOT_EVENT_LIST, new EventListBroadcastReceiver());
+
+        globalStateAccess = new GlobalStateAccess(this);
+
+        eventsCache = new EventsMessageCache(this);
+        // avoid NPE, will be replaced as soon as we get data from the network or the cache:
+        eventList = new EventList();
+
         webView = (WebView) findViewById(R.id.main_webview);
-        webView.loadUrl("file://" + getLandingPageLocalPath());
+        textViewNext = (TextView) findViewById(R.id.textview_next_event_label);
+        textViewRouteName = (TextView) findViewById(R.id.textview_route_name);
+        textViewEventDate = (TextView) findViewById(R.id.textview_event_date);
+        textViewEventStatus = (TextView) findViewById(R.id.textview_event_status);
 
         webView.setBackgroundColor(Color.TRANSPARENT);
         webView.setLayerType(WebView.LAYER_TYPE_SOFTWARE, null);
+        webView.getSettings().setLoadsImagesAutomatically(true);
+        // webView.getSettings().setDomStorageEnabled(true);
+
+        webView.loadUrl("file://" + getLandingPageLocalPath());
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        broadcastReceiversRegister.unregisterReceivers();
+    }
 
     @Override
     protected void onResume() {
         super.onResume();
+
         triggerLandingPageDownload();
+
+        getEventsFromCache();
+        globalStateAccess.requestEventList();
+
+        configureActionBar();
     }
 
     private void configureActionBar() {
@@ -94,5 +148,47 @@ public class MainActivity extends Activity {
                         });
                     }
                 });
+    }
+
+    class EventListBroadcastReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            eventList = globalStateAccess.getEventList();
+            updateFragmentsFromEventList();
+            saveEventsToCache(eventList);
+        }
+    }
+
+    private void updateFragmentsFromEventList() {
+        eventList.sortByStartDate();
+        Event nextEvent = eventList.getNextEvent();
+        if ( nextEvent != null ) {
+            // Log.i(TAG, "nextEvent=" + nextEvent);
+            textViewNext.setVisibility(View.VISIBLE);
+            textViewRouteName.setVisibility(View.VISIBLE);
+
+            textViewNext.setText(R.string.text_next_event);
+            textViewRouteName.setText(nextEvent.getRouteName());
+            textViewEventDate.setText(dateFormatter.format(nextEvent.getStartDate()));
+            textViewEventStatus.setText("Status: " + nextEvent.getStatus().toString()); // TODO translate
+        }
+        else {
+            textViewNext.setVisibility(View.GONE);
+            textViewRouteName.setVisibility(View.GONE);
+            textViewEventDate.setVisibility(View.GONE);
+            textViewEventStatus.setVisibility(View.GONE);
+        }
+    }
+
+    private void getEventsFromCache() {
+        EventListMessage eventListFromCache = eventsCache.read();
+        if ( eventListFromCache != null) {
+            this.eventList = eventListFromCache.convertToEventsList();
+            updateFragmentsFromEventList();
+        }
+    }
+
+    private void saveEventsToCache(EventList eventList) {
+        eventsCache.write(EventListMessage.newFromEventsList(eventList));
     }
 }
