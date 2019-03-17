@@ -30,7 +30,7 @@
 
         <activity
             android:name="de.greencity.bladenightapp.android.selection.SelectionActivity"
-            android:label="@string/app_name"
+            android:label="@string/app_name_dev"
             android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
