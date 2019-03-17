@@ -1,25 +1,11 @@
 
 package de.greencity.bladenightapp.android.selection;
 
-import java.lang.ref.WeakReference;
-
-import org.joda.time.DateTime;
-import org.joda.time.Hours;
-
-import android.Manifest;
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -31,10 +17,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
-import android.widget.Toast;
 
 import com.markupartist.android.widget.ActionBar;
 import com.markupartist.android.widget.ActionBar.Action;
+
+import org.joda.time.DateTime;
+import org.joda.time.Hours;
 
 import de.greencity.bladenightapp.android.about.AboutActivity;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
@@ -42,20 +30,16 @@ import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator.Action
 import de.greencity.bladenightapp.android.actionbar.ActionEventSelection;
 import de.greencity.bladenightapp.android.admin.AdminActivity;
 import de.greencity.bladenightapp.android.admin.AdminUtilities;
-import de.greencity.bladenightapp.android.app.BladeNightApplication;
 import de.greencity.bladenightapp.android.background.BackgroundHelper;
 import de.greencity.bladenightapp.android.cache.EventsMessageCache;
 import de.greencity.bladenightapp.android.global.GlobalStateAccess;
 import de.greencity.bladenightapp.android.global.LocalBroadcast;
 import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
-import de.greencity.bladenightapp.android.utils.DeviceId;
+import de.greencity.bladenightapp.android.utils.Permissions;
 import de.greencity.bladenightapp.dev.android.R;
 import de.greencity.bladenightapp.events.Event;
 import de.greencity.bladenightapp.events.EventList;
-import de.greencity.bladenightapp.network.BladenightError;
 import de.greencity.bladenightapp.network.messages.EventListMessage;
-import de.greencity.bladenightapp.network.messages.HandshakeClientMessage;
-import fr.ocroquette.wampoc.messages.CallErrorMessage;
 
 public class SelectionActivity extends FragmentActivity {
     @Override
@@ -77,8 +61,7 @@ public class SelectionActivity extends FragmentActivity {
 
         globalStateAccess = new GlobalStateAccess(this);
 
-        // Request permissions from user as soon as possible, so that we have them when needed
-        verifyStoragePermissions();
+        Permissions.verifyPermissionsForApp(this);
     }
 
     @Override
@@ -325,57 +308,6 @@ public class SelectionActivity extends FragmentActivity {
         }
 
     }
-
-    /**
-     * Verify storage permissions for MapsForge and request them from the users if required.
-     */
-    private void verifyStoragePermissions() {
-        // Storage Permissions required for MapsForge tile cache.
-        int permission = ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-
-        if (permission != PackageManager.PERMISSION_GRANTED) {
-            // We don't have permission so prompt the user
-            final int REQUEST_EXTERNAL_STORAGE_ID = 1;
-            final String[] PERMISSIONS_STORAGE = {
-                    Manifest.permission.READ_EXTERNAL_STORAGE,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-            };
-            ActivityCompat.requestPermissions(
-                    this,
-                    PERMISSIONS_STORAGE,
-                    REQUEST_EXTERNAL_STORAGE_ID
-            );
-        }
-    }
-
-
-    //  private void openAnnouncement(){
-    //      //TODO: check if internet-connection, if not -> skip
-    //      //TODO: get the last anouncement from the server instead of the following
-    //      String message_e = "On the statistics view you can now see data about all " +
-    //              "past blade nights, e.g. the group velocity or the history of your " +
-    //              "position in the group. Simply press the statistics button located " +
-    //              "on the lower half of the screen on the right.";
-    //      String message_d = "Dasselbe auf deutsch. blablablablabalba";
-    //      String headline_e = "Statistics";
-    //      String headline_d = "Statistiken";
-    //      Announcement announcement = new Announcement(Announcement.Type.NEW_FEATURE, 1, message_d, headline_d,
-    //              message_e, headline_e);
-    //
-    //
-    //      SharedPreferences settings = getSharedPreferences("HelpPrefs", 0);
-    //      SharedPreferences.Editor editor = settings.edit();
-    //      int announcementCounter = settings.getInt("announcementCounter", -1);
-    //
-    //      if (announcementCounter < announcement.getId()){
-    //          FragmentManager fm = getSupportFragmentManager();
-    //          AnnouncementDialog announcementDialog = new AnnouncementDialog();
-    //          announcementDialog.setAnnouncement(announcement);
-    //          announcementDialog.show(fm, "fragment_announcement");
-    //          editor.putInt("announcementCounter", announcement.getId());
-    //          editor.commit();
-    //      }
-    //  }
 
     public static class ViewPagerAdapter extends FragmentStatePagerAdapter {
         public ViewPagerAdapter(ViewPager viewPager, FragmentManager fm) {

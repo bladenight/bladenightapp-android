@@ -17,6 +17,7 @@ import de.greencity.bladenightapp.android.actionbar.ActionHome;
 import de.greencity.bladenightapp.android.app.BladeNightApplication;
 import de.greencity.bladenightapp.android.utils.AsyncDownloadTaskHttpClient;
 import de.greencity.bladenightapp.android.utils.Paths;
+import de.greencity.bladenightapp.android.utils.Permissions;
 import de.greencity.bladenightapp.dev.android.R;
 
 public class MainActivity extends Activity {
@@ -29,6 +30,8 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         configureActionBar();
+
+        Permissions.verifyPermissionsForApp(this);
 
         webView = (WebView) findViewById(R.id.main_webview);
         webView.loadUrl("file://" + getLandingPageLocalPath());
