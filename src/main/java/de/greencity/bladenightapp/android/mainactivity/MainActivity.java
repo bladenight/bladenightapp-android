@@ -110,8 +110,8 @@ public class MainActivity extends Activity {
                         triggerLandingPageDownload();
                     }
                 })
-                .show(ActionBarConfigurator.ActionItemType.FRIENDS)
-                .show(ActionBarConfigurator.ActionItemType.TRACKER_CONTROL)
+                // .show(ActionBarConfigurator.ActionItemType.FRIENDS)
+                // .show(ActionBarConfigurator.ActionItemType.TRACKER_CONTROL)
                 .setTitle(R.string.title_main)
                 .configure();
     }
