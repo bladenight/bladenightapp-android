@@ -57,8 +57,10 @@
 
             <TextView
                 android:id="@+id/textview_route_name"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="54dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
                 android:layout_weight="0.5"
                 android:gravity="center"
                 android:text="@string/text_route_name"
@@ -66,11 +68,23 @@
                 android:textIsSelectable="false"
                 android:textSize="30sp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/textview_event_date"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toEndOf="@+id/textview_next_event_label"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textview_next_event_label"></TextView>
+
+            <ImageButton
+                android:id="@+id/button_map"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:contentDescription="Show map"
+                android:src="@android:drawable/ic_dialog_map"
+                android:background="@null"
+                app:layout_constraintBottom_toBottomOf="@+id/textview_route_name"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/textview_route_name"
+                app:layout_constraintTop_toTopOf="@+id/textview_route_name" />
 
             <TextView
                 android:id="@+id/textview_event_date"
