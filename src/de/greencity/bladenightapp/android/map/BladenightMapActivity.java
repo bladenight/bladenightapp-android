@@ -75,7 +75,7 @@ public class BladenightMapActivity extends Activity {
     private String routeName = "";
     private int routeLength;
     private boolean isLive = false;
-    // private RouteOverlay routeOverlay;
+    private RouteOverlay routeOverlay;
     // private BladenightMapView mapView;
     private ProcessionProgressBar processionProgressBar;
     private TextView mapHeadline;
@@ -124,17 +124,27 @@ public class BladenightMapActivity extends Activity {
         AndroidGraphicFactory.createInstance(getApplication());
 
         createMapView();
-        // createOverlays();
+        createOverlays();
 
         configureActionBar();
     }
 
+    private void createOverlays() {
+        /*
+        if (routeOverlay != null)
+            mapView.getLayerManager().getLayers().remove();
+            */
+        routeOverlay = new RouteOverlay(mapView);
+        /*
+        TODO
+        if (userPositionOverlay != null)
+            mapView.getOverlays().remove(userPositionOverlay);
+        userPositionOverlay = new UserPositionOverlay(this, mapView);
+        */
+    }
+
     @Override
     protected void onDestroy() {
-        /*
-         * Whenever your activity exits, some cleanup operations have to be performed lest your app
-         * runs out of memory.
-         */
         mapView.destroyAll();
         AndroidGraphicFactory.clearResourceMemoryCache();
         super.onDestroy();
@@ -227,7 +237,7 @@ public class BladenightMapActivity extends Activity {
                     bladenightMapActivity.requestRouteFromServer();
                 }
                 // TODO
-                // bladenightMapActivity.routeOverlay.update(realTimeUpdateData);
+                bladenightMapActivity.routeOverlay.update(realTimeUpdateData);
                 // bladenightMapActivity.processionProgressBar.update(realTimeUpdateData);
                 // bladenightMapActivity.userPositionOverlay.update(realTimeUpdateData);
                 // bladenightMapActivity.update(realTimeUpdateData);
@@ -527,7 +537,7 @@ public class BladenightMapActivity extends Activity {
         routeName = routeMessage.getRouteName();
         routeLength = routeMessage.getRouteLength();
         // TODO
-        // routeOverlay.update(routeMessage);
+        routeOverlay.update(routeMessage);
         if (shallFitViewWhenPossible) {
             shallFitViewWhenPossible = false;
             // TODO
