@@ -27,8 +27,7 @@ public class ActionBarConfigurator {
 
     public ActionBarConfigurator(ActionBar actionBar) {
         this.actionBar = actionBar;
-        typeToActionAll.put(ActionItemType.HOME, new ActionEventSelection());
-        typeToActionAll.put(ActionItemType.EVENT_SELECTION, new ActionEventSelection());
+        typeToActionAll.put(ActionItemType.HOME, new ActionHome());
         typeToActionAll.put(ActionItemType.TRACKER_CONTROL, new ActionTrackerControl(actionBar.getContext()));
         typeToActionAll.put(ActionItemType.MAP, new ActionMap());
         typeToActionAll.put(ActionItemType.FRIENDS, new ActionFriends());

@@ -119,7 +119,7 @@ public class MainActivity extends Activity {
                         globalStateAccess.requestEventList();
                     }
                 })
-                // .show(ActionBarConfigurator.ActionItemType.FRIENDS)
+                .show(ActionBarConfigurator.ActionItemType.FRIENDS)
                 // .show(ActionBarConfigurator.ActionItemType.TRACKER_CONTROL)
                 .setTitle(R.string.title_main)
                 .configure();

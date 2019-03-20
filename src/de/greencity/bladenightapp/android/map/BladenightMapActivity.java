@@ -429,6 +429,7 @@ public class BladenightMapActivity extends Activity {
             @Override
             public void performAction(View view) {
                 Toast.makeText(view.getContext(), view.getResources().getString(R.string.msg_locate), Toast.LENGTH_SHORT).show();
+                // TODO
                 // BladenightMapActivity.this.centerViewOnLastKnownLocation();
             }
         });
@@ -617,5 +618,4 @@ public class BladenightMapActivity extends Activity {
             mapView.setCenter(boundingBox.getCenterPoint());
         }
     }
-
 }
