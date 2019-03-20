@@ -20,7 +20,9 @@ import android.widget.Toast;
 import com.markupartist.android.widget.ActionBar;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.mapsforge.core.model.BoundingBox;
 import org.mapsforge.core.model.LatLong;
+import org.mapsforge.core.model.Point;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 import org.mapsforge.map.android.util.AndroidUtil;
 import org.mapsforge.map.android.view.MapView;
@@ -29,6 +31,7 @@ import org.mapsforge.map.layer.cache.TileCache;
 import org.mapsforge.map.layer.renderer.TileRendererLayer;
 import org.mapsforge.map.reader.MapFile;
 import org.mapsforge.map.rendertheme.InternalRenderTheme;
+import org.mapsforge.map.util.MapViewProjection;
 
 import java.io.Closeable;
 import java.io.File;
@@ -540,8 +543,7 @@ public class BladenightMapActivity extends Activity {
         routeOverlay.update(routeMessage);
         if (shallFitViewWhenPossible) {
             shallFitViewWhenPossible = false;
-            // TODO
-            // fitViewToRoute();
+            fitViewToRoute();
         }
         updateHeadline(null);
     }
@@ -550,6 +552,69 @@ public class BladenightMapActivity extends Activity {
         RouteMessage message = new RoutesCache(this).read(routeName);
         if (message != null) {
             updateRouteFromRouteMessage(message);
+        }
+    }
+
+    protected void fitViewToRoute() {
+        if (routeOverlay != null) {
+            shallFitViewWhenPossible = false;
+            fitViewToBoundingBox(routeOverlay.getRouteBoundingBox());
+        }
+    }
+
+    protected void fitViewToProcession() {
+        if (routeOverlay != null) {
+            fitViewToBoundingBox(routeOverlay.getProcessionBoundingBox());
+        }
+    }
+
+
+    protected void centerViewOnCoordinates(LatLong center, byte zoomLevel) {
+        mapView.setCenter(center);
+        mapView.setZoomLevel(zoomLevel);
+    }
+
+    protected void centerViewOnLastKnownLocation() {
+        /*
+        TODO
+        Location location = userPositionOverlay.getLastOwnLocation();
+        if (location != null) {
+            GeoPoint pos = new GeoPoint(location.getLatitude(), location.getLongitude());
+            this.mapView.getMapViewPosition().setCenter(pos);
+        } else {
+            String text = getResources().getString(R.string.msg_current_position_unknown);
+            Toast.makeText(this, text, Toast.LENGTH_LONG).show();
+        }
+        */
+    }
+
+    public synchronized void fitViewToBoundingBox(final BoundingBox boundingBox) {
+        if (boundingBox != null && boundingBox.getLatitudeSpan() > 0 && boundingBox.getLongitudeSpan() > 0) {
+            int width = mapView.getWidth();
+            int height = mapView.getHeight();
+            if (width <= 0 || height <= 0) {
+                Log.w(TAG, "Invalid dimension " + width + "/" + height);
+                Log.i(TAG, "Invalid dimension " + boundingBox.toString());
+                Log.i(TAG, "Trace: " + ExceptionUtils.getStackTrace(new Throwable()));
+                return;
+            }
+            MapViewProjection projection = mapView.getMapViewProjection();
+            LatLong pointSouthWest = new LatLong(boundingBox.minLatitude, boundingBox.minLongitude);
+            LatLong pointNorthEast = new LatLong(boundingBox.maxLatitude, boundingBox.maxLongitude);
+            byte maximumZoom = mapView.getMapZoomControls().getZoomLevelMax();
+            byte zoomLevel = 0;
+            while (zoomLevel < maximumZoom) {
+                mapView.setZoomLevel(zoomLevel);
+                Point pointSW = projection.toPixels(pointSouthWest);
+                Point pointNE = projection.toPixels(pointNorthEast);
+                if (pointNE.x - pointSW.x > width || pointSW.y - pointNE.y > height) {
+                    zoomLevel--;
+                    break;
+                }
+                zoomLevel++;
+            }
+            mapView.setZoomLevel(zoomLevel);
+            mapView.setCenter(boundingBox.getCenterPoint());
         }
     }
 
