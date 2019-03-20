@@ -1,106 +1,113 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="de.greencity.bladenightapp.android.mainactivity.MainActivity">
+    >
 
-    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <com.markupartist.android.widget.ActionBar
+        android:id="@+id/actionbar"
+        style="@style/ActionBar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        tools:layout_editor_absoluteY="50dp">
+        android:layout_height="match_parent">
 
-        <com.markupartist.android.widget.ActionBar
-            android:id="@+id/actionbar"
-            style="@style/ActionBar"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <WebView
-            android:id="@+id/main_webview"
+        <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="32dp"
-            app:layout_constraintBottom_toTopOf="@+id/textview_next_event_label"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/actionbar">
-            app:layout_marginBottom="100dp"</WebView>
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            tools:layout_editor_absoluteY="50dp">
 
-        <TextView
-            android:id="@+id/textview_next_event_label"
-            android:layout_width="match_parent"
-            android:layout_height="54dp"
-            android:layout_weight="0.5"
-            android:gravity="center"
-            android:text="@string/text_next_event"
-            android:textColor="@color/bn_white"
-            android:textIsSelectable="false"
-            android:textSize="25sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/textview_route_name"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/main_webview"></TextView>
+            <WebView
+                android:id="@+id/main_webview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="32dp"
+                app:layout_constraintBottom_toTopOf="@+id/textview_next_event_label"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="parent">
+                app:layout_marginBottom="100dp"</WebView>
+
+            <TextView
+                android:id="@+id/textview_next_event_label"
+                android:layout_width="match_parent"
+                android:layout_height="54dp"
+                android:layout_weight="0.5"
+                android:gravity="center"
+                android:text="@string/text_next_event"
+                android:textColor="@color/bn_white"
+                android:textIsSelectable="false"
+                android:textSize="25sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/textview_route_name"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/main_webview"></TextView>
 
 
-        <TextView
-            android:id="@+id/textview_route_name"
-            android:layout_width="match_parent"
-            android:layout_height="54dp"
-            android:layout_weight="0.5"
-            android:gravity="center"
-            android:text="@string/text_route_name"
-            android:textColor="@color/bn_white"
-            android:textIsSelectable="false"
-            android:textSize="30sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/textview_event_date"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/textview_next_event_label"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textview_next_event_label"></TextView>
+            <TextView
+                android:id="@+id/textview_route_name"
+                android:layout_width="match_parent"
+                android:layout_height="54dp"
+                android:layout_weight="0.5"
+                android:gravity="center"
+                android:text="@string/text_route_name"
+                android:textColor="@color/bn_white"
+                android:textIsSelectable="false"
+                android:textSize="30sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/textview_event_date"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/textview_next_event_label"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textview_next_event_label"></TextView>
 
-        <TextView
-            android:id="@+id/textview_event_date"
-            android:layout_width="match_parent"
-            android:layout_height="54dp"
-            android:layout_weight="0.5"
-            android:gravity="center"
-            android:text="@string/event_date"
-            android:textColor="@color/bn_white"
-            android:textIsSelectable="false"
-            android:textSize="25sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/textview_event_status"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/textview_route_name"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textview_route_name"></TextView>
+            <TextView
+                android:id="@+id/textview_event_date"
+                android:layout_width="match_parent"
+                android:layout_height="54dp"
+                android:layout_weight="0.5"
+                android:gravity="center"
+                android:text="@string/event_date"
+                android:textColor="@color/bn_white"
+                android:textIsSelectable="false"
+                android:textSize="25sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/textview_event_status"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/textview_route_name"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textview_route_name"></TextView>
 
-        <TextView
-            android:id="@+id/textview_event_status"
-            android:layout_width="match_parent"
-            android:layout_height="55dp"
-            android:layout_weight="0.5"
-            android:gravity="center"
-            android:text="Status"
-            android:textColor="@color/bn_white"
-            android:textIsSelectable="false"
-            android:textSize="30sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/textview_event_date"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textview_event_date"></TextView>
+            <TextView
+                android:id="@+id/textview_event_status"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:layout_weight="0.5"
+                android:gravity="center"
+                android:text="Status"
+                android:textColor="@color/bn_white"
+                android:textIsSelectable="false"
+                android:textSize="30sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/textview_event_date"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textview_event_date"></TextView>
 
-        <!--
-            -->
+            <!--
+                -->
 
-    </android.support.constraint.ConstraintLayout>
-</ScrollView>
+        </android.support.constraint.ConstraintLayout>
+    </ScrollView>
+</LinearLayout>
