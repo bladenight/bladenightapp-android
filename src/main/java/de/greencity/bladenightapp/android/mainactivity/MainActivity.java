@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
 import android.webkit.WebView;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.markupartist.android.widget.ActionBar;
@@ -20,6 +21,7 @@ import de.greencity.bladenightapp.android.app.BladeNightApplication;
 import de.greencity.bladenightapp.android.cache.EventsMessageCache;
 import de.greencity.bladenightapp.android.global.GlobalStateAccess;
 import de.greencity.bladenightapp.android.global.LocalBroadcast;
+import de.greencity.bladenightapp.android.map.BladenightMapActivity;
 import de.greencity.bladenightapp.android.utils.AsyncDownloadTaskHttpClient;
 import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
 import de.greencity.bladenightapp.android.utils.DateFormatter;
@@ -39,6 +41,7 @@ public class MainActivity extends Activity {
     private TextView textViewRouteName;
     private TextView textViewEventDate;
     private TextView textViewEventStatus;
+    private ImageView imageViewMap;
 
     private GlobalStateAccess globalStateAccess;
     private BroadcastReceiversRegister broadcastReceiversRegister = new BroadcastReceiversRegister(this);
@@ -70,6 +73,7 @@ public class MainActivity extends Activity {
         textViewRouteName = (TextView) findViewById(R.id.textview_route_name);
         textViewEventDate = (TextView) findViewById(R.id.textview_event_date);
         textViewEventStatus = (TextView) findViewById(R.id.textview_event_status);
+        imageViewMap = (ImageView) findViewById(R.id.button_map);
 
         webView.setBackgroundColor(Color.TRANSPARENT);
         webView.setLayerType(WebView.LAYER_TYPE_SOFTWARE, null);
@@ -77,6 +81,13 @@ public class MainActivity extends Activity {
         // webView.getSettings().setDomStorageEnabled(true);
 
         webView.loadUrl("file://" + getLandingPageLocalPath());
+
+        imageViewMap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startMapActivity();
+            }
+        });
     }
 
     @Override
@@ -207,5 +218,10 @@ public class MainActivity extends Activity {
                 break;
         }
         return getString(id);
+    }
+
+    private void startMapActivity() {
+        Intent intent = new Intent(this, BladenightMapActivity.class);
+        startActivity(intent);
     }
 }
