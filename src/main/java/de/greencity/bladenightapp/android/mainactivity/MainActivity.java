@@ -8,22 +8,18 @@ import android.os.Bundle;
 import android.app.Activity;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.markupartist.android.widget.ActionBar;
 
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
-import de.greencity.bladenightapp.android.actionbar.ActionEventSelection;
 import de.greencity.bladenightapp.android.actionbar.ActionHome;
 import de.greencity.bladenightapp.android.app.BladeNightApplication;
 import de.greencity.bladenightapp.android.cache.EventsMessageCache;
 import de.greencity.bladenightapp.android.global.GlobalStateAccess;
 import de.greencity.bladenightapp.android.global.LocalBroadcast;
-import de.greencity.bladenightapp.android.selection.SelectionActivity;
 import de.greencity.bladenightapp.android.utils.AsyncDownloadTaskHttpClient;
 import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
 import de.greencity.bladenightapp.android.utils.DateFormatter;
@@ -154,37 +150,41 @@ public class MainActivity extends Activity {
         @Override
         public void onReceive(Context context, Intent intent) {
             eventList = globalStateAccess.getEventList();
-            updateFragmentsFromEventList();
+            updateUiFromEventList();
             saveEventsToCache(eventList);
         }
     }
 
-    private void updateFragmentsFromEventList() {
+    private void updateUiFromEventList() {
         eventList.sortByStartDate();
         Event nextEvent = eventList.getNextEvent();
         if ( nextEvent != null ) {
             // Log.i(TAG, "nextEvent=" + nextEvent);
-            textViewNext.setVisibility(View.VISIBLE);
-            textViewRouteName.setVisibility(View.VISIBLE);
-
             textViewNext.setText(R.string.text_next_event);
             textViewRouteName.setText(nextEvent.getRouteName());
             textViewEventDate.setText(dateFormatter.format(nextEvent.getStartDate()));
             textViewEventStatus.setText("Status: " + nextEvent.getStatus().toString()); // TODO translate
+
+            showNextEvent(true);
         }
         else {
-            textViewNext.setVisibility(View.GONE);
-            textViewRouteName.setVisibility(View.GONE);
-            textViewEventDate.setVisibility(View.GONE);
-            textViewEventStatus.setVisibility(View.GONE);
+            showNextEvent(false);
         }
+    }
+
+    private void showNextEvent(boolean status) {
+        int visible = ( status ? View.VISIBLE :  View.GONE);
+        textViewNext.setVisibility(visible);
+        textViewRouteName.setVisibility(visible);
+        textViewEventDate.setVisibility(visible);
+        textViewEventStatus.setVisibility(visible);
     }
 
     private void getEventsFromCache() {
         EventListMessage eventListFromCache = eventsCache.read();
         if ( eventListFromCache != null) {
             this.eventList = eventListFromCache.convertToEventsList();
-            updateFragmentsFromEventList();
+            updateUiFromEventList();
         }
     }
 
