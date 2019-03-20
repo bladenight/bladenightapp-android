@@ -29,6 +29,7 @@ import de.greencity.bladenightapp.android.utils.Paths;
 import de.greencity.bladenightapp.android.utils.Permissions;
 import de.greencity.bladenightapp.dev.android.R;
 import de.greencity.bladenightapp.events.Event;
+import de.greencity.bladenightapp.events.EventGsonHelper;
 import de.greencity.bladenightapp.events.EventList;
 import de.greencity.bladenightapp.network.messages.EventListMessage;
 
@@ -222,6 +223,7 @@ public class MainActivity extends Activity {
 
     private void startMapActivity() {
         Intent intent = new Intent(this, BladenightMapActivity.class);
+        intent.putExtra(BladenightMapActivity.PARAM_EVENT_MESSAGE, EventGsonHelper.toJson(eventList.getNextEvent()));
         startActivity(intent);
     }
 }

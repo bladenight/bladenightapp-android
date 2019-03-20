@@ -2,14 +2,24 @@ package de.greencity.bladenightapp.android.map;
 
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.Window;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.markupartist.android.widget.ActionBar;
+
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 import org.mapsforge.map.android.util.AndroidUtil;
@@ -27,15 +37,30 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.ref.WeakReference;
+import java.util.Locale;
 
+import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
+import de.greencity.bladenightapp.android.actionbar.ActionLocateMe;
 import de.greencity.bladenightapp.android.app.BladeNightApplication;
+import de.greencity.bladenightapp.android.cache.EventsMessageCache;
+import de.greencity.bladenightapp.android.cache.RoutesCache;
 import de.greencity.bladenightapp.android.global.GlobalStateAccess;
+import de.greencity.bladenightapp.android.global.LocalBroadcast;
 import de.greencity.bladenightapp.android.network.NetworkClient;
 import de.greencity.bladenightapp.android.tracker.GpsListener;
+import de.greencity.bladenightapp.android.tracker.GpsTrackerService;
 import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
 import de.greencity.bladenightapp.android.utils.Paths;
 import de.greencity.bladenightapp.android.utils.ResourceUtils;
+import de.greencity.bladenightapp.android.utils.ServiceUtils;
 import de.greencity.bladenightapp.dev.android.R;
+import de.greencity.bladenightapp.events.Event;
+import de.greencity.bladenightapp.events.EventGsonHelper;
+import de.greencity.bladenightapp.events.EventList;
+import de.greencity.bladenightapp.network.messages.EventListMessage;
+import de.greencity.bladenightapp.network.messages.RealTimeUpdateData;
+import de.greencity.bladenightapp.network.messages.RouteMessage;
 
 public class BladenightMapActivity extends Activity {
 
@@ -80,10 +105,6 @@ public class BladenightMapActivity extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_action);
 
-
-        // createMapView();
-        // createOverlays();
-
         globalStateAccess = new GlobalStateAccess(this);
         networkClient = BladeNightApplication.networkClient;
 
@@ -102,54 +123,10 @@ public class BladenightMapActivity extends Activity {
          */
         AndroidGraphicFactory.createInstance(getApplication());
 
-        /*
-         * A MapView is an Android View (or ViewGroup) that displays a mapsforge map. You can have
-         * multiple MapViews in your app or even a single Activity. Have a look at the mapviewer.xml
-         * on how to create a MapView using the Android XML Layout definitions. Here we create a
-         * MapView on the fly and make the content view of the activity the MapView. This means
-         * that no other elements make up the content of this activity.
-         */
-        mapView = new MapView(this);
-        setContentView(mapView);
+        createMapView();
+        // createOverlays();
 
-        /*
-         * We then make some simple adjustments, such as showing a scale bar and zoom controls.
-         */
-        mapView.setClickable(true);
-        mapView.getMapScaleBar().setVisible(true);
-        mapView.setBuiltInZoomControls(true);
-
-        /*
-         * To avoid redrawing all the tiles all the time, we need to set up a tile cache with an
-         * utility method.
-         */
-        TileCache tileCache = AndroidUtil.createTileCache(this, "mapcache",
-                mapView.getModel().displayModel.getTileSize(), 1f,
-                mapView.getModel().frameBufferModel.getOverdrawFactor());
-
-        /*
-         * Now we need to set up the process of displaying a map. A map can have several layers,
-         * stacked on top of each other. A layer can be a map or some visual elements, such as
-         * markers. Here we only show a map based on a mapsforge map file. For this we need a
-         * TileRendererLayer. A TileRendererLayer needs a TileCache to hold the generated map
-         * tiles, a map file from which the tiles are generated and Rendertheme that defines the
-         * appearance of the map.
-         */
-        MapDataStore mapDataStore = new MapFile(mapLocalFile);
-        TileRendererLayer tileRendererLayer = new TileRendererLayer(tileCache, mapDataStore,
-                mapView.getModel().mapViewPosition, AndroidGraphicFactory.INSTANCE);
-        tileRendererLayer.setXmlRenderTheme(CustomRenderTheme.CUSTOM_RENDER);
-        // tileRendererLayer.setXmlRenderTheme();
-        // tileRendererLayer.setXmlRenderTheme(InternalRenderTheme.DEFAULT);
-
-        /*
-         * On its own a tileRendererLayer does not know where to display the map, so we need to
-         * associate it with our mapView.
-         */
-        mapView.getLayerManager().getLayers().add(tileRendererLayer);
-
-        mapView.setCenter(new LatLong(48.1351, 11.5820));
-        mapView.setZoomLevel((byte) 12);
+        configureActionBar();
     }
 
     @Override
@@ -163,12 +140,407 @@ public class BladenightMapActivity extends Activity {
         super.onDestroy();
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        Log.i(TAG, "onStart");
+
+        configureBasedOnIntent();
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        // Friend colors and stuff like that could have been changed in the meantime, so re-create the overlays
+        // userPositionOverlay.onResume();
+        processionProgressBar.onResume();
+
+        registerGpsListener();
+
+        periodicTask = new Runnable() {
+            @Override
+            public void run() {
+                if (!isRunning)
+                    return;
+                // Log.i(TAG, "periodic task");
+                if (!isRouteInfoAvailable)
+                    requestRouteFromServer();
+                getRealTimeDataFromServer();
+                periodicHandler.postDelayed(this, updatePeriod);
+            }
+        };
+        periodicHandler.post(periodicTask);
+
+        if (!isLive) {
+            processionProgressBar.setVisibility(View.GONE);
+            mapHeadline.setVisibility(View.VISIBLE);
+            mapHeadlineSeparator.setVisibility(View.VISIBLE);
+            updateHeadline(null);
+        } else {
+            processionProgressBar.setVisibility(View.VISIBLE);
+            mapHeadline.setVisibility(View.VISIBLE);
+            mapHeadlineSeparator.setVisibility(View.GONE);
+        }
+
+        // The auto-zooming of the fetched route requires to have the layout
+        if (mapView.getWidth() == 0 || mapView.getHeight() == 0) {
+            Log.i(TAG, "scheduling triggerInitialRouteDataFetch");
+            ViewTreeObserver vto = mapView.getViewTreeObserver();
+            vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    triggerInitialRouteDataFetch();
+                    mapView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                }
+            });
+        } else {
+            triggerInitialRouteDataFetch();
+        }
+
+        broadcastReceiversRegister.registerReceiver(LocalBroadcast.GOT_REALTIME_DATA, new RealTimeDataBroadcastReceiver());
+        broadcastReceiversRegister.registerReceiver(LocalBroadcast.GOT_GPS_UPDATE, new LocationBroadcastReceiver());
+
+        isRunning = true;
+    }
+
+    class RealTimeDataBroadcastReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.i(TAG, "RealTimeDataBroadcastReceiver.onReceive");
+            final BladenightMapActivity bladenightMapActivity = BladenightMapActivity.this;
+            if (bladenightMapActivity == null || bladenightMapActivity.isFinishing() || !bladenightMapActivity.isRunning)
+                return;
+            RealTimeUpdateData realTimeUpdateData = globalStateAccess.getRealTimeUpdateData();
+            String liveRouteName = realTimeUpdateData.getRouteName();
+            if (bladenightMapActivity.isLive) {
+                if (!liveRouteName.equals(bladenightMapActivity.routeName)) {
+                    if (bladenightMapActivity.routeName != null) {
+                        // the route has changed, typically Lang -> Kurz
+                        Log.i(TAG, "GetRealTimeDataFromServerHandler: route has changed: " + bladenightMapActivity.routeName + " -> " + liveRouteName);
+                        String text = bladenightMapActivity.getResources().getString(R.string.msg_route_has_changed);
+                        Toast.makeText(bladenightMapActivity, text + " " + liveRouteName, Toast.LENGTH_LONG).show();
+                    }
+                    bladenightMapActivity.routeName = liveRouteName;
+                    bladenightMapActivity.requestRouteFromServer();
+                }
+                // TODO
+                // bladenightMapActivity.routeOverlay.update(realTimeUpdateData);
+                // bladenightMapActivity.processionProgressBar.update(realTimeUpdateData);
+                // bladenightMapActivity.userPositionOverlay.update(realTimeUpdateData);
+                // bladenightMapActivity.update(realTimeUpdateData);
+            } else {
+                // TODO
+                // bladenightMapActivity.userPositionOverlay.update(realTimeUpdateData);
+            }
+        }
+    }
+
+    class LocationBroadcastReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.i(TAG, "LocationBroadcastReceiver.onReceive");
+            final BladenightMapActivity bladenightMapActivity = BladenightMapActivity.this;
+            Location location = globalStateAccess.getLocationFromGps();
+            // TODO bladenightMapActivity.userPositionOverlay.onLocationChanged(location);
+        }
+    }
+
+
+
+    private void triggerInitialRouteDataFetch() {
+        Log.i(TAG, "triggerInitialRouteDataFetch");
+        updateRouteFromCache();
+        requestRouteFromServer();
+    }
+
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        cancelAllAutomaticTasks();
+        isRunning = false;
+    }
+
+    public void cancelAllAutomaticTasks() {
+        if (periodicTask != null)
+            periodicHandler.removeCallbacks(periodicTask);
+        if (gpsListener != null)
+            gpsListener.cancelLocationUpdates();
+    }
+
+
+    public void registerGpsListener() {
+        destroyGpsListener();
+        gpsListener = new GpsListener(this, globalStateAccess);
+        gpsListener.requestLocationUpdates(updatePeriod);
+    }
+
+    public void destroyGpsListener() {
+        if (gpsListener != null)
+            gpsListener.cancelLocationUpdates();
+        gpsListener = null;
+    }
+
+    private void configureBasedOnIntent() {
+
+        Log.i(TAG, "configureBasedOnIntent");
+
+        getActivityParametersFromIntentOrDefault(getIntent());
+
+        configureActionBar();
+    }
+
+    private boolean getActivityParametersFromIntentOrDefault(Intent intent) {
+        if (getActivityParametersFromIntent(intent))
+            return true;
+        Event nextEvent = getEventListFromCacheOrEmptyList().getNextEvent();
+        if (nextEvent == null)
+            return false;
+        getActivityParametersFromEvent(nextEvent);
+        return true;
+    }
+
+    private boolean getActivityParametersFromIntent(Intent intent) {
+        Log.i(TAG, "getActivityParametersFromIntent intent=" + intent);
+
+        if (intent == null)
+            return false;
+
+        Bundle bundle = intent.getExtras();
+        if (bundle == null) {
+            Log.i(TAG, "getActivityParametersFromIntent bundle=" + bundle);
+            return false;
+        }
+        String json = bundle.getString(PARAM_EVENT_MESSAGE);
+        if (json == null) {
+            Log.i(TAG, "getActivityParametersFromIntent json=" + json);
+            return false;
+        }
+
+        Log.i(TAG, "json=" + json);
+        Event event = EventGsonHelper.getGson().fromJson(json, Event.class);
+
+        if (event == null) {
+            Log.i(TAG, "getActivityParametersFromIntent eventMessage=" + event);
+            return false;
+        }
+
+        getActivityParametersFromEvent(event);
+
+        Log.i(TAG, "getActivityParametersFromIntent DONE routeName=" + routeName);
+        Log.i(TAG, "isLive=" + isLive);
+        return true;
+    }
+
+    private void getActivityParametersFromEvent(Event event) {
+        setRoute(event.getRouteName());
+        isLive = false;
+        EventList eventList = getEventListFromCacheOrEmptyList();
+        if (eventList.isLive(event)) {
+            isLive = true;
+        }
+    }
+
+    private EventList getEventListFromCacheOrEmptyList() {
+        EventListMessage eventListMessage = new EventsMessageCache(this).read();
+        if (eventListMessage == null)
+            return new EventList();
+        return eventListMessage.convertToEventsList();
+    }
+
+    private void setRoute(String routeName) {
+        if (!routeName.equals(this.routeName)) {
+            // Activity will now display a new new route, request automatic zooming
+            shallFitViewWhenPossible = true;
+            isRouteInfoAvailable = false;
+        }
+        this.routeName = routeName;
+    }
+
+    public void createMapView() {
+
+        // mapView = new BladenightMapView(this);
+        mapView = new MapView(this);
+        mapView.setClickable(true);
+        mapView.setBuiltInZoomControls(true);
+        mapView.getMapScaleBar().setVisible(true);
+
+        LinearLayout parent = (LinearLayout) findViewById(R.id.map_parent);
+        parent.removeAllViews();
+        parent.addView(mapView);
+
+        TileCache tileCache = AndroidUtil.createTileCache(this, "mapcache",
+                mapView.getModel().displayModel.getTileSize(), 1f,
+                mapView.getModel().frameBufferModel.getOverdrawFactor());
+
+        MapDataStore mapDataStore = new MapFile(mapLocalFile);
+        TileRendererLayer tileRendererLayer = new TileRendererLayer(tileCache, mapDataStore,
+                mapView.getModel().mapViewPosition, AndroidGraphicFactory.INSTANCE);
+        tileRendererLayer.setXmlRenderTheme(CustomRenderTheme.CUSTOM_RENDER);
+
+        mapView.getLayerManager().getLayers().add(tileRendererLayer);
+
+        mapView.setCenter(new LatLong(48.1351, 11.5820));
+        mapView.setZoomLevel((byte) 12);
+        // centerViewOnCoordinates(new GeoPoint(48.132491, 11.543474), (byte) 13);
+    }
+
+
     private void verifyMapFile() {
         // TODO provide a way to delete the file in case it is corrupted
-        if (! mapLocalFile.exists() || mapLocalFile.length() == 0) {
-            if(! ResourceUtils.extractMapFile(MAP_RESOURCE_PATH, mapLocalFile)) {
+        if (!mapLocalFile.exists() || mapLocalFile.length() == 0) {
+            if (!ResourceUtils.extractMapFile(MAP_RESOURCE_PATH, mapLocalFile)) {
                 Toast.makeText(this, R.string.msg_failed_to_extract_map, Toast.LENGTH_LONG).show();
             }
         }
     }
+
+    private void configureActionBar() {
+        final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
+        ActionBarConfigurator configurator = new ActionBarConfigurator(actionBar);
+
+        configurator.show(ActionBarConfigurator.ActionItemType.FRIENDS);
+
+        if (isLive) {
+            configurator
+                    .show(ActionBarConfigurator.ActionItemType.TRACKER_CONTROL)
+                    .setTitle(R.string.title_map_live);
+        } else {
+            configurator.setTitle(R.string.title_map_default);
+        }
+
+        configurator.setAction(ActionBarConfigurator.ActionItemType.LOCATE_ME, new ActionLocateMe() {
+            @Override
+            public void performAction(View view) {
+                Toast.makeText(view.getContext(), view.getResources().getString(R.string.msg_locate), Toast.LENGTH_SHORT).show();
+                // BladenightMapActivity.this.centerViewOnLastKnownLocation();
+            }
+        });
+
+        // If the tracker is currently running, show the control in the activity
+        // to give a chance to the user to stop it from here without having to go
+        // to the Selection activity.
+        if (ServiceUtils.isServiceRunning(this, GpsTrackerService.class))
+            configurator.show(ActionBarConfigurator.ActionItemType.TRACKER_CONTROL);
+
+        configurator.configure();
+    }
+    protected void getRealTimeDataFromServer() {
+        globalStateAccess.requestRealTimeUpdateData();
+    }
+
+    public void update(RealTimeUpdateData realTimeUpdateData) {
+        updateHeadline(realTimeUpdateData);
+    }
+
+    protected void requestRouteFromServer() {
+        if (routeName.length() > 0)
+            getSpecificRouteFromServer(routeName);
+        else
+            getNextRouteFromServer();
+    }
+
+    private void updateHeadline(RealTimeUpdateData realTimeUpdateData) {
+        if (isLive) {
+            int trackedParticipants = (realTimeUpdateData != null ? realTimeUpdateData.getUserTotal() : 0);
+            String trackedParticipantsString = getResources().getString(R.string.word_active_trackers);
+            String formattedText = String.format(Locale.getDefault(), "%s | %1.1fkm  |  %s: %d",
+                    routeNameToText(routeName),
+                    routeLength / 1000.0,
+                    trackedParticipantsString,
+                    trackedParticipants
+            );
+            mapHeadline.setText(formattedText);
+        } else {
+            String formattedText = String.format(Locale.getDefault(), "%s | %1.1fkm",
+                    routeNameToText(routeName),
+                    routeLength / 1000.0
+            );
+            mapHeadline.setText(formattedText);
+        }
+    }
+
+    private String routeNameToText(String routeName) {
+        if (routeName.equals("Nord - kurz")) {
+            return getResources().getString(R.string.course_north_short);
+        }
+        if (routeName.equals("Nord - lang")) {
+            return getResources().getString(R.string.course_north_long);
+        }
+        if (routeName.equals("West - kurz")) {
+            return getResources().getString(R.string.course_west_short);
+        }
+        if (routeName.equals("West - lang")) {
+            return getResources().getString(R.string.course_west_long);
+        }
+        if (routeName.equals("Ost - kurz")) {
+            return getResources().getString(R.string.course_east_short);
+        }
+        if (routeName.equals("Ost - lang")) {
+            return getResources().getString(R.string.course_east_long);
+        }
+        if (routeName.equals("Familie")) {
+            return getResources().getString(R.string.course_family);
+        }
+        return routeName;
+    }
+
+
+    static class GetRouteFromServerHandler extends Handler {
+        private WeakReference<BladenightMapActivity> reference;
+
+        GetRouteFromServerHandler(BladenightMapActivity activity) {
+            this.reference = new WeakReference<BladenightMapActivity>(activity);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            final BladenightMapActivity bladenightMapActivity = reference.get();
+            if (bladenightMapActivity == null || bladenightMapActivity.isFinishing() || !bladenightMapActivity.isRunning)
+                return;
+            RouteMessage routeMessage = (RouteMessage) msg.obj;
+            bladenightMapActivity.updateRouteFromRouteMessage(routeMessage);
+            new RoutesCache(bladenightMapActivity).write(routeMessage);
+        }
+    }
+
+    private void getSpecificRouteFromServer(String routeName) {
+        Log.i(TAG, "getSpecificRouteFromServer routeName=" + routeName);
+        networkClient.getRoute(routeName, new GetRouteFromServerHandler(this), null);
+    }
+
+    private void getNextRouteFromServer() {
+        Log.i(TAG, "getNextRouteFromServer");
+        networkClient.getActiveRoute(new GetRouteFromServerHandler(this), null);
+    }
+
+
+    private void updateRouteFromRouteMessage(RouteMessage routeMessage) {
+        if (!routeMessage.getRouteName().equals(routeName)) {
+            Log.e(TAG, "Inconsistency: Got \"" + routeMessage.getRouteName() + "\" but expected: \"" + routeName + "\"");
+            Log.i(TAG, "Trace: " + ExceptionUtils.getStackTrace(new Throwable()));
+        }
+        isRouteInfoAvailable = true;
+        routeName = routeMessage.getRouteName();
+        routeLength = routeMessage.getRouteLength();
+        // TODO
+        // routeOverlay.update(routeMessage);
+        if (shallFitViewWhenPossible) {
+            shallFitViewWhenPossible = false;
+            // TODO
+            // fitViewToRoute();
+        }
+        updateHeadline(null);
+    }
+
+    private void updateRouteFromCache() {
+        RouteMessage message = new RoutesCache(this).read(routeName);
+        if (message != null) {
+            updateRouteFromRouteMessage(message);
+        }
+    }
+
 }
