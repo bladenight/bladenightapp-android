@@ -88,4 +88,6 @@
     <string name="text_next_event">Nächster Termin:</string>
     <string name="text_route_name">Route Name</string>
     <string name="event_date">Event date</string>
+    <string name="status_confirmed">bestätigt</string>
+    <string name="status_cancelled">abgesagt</string>
 </resources>

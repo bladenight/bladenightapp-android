@@ -106,4 +106,6 @@
     <string name="text_next_event">Next event:</string>
     <string name="text_route_name">Route name</string>
     <string name="event_date">Event date</string>
+    <string name="status_confirmed">confirmed</string>
+    <string name="status_cancelled">cancelled</string>
 </resources>

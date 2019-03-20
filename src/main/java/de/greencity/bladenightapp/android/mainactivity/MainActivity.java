@@ -104,6 +104,7 @@ public class MainActivity extends Activity {
                     @Override
                     public void performAction(View view) {
                         triggerLandingPageDownload();
+                        globalStateAccess.requestEventList();
                     }
                 })
                 // .show(ActionBarConfigurator.ActionItemType.FRIENDS)
@@ -163,7 +164,7 @@ public class MainActivity extends Activity {
             textViewNext.setText(R.string.text_next_event);
             textViewRouteName.setText(nextEvent.getRouteName());
             textViewEventDate.setText(dateFormatter.format(nextEvent.getStartDate()));
-            textViewEventStatus.setText("Status: " + nextEvent.getStatus().toString()); // TODO translate
+            textViewEventStatus.setText("Status: " + getEventStatusAsText(nextEvent.getStatus()));
 
             showNextEvent(true);
         }
@@ -190,5 +191,21 @@ public class MainActivity extends Activity {
 
     private void saveEventsToCache(EventList eventList) {
         eventsCache.write(EventListMessage.newFromEventsList(eventList));
+    }
+
+    private String getEventStatusAsText(Event.EventStatus status) {
+        int id = -1;
+        switch (status) {
+            case PENDING:
+                id = R.string.status_pending;
+                break;
+            case CONFIRMED:
+                id = R.string.status_confirmed;
+                break;
+            case CANCELLED:
+                id = R.string.status_cancelled;
+                break;
+        }
+        return getString(id);
     }
 }
