@@ -20,7 +20,8 @@ public class GpsListener {
         LocationManager locationManager;
         locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         try {
-            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                    && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 Log.e(this.toString(), "Failed to subscribe some of the location listeners");
                 // TODO: Consider calling
                 //    ActivityCompat#requestPermissions

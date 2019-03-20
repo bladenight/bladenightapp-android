@@ -30,16 +30,9 @@ import org.mapsforge.map.datastore.MapDataStore;
 import org.mapsforge.map.layer.cache.TileCache;
 import org.mapsforge.map.layer.renderer.TileRendererLayer;
 import org.mapsforge.map.reader.MapFile;
-import org.mapsforge.map.rendertheme.InternalRenderTheme;
 import org.mapsforge.map.util.MapViewProjection;
 
-import java.io.Closeable;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.lang.ref.WeakReference;
 import java.util.Locale;
 
@@ -50,6 +43,7 @@ import de.greencity.bladenightapp.android.cache.EventsMessageCache;
 import de.greencity.bladenightapp.android.cache.RoutesCache;
 import de.greencity.bladenightapp.android.global.GlobalStateAccess;
 import de.greencity.bladenightapp.android.global.LocalBroadcast;
+import de.greencity.bladenightapp.android.map.userovl.UserPositionsOverlay;
 import de.greencity.bladenightapp.android.network.NetworkClient;
 import de.greencity.bladenightapp.android.tracker.GpsListener;
 import de.greencity.bladenightapp.android.tracker.GpsTrackerService;
@@ -86,7 +80,7 @@ public class BladenightMapActivity extends Activity {
     private final int updatePeriod = 3000;
     private final Handler periodicHandler = new Handler();
     private Runnable periodicTask;
-    // private UserPositionOverlay userPositionOverlay;
+    private UserPositionsOverlay userPositionOverlay;
     private GpsListener gpsListener;
     private boolean isRouteInfoAvailable = false;
     public static final String PARAM_EVENT_MESSAGE = "eventMessage";
@@ -142,8 +136,8 @@ public class BladenightMapActivity extends Activity {
         TODO
         if (userPositionOverlay != null)
             mapView.getOverlays().remove(userPositionOverlay);
-        userPositionOverlay = new UserPositionOverlay(this, mapView);
-        */
+            */
+        userPositionOverlay = new UserPositionsOverlay(this, mapView);
     }
 
     @Override
@@ -168,7 +162,7 @@ public class BladenightMapActivity extends Activity {
         super.onResume();
 
         // Friend colors and stuff like that could have been changed in the meantime, so re-create the overlays
-        // userPositionOverlay.onResume();
+        userPositionOverlay.onResume();
         processionProgressBar.onResume();
 
         registerGpsListener();
@@ -239,14 +233,12 @@ public class BladenightMapActivity extends Activity {
                     bladenightMapActivity.routeName = liveRouteName;
                     bladenightMapActivity.requestRouteFromServer();
                 }
-                // TODO
                 bladenightMapActivity.routeOverlay.update(realTimeUpdateData);
-                // bladenightMapActivity.processionProgressBar.update(realTimeUpdateData);
-                // bladenightMapActivity.userPositionOverlay.update(realTimeUpdateData);
-                // bladenightMapActivity.update(realTimeUpdateData);
+                bladenightMapActivity.processionProgressBar.update(realTimeUpdateData);
+                bladenightMapActivity.userPositionOverlay.update(realTimeUpdateData);
+                bladenightMapActivity.update(realTimeUpdateData);
             } else {
-                // TODO
-                // bladenightMapActivity.userPositionOverlay.update(realTimeUpdateData);
+                bladenightMapActivity.userPositionOverlay.update(realTimeUpdateData);
             }
         }
     }
@@ -257,7 +249,7 @@ public class BladenightMapActivity extends Activity {
             Log.i(TAG, "LocationBroadcastReceiver.onReceive");
             final BladenightMapActivity bladenightMapActivity = BladenightMapActivity.this;
             Location location = globalStateAccess.getLocationFromGps();
-            // TODO bladenightMapActivity.userPositionOverlay.onLocationChanged(location);
+            bladenightMapActivity.userPositionOverlay.onLocationChanged(location);
         }
     }
 
@@ -396,9 +388,8 @@ public class BladenightMapActivity extends Activity {
 
         mapView.getLayerManager().getLayers().add(tileRendererLayer);
 
-        mapView.setCenter(new LatLong(48.1351, 11.5820));
-        mapView.setZoomLevel((byte) 12);
-        // centerViewOnCoordinates(new GeoPoint(48.132491, 11.543474), (byte) 13);
+        mapView.setCenter(new LatLong(48.132491, 11.543474));
+        mapView.setZoomLevel((byte) 13);
     }
 
 
@@ -429,8 +420,7 @@ public class BladenightMapActivity extends Activity {
             @Override
             public void performAction(View view) {
                 Toast.makeText(view.getContext(), view.getResources().getString(R.string.msg_locate), Toast.LENGTH_SHORT).show();
-                // TODO
-                // BladenightMapActivity.this.centerViewOnLastKnownLocation();
+                BladenightMapActivity.this.centerViewOnLastKnownLocation();
             }
         });
 
@@ -576,17 +566,13 @@ public class BladenightMapActivity extends Activity {
     }
 
     protected void centerViewOnLastKnownLocation() {
-        /*
-        TODO
         Location location = userPositionOverlay.getLastOwnLocation();
         if (location != null) {
-            GeoPoint pos = new GeoPoint(location.getLatitude(), location.getLongitude());
-            this.mapView.getMapViewPosition().setCenter(pos);
+            this.mapView.setCenter(new LatLong(location.getLatitude(), location.getLongitude()));
         } else {
             String text = getResources().getString(R.string.msg_current_position_unknown);
             Toast.makeText(this, text, Toast.LENGTH_LONG).show();
         }
-        */
     }
 
     public synchronized void fitViewToBoundingBox(final BoundingBox boundingBox) {
