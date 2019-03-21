@@ -48,8 +48,7 @@ public class UserPositionsOverlay implements LocationListener {
 
     public void repaint() {
         mapView.repaint();
-        // TODO
-        // mapView.getOverlayController().redrawOverlays();
+        mapView.getLayerManager().redrawLayers();
     }
 
     @Override

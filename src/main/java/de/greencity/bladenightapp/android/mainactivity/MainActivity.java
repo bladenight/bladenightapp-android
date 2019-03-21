@@ -120,7 +120,7 @@ public class MainActivity extends Activity {
                     }
                 })
                 .show(ActionBarConfigurator.ActionItemType.FRIENDS)
-                // .show(ActionBarConfigurator.ActionItemType.TRACKER_CONTROL)
+                .show(ActionBarConfigurator.ActionItemType.TRACKER_CONTROL)
                 .setTitle(R.string.title_main)
                 .configure();
     }

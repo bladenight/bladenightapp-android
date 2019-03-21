@@ -1,6 +1,7 @@
 package de.greencity.bladenightapp.android.map.userovl;
 
 import android.graphics.Color;
+import android.support.v4.content.ContextCompat;
 
 import org.mapsforge.core.graphics.Paint;
 import org.mapsforge.core.graphics.Style;
@@ -18,39 +19,45 @@ class AccuracyCircle {
     private int color;
 
     public AccuracyCircle(MapView mapView, int color) {
-        circle = new Circle(new LatLong(0,0), 0, getPaintFill(color), getPaintStroke(color));
         this.color = color;
         this.mapView = mapView;
+        circle = new Circle(new LatLong(0, 0), 0, getPaintFill(color), getPaintStroke(color));
     }
 
     private Paint getPaintFill(int color) {
-        Paint paintFill = AndroidGraphicFactory.INSTANCE.createPaint();
+        Paint paintFill = getPaint(color, ALPHA);
         paintFill.setStyle(Style.FILL);
-        paintFill.setColor(color);
-        // TODO
-        // paintFill.setAlpha(ALPHA);
-        // paintFill.setAntiAlias(true);
         return paintFill;
     }
 
     private Paint getPaintStroke(int color) {
-        Paint paintStroke = AndroidGraphicFactory.INSTANCE.createPaint();
+        Paint paintStroke = getPaint(color, ALPHA);
         paintStroke.setStyle(Style.STROKE);
         paintStroke.setColor(Color.WHITE);
-        // TODO
-        // paintStroke.setAlpha(ALPHA);
-        // paintStroke.setAntiAlias(true);
         paintStroke.setStrokeWidth(3);
 
         return paintStroke;
     }
 
+    private Paint getPaint(int color, int alpha) {
+        int red = Color.red(color);
+        int blue = Color.blue(color);
+        int green = Color.green(color);
+
+        Paint p = AndroidGraphicFactory.INSTANCE.createPaint();
+        p.setStyle(Style.FILL);
+        p.setColor(AndroidGraphicFactory.INSTANCE.createColor(alpha, red, green, blue));
+
+        return p;
+    }
+
     public void setColor(int color) {
-        if ( this.color == color )
+        if (this.color == color)
             return;
         circle.setPaintFill(getPaintFill(color));
         circle.setPaintStroke(getPaintStroke(color));
     }
+
     public void setLatLong(LatLong latLong) {
         circle.setLatLong(latLong);
     }
