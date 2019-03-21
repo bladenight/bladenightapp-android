@@ -46,6 +46,10 @@
 
 ##---------------End: proguard configuration for Gson  ----------
 
+# Required for MapsForge themes
+# See https://github.com/mapsforge/mapsforge/issues/1031
+-keep class org.xmlpull.v1.** { *; }
+
 
 # Following rules deactivate obfuscation, we could consider it for an opensource app.
 # -dontobfuscate
