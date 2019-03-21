@@ -165,6 +165,9 @@ public class BladenightMapActivity extends Activity {
         userPositionOverlay.onResume();
         processionProgressBar.onResume();
 
+        broadcastReceiversRegister.registerReceiver(LocalBroadcast.GOT_REALTIME_DATA, new RealTimeDataBroadcastReceiver());
+        broadcastReceiversRegister.registerReceiver(LocalBroadcast.GOT_GPS_UPDATE, new LocationBroadcastReceiver());
+
         registerGpsListener();
 
         periodicTask = new Runnable() {
@@ -207,11 +210,17 @@ public class BladenightMapActivity extends Activity {
             triggerInitialRouteDataFetch();
         }
 
-        broadcastReceiversRegister.registerReceiver(LocalBroadcast.GOT_REALTIME_DATA, new RealTimeDataBroadcastReceiver());
-        broadcastReceiversRegister.registerReceiver(LocalBroadcast.GOT_GPS_UPDATE, new LocationBroadcastReceiver());
-
         isRunning = true;
     }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        cancelAllAutomaticTasks();
+        broadcastReceiversRegister.unregisterReceivers();
+        isRunning = false;
+    }
+
 
     class RealTimeDataBroadcastReceiver extends BroadcastReceiver {
         @Override
@@ -246,7 +255,7 @@ public class BladenightMapActivity extends Activity {
     class LocationBroadcastReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.i(TAG, "LocationBroadcastReceiver.onReceive");
+            Log.i(TAG, "LocationBroadcastReceiver.onReceive " + intent);
             final BladenightMapActivity bladenightMapActivity = BladenightMapActivity.this;
             Location location = globalStateAccess.getLocationFromGps();
             bladenightMapActivity.userPositionOverlay.onLocationChanged(location);

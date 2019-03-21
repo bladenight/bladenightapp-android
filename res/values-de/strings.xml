@@ -35,7 +35,6 @@
     <string name="msg_about_app">Über die App</string>
     <string name="msg_code_copied">Der Code wurde in die Zwischenablage kopiert</string>
     <string name="msg_code_not_valid">Dieser Code ist nicht gültig</string>
-    <string name="msg_current_position_unknown">Aktuelle Position ist nicht bekannt</string>
     <string name="msg_failed_to_load_map">Extrahieren der Karte fehlgeschlagen</string>
     <string name="msg_feedback">Wir freuen uns auf Dein Feedback.\nSchreib uns an:\napp@aok-bladenight.de</string>
     <string name="msg_friend_added">wurde hinzugefügt</string>
@@ -90,4 +89,6 @@
     <string name="event_date">Event date</string>
     <string name="status_confirmed">bestätigt</string>
     <string name="status_cancelled">abgesagt</string>
+    <string name="msg_failed_to_retrieve_position">Aktuelle Position könnte nicht ermittelt werden</string>
+    <string name="msg_current_position_unknown">Aktuelle Position unbekannt</string>
 </resources>

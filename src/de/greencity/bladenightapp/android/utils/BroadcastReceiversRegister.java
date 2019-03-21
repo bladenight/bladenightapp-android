@@ -6,6 +6,7 @@ import java.util.List;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.IntentFilter;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import de.greencity.bladenightapp.android.global.LocalBroadcast;
 
@@ -16,7 +17,7 @@ public class BroadcastReceiversRegister {
 
     public void registerReceiver(LocalBroadcast broadcast, BroadcastReceiver receiver) {
         IntentFilter intentFilter = new IntentFilter(broadcast.toString());
-        context.registerReceiver(receiver, intentFilter);
+        LocalBroadcastManager.getInstance(context).registerReceiver(receiver, intentFilter);
         registeredReceivers.add(receiver);
         Log.i(TAG,"Registered receiver for " + broadcast.toString() + "; " + receiver);
     }
@@ -25,7 +26,7 @@ public class BroadcastReceiversRegister {
         while ( registeredReceivers.size() > 0 ) {
             BroadcastReceiver r = registeredReceivers.remove(0);
             try {
-                context.unregisterReceiver(r);
+                LocalBroadcastManager.getInstance(context).unregisterReceiver(r);
             }
             catch (IllegalArgumentException e) {
                 Log.e(TAG,"Failed to unregister receiver " + r + "\n" + e);

@@ -2,6 +2,7 @@ package de.greencity.bladenightapp.android.global;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 public enum LocalBroadcast {
@@ -25,8 +26,7 @@ public enum LocalBroadcast {
 
     public void send(Context context) {
         Intent intent = new Intent(text);
-        // LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-        context.sendBroadcast(intent);
+        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
         Log.i(TAG, "Sending broadcast: " + text);
     }
 
