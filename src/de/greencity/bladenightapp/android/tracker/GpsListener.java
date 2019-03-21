@@ -12,6 +12,8 @@ import android.widget.Toast;
 
 import com.intentfilter.androidpermissions.PermissionManager;
 
+import de.greencity.bladenightapp.dev.android.R;
+
 import static java.util.Collections.singleton;
 
 public class GpsListener {
@@ -27,7 +29,7 @@ public class GpsListener {
         permissionManager.checkPermissions(singleton(Manifest.permission.ACCESS_FINE_LOCATION), new PermissionManager.PermissionRequestListener() {
             @Override
             public void onPermissionGranted() {
-                Toast.makeText(context, "Permissions Granted", Toast.LENGTH_SHORT).show();
+                // Toast.makeText(context, "Permissions Granted", Toast.LENGTH_SHORT).show();
                 LocationManager locationManager;
                 locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
                 if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -38,7 +40,7 @@ public class GpsListener {
 
             @Override
             public void onPermissionDenied() {
-                Toast.makeText(context, "Permissions Denied", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, context.getString(R.string.msg_current_position_unknown), Toast.LENGTH_LONG).show();
             }
         });
     }
