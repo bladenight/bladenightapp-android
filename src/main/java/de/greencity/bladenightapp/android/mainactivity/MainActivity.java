@@ -191,6 +191,7 @@ public class MainActivity extends Activity {
         textViewRouteName.setVisibility(visible);
         textViewEventDate.setVisibility(visible);
         textViewEventStatus.setVisibility(visible);
+        imageViewMap.setVisibility(visible);
     }
 
     private void getEventsFromCache() {
