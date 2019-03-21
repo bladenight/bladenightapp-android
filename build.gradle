@@ -31,7 +31,7 @@ android {
 
     defaultConfig {
         applicationId "de.greencity.bladenightapp.dev.android"
-        minSdkVersion 14
+        minSdkVersion 16
         targetSdkVersion 27
 
         buildConfigField "long", "BUILD_TIMESTAMP", System.currentTimeMillis() + "L"
@@ -95,6 +95,8 @@ dependencies {
 
     implementation 'org.mapsforge:mapsforge-map-android:0.10.0'
     implementation 'org.mapsforge:mapsforge-themes:0.10.0'
+
+    implementation 'com.intentfilter:android-permissions:0.1.8'
 
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
 }

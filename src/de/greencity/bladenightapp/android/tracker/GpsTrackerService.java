@@ -41,7 +41,7 @@ public class GpsTrackerService extends Service {
 
         lastKnownLocation = new Location("INTERNAL");
         locationListener = new BladenightLocationListener(lastKnownLocation);
-        gpsListener = new GpsListener(this, locationListener);
+        gpsListener = new GpsListener(null, locationListener);
 
         gpsListener.requestLocationUpdates(5000);
 
