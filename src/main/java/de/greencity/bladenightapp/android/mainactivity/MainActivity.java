@@ -15,6 +15,8 @@ import android.widget.TextView;
 
 import com.markupartist.android.widget.ActionBar;
 
+import java.io.File;
+
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
 import de.greencity.bladenightapp.android.actionbar.ActionHome;
 import de.greencity.bladenightapp.android.app.BladeNightApplication;
@@ -79,9 +81,8 @@ public class MainActivity extends Activity {
         webView.setBackgroundColor(Color.TRANSPARENT);
         webView.setLayerType(WebView.LAYER_TYPE_SOFTWARE, null);
         webView.getSettings().setLoadsImagesAutomatically(true);
-        // webView.getSettings().setDomStorageEnabled(true);
 
-        webView.loadUrl("file://" + getLandingPageLocalPath());
+        showLocalLandingPage();
 
         imageViewMap.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -89,6 +90,14 @@ public class MainActivity extends Activity {
                 startMapActivity();
             }
         });
+    }
+
+    private void showLocalLandingPage() {
+        String landingPageLocalPath = getLandingPageLocalPath();
+        if(new File(landingPageLocalPath).isFile()) {
+            webView.loadUrl("file://" + landingPageLocalPath);
+            webView.reload();
+        }
     }
 
     @Override
@@ -152,7 +161,7 @@ public class MainActivity extends Activity {
                         Handler handler = new Handler(Looper.getMainLooper());
                         handler.post(new Runnable() {
                             public void run() {
-                                webView.reload();
+                                showLocalLandingPage();
                             }
                         });
                     }
