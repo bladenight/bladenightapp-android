@@ -114,7 +114,6 @@ public class MainActivity extends Activity {
 
         getEventsFromCache();
         globalStateAccess.requestEventList();
-
         configureActionBar();
     }
 
@@ -130,9 +129,11 @@ public class MainActivity extends Activity {
                 })
                 .show(ActionBarConfigurator.ActionItemType.FRIENDS)
                 .show(ActionBarConfigurator.ActionItemType.TRACKER_CONTROL)
+                .show(ActionBarConfigurator.ActionItemType.TABLE)
                 .setTitle(R.string.title_main)
                 .configure();
     }
+
 
 
     private String getLandingPageRemotePath() {

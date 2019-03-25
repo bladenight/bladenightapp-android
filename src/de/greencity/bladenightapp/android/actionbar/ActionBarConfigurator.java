@@ -22,7 +22,8 @@ public class ActionBarConfigurator {
         RELOAD,
         OPTIONS,
         ADD_FRIEND,
-        LOCATE_ME
+        LOCATE_ME,
+        TABLE
     }
 
     public ActionBarConfigurator(ActionBar actionBar) {
@@ -35,6 +36,7 @@ public class ActionBarConfigurator {
         typeToActionAll.put(ActionItemType.RELOAD, new ActionReload());
         typeToActionAll.put(ActionItemType.OPTIONS, new ActionOptions());
         typeToActionAll.put(ActionItemType.LOCATE_ME, new ActionLocateMe());
+        typeToActionAll.put(ActionItemType.TABLE, new ActionTable());
         show(ActionItemType.HOME);
     }
 
