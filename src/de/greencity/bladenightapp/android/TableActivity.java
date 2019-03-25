@@ -106,6 +106,9 @@ public class TableActivity extends Activity {
         for(Event event: eventList) {
             TableRow tr = new TableRow(this);
             tr.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
+            if(event == eventList.getNextEvent()) {
+                tr.setBackgroundResource(R.drawable.cell_shape);
+            }
             tableLayout.addView(tr);
 
             TextView tv1 = new TextView(this);
@@ -117,6 +120,7 @@ public class TableActivity extends Activity {
             tv2.setText(event.getRouteName());
             tv2.setLayoutParams(tvParams);
             tr.addView(tv2);
+
 
             ImageView iv = new ImageView(this);
             int ivResourceId = R.drawable.icon_pending;
