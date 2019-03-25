@@ -103,10 +103,12 @@ public class TableActivity extends Activity {
 
         tableLayout.getChildAt(0).setLayoutParams(tvParams);
 
-        for(Event event: eventList) {
+        for (Event event : eventList) {
+            boolean isNextEvent = (event == eventList.getNextEvent());
+
             TableRow tr = new TableRow(this);
             tr.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
-            if(event == eventList.getNextEvent()) {
+            if (isNextEvent) {
                 tr.setBackgroundResource(R.drawable.cell_shape);
             }
             tableLayout.addView(tr);
@@ -124,7 +126,7 @@ public class TableActivity extends Activity {
 
             ImageView iv = new ImageView(this);
             int ivResourceId = R.drawable.icon_pending;
-            switch(event.getStatus()) {
+            switch (event.getStatus()) {
                 case PENDING:
                     ivResourceId = R.drawable.icon_pending;
                     break;
@@ -135,12 +137,14 @@ public class TableActivity extends Activity {
                     ivResourceId = R.drawable.icon_no;
                     break;
             }
-            iv.setImageResource(ivResourceId);
+            if (ivResourceId != R.drawable.icon_pending || isNextEvent) {
+                iv.setImageResource(ivResourceId);
+            }
             iv.setLayoutParams(ivParams);
             tr.addView(iv);
 
             TextView tv3 = new TextView(this);
-            if(event.getParticipants() > 0)
+            if (event.getParticipants() > 0)
                 tv3.setText(Integer.toString(event.getParticipants()));
             tv3.setLayoutParams(tvParams);
             tr.addView(tv3);
