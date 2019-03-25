@@ -101,6 +101,7 @@
     <string name="title_activity_admin">AdminActivity</string>
     <string name="word_active_trackers">Trackers</string>
     <string name="word_route">Route</string>
+    <string name="word_date">Date</string>
     <string name="msg_failed_to_load_map">Failed to extract map</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="title_main">K2 Blade Night</string>

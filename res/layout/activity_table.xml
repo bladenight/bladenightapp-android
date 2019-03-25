@@ -33,7 +33,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"
                     android:layout_marginRight="5dp"
-                    android:text="Date"
+                    android:text="@string/word_date"
                     android:textAppearance="@android:style/TextAppearance.DeviceDefault.Large" />
 
                 <TextView
@@ -41,7 +41,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"
                     android:layout_marginRight="5dp"
-                    android:text="Route"
+                    android:text="@string/word_route"
                     android:textAppearance="@android:style/TextAppearance.DeviceDefault.Large" />
                 <!-- Placeholder for status: -->
                 <TextView
