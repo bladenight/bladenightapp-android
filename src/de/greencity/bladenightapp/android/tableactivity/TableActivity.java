@@ -80,16 +80,21 @@ public class TableActivity extends Activity {
             tableLayout.removeViewAt(1);
         }
 
-        int marginSizeDp = (int) TypedValue.applyDimension(
+        int cellHorizontalMargin = (int) TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP,
                 20,
+                getResources().getDisplayMetrics()
+        );
+        int cellVerticalMargin = (int) TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                5,
                 getResources().getDisplayMetrics()
         );
         TableRow.LayoutParams tvParams = new TableRow.LayoutParams(
                 TableRow.LayoutParams.WRAP_CONTENT,
                 TableRow.LayoutParams.WRAP_CONTENT
         );
-        tvParams.setMargins(marginSizeDp, 0, marginSizeDp, 0);
+        tvParams.setMargins(cellHorizontalMargin, cellVerticalMargin, cellHorizontalMargin, cellVerticalMargin);
 
         int imageViewSizeDp = (int) TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP,
@@ -97,6 +102,7 @@ public class TableActivity extends Activity {
                 getResources().getDisplayMetrics()
         );
         TableRow.LayoutParams ivParams = new TableRow.LayoutParams(imageViewSizeDp, imageViewSizeDp);
+        ivParams.setMargins(cellHorizontalMargin, cellVerticalMargin, cellHorizontalMargin, cellVerticalMargin);
 
         tableLayout.getChildAt(0).setLayoutParams(tvParams);
 
