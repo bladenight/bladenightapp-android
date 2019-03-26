@@ -38,8 +38,9 @@ public class GpsListener {
                 locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, period, 1f, locationListener);
 
                 Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                locationListener.onLocationChanged(lastKnownLocation);
                 Log.i(TAG, "lastKnownLocation=" + lastKnownLocation);
+                if(lastKnownLocation != null)
+                    locationListener.onLocationChanged(lastKnownLocation);
             }
 
             @Override
