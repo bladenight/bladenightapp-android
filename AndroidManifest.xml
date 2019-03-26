@@ -103,7 +103,7 @@
         </receiver>
 
         <activity
-            android:name="de.greencity.bladenightapp.android.TableActivity"
+            android:name="de.greencity.bladenightapp.android.tableactivity.TableActivity"
             android:label="@string/title_activity_table"></activity>
     </application>
 
