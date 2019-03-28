@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -18,10 +19,12 @@ import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
 import de.greencity.bladenightapp.android.cache.EventsMessageCache;
 import de.greencity.bladenightapp.android.global.GlobalStateAccess;
 import de.greencity.bladenightapp.android.global.LocalBroadcast;
+import de.greencity.bladenightapp.android.map.BladenightMapActivity;
 import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
 import de.greencity.bladenightapp.android.utils.DateFormatter;
 import de.greencity.bladenightapp.dev.android.R;
 import de.greencity.bladenightapp.events.Event;
+import de.greencity.bladenightapp.events.EventGsonHelper;
 import de.greencity.bladenightapp.events.EventList;
 import de.greencity.bladenightapp.network.messages.EventListMessage;
 
@@ -106,7 +109,7 @@ public class TableActivity extends Activity {
 
         tableLayout.getChildAt(0).setLayoutParams(tvParams);
 
-        for (Event event : eventList) {
+        for (final Event event : eventList) {
             boolean isNextEvent = (event == eventList.getNextEvent());
 
             TableRow tr = new TableRow(this);
@@ -114,6 +117,14 @@ public class TableActivity extends Activity {
             if (isNextEvent) {
                 tr.setBackgroundResource(R.drawable.cell_shape);
             }
+            tr.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(TableActivity.this, BladenightMapActivity.class);
+                    intent.putExtra(BladenightMapActivity.PARAM_EVENT_MESSAGE, EventGsonHelper.toJson(event));
+                    startActivity(intent);
+                }
+            });
             tableLayout.addView(tr);
 
             TextView tv1 = new TextView(this);
