@@ -21,7 +21,7 @@
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name_dev"
-        android:theme="@style/customTheme"
+        android:theme="@style/BnaTheme"
         tools:replace="android:label">
         <service
             android:name="de.greencity.bladenightapp.android.tracker.GpsTrackerService"

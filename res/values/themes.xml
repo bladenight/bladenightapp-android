@@ -3,5 +3,13 @@
     <style name="customTheme" parent="android:Theme"> 
         <item name="android:windowTitleBackgroundStyle">@style/WindowTitleBackground</item> 
         <item name="android:windowTitleSize">0dip</item>  
-    </style> 
+    </style>
+    <style name="BnaTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="android:textColor">@color/bn_green_dark</item>
+        <item name="colorPrimary">@color/bn_green_dark</item>
+        <item name="colorPrimaryDark">@color/bn_green</item>
+        <item name="colorAccent">@android:color/holo_blue_bright</item>
+        <item name="android:windowBackground">@android:color/white</item>
+    </style>
 </resources>

@@ -7,10 +7,5 @@
         android:width="3dp"
         android:color="@color/bn_green" />
 
-    <solid android:color="#000" />
-
     <corners android:radius="3dp" />
-
-   
-
 </shape>

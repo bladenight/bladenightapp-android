@@ -2,6 +2,7 @@
 <resources>   
     <color name="bn_green">#009834</color>
     <color name="bn_green2">#78009834</color>
+    <color name="bn_green_dark">#006e26</color>
     <color name="bn_orange">#FE6D00</color>
     <color name="bn_orange2">#F58633</color>
     <color name="bn_white">#FAFCFB</color>
@@ -27,8 +28,8 @@
     <color name="new_friend1">#454DE7</color>
     <color name="new_friend2">#FE100D</color>
     <color name="new_friend3">#02E5FC</color>
-    <color name="new_friend4">#F6FC02</color>
-    <color name="new_friend5">#FF00DA</color>
+    <color name="new_friend4">#7615ca</color>
+    <color name="new_friend5">#ff00da</color>
     <color name="new_friend6">#FE6D00</color>
     
     <color name="default_friend_color">#454DE7</color>
