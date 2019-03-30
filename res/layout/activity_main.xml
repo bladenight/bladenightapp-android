@@ -27,21 +27,11 @@
             android:orientation="vertical"
             tools:layout_editor_absoluteY="50dp">
 
-            <WebView
-                android:id="@+id/main_webview"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="32dp"
-                app:layout_constraintBottom_toTopOf="@+id/textview_next_event_label"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="parent">
-                app:layout_marginBottom="100dp"</WebView>
-
             <TextView
                 android:id="@+id/textview_next_event_label"
                 android:layout_width="match_parent"
                 android:layout_height="54dp"
+                android:layout_marginTop="80dp"
                 android:layout_weight="0.5"
                 android:gravity="center"
                 android:text="@string/text_next_event"
@@ -51,7 +41,7 @@
                 app:layout_constraintEnd_toStartOf="@+id/textview_route_name"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/main_webview"></TextView>
+                app:layout_constraintTop_toTopOf="parent"></TextView>
 
 
             <TextView

@@ -1,25 +1,22 @@
 package de.greencity.bladenightapp.android.mainactivity;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.support.v4.app.FragmentManager;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.PopupMenu;
+import android.text.method.ScrollingMovementMethod;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.webkit.WebView;
+import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.markupartist.android.widget.ActionBar;
-
-import java.io.File;
 
 import de.greencity.bladenightapp.android.about.AboutActivity;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
@@ -27,13 +24,10 @@ import de.greencity.bladenightapp.android.actionbar.ActionHome;
 import de.greencity.bladenightapp.android.actionbar.ActionMore;
 import de.greencity.bladenightapp.android.admin.AdminActivity;
 import de.greencity.bladenightapp.android.admin.AdminUtilities;
-import de.greencity.bladenightapp.android.app.BladeNightApplication;
 import de.greencity.bladenightapp.android.cache.EventsMessageCache;
 import de.greencity.bladenightapp.android.global.GlobalStateAccess;
 import de.greencity.bladenightapp.android.global.LocalBroadcast;
 import de.greencity.bladenightapp.android.map.BladenightMapActivity;
-import de.greencity.bladenightapp.android.selection.HelpDialog;
-import de.greencity.bladenightapp.android.utils.AsyncDownloadTaskHttpClient;
 import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
 import de.greencity.bladenightapp.android.utils.DateFormatter;
 import de.greencity.bladenightapp.android.utils.Paths;
@@ -44,11 +38,10 @@ import de.greencity.bladenightapp.events.EventGsonHelper;
 import de.greencity.bladenightapp.events.EventList;
 import de.greencity.bladenightapp.network.messages.EventListMessage;
 
-public class MainActivity extends Activity {
+public class MainActivity extends FragmentActivity {
 
     private static final String LANDING_PAGE_REMOTE_PATH = "landing.html";
 
-    private WebView webView;
     private TextView textViewNext;
     private TextView textViewRouteName;
     private TextView textViewEventDate;
@@ -80,18 +73,11 @@ public class MainActivity extends Activity {
         // avoid NPE, will be replaced as soon as we get data from the network or the cache:
         eventList = new EventList();
 
-        webView = (WebView) findViewById(R.id.main_webview);
         textViewNext = (TextView) findViewById(R.id.textview_next_event_label);
         textViewRouteName = (TextView) findViewById(R.id.textview_route_name);
         textViewEventDate = (TextView) findViewById(R.id.textview_event_date);
         textViewEventStatus = (TextView) findViewById(R.id.textview_event_status);
         imageViewMap = (ImageView) findViewById(R.id.button_map);
-
-        webView.setBackgroundColor(Color.TRANSPARENT);
-        webView.setLayerType(WebView.LAYER_TYPE_SOFTWARE, null);
-        webView.getSettings().setLoadsImagesAutomatically(true);
-
-        showLocalLandingPage();
 
         imageViewMap.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -99,14 +85,6 @@ public class MainActivity extends Activity {
                 startMapActivity();
             }
         });
-    }
-
-    private void showLocalLandingPage() {
-        String landingPageLocalPath = getLandingPageLocalPath();
-        if (new File(landingPageLocalPath).isFile()) {
-            webView.loadUrl("file://" + landingPageLocalPath);
-            webView.reload();
-        }
     }
 
     @Override
@@ -119,8 +97,6 @@ public class MainActivity extends Activity {
     protected void onResume() {
         super.onResume();
 
-        triggerLandingPageDownload();
-
         getEventsFromCache();
         globalStateAccess.requestEventList();
         configureActionBar();
@@ -132,7 +108,6 @@ public class MainActivity extends Activity {
                 .setAction(ActionBarConfigurator.ActionItemType.HOME, new ActionHome() {
                     @Override
                     public void performAction(View view) {
-                        triggerLandingPageDownload();
                         globalStateAccess.requestEventList();
                     }
                 })
@@ -146,7 +121,7 @@ public class MainActivity extends Activity {
                     public void performAction(View view) {
                         PopupMenu popup = new PopupMenu(MainActivity.this, actionBar);
                         popup.getMenuInflater().inflate(R.menu.menu_popup_more, popup.getMenu());
-                        if ( AdminUtilities.getAdminPassword(MainActivity.this) == null ) {
+                        if (AdminUtilities.getAdminPassword(MainActivity.this) == null) {
                             // Show the admin menu entry only if an admin password was entered
                             popup.getMenu().findItem(R.id.menu_item_admin).setVisible(false);
                         }
@@ -160,7 +135,8 @@ public class MainActivity extends Activity {
                                         startActivity(new Intent(MainActivity.this, AboutActivity.class));
                                         return true;
                                     case R.id.menu_item_help:
-                                        // TODO
+                                        DialogFragment dialog = new HelpDialog();
+                                        dialog.show(getSupportFragmentManager(), "NoticeDialogFragment");
                                         return false;
                                     default:
                                         return false;
@@ -182,31 +158,6 @@ public class MainActivity extends Activity {
 
     private String getLandingPageLocalPath() {
         return Paths.getAppDataDirectory(this) + "/" + LANDING_PAGE_REMOTE_PATH;
-    }
-
-    private void triggerLandingPageDownload() {
-        BladeNightApplication.networkClient.downloadFile(getLandingPageLocalPath(), getLandingPageRemotePath(),
-                new AsyncDownloadTaskHttpClient.StatusHandler() {
-                    @Override
-                    public void onProgress(long current, long total) {
-                        // We don't care about progress
-                    }
-
-                    @Override
-                    public void onDownloadFailure() {
-                        // Hopefully a temporary issue, ignore
-                    }
-
-                    @Override
-                    public void onDownloadSuccess() {
-                        Handler handler = new Handler(Looper.getMainLooper());
-                        handler.post(new Runnable() {
-                            public void run() {
-                                showLocalLandingPage();
-                            }
-                        });
-                    }
-                });
     }
 
     class EventListBroadcastReceiver extends BroadcastReceiver {
@@ -275,5 +226,34 @@ public class MainActivity extends Activity {
         Intent intent = new Intent(this, BladenightMapActivity.class);
         intent.putExtra(BladenightMapActivity.PARAM_EVENT_MESSAGE, EventGsonHelper.toJson(eventList.getNextEvent()));
         startActivity(intent);
+    }
+
+    static public class HelpDialog extends DialogFragment {
+        public HelpDialog() {
+            // Empty constructor required for DialogFragment
+        }
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+            View rootView = inflater.inflate(R.layout.help_dialog, container);
+            getDialog().setTitle(getResources().getString(R.string.title_help));
+            setButtonListeners(rootView);
+            TextView text = (TextView) rootView.findViewById(R.id.help_text);
+            text.setMovementMethod(new ScrollingMovementMethod());
+
+            return rootView;
+        }
+
+        private void setButtonListeners(View view) {
+            Button confirmButton = (Button) view.findViewById(R.id.help_confirm);
+            confirmButton.setOnClickListener(new Button.OnClickListener() {
+                public void onClick(View view) {
+                    dismiss();
+                }
+            });
+        }
+
+        private View rootView;
     }
 }
