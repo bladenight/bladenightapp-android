@@ -9,7 +9,7 @@ import com.markupartist.android.widget.ActionBar;
 
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator.ActionItemType;
-import de.greencity.bladenightapp.dev.android.R;
+import de.greencity.bladenightapp.android.R;
 
 public class StatisticsActivity extends Activity {
     @Override

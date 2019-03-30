@@ -33,7 +33,7 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
-import de.greencity.bladenightapp.dev.android.R;
+import de.greencity.bladenightapp.android.R;
 
 /**
  * Draws circles (one for each view). The current view position is filled and

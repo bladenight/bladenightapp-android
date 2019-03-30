@@ -5,7 +5,7 @@ import android.widget.Toast;
 
 import com.markupartist.android.widget.ActionBar.Action;
 
-import de.greencity.bladenightapp.dev.android.R;
+import de.greencity.bladenightapp.android.R;
 
 public class ActionReload implements Action {
     @Override

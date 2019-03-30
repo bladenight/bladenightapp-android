@@ -5,7 +5,7 @@ import android.view.View;
 
 import com.markupartist.android.widget.ActionBar.Action;
 
-import de.greencity.bladenightapp.dev.android.R;
+import de.greencity.bladenightapp.android.R;
 import de.greencity.bladenightapp.android.social.SocialActivity;
 
 public class ActionFriends implements Action {

@@ -25,7 +25,7 @@ import de.greencity.bladenightapp.android.admin.AdminUtilities;
 import de.greencity.bladenightapp.android.app.BladeNightApplication;
 import de.greencity.bladenightapp.android.network.NetworkClient;
 import de.greencity.bladenightapp.android.utils.MetaInfo;
-import de.greencity.bladenightapp.dev.android.R;
+import de.greencity.bladenightapp.android.R;
 
 public class AboutActivity extends Activity {
     @Override

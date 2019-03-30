@@ -17,7 +17,7 @@ import android.widget.RemoteViews;
 import de.greencity.bladenightapp.android.global.GlobalStateAccess;
 import de.greencity.bladenightapp.android.global.LocalBroadcast;
 import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
-import de.greencity.bladenightapp.dev.android.R;
+import de.greencity.bladenightapp.android.R;
 import de.greencity.bladenightapp.network.messages.RealTimeUpdateData;
 
 public class WidgetProvider extends AppWidgetProvider {

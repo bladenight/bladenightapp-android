@@ -51,7 +51,7 @@ import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
 import de.greencity.bladenightapp.android.utils.Paths;
 import de.greencity.bladenightapp.android.utils.ResourceUtils;
 import de.greencity.bladenightapp.android.utils.ServiceUtils;
-import de.greencity.bladenightapp.dev.android.R;
+import de.greencity.bladenightapp.android.R;
 import de.greencity.bladenightapp.events.Event;
 import de.greencity.bladenightapp.events.EventGsonHelper;
 import de.greencity.bladenightapp.events.EventList;

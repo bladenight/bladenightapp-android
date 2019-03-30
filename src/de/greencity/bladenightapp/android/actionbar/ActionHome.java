@@ -7,7 +7,7 @@ import com.markupartist.android.widget.ActionBar.Action;
 
 import de.greencity.bladenightapp.android.mainactivity.MainActivity;
 import de.greencity.bladenightapp.android.selection.SelectionActivity;
-import de.greencity.bladenightapp.dev.android.R;
+import de.greencity.bladenightapp.android.R;
 
 public class ActionHome implements Action {
     @Override

@@ -36,7 +36,7 @@ import de.greencity.bladenightapp.android.global.GlobalStateAccess;
 import de.greencity.bladenightapp.android.global.LocalBroadcast;
 import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
 import de.greencity.bladenightapp.android.utils.Permissions;
-import de.greencity.bladenightapp.dev.android.R;
+import de.greencity.bladenightapp.android.R;
 import de.greencity.bladenightapp.events.Event;
 import de.greencity.bladenightapp.events.EventList;
 import de.greencity.bladenightapp.network.messages.EventListMessage;

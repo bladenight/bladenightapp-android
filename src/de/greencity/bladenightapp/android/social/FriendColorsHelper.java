@@ -10,7 +10,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.Log;
-import de.greencity.bladenightapp.dev.android.R;
+import de.greencity.bladenightapp.android.R;
 
 @SuppressLint("UseSparseArrays")
 public class FriendColorsHelper {

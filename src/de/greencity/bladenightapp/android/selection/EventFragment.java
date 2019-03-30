@@ -21,7 +21,7 @@ import de.greencity.bladenightapp.android.map.BladenightMapActivity;
 import de.greencity.bladenightapp.android.statistics.StatisticsActivity;
 import de.greencity.bladenightapp.android.tracker.GpsTrackerService;
 import de.greencity.bladenightapp.android.utils.ServiceUtils;
-import de.greencity.bladenightapp.dev.android.R;
+import de.greencity.bladenightapp.android.R;
 import de.greencity.bladenightapp.events.Event;
 import de.greencity.bladenightapp.events.EventGsonHelper;
 

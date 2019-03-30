@@ -14,7 +14,7 @@ import org.mapsforge.map.layer.overlay.Polyline;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.greencity.bladenightapp.dev.android.R;
+import de.greencity.bladenightapp.android.R;
 import de.greencity.bladenightapp.network.messages.LatLong;
 import de.greencity.bladenightapp.network.messages.RealTimeUpdateData;
 import de.greencity.bladenightapp.network.messages.RouteMessage;

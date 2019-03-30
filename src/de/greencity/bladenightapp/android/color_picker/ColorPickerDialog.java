@@ -7,7 +7,7 @@ import android.content.DialogInterface.OnCancelListener;
 import android.graphics.*;
 import android.view.*;
 import android.widget.*;
-import de.greencity.bladenightapp.dev.android.R;
+import de.greencity.bladenightapp.android.R;
 
 public class ColorPickerDialog {
     public interface OnAmbilWarnaListener {

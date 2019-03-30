@@ -14,7 +14,7 @@ import android.widget.Toast;
 
 import com.intentfilter.androidpermissions.PermissionManager;
 
-import de.greencity.bladenightapp.dev.android.R;
+import de.greencity.bladenightapp.android.R;
 
 import static java.util.Collections.singleton;
 

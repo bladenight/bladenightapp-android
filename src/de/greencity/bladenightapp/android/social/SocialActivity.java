@@ -46,7 +46,7 @@ import de.greencity.bladenightapp.android.social.InviteFriendDialog.InviteFriend
 import de.greencity.bladenightapp.android.tracker.GpsTrackerService;
 import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
 import de.greencity.bladenightapp.android.utils.ServiceUtils;
-import de.greencity.bladenightapp.dev.android.R;
+import de.greencity.bladenightapp.android.R;
 import de.greencity.bladenightapp.network.messages.FriendMessage;
 import de.greencity.bladenightapp.network.messages.FriendsMessage;
 import de.greencity.bladenightapp.network.messages.MovingPointMessage;

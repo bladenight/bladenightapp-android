@@ -20,7 +20,7 @@ import de.greencity.bladenightapp.android.network.BladenightWampClient.State;
 import de.greencity.bladenightapp.android.utils.AsyncDownloadTaskHttpClient;
 import de.greencity.bladenightapp.android.utils.BladenightPreferences;
 import de.greencity.bladenightapp.android.utils.DeviceId;
-import de.greencity.bladenightapp.dev.android.R;
+import de.greencity.bladenightapp.android.R;
 import de.greencity.bladenightapp.network.BladenightUrl;
 import de.greencity.bladenightapp.network.messages.AdminMessage;
 import de.greencity.bladenightapp.network.messages.EventListMessage;

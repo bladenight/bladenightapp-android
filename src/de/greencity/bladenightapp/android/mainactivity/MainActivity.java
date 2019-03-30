@@ -32,7 +32,7 @@ import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
 import de.greencity.bladenightapp.android.utils.DateFormatter;
 import de.greencity.bladenightapp.android.utils.Paths;
 import de.greencity.bladenightapp.android.utils.Permissions;
-import de.greencity.bladenightapp.dev.android.R;
+import de.greencity.bladenightapp.android.R;
 import de.greencity.bladenightapp.events.Event;
 import de.greencity.bladenightapp.events.EventGsonHelper;
 import de.greencity.bladenightapp.events.EventList;

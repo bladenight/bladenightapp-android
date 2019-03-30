@@ -33,7 +33,7 @@ import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator.Action
 import de.greencity.bladenightapp.android.actionbar.ActionReload;
 import de.greencity.bladenightapp.android.app.BladeNightApplication;
 import de.greencity.bladenightapp.android.network.NetworkClient;
-import de.greencity.bladenightapp.dev.android.R;
+import de.greencity.bladenightapp.android.R;
 import de.greencity.bladenightapp.network.messages.EventMessage;
 import de.greencity.bladenightapp.network.messages.EventMessage.EventStatus;
 import de.greencity.bladenightapp.network.messages.RouteNamesMessage;

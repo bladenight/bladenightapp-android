@@ -14,7 +14,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import de.greencity.bladenightapp.android.color_picker.ColorPickerDialog;
-import de.greencity.bladenightapp.dev.android.R;
+import de.greencity.bladenightapp.android.R;
 
 
 @SuppressLint("UseSparseArrays")

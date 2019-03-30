@@ -10,7 +10,7 @@ import android.widget.Toast;
 
 import com.markupartist.android.widget.ActionBar.Action;
 
-import de.greencity.bladenightapp.dev.android.R;
+import de.greencity.bladenightapp.android.R;
 import de.greencity.bladenightapp.android.tracker.GpsTrackerService;
 import de.greencity.bladenightapp.android.utils.ServiceUtils;
 

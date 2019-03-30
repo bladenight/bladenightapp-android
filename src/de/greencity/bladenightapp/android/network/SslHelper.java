@@ -17,7 +17,7 @@ import javax.net.ssl.TrustManagerFactory;
 
 import android.content.Context;
 import android.util.Log;
-import de.greencity.bladenightapp.dev.android.R;
+import de.greencity.bladenightapp.android.R;
 
 public class SslHelper {
     final static private String trustStorePassword = "ssl-password-for-development";

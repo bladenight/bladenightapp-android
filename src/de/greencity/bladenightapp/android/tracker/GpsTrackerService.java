@@ -28,7 +28,7 @@ import de.greencity.bladenightapp.android.map.BladenightMapActivity;
 import de.greencity.bladenightapp.android.network.NetworkClient;
 import de.greencity.bladenightapp.android.network.RealTimeDataConsumer;
 import de.greencity.bladenightapp.android.utils.Paths;
-import de.greencity.bladenightapp.dev.android.R;
+import de.greencity.bladenightapp.android.R;
 import de.greencity.bladenightapp.network.messages.RealTimeUpdateData;
 
 public class GpsTrackerService extends Service {

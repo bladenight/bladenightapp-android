@@ -15,7 +15,7 @@ import java.lang.ref.WeakReference;
 import de.greencity.bladenightapp.android.network.NetworkClient;
 import de.greencity.bladenightapp.android.selection.SelectionActivity;
 import de.greencity.bladenightapp.android.utils.DeviceId;
-import de.greencity.bladenightapp.dev.android.R;
+import de.greencity.bladenightapp.android.R;
 import de.greencity.bladenightapp.network.BladenightError;
 import de.greencity.bladenightapp.network.messages.HandshakeClientMessage;
 import fr.ocroquette.wampoc.messages.CallErrorMessage;

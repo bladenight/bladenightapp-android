@@ -30,7 +30,7 @@ android {
     useLibrary 'org.apache.http.legacy'
 
     defaultConfig {
-        applicationId "de.greencity.bladenightapp.dev.android"
+        applicationId "de.greencity.bladenightapp.android.dev"
         minSdkVersion 16
         targetSdkVersion 27
 
