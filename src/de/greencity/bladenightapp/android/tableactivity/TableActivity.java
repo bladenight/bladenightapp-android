@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.TypedValue;
@@ -14,6 +15,8 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.markupartist.android.widget.ActionBar;
+
+import java.util.Optional;
 
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
 import de.greencity.bladenightapp.android.cache.EventsMessageCache;
@@ -85,7 +88,7 @@ public class TableActivity extends Activity {
 
         int cellHorizontalMargin = (int) TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP,
-                20,
+                15,
                 getResources().getDisplayMetrics()
         );
         int cellVerticalMargin = (int) TypedValue.applyDimension(
@@ -110,13 +113,8 @@ public class TableActivity extends Activity {
         tableLayout.getChildAt(0).setLayoutParams(tvParams);
 
         for (final Event event : eventList) {
-            boolean isNextEvent = (event == eventList.getNextEvent());
-
             TableRow tr = new TableRow(this);
             tr.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
-            if (isNextEvent) {
-                tr.setBackgroundResource(R.drawable.cell_shape);
-            }
             tr.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -137,22 +135,28 @@ public class TableActivity extends Activity {
             tv2.setLayoutParams(tvParams);
             tr.addView(tv2);
 
+            if (event == eventList.getNextEvent()) {
+                tr.setBackgroundResource(R.drawable.cell_shape);
+                tv1.setTypeface(null, Typeface.BOLD);
+                tv2.setTypeface(null, Typeface.BOLD);
+            }
 
             ImageView iv = new ImageView(this);
-            int ivResourceId = R.drawable.icon_pending;
+            // This badly calls for an Optional, but we don't have them in the current API level
+            boolean hasIcon = false;
+            int icon = 0;
             switch (event.getStatus()) {
-                case PENDING:
-                    ivResourceId = R.drawable.icon_pending;
-                    break;
                 case CONFIRMED:
-                    ivResourceId = R.drawable.icon_ok;
+                    hasIcon = true;
+                    icon = R.drawable.icon_ok;
                     break;
                 case CANCELLED:
-                    ivResourceId = R.drawable.icon_no;
+                    hasIcon = true;
+                    icon = R.drawable.icon_no;
                     break;
             }
-            if (ivResourceId != R.drawable.icon_pending || isNextEvent) {
-                iv.setImageResource(ivResourceId);
+            if (hasIcon) {
+                iv.setImageResource(icon);
             }
             iv.setLayoutParams(ivParams);
             tr.addView(iv);

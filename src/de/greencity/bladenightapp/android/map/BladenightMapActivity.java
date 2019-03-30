@@ -403,7 +403,6 @@ public class BladenightMapActivity extends Activity {
 
 
     private void verifyMapFile() {
-        // TODO provide a way to delete the file in case it is corrupted
         if (!mapLocalFile.exists() || mapLocalFile.length() == 0) {
             if (!ResourceUtils.extractMapFile(MAP_RESOURCE_PATH, mapLocalFile)) {
                 Toast.makeText(this, R.string.msg_failed_to_extract_map, Toast.LENGTH_LONG).show();
