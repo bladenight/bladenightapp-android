@@ -73,14 +73,18 @@
 
             <ImageButton
                 android:id="@+id/button_map"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
                 android:layout_marginLeft="16dp"
-                android:contentDescription="Show map"
-                android:src="@android:drawable/ic_dialog_map"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
                 android:background="@null"
+                android:contentDescription="Show map"
+                android:cropToPadding="false"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_map"
                 app:layout_constraintBottom_toBottomOf="@+id/textview_route_name"
-                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintDimensionRatio="1:1"
                 app:layout_constraintStart_toEndOf="@+id/textview_route_name"
                 app:layout_constraintTop_toTopOf="@+id/textview_route_name" />
 
