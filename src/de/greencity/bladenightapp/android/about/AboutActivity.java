@@ -35,16 +35,29 @@ public class AboutActivity extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_about);
 
-        final TextView versionTextView = (TextView) findViewById(R.id.version);
+        final TextView versionTextView = (TextView) findViewById(R.id.textview_version);
         try {
             String versionName = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
-            if ( "DEV".equals(versionName))
+            if ("DEV".equals(versionName))
                 versionName = versionName + " " + MetaInfo.getBuildTime(this);
             versionTextView.setText(versionName);
         } catch (Exception e) {
+            versionTextView.setText("???");
             Log.e(TAG, "Failed to update version string: " + e);
         }
 
+        versionTextView.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        clickCounter++;
+                        if (clickCounter == 5) {
+                            clickCounter = 0;
+                            requestAdminPassword();
+                        }
+                    }
+                }
+        );
     }
 
     @Override
@@ -63,8 +76,8 @@ public class AboutActivity extends Activity {
     private void configureActionBar() {
         final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
         new ActionBarConfigurator(actionBar)
-        .setTitle(R.string.title_about)
-        .configure();
+                .setTitle(R.string.title_about)
+                .configure();
     }
 
 
@@ -72,18 +85,6 @@ public class AboutActivity extends Activity {
     public void onStop() {
         super.onStop();
     }
-
-    public void onClick(View view) {
-        switch (view.getId()) {
-            default:
-            clickCounter++;
-            if(clickCounter == 5) {
-                clickCounter = 0;
-                requestAdminPassword();
-            }
-        }
-    }
-
 
     private void requestAdminPassword() {
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
@@ -105,6 +106,7 @@ public class AboutActivity extends Activity {
         protected WeakReference<AboutActivity> reference;
         protected ProgressDialog progressDialog;
         protected String password;
+
         VerificationHandler(AboutActivity activity, ProgressDialog progressDialog, String password) {
             this.reference = new WeakReference<AboutActivity>(activity);
             this.progressDialog = progressDialog;
@@ -116,10 +118,11 @@ public class AboutActivity extends Activity {
         VerificationSuccessHandler(AboutActivity activity, ProgressDialog progressDialog, String password) {
             super(activity, progressDialog, password);
         }
+
         @Override
         public void handleMessage(Message msg) {
             final AboutActivity aboutActivity = reference.get();
-            if ( aboutActivity == null || aboutActivity.isFinishing())
+            if (aboutActivity == null || aboutActivity.isFinishing())
                 return;
             progressDialog.dismiss();
             Toast.makeText(aboutActivity, "OK", Toast.LENGTH_LONG).show();
@@ -131,10 +134,11 @@ public class AboutActivity extends Activity {
         VerificationFailureHandler(AboutActivity activity, ProgressDialog progressDialog, String password) {
             super(activity, progressDialog, password);
         }
+
         @Override
         public void handleMessage(Message msg) {
             final AboutActivity aboutActivity = reference.get();
-            if ( aboutActivity == null || aboutActivity.isFinishing())
+            if (aboutActivity == null || aboutActivity.isFinishing())
                 return;
             progressDialog.dismiss();
             Toast.makeText(aboutActivity, "Failed", Toast.LENGTH_LONG).show();

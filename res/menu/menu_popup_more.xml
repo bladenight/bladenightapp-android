@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
     <item
-        android:id="@+id/popup_btn_about"
-        android:title="@string/title_about" />
+        android:id="@+id/menu_item_admin"
+        android:icon="@drawable/ic_action_warning"
+        android:title="@string/msg_administration">
+    </item>
+    <item
+        android:id="@+id/menu_item_about"
+        android:icon="@drawable/ic_action_help"
+        android:title="@string/msg_about_app">
+    </item>
+    <item
+        android:id="@+id/menu_item_help"
+        android:icon="@drawable/ic_action_help"
+        android:title="@string/title_help">
+    </item>
 </menu>

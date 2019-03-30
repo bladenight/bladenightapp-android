@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.PopupMenu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,11 +25,14 @@ import de.greencity.bladenightapp.android.about.AboutActivity;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
 import de.greencity.bladenightapp.android.actionbar.ActionHome;
 import de.greencity.bladenightapp.android.actionbar.ActionMore;
+import de.greencity.bladenightapp.android.admin.AdminActivity;
+import de.greencity.bladenightapp.android.admin.AdminUtilities;
 import de.greencity.bladenightapp.android.app.BladeNightApplication;
 import de.greencity.bladenightapp.android.cache.EventsMessageCache;
 import de.greencity.bladenightapp.android.global.GlobalStateAccess;
 import de.greencity.bladenightapp.android.global.LocalBroadcast;
 import de.greencity.bladenightapp.android.map.BladenightMapActivity;
+import de.greencity.bladenightapp.android.selection.HelpDialog;
 import de.greencity.bladenightapp.android.utils.AsyncDownloadTaskHttpClient;
 import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
 import de.greencity.bladenightapp.android.utils.DateFormatter;
@@ -142,17 +146,30 @@ public class MainActivity extends Activity {
                     public void performAction(View view) {
                         PopupMenu popup = new PopupMenu(MainActivity.this, actionBar);
                         popup.getMenuInflater().inflate(R.menu.menu_popup_more, popup.getMenu());
+                        if ( AdminUtilities.getAdminPassword(MainActivity.this) == null ) {
+                            // Show the admin menu entry only if an admin password was entered
+                            popup.getMenu().findItem(R.id.menu_item_admin).setVisible(false);
+                        }
                         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                             public boolean onMenuItemClick(MenuItem item) {
-                                switch(item.getItemId()) {
-                                    case R.id.popup_btn_about:
+                                switch (item.getItemId()) {
+                                    case R.id.menu_item_admin:
+                                        startActivity(new Intent(MainActivity.this, AdminActivity.class));
+                                        return true;
+                                    case R.id.menu_item_about:
                                         startActivity(new Intent(MainActivity.this, AboutActivity.class));
+                                        return true;
+                                    case R.id.menu_item_help:
+                                        // TODO
+                                        return false;
+                                    default:
+                                        return false;
                                 }
-                                return true;
                             }
                         });
                         popup.show();
-                    }})
+                    }
+                })
                 .setTitle(R.string.title_main)
                 .configure();
 
