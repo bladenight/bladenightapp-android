@@ -8,17 +8,22 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.v7.widget.PopupMenu;
+import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.markupartist.android.widget.ActionBar;
 
 import java.io.File;
 
+import de.greencity.bladenightapp.android.about.AboutActivity;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
 import de.greencity.bladenightapp.android.actionbar.ActionHome;
+import de.greencity.bladenightapp.android.actionbar.ActionMore;
 import de.greencity.bladenightapp.android.app.BladeNightApplication;
 import de.greencity.bladenightapp.android.cache.EventsMessageCache;
 import de.greencity.bladenightapp.android.global.GlobalStateAccess;
@@ -94,7 +99,7 @@ public class MainActivity extends Activity {
 
     private void showLocalLandingPage() {
         String landingPageLocalPath = getLandingPageLocalPath();
-        if(new File(landingPageLocalPath).isFile()) {
+        if (new File(landingPageLocalPath).isFile()) {
             webView.loadUrl("file://" + landingPageLocalPath);
             webView.reload();
         }
@@ -130,10 +135,28 @@ public class MainActivity extends Activity {
                 .show(ActionBarConfigurator.ActionItemType.FRIENDS)
                 .show(ActionBarConfigurator.ActionItemType.TRACKER_CONTROL)
                 .show(ActionBarConfigurator.ActionItemType.TABLE)
+                .show(ActionBarConfigurator.ActionItemType.MORE)
+                .hide(ActionBarConfigurator.ActionItemType.HOME)
+                .setAction(ActionBarConfigurator.ActionItemType.MORE, new ActionMore() {
+                    @Override
+                    public void performAction(View view) {
+                        PopupMenu popup = new PopupMenu(MainActivity.this, actionBar);
+                        popup.getMenuInflater().inflate(R.menu.menu_popup_more, popup.getMenu());
+                        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                            public boolean onMenuItemClick(MenuItem item) {
+                                switch(item.getItemId()) {
+                                    case R.id.popup_btn_about:
+                                        startActivity(new Intent(MainActivity.this, AboutActivity.class));
+                                }
+                                return true;
+                            }
+                        });
+                        popup.show();
+                    }})
                 .setTitle(R.string.title_main)
                 .configure();
-    }
 
+    }
 
 
     private String getLandingPageRemotePath() {
@@ -181,7 +204,7 @@ public class MainActivity extends Activity {
     private void updateUiFromEventList() {
         eventList.sortByStartDate();
         Event nextEvent = eventList.getNextEvent();
-        if ( nextEvent != null ) {
+        if (nextEvent != null) {
             // Log.i(TAG, "nextEvent=" + nextEvent);
             textViewNext.setText(R.string.text_next_event);
             textViewRouteName.setText(nextEvent.getRouteName());
@@ -189,14 +212,13 @@ public class MainActivity extends Activity {
             textViewEventStatus.setText("Status: " + getEventStatusAsText(nextEvent.getStatus()));
 
             showNextEvent(true);
-        }
-        else {
+        } else {
             showNextEvent(false);
         }
     }
 
     private void showNextEvent(boolean status) {
-        int visible = ( status ? View.VISIBLE :  View.GONE);
+        int visible = (status ? View.VISIBLE : View.GONE);
         textViewNext.setVisibility(visible);
         textViewRouteName.setVisibility(visible);
         textViewEventDate.setVisibility(visible);
@@ -206,7 +228,7 @@ public class MainActivity extends Activity {
 
     private void getEventsFromCache() {
         EventListMessage eventListFromCache = eventsCache.read();
-        if ( eventListFromCache != null) {
+        if (eventListFromCache != null) {
             this.eventList = eventListFromCache.convertToEventsList();
             updateUiFromEventList();
         }

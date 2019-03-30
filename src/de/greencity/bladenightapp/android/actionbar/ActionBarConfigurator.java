@@ -23,12 +23,14 @@ public class ActionBarConfigurator {
         OPTIONS,
         ADD_FRIEND,
         LOCATE_ME,
-        TABLE
+        TABLE,
+        MORE
     }
 
     public ActionBarConfigurator(ActionBar actionBar) {
         this.actionBar = actionBar;
         typeToActionAll.put(ActionItemType.HOME, new ActionHome());
+        typeToActionAll.put(ActionItemType.MORE, new ActionMore());
         typeToActionAll.put(ActionItemType.TRACKER_CONTROL, new ActionTrackerControl(actionBar.getContext()));
         typeToActionAll.put(ActionItemType.MAP, new ActionMap());
         typeToActionAll.put(ActionItemType.FRIENDS, new ActionFriends());
@@ -37,6 +39,7 @@ public class ActionBarConfigurator {
         typeToActionAll.put(ActionItemType.OPTIONS, new ActionOptions());
         typeToActionAll.put(ActionItemType.LOCATE_ME, new ActionLocateMe());
         typeToActionAll.put(ActionItemType.TABLE, new ActionTable());
+        typeToActionAll.put(ActionItemType.MORE, new ActionMore());
         show(ActionItemType.HOME);
     }
 
@@ -70,7 +73,7 @@ public class ActionBarConfigurator {
         for ( ActionItemType type: typesToShow) {
             Action action = typeToActionSelected.get(type);
             if ( action != null ) {
-                if ( type != ActionItemType.HOME )
+                if ( type != ActionItemType.HOME && type != ActionItemType.MORE)
                     actionBar.addAction(action);
                 else
                     actionBar.setHomeAction(action);

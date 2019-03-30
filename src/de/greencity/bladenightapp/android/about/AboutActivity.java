@@ -52,7 +52,6 @@ public class AboutActivity extends Activity {
         super.onStart();
 
         configureActionBar();
-
     }
 
 
@@ -75,9 +74,8 @@ public class AboutActivity extends Activity {
     }
 
     public void onClick(View view) {
-
         switch (view.getId()) {
-        default:
+            default:
             clickCounter++;
             if(clickCounter == 5) {
                 clickCounter = 0;

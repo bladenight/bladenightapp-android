@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="about_android_application">Android Applikation</string>
+    <string name="about_android_application_v1">Android Application (v1)</string>
+    <string name="about_android_application_v2">Android Applikation (v2)</string>
     <string name="about_server_application">Server Applikation</string>
     <string name="about_more_info">Mehr Information</string>
     <string name="about_version">Version:</string>
@@ -36,7 +37,7 @@
     <string name="msg_code_copied">Der Code wurde in die Zwischenablage kopiert</string>
     <string name="msg_code_not_valid">Dieser Code ist nicht gültig</string>
     <string name="msg_failed_to_load_map">Extrahieren der Karte fehlgeschlagen</string>
-    <string name="msg_feedback">Wir freuen uns auf Dein Feedback.\nSchreib uns an:\napp@aok-bladenight.de</string>
+    <string name="msg_feedback">Wir freuen uns auf Dein Feedback.\nSchreib uns an:\nocroquette@free.fr</string>
     <string name="msg_friend_added">wurde hinzugefügt</string>
     <string name="msg_friend_removed">Freund wurde gelöscht</string>
     <string name="msg_invalid_friend_to_delete">Dieses Element kann nicht gelöscht werden</string>
@@ -83,7 +84,6 @@
     <string name="title_activity_admin">AdminActivity</string>
     <string name="word_active_trackers">Trackers</string>
     <string name="title_main">K2 Blade Night</string>
-    <string name="msg_impressum">Betreiber und Veranstalter: Green City Projekt GmbH Goethestraße 34 / Rgb. 80336 München Registergericht München HRB 148908 http://www.greencity-projekt.de bladenight@greencity.de</string>
     <string name="msg_status">Status</string>
     <string name="text_next_event">Nächster Termin:</string>
     <string name="text_route_name">Route Name</string>
