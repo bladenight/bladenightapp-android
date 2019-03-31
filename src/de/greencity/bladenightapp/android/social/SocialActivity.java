@@ -53,11 +53,12 @@ import de.greencity.bladenightapp.network.messages.RealTimeUpdateData;
 import de.greencity.bladenightapp.network.messages.RelationshipOutputMessage;
 
 public class SocialActivity extends FragmentActivity implements InviteFriendDialogListener,
-ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListener {
+        ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListener {
 
     private ListView listView;
     Friends friends;
     List<Integer> sortedFriendIdsToDisplay = new ArrayList<Integer>();
+    boolean isEventActive;
     private final static String TAG = "SocialActivity";
     private NetworkClient networkClient;
     private final Handler periodicHandler = new Handler();
@@ -67,19 +68,20 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
     private GlobalStateAccess globalStateAccess;
     private BroadcastReceiversRegister broadcastReceiversRegister = new BroadcastReceiversRegister(this);
 
-    public final static Integer ID_HEAD     = -3;
-    public final static Integer ID_ME       = -2;
-    public final static Integer ID_TAIL     = -1;
+    public final static Integer ID_HEAD = -3;
+    public final static Integer ID_ME = -2;
+    public final static Integer ID_TAIL = -1;
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.i(TAG, "onCreate");
         super.onCreate(savedInstanceState);
+
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_social);
 
-        listView = (ListView)findViewById(R.id.listview);
+        listView = (ListView) findViewById(R.id.listview);
 
         networkClient = BladeNightApplication.networkClient;
 
@@ -93,6 +95,9 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
         super.onResume();
 
         Log.i(TAG, "onResume");
+
+        isEventActive = globalStateAccess.getEventList().getNextEvent().isActive();
+
         configureActionBar();
 
         getFriendsFromLocalStorage();
@@ -100,16 +105,19 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
         getFriendsListFromServer();
         createListView();
 
-        if ( ServiceUtils.isServiceRunning(SocialActivity.this, GpsTrackerService.class) ) {
+        int visibility = View.VISIBLE;
+        if (isEventActive) {
             getRealTimeDataFromServer();
             schedulePeriodicTask();
-            LinearLayout legend = (LinearLayout) findViewById(R.id.social_live_legend);
-            legend.setVisibility(View.VISIBLE);
-            View sep = (View) findViewById(R.id.social_live_sep);
-            sep.setVisibility(View.VISIBLE);
+            visibility = View.VISIBLE;
+            broadcastReceiversRegister.registerReceiver(LocalBroadcast.GOT_REALTIME_DATA, new SocialActivity.RealTimeDataBroadcastReceiver());
+        }
+        else {
+            visibility = View.GONE;
         }
 
-        broadcastReceiversRegister.registerReceiver(LocalBroadcast.GOT_REALTIME_DATA, new SocialActivity.RealTimeDataBroadcastReceiver());
+        ((LinearLayout) findViewById(R.id.social_live_legend)).setVisibility(visibility);
+        ((View) findViewById(R.id.social_live_sep)).setVisibility(visibility);
     }
 
     @Override
@@ -123,14 +131,13 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
         final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
 
         ActionBarConfigurator actionBarConfigurator = new ActionBarConfigurator(actionBar)
-        .show(ActionItemType.ADD_FRIEND)
-        .setTitle(R.string.title_social);
+                .show(ActionItemType.ADD_FRIEND)
+                .setTitle(R.string.title_social);
 
-        if ( ServiceUtils.isServiceRunning(this, GpsTrackerService.class)) {
+        if (isEventActive) {
             actionBarConfigurator
-            .show(ActionItemType.MAP);
-        }
-        else {
+                    .show(ActionItemType.MAP);
+        } else {
             Action reloadAction = new ActionReload() {
                 @Override
                 public void performAction(View view) {
@@ -141,7 +148,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
             };
 
             actionBarConfigurator
-            .setAction(ActionItemType.RELOAD, reloadAction);
+                    .setAction(ActionItemType.RELOAD, reloadAction);
         }
 
         actionBarConfigurator.configure();
@@ -151,15 +158,14 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
     private void createListView() {
         //Create an adapter for the listView and add the ArrayList to the adapter.
         listView.setAdapter(new FriendListAdapter(SocialActivity.this));
-        listView.setOnItemClickListener(new OnItemClickListener()
-        {
+        listView.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int selectedIndex, long rowId) {
                 FragmentManager fm = getSupportFragmentManager();
-                LinearLayout row = (LinearLayout)view.findViewById(R.id.row_friend);
+                LinearLayout row = (LinearLayout) view.findViewById(R.id.row_friend);
                 int friendId = (Integer) row.getTag();
 
-                if ( friendId == ID_HEAD || friendId == ID_TAIL) {
+                if (friendId == ID_HEAD || friendId == ID_TAIL) {
                     return;
                 }
 
@@ -171,31 +177,28 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
                 changeFriendDialog.show(fm, "fragment_change_friend");
             }
         });
-        listView.setOnItemLongClickListener(new OnItemLongClickListener()
-        {
+        listView.setOnItemLongClickListener(new OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int selectedIndex, long rowId) {
                 FragmentManager fm = getSupportFragmentManager();
-                LinearLayout row = (LinearLayout)view.findViewById(R.id.row_friend);
+                LinearLayout row = (LinearLayout) view.findViewById(R.id.row_friend);
                 int friendId = (Integer) row.getTag();
-                if ( friendId == ID_HEAD || friendId == ID_TAIL || friendId == ID_ME ) {
+                if (friendId == ID_HEAD || friendId == ID_TAIL || friendId == ID_ME) {
                     Toast.makeText(view.getContext(), getResources().getString(R.string.msg_invalid_friend_to_delete), Toast.LENGTH_LONG).show();
                     return true;
                 }
 
                 Friend friend = friends.get(friendId);
-                if ( friend == null ) {
+                if (friend == null) {
                     Log.e(TAG, "Friend " + friendId + " does not exist");
-                }
-                else if ( friends.get(friendId).isValid() ) {
+                } else if (friends.get(friendId).isValid()) {
                     DeleteFriendDialog deleteFriendDialog = new DeleteFriendDialog();
                     Bundle arguments = new Bundle();
                     arguments.putSerializable(DeleteFriendDialog.KEY_FRIENDOBJ, friends.get(friendId));
                     arguments.putInt(DeleteFriendDialog.KEY_FRIENDID, friendId);
                     deleteFriendDialog.setArguments(arguments);
                     deleteFriendDialog.show(fm, "fragment_delete_friend");
-                }
-                else {
+                } else {
                     onFinishDeleteFriendDialog(friendId);
                 }
                 return true;
@@ -209,13 +212,14 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
             this.friendName = friendName;
             this.progressDialog = progressDialog;
         }
+
         @Override
         public void handleMessage(Message msg) {
-            RelationshipOutputMessage relMsg = (RelationshipOutputMessage)msg.obj;
+            RelationshipOutputMessage relMsg = (RelationshipOutputMessage) msg.obj;
             Log.i("CreateNewRequestHandler", "Got answer from server:" + relMsg);
-            if (relMsg != null ) {
+            if (relMsg != null) {
                 final SocialActivity socialActivity = reference.get();
-                if ( socialActivity == null || socialActivity.isFinishing())
+                if (socialActivity == null || socialActivity.isFinishing())
                     return;
                 FragmentManager fm = socialActivity.getSupportFragmentManager();
                 Bundle arguments = new Bundle();
@@ -227,12 +231,13 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
                 showCodeDialog.show(fm, "fragment_show_code");
                 Friend newFriend = socialActivity.newFriend(friendName);
                 newFriend.setRequestId(relMsg.getRequestId());
-                socialActivity.friends.put((int)relMsg.fid,newFriend);
+                socialActivity.friends.put((int) relMsg.fid, newFriend);
                 socialActivity.updateGui();
                 progressDialog.dismiss();
                 socialActivity.getFriendsListFromServer();
             }
         }
+
         private WeakReference<SocialActivity> reference;
         private String friendName;
         private ProgressDialog progressDialog;
@@ -261,25 +266,26 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
             this.friendName = friendName;
             this.progressDialog = progressDialog;
         }
+
         @Override
         public void handleMessage(Message msg) {
             final SocialActivity socialActivity = reference.get();
-            if ( socialActivity == null || socialActivity.isFinishing())
+            if (socialActivity == null || socialActivity.isFinishing())
                 return;
-            RelationshipOutputMessage relMsg = (RelationshipOutputMessage)msg.obj;
+            RelationshipOutputMessage relMsg = (RelationshipOutputMessage) msg.obj;
             Log.i("CreateNewRequestHandler", "Got answer from server:" + relMsg);
-            if (relMsg != null ) {
+            if (relMsg != null) {
                 Friend newFriend = socialActivity.newFriend(friendName);
-                socialActivity.friends.put((int)relMsg.fid, newFriend);
+                socialActivity.friends.put((int) relMsg.fid, newFriend);
                 socialActivity.updateGui();
                 progressDialog.dismiss();
                 Toast.makeText(socialActivity, friendName + " " + socialActivity.getResources().getString(R.string.msg_friend_added), Toast.LENGTH_LONG).show();
-            }
-            else{
+            } else {
                 Toast.makeText(socialActivity, socialActivity.getResources().getString(R.string.msg_code_not_valid), Toast.LENGTH_LONG).show();
             }
             socialActivity.getFriendsListFromServer();
         }
+
         private WeakReference<SocialActivity> reference;
         private String friendName;
         private ProgressDialog progressDialog;
@@ -290,14 +296,16 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
             this.reference = new WeakReference<SocialActivity>(activity);
             this.progressDialog = progressDialog;
         }
+
         @Override
         public void handleMessage(Message msg) {
             final SocialActivity socialActivity = reference.get();
-            if ( socialActivity == null || socialActivity.isFinishing())
+            if (socialActivity == null || socialActivity.isFinishing())
                 return;
             Toast.makeText(socialActivity, socialActivity.getResources().getString(R.string.msg_code_not_valid), Toast.LENGTH_LONG).show();
             progressDialog.dismiss();
         }
+
         private WeakReference<SocialActivity> reference;
         private ProgressDialog progressDialog;
     }
@@ -308,8 +316,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
         long codeAsLong = 0;
         try {
             codeAsLong = Long.parseLong(codeAsString);
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             Log.e(TAG, "Failed to parse long: " + e);
             Toast.makeText(this, getResources().getString(R.string.msg_code_not_valid), Toast.LENGTH_SHORT).show();
             return;
@@ -338,28 +345,30 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
         @Override
         public void onReceive(Context context, Intent intent) {
             final SocialActivity socialActivity = SocialActivity.this;
-            if ( socialActivity == null || socialActivity.isFinishing() )
+            if (socialActivity == null || socialActivity.isFinishing())
                 return;
             RealTimeUpdateData realTimeUpdateData = globalStateAccess.getRealTimeUpdateData();
             socialActivity.updateGuiFromRealTimeUpdateData(realTimeUpdateData);
         }
     }
 
-    private void getRealTimeDataFromServer(){
+    private void getRealTimeDataFromServer() {
         globalStateAccess.requestRealTimeUpdateData();
     }
 
     static class DeleteFriendOnServerHandler extends Handler {
         private WeakReference<SocialActivity> reference;
         private int friendId;
+
         DeleteFriendOnServerHandler(SocialActivity activity, int friendId) {
             this.reference = new WeakReference<SocialActivity>(activity);
             this.friendId = friendId;
         }
+
         @Override
         public void handleMessage(Message msg) {
             final SocialActivity socialActivity = reference.get();
-            if ( socialActivity == null || socialActivity.isFinishing())
+            if (socialActivity == null || socialActivity.isFinishing())
                 return;
             Toast.makeText(socialActivity, socialActivity.getResources().getString(R.string.msg_friend_removed), Toast.LENGTH_SHORT).show();
             socialActivity.friends.remove(friendId);
@@ -369,35 +378,37 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
         }
     }
 
-    private void removeFriendOnServer(int friendId){
+    private void removeFriendOnServer(int friendId) {
         networkClient.deleteRelationship(friendId, new DeleteFriendOnServerHandler(this, friendId), null);
     }
 
 
     static class GetFriendsListFromServerHandler extends Handler {
         private WeakReference<SocialActivity> reference;
+
         GetFriendsListFromServerHandler(SocialActivity activity) {
             this.reference = new WeakReference<SocialActivity>(activity);
         }
+
         @Override
         public void handleMessage(Message msg) {
             final SocialActivity socialActivity = reference.get();
-            if ( socialActivity == null || socialActivity.isFinishing())
+            if (socialActivity == null || socialActivity.isFinishing())
                 return;
-            FriendsMessage friendsMessage = (FriendsMessage)msg.obj;
-            Log.i(TAG, "friendsMessage="+friendsMessage);
+            FriendsMessage friendsMessage = (FriendsMessage) msg.obj;
+            Log.i(TAG, "friendsMessage=" + friendsMessage);
             socialActivity.updateGuiFromFriendsMessage(friendsMessage);
             new FriendsCache(socialActivity).write(friendsMessage);
         }
     }
 
-    public void getFriendsListFromServer(){
+    public void getFriendsListFromServer() {
         networkClient.getFriendsList(new GetFriendsListFromServerHandler(this), null);
     }
 
     private void getFriendsServerInfoFromCache() {
         FriendsMessage friendsMessage = new FriendsCache(this).read();
-        if ( friendsMessage != null) {
+        if (friendsMessage != null) {
             Log.i(TAG, "Updating friends from cached data");
             updateGuiFromFriendsMessage(friendsMessage);
         }
@@ -408,24 +419,23 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
         combinedFriendIds.addAll(friendsMessage.keySet());
         combinedFriendIds.addAll(friends.keySet());
 
-        for ( int friendId : combinedFriendIds) {
-            if ( friendId < 0)
+        for (int friendId : combinedFriendIds) {
+            if (friendId < 0)
                 continue;
 
             Friend friend = friends.get(friendId);
-            if ( friend == null ) {
-                // for some reason the server knows about this friend but we don't
-                friend = newFriend("?");
+            if (friend == null) {
+                // for some reason the server knows about this "friend but we don't
+                friend = newFriend(getString(R.string.default_friend_name) + friendId);
                 friends.put(friendId, friend);
             }
 
             FriendMessage friendMessage = friendsMessage.get(friendId);
 
-            Log.i(TAG, "friendMessage="+friendMessage);
-            if ( friendMessage == null ) {
+            Log.i(TAG, "friendMessage=" + friendMessage);
+            if (friendMessage == null) {
                 friend.isValid(false);
-            }
-            else {
+            } else {
                 friend.isValid(true);
                 friend.setRequestId(friendMessage.getRequestId());
             }
@@ -434,13 +444,13 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
         updateGui();
     }
 
-    private void getFriendsFromLocalStorage(){
+    private void getFriendsFromLocalStorage() {
         friends = new Friends(this);
         friends.load();
 
         friends.put(ID_HEAD, new Friend(getResources().getString(R.string.name_head)));
         friends.put(ID_TAIL, new Friend(getResources().getString(R.string.name_tail)));
-        if ( friends.get(ID_ME) == null )
+        if (friends.get(ID_ME) == null)
             friends.put(ID_ME, new Friend(getResources().getString(R.string.name_me)));
     }
 
@@ -448,15 +458,16 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
         friend.resetPositionData();
         // RealTimeUpdateData contains only online friends by convention
         friend.isOnline(true);
-        if ( nmp.isOnRoute() ) {
+        if (nmp.isOnRoute()) {
             friend.setAbsolutePosition(nmp.getPosition());
             MovingPointMessage me = realTimeUpdateData.getUser();
-            if ( me.isOnRoute() ) {
-                friend.setRelativeDistance(nmp.getPosition()-me.getPosition());
-                friend.setRelativeTime(me.getEstimatedTimeToArrival()-nmp.getEstimatedTimeToArrival());
+            if (me.isOnRoute()) {
+                friend.setRelativeDistance(nmp.getPosition() - me.getPosition());
+                friend.setRelativeTime(me.getEstimatedTimeToArrival() - nmp.getEstimatedTimeToArrival());
             }
         }
     }
+
     private void updateGuiFromRealTimeUpdateData(RealTimeUpdateData realTimeUpdateData) {
 
         FriendsMessage friendsMessage = realTimeUpdateData.getFriends();
@@ -465,31 +476,27 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
         combinedFriendIds.addAll(friendsMessage.keySet());
         combinedFriendIds.addAll(friends.keySet());
 
-        for ( int friendId : combinedFriendIds) {
+        for (int friendId : combinedFriendIds) {
             // Log.i(TAG, "updateGuiFromRealTimeUpdateData: FriendId="+friendId);
             Friend friend = friends.get(friendId);
             MovingPointMessage friendLocation;
-            if ( friendId == ID_HEAD ) {
-                friendLocation =  realTimeUpdateData.getHead();
-            }
-            else if ( friendId == ID_TAIL ) {
-                friendLocation =  realTimeUpdateData.getTail();
-            }
-            else if ( friendId == ID_ME ) {
-                friendLocation =  realTimeUpdateData.getUser();
-            }
-            else {
-                friendLocation =  friendsMessage.get(friendId);
-                if ( friends.get(friendId) == null ) {
+            if (friendId == ID_HEAD) {
+                friendLocation = realTimeUpdateData.getHead();
+            } else if (friendId == ID_TAIL) {
+                friendLocation = realTimeUpdateData.getTail();
+            } else if (friendId == ID_ME) {
+                friendLocation = realTimeUpdateData.getUser();
+            } else {
+                friendLocation = friendsMessage.get(friendId);
+                if (friends.get(friendId) == null) {
                     // For some reason, the server knows about this friend but we don't
-                    friend = newFriend("?");
+                    friend = newFriend(getString(R.string.default_friend_name) + friendId);
                     friends.put(friendId, friend);
                 }
             }
-            if ( friendLocation != null ) {
+            if (friendLocation != null) {
                 updateFriendDynamicData(realTimeUpdateData, friendLocation, friend);
-            }
-            else {
+            } else {
                 friend.isOnline(false);
             }
         }
@@ -500,13 +507,10 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
     }
 
 
-    public void updateGui(){
-        boolean isInAction = ServiceUtils.isServiceRunning(SocialActivity.this, GpsTrackerService.class);
-
-        if( isInAction ){
+    public void updateGui() {
+        if (isEventActive) {
             sortListViewWhileInAction();
-        }
-        else{
+        } else {
             sortListViewWhileNotInAction();
         }
 
@@ -528,10 +532,10 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
 
     private void sortListViewWhileInAction() {
         Set<Integer> set = new HashSet<Integer>();
-        for(int friendId : friends.keySet()){
+        for (int friendId : friends.keySet()) {
             Friend friend = friends.get(friendId);
             // i erased friend.isOnline here (ben): do we really need this feature?
-            if( friend.isActive() )
+            if (friend.isActive())
                 set.add(friendId);
         }
         sortedFriendIdsToDisplay.clear();
@@ -540,13 +544,13 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
             public int compare(Integer id1, Integer id2) {
                 Long d1 = friends.get(id1).getAbsolutePosition();
                 Long d2 = friends.get(id2).getAbsolutePosition();
-                if ( d1 == null && d2 == null)
+                if (d1 == null && d2 == null)
                     return id1.compareTo(id2);
-                if ( d1 == null )
+                if (d1 == null)
                     return 1;
-                if ( d2 == null )
+                if (d2 == null)
                     return -1;
-                if ( d2.compareTo(d1) != 0)
+                if (d2.compareTo(d1) != 0)
                     return d2.compareTo(d1);
                 return id2.compareTo(id1);
             }
@@ -565,12 +569,12 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
     }
 
     private void cancelPeriodicTask() {
-        if ( periodicTask != null )
+        if (periodicTask != null)
             periodicHandler.removeCallbacks(periodicTask);
     }
 
     public static String formatRequestId(long requestId) {
-        return Long.toString(requestId).replaceAll("(\\d\\d)","$1 ");
+        return Long.toString(requestId).replaceAll("(\\d\\d)", "$1 ");
     }
 
 }

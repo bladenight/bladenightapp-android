@@ -433,8 +433,7 @@ public class BladenightMapActivity extends Activity {
         });
 
         // If the tracker is currently running, show the control in the activity
-        // to give a chance to the user to stop it from here without having to go
-        // to the Selection activity.
+        // to give a chance to the user to stop it from here
         if (ServiceUtils.isServiceRunning(this, GpsTrackerService.class))
             configurator.show(ActionBarConfigurator.ActionItemType.TRACKER_CONTROL);
 

@@ -85,10 +85,6 @@ public class GlobalStateAccess implements LocationListener {
             gpsInfo.setLatitude(location.getLatitude());
             gpsInfo.setLongitude(location.getLongitude());
             gpsInfo.setAccuracy((int)location.getAccuracy());
-
-            // remove test coordinates
-            // sharedState.gpsInfo.setLatitude( 48.160027);
-            // sharedState.gpsInfo.setLongitude( 11.561509);
         }
 
         networkClient.getRealTimeData(gpsInfo, new RealTimeUpdateDataHandler(this), null);
