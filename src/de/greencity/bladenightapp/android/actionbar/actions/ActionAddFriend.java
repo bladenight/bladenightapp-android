@@ -1,15 +1,14 @@
-package de.greencity.bladenightapp.android.actionbar;
+package de.greencity.bladenightapp.android.actionbar.actions;
 
 import android.support.v4.app.FragmentManager;
 import android.view.View;
 
-import com.markupartist.android.widget.ActionBar.Action;
-
 import de.greencity.bladenightapp.android.R;
+import de.greencity.bladenightapp.android.actionbar.ActionAugmented;
 import de.greencity.bladenightapp.android.social.AddFriendDialog;
 import de.greencity.bladenightapp.android.social.SocialActivity;
 
-public class ActionAddFriend implements Action {
+public class ActionAddFriend extends ActionAugmented {
     @Override
     public int getDrawable() {
         return R.drawable.ic_action_add;

@@ -1,6 +1,5 @@
 package de.greencity.bladenightapp.android.app;
 
-import android.app.Activity;
 import android.app.Application;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -8,14 +7,9 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-import android.widget.Toast;
-
-import java.lang.ref.WeakReference;
 
 import de.greencity.bladenightapp.android.network.NetworkClient;
-import de.greencity.bladenightapp.android.selection.SelectionActivity;
 import de.greencity.bladenightapp.android.utils.DeviceId;
-import de.greencity.bladenightapp.android.R;
 import de.greencity.bladenightapp.network.BladenightError;
 import de.greencity.bladenightapp.network.messages.HandshakeClientMessage;
 import fr.ocroquette.wampoc.messages.CallErrorMessage;

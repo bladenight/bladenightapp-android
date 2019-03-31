@@ -30,7 +30,7 @@ import com.markupartist.android.widget.ActionBar.Action;
 
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator.ActionItemType;
-import de.greencity.bladenightapp.android.actionbar.ActionReload;
+import de.greencity.bladenightapp.android.actionbar.actions.ActionReload;
 import de.greencity.bladenightapp.android.app.BladeNightApplication;
 import de.greencity.bladenightapp.android.network.NetworkClient;
 import de.greencity.bladenightapp.android.R;

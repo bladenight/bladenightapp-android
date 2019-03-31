@@ -37,7 +37,7 @@ import java.lang.ref.WeakReference;
 import java.util.Locale;
 
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
-import de.greencity.bladenightapp.android.actionbar.ActionLocateMe;
+import de.greencity.bladenightapp.android.actionbar.actions.ActionLocateMe;
 import de.greencity.bladenightapp.android.app.BladeNightApplication;
 import de.greencity.bladenightapp.android.cache.EventsMessageCache;
 import de.greencity.bladenightapp.android.cache.RoutesCache;

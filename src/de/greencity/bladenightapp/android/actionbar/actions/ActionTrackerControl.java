@@ -1,4 +1,4 @@
-package de.greencity.bladenightapp.android.actionbar;
+package de.greencity.bladenightapp.android.actionbar.actions;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -6,16 +6,14 @@ import android.content.DialogInterface;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.Toast;
-
-import com.markupartist.android.widget.ActionBar.Action;
 
 import de.greencity.bladenightapp.android.R;
+import de.greencity.bladenightapp.android.actionbar.ActionAugmented;
 import de.greencity.bladenightapp.android.tracker.GpsTrackerService;
 import de.greencity.bladenightapp.android.utils.ServiceUtils;
 
-public class ActionTrackerControl implements Action {
-    ActionTrackerControl(Context context) {
+public class ActionTrackerControl extends ActionAugmented {
+    public ActionTrackerControl(Context context) {
         this.context = context;
     }
 
@@ -30,7 +28,7 @@ public class ActionTrackerControl implements Action {
     public void performAction(View view) {
         if ( startOnClick ) {
             if ( isTrackerRunning() ) {
-                Log.i(TAG, "Service has been started in the meantime");
+                Log.i(TAG, "Service is already running");
             }
             else {
                 ServiceUtils.startService(context, trackerServiceClass);
@@ -39,7 +37,7 @@ public class ActionTrackerControl implements Action {
         }
         else {
             if ( ! isTrackerRunning() ) {
-                Log.i(TAG, "Service has been stopped in the meantime");
+                Log.i(TAG, "Service is not running");
             }
             else {
                 askForConfirmation(view);

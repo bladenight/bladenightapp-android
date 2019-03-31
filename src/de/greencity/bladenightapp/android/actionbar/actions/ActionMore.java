@@ -1,23 +1,23 @@
-package de.greencity.bladenightapp.android.actionbar;
+package de.greencity.bladenightapp.android.actionbar.actions;
 
 import android.content.Intent;
 import android.view.View;
 
 import com.markupartist.android.widget.ActionBar.Action;
 
+import de.greencity.bladenightapp.android.actionbar.ActionAugmented;
 import de.greencity.bladenightapp.android.mainactivity.MainActivity;
-import de.greencity.bladenightapp.android.selection.SelectionActivity;
 import de.greencity.bladenightapp.android.R;
+import de.greencity.bladenightapp.android.map.BladenightMapActivity;
 
-public class ActionHome implements Action {
+public class ActionMore extends ActionAugmented {
     @Override
     public int getDrawable() {
-        return R.drawable.ic_action_home;
+        return R.drawable.ic_more_vert;
     }
 
     @Override
     public void performAction(View view) {
-        Intent intent = new Intent(view.getContext(), MainActivity.class);
-        view.getContext().startActivity(intent);
+        // Overriden in main activity
     }
 }

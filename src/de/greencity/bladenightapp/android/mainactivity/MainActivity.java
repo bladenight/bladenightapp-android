@@ -20,8 +20,8 @@ import com.markupartist.android.widget.ActionBar;
 
 import de.greencity.bladenightapp.android.about.AboutActivity;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
-import de.greencity.bladenightapp.android.actionbar.ActionHome;
-import de.greencity.bladenightapp.android.actionbar.ActionMore;
+import de.greencity.bladenightapp.android.actionbar.actions.ActionHome;
+import de.greencity.bladenightapp.android.actionbar.actions.ActionMore;
 import de.greencity.bladenightapp.android.admin.AdminActivity;
 import de.greencity.bladenightapp.android.admin.AdminUtilities;
 import de.greencity.bladenightapp.android.cache.EventsMessageCache;
