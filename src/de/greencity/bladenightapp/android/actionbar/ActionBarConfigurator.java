@@ -1,15 +1,15 @@
 package de.greencity.bladenightapp.android.actionbar;
 
+import android.util.Log;
+
+import com.markupartist.android.widget.ActionBar;
+import com.markupartist.android.widget.ActionBar.Action;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
-import android.util.Log;
-
-import com.markupartist.android.widget.ActionBar;
-import com.markupartist.android.widget.ActionBar.Action;
 
 import de.greencity.bladenightapp.android.actionbar.actions.ActionAddFriend;
 import de.greencity.bladenightapp.android.actionbar.actions.ActionFriends;

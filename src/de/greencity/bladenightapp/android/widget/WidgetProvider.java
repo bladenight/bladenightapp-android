@@ -1,7 +1,5 @@
 package de.greencity.bladenightapp.android.widget;
 
-import java.util.Random;
-
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
@@ -14,10 +12,13 @@ import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.widget.RemoteViews;
+
+import java.util.Random;
+
+import de.greencity.bladenightapp.android.R;
 import de.greencity.bladenightapp.android.global.GlobalStateAccess;
 import de.greencity.bladenightapp.android.global.LocalBroadcast;
 import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
-import de.greencity.bladenightapp.android.R;
 import de.greencity.bladenightapp.network.messages.RealTimeUpdateData;
 
 public class WidgetProvider extends AppWidgetProvider {

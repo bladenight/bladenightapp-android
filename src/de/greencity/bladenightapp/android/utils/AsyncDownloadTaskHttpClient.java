@@ -1,13 +1,8 @@
 package de.greencity.bladenightapp.android.utils;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URI;
-import java.net.URL;
-
-import javax.net.ssl.SSLException;
+import android.content.Context;
+import android.os.AsyncTask;
+import android.util.Log;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -20,9 +15,15 @@ import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
 
-import android.content.Context;
-import android.os.AsyncTask;
-import android.util.Log;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URI;
+import java.net.URL;
+
+import javax.net.ssl.SSLException;
+
 import de.greencity.bladenightapp.android.network.SslHelper;
 
 public class AsyncDownloadTaskHttpClient extends AsyncTask<String, Long, Boolean> {

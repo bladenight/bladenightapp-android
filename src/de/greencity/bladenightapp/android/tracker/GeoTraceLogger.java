@@ -1,9 +1,9 @@
 package de.greencity.bladenightapp.android.tracker;
 
+import org.joda.time.DateTime;
+
 import java.io.File;
 import java.io.IOException;
-
-import org.joda.time.DateTime;
 
 import de.greencity.bladenightapp.valuelogger.ValueLogger;
 

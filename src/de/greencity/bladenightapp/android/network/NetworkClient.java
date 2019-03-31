@@ -1,13 +1,5 @@
 package de.greencity.bladenightapp.android.network;
 
-import java.io.IOException;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Vector;
-
-import org.apache.commons.lang3.builder.ToStringBuilder;
-
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
@@ -15,12 +7,20 @@ import android.util.Log;
 
 import com.codebutler.android_websockets.WebSocketClient;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
+import java.io.IOException;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
+
+import de.greencity.bladenightapp.android.R;
 import de.greencity.bladenightapp.android.admin.AdminUtilities;
 import de.greencity.bladenightapp.android.network.BladenightWampClient.State;
 import de.greencity.bladenightapp.android.utils.AsyncDownloadTaskHttpClient;
 import de.greencity.bladenightapp.android.utils.BladenightPreferences;
 import de.greencity.bladenightapp.android.utils.DeviceId;
-import de.greencity.bladenightapp.android.R;
 import de.greencity.bladenightapp.network.BladenightUrl;
 import de.greencity.bladenightapp.network.messages.AdminMessage;
 import de.greencity.bladenightapp.network.messages.EventListMessage;

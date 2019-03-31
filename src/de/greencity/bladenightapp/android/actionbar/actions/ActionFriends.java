@@ -1,6 +1,5 @@
 package de.greencity.bladenightapp.android.actionbar.actions;
 
-import android.content.Intent;
 import android.view.View;
 
 import de.greencity.bladenightapp.android.R;

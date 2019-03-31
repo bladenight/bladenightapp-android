@@ -1,11 +1,5 @@
 package de.greencity.bladenightapp.android.global;
 
-import static de.greencity.bladenightapp.android.global.LocalBroadcast.GOT_EVENT_LIST;
-import static de.greencity.bladenightapp.android.global.LocalBroadcast.GOT_GPS_UPDATE;
-import static de.greencity.bladenightapp.android.global.LocalBroadcast.GOT_REALTIME_DATA;
-
-import java.lang.ref.WeakReference;
-
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
@@ -13,6 +7,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+
+import java.lang.ref.WeakReference;
+
 import de.greencity.bladenightapp.android.app.BladeNightApplication;
 import de.greencity.bladenightapp.android.cache.EventsMessageCache;
 import de.greencity.bladenightapp.android.network.NetworkClient;
@@ -23,6 +20,10 @@ import de.greencity.bladenightapp.events.EventList;
 import de.greencity.bladenightapp.network.messages.EventListMessage;
 import de.greencity.bladenightapp.network.messages.GpsInfo;
 import de.greencity.bladenightapp.network.messages.RealTimeUpdateData;
+
+import static de.greencity.bladenightapp.android.global.LocalBroadcast.GOT_EVENT_LIST;
+import static de.greencity.bladenightapp.android.global.LocalBroadcast.GOT_GPS_UPDATE;
+import static de.greencity.bladenightapp.android.global.LocalBroadcast.GOT_REALTIME_DATA;
 
 public class GlobalStateAccess implements LocationListener {
 

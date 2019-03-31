@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import com.markupartist.android.widget.ActionBar;
 
+import de.greencity.bladenightapp.android.R;
 import de.greencity.bladenightapp.android.about.AboutActivity;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
 import de.greencity.bladenightapp.android.actionbar.actions.ActionHome;
@@ -32,7 +33,6 @@ import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
 import de.greencity.bladenightapp.android.utils.DateFormatter;
 import de.greencity.bladenightapp.android.utils.Paths;
 import de.greencity.bladenightapp.android.utils.Permissions;
-import de.greencity.bladenightapp.android.R;
 import de.greencity.bladenightapp.events.Event;
 import de.greencity.bladenightapp.events.EventGsonHelper;
 import de.greencity.bladenightapp.events.EventList;

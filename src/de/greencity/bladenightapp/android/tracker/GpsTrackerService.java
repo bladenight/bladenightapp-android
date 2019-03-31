@@ -1,8 +1,5 @@
 package de.greencity.bladenightapp.android.tracker;
 
-import java.io.File;
-import java.io.IOException;
-
 import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -22,13 +19,16 @@ import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import java.io.File;
+import java.io.IOException;
+
+import de.greencity.bladenightapp.android.R;
 import de.greencity.bladenightapp.android.app.BladeNightApplication;
 import de.greencity.bladenightapp.android.global.GlobalStateAccess;
 import de.greencity.bladenightapp.android.map.BladenightMapActivity;
 import de.greencity.bladenightapp.android.network.NetworkClient;
 import de.greencity.bladenightapp.android.network.RealTimeDataConsumer;
 import de.greencity.bladenightapp.android.utils.Paths;
-import de.greencity.bladenightapp.android.R;
 import de.greencity.bladenightapp.network.messages.RealTimeUpdateData;
 
 public class GpsTrackerService extends Service {

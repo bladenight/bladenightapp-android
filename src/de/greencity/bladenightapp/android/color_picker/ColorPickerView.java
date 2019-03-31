@@ -1,11 +1,17 @@
 package de.greencity.bladenightapp.android.color_picker;
 
 
-import android.content.*;
-import android.graphics.*;
+import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.ComposeShader;
+import android.graphics.LinearGradient;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.Shader;
 import android.graphics.Shader.TileMode;
-import android.util.*;
-import android.view.*;
+import android.util.AttributeSet;
+import android.view.View;
 
 public class ColorPickerView extends View {
     Paint paint;

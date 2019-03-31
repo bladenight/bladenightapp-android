@@ -1,6 +1,5 @@
 package de.greencity.bladenightapp.android.social;
 
-import de.greencity.bladenightapp.android.R;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
@@ -8,6 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+
+import de.greencity.bladenightapp.android.R;
 
 
 public class AddFriendDialog extends DialogFragment  {

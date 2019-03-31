@@ -1,8 +1,9 @@
 package de.greencity.bladenightapp.android.cache;
 
-import de.greencity.bladenightapp.events.EventList;
 import android.content.Context;
 import android.util.Log;
+
+import de.greencity.bladenightapp.events.EventList;
 
 public class EventsCache {
     public EventsCache(Context context) {

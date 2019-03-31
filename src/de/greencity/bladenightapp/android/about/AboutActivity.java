@@ -1,8 +1,6 @@
 package de.greencity.bladenightapp.android.about;
 
 
-import java.lang.ref.WeakReference;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -20,12 +18,14 @@ import android.widget.Toast;
 
 import com.markupartist.android.widget.ActionBar;
 
+import java.lang.ref.WeakReference;
+
+import de.greencity.bladenightapp.android.R;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
 import de.greencity.bladenightapp.android.admin.AdminUtilities;
 import de.greencity.bladenightapp.android.app.BladeNightApplication;
 import de.greencity.bladenightapp.android.network.NetworkClient;
 import de.greencity.bladenightapp.android.utils.MetaInfo;
-import de.greencity.bladenightapp.android.R;
 
 public class AboutActivity extends Activity {
     @Override

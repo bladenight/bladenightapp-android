@@ -1,12 +1,12 @@
 package de.greencity.bladenightapp.android.utils;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class PeriodicBroadcastIntentManager {
     protected List<PendingIntent> periodicIntents;

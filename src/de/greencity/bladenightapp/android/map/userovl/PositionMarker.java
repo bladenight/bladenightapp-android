@@ -1,13 +1,11 @@
 package de.greencity.bladenightapp.android.map.userovl;
 
-import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.PorterDuff;
-import android.graphics.PorterDuff.Mode;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 
 import org.mapsforge.core.graphics.Bitmap;
-import android.graphics.Paint;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 import org.mapsforge.map.android.view.MapView;

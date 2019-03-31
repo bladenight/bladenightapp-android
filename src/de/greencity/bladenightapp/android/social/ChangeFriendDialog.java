@@ -1,8 +1,5 @@
 package de.greencity.bladenightapp.android.social;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -13,8 +10,12 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
-import de.greencity.bladenightapp.android.color_picker.ColorPickerDialog;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import de.greencity.bladenightapp.android.R;
+import de.greencity.bladenightapp.android.color_picker.ColorPickerDialog;
 
 
 @SuppressLint("UseSparseArrays")

@@ -1,7 +1,5 @@
 package de.greencity.bladenightapp.android.map;
 
-import java.util.HashMap;
-
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -14,6 +12,9 @@ import android.graphics.drawable.LayerDrawable;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.widget.ProgressBar;
+
+import java.util.HashMap;
+
 import de.greencity.bladenightapp.android.social.Friends;
 import de.greencity.bladenightapp.android.utils.DistanceFormatting;
 import de.greencity.bladenightapp.network.messages.FriendMessage;

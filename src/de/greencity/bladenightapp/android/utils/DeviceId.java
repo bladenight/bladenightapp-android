@@ -1,11 +1,11 @@
 package de.greencity.bladenightapp.android.utils;
 
-import java.util.Random;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
+
+import java.util.Random;
 
 public class DeviceId {
     static final private String KEY_DEVICEID = "deviceId";

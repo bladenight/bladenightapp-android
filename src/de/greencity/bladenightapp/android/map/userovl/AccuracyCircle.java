@@ -1,7 +1,6 @@
 package de.greencity.bladenightapp.android.map.userovl;
 
 import android.graphics.Color;
-import android.support.v4.content.ContextCompat;
 
 import org.mapsforge.core.graphics.Paint;
 import org.mapsforge.core.graphics.Style;

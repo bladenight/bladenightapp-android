@@ -2,6 +2,7 @@ package de.greencity.bladenightapp.android.cache;
 
 import android.content.Context;
 import android.util.Log;
+
 import de.greencity.bladenightapp.network.messages.EventListMessage;
 
 public class EventsMessageCache {

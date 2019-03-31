@@ -1,6 +1,7 @@
 package de.greencity.bladenightapp.android.global;
 
 import android.location.Location;
+
 import de.greencity.bladenightapp.events.EventList;
 import de.greencity.bladenightapp.network.messages.RealTimeUpdateData;
 

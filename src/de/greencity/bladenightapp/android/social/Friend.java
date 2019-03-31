@@ -1,10 +1,10 @@
 package de.greencity.bladenightapp.android.social;
 
-import java.io.Serializable;
+import android.graphics.Color;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-import android.graphics.Color;
+import java.io.Serializable;
 
 public class Friend implements Comparable<Friend>, Serializable {
 

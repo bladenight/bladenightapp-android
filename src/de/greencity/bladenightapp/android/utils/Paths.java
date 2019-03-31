@@ -1,9 +1,8 @@
 package de.greencity.bladenightapp.android.utils;
 
-import java.io.File;
-
 import android.content.Context;
-import android.os.Environment;
+
+import java.io.File;
 
 public class Paths {
     public static File getAppDataDirectory(Context context) {

@@ -1,15 +1,16 @@
 package de.greencity.bladenightapp.android.social;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.util.Log;
+
+import org.apache.commons.lang3.exception.ExceptionUtils;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
-
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.util.Log;
 import de.greencity.bladenightapp.android.R;
 
 @SuppressLint("UseSparseArrays")

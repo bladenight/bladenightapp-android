@@ -1,5 +1,8 @@
 package de.greencity.bladenightapp.android.network;
 
+import android.content.Context;
+import android.util.Log;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.KeyManagementException;
@@ -15,8 +18,6 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManagerFactory;
 
-import android.content.Context;
-import android.util.Log;
 import de.greencity.bladenightapp.android.R;
 
 public class SslHelper {

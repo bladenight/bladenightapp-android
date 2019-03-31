@@ -7,6 +7,7 @@ import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.util.Log;
+
 import de.greencity.bladenightapp.network.scanner.PortScanner;
 
 public class ServerFinderAsyncTask extends AsyncTask<Integer, Integer, String> {

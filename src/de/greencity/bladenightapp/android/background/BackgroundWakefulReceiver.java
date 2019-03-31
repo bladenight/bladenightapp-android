@@ -2,9 +2,9 @@ package de.greencity.bladenightapp.android.background;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.os.SystemClock;
 import android.support.v4.content.WakefulBroadcastReceiver;
+import android.util.Log;
 
 public class BackgroundWakefulReceiver extends WakefulBroadcastReceiver {
     private static final String TAG = "BackgroundWakefulReceiver";

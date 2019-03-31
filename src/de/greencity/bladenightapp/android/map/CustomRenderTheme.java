@@ -1,9 +1,9 @@
 package de.greencity.bladenightapp.android.map;
 
-import java.io.InputStream;
-
 import org.mapsforge.map.rendertheme.XmlRenderTheme;
 import org.mapsforge.map.rendertheme.XmlRenderThemeMenuCallback;
+
+import java.io.InputStream;
 
 public enum CustomRenderTheme implements XmlRenderTheme {
     /**

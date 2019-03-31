@@ -1,13 +1,13 @@
 package de.greencity.bladenightapp.android.network;
 
-import java.io.IOException;
-import java.net.URI;
-
-import org.apache.commons.lang3.exception.ExceptionUtils;
-
 import android.util.Log;
 
 import com.codebutler.android_websockets.WebSocketClient;
+
+import org.apache.commons.lang3.exception.ExceptionUtils;
+
+import java.io.IOException;
+import java.net.URI;
 
 import fr.ocroquette.wampoc.client.RpcResultReceiver;
 import fr.ocroquette.wampoc.client.WampClient;

@@ -1,5 +1,8 @@
 package de.greencity.bladenightapp.android.utils;
 
+import android.os.AsyncTask;
+import android.util.Log;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -12,9 +15,6 @@ import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
-
-import android.os.AsyncTask;
-import android.util.Log;
 
 public class AsyncDownloadTask extends AsyncTask<String, Long, Boolean> {
 

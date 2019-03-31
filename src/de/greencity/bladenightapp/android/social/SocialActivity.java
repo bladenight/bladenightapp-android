@@ -1,13 +1,5 @@
 package de.greencity.bladenightapp.android.social;
 
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -30,6 +22,15 @@ import android.widget.Toast;
 import com.markupartist.android.widget.ActionBar;
 import com.markupartist.android.widget.ActionBar.Action;
 
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import de.greencity.bladenightapp.android.R;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator.ActionItemType;
 import de.greencity.bladenightapp.android.actionbar.actions.ActionReload;
@@ -42,10 +43,7 @@ import de.greencity.bladenightapp.android.social.ChangeFriendDialog.ChangeFriend
 import de.greencity.bladenightapp.android.social.ConfirmFriendDialog.ConfirmFriendDialogListener;
 import de.greencity.bladenightapp.android.social.DeleteFriendDialog.DeleteFriendDialogListener;
 import de.greencity.bladenightapp.android.social.InviteFriendDialog.InviteFriendDialogListener;
-import de.greencity.bladenightapp.android.tracker.GpsTrackerService;
 import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
-import de.greencity.bladenightapp.android.utils.ServiceUtils;
-import de.greencity.bladenightapp.android.R;
 import de.greencity.bladenightapp.network.messages.FriendMessage;
 import de.greencity.bladenightapp.network.messages.FriendsMessage;
 import de.greencity.bladenightapp.network.messages.MovingPointMessage;

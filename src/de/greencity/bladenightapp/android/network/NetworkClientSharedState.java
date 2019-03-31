@@ -1,9 +1,9 @@
 package de.greencity.bladenightapp.android.network;
 
+import android.util.Log;
+
 import java.net.MalformedURLException;
 import java.net.URL;
-
-import android.util.Log;
 
 public class NetworkClientSharedState {
 
