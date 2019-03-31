@@ -91,10 +91,6 @@
                 app:layout_constraintStart_toEndOf="@+id/textview_event_date"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textview_event_date"></TextView>
-
-            <!--
-                -->
-
         </android.support.constraint.ConstraintLayout>
     </ScrollView>
 </LinearLayout>
