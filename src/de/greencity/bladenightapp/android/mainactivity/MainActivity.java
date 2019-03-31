@@ -115,6 +115,7 @@ public class MainActivity extends FragmentActivity {
                 .show(ActionBarConfigurator.ActionItemType.TRACKER_CONTROL)
                 .show(ActionBarConfigurator.ActionItemType.TABLE)
                 .show(ActionBarConfigurator.ActionItemType.MORE)
+                .show(ActionBarConfigurator.ActionItemType.MAP)
                 .hide(ActionBarConfigurator.ActionItemType.HOME)
                 .setAction(ActionBarConfigurator.ActionItemType.MORE, new ActionMore() {
                     @Override

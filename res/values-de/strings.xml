@@ -57,7 +57,7 @@
     <string name="name_tail">ZUGENDE</string>
     <string name="social_ask_for_name">Name des Freundes</string>
     <string name="social_explanation">Um Freunde hinzuzufügen, musst du einen Code benutzen. Falls du einen Freund einladen willst, drücke \'Freund einladen\' und wir generieren einen Code für Dich. Falls Dir ein Freund einen Code gegeben hat, drücke \'Freund bestätigen\'.</string>
-    <string name="social_live_legend_name"><u>LIVE DATEN</u></string>
+    <string name="social_live_legend_name">Live Daten</string>
     <string name="status_active">aktiv</string>
     <string name="status_inactive">inaktiv</string>
     <string name="status_obsolete">obsolet</string>

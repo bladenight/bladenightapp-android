@@ -9,7 +9,7 @@ import de.greencity.bladenightapp.android.map.BladenightMapActivity;
 public class ActionMap extends ActionAugmented {
     @Override
     public int getDrawable() {
-        return R.drawable.ic_action_globe_dyn;
+        return R.drawable.ic_map_white;
     }
 
     @Override
