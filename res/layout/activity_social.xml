@@ -33,7 +33,6 @@
 	        android:paddingLeft="5dip"
 	        android:text="@string/social_live_legend_name"
 	        android:textSize="18dip"
-	        android:textStyle="italic"
 	        android:typeface="sans" />
 	
 	    <TextView

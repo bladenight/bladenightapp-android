@@ -77,14 +77,6 @@ public class MainActivity extends FragmentActivity {
         textViewRouteName = (TextView) findViewById(R.id.textview_route_name);
         textViewEventDate = (TextView) findViewById(R.id.textview_event_date);
         textViewEventStatus = (TextView) findViewById(R.id.textview_event_status);
-        imageViewMap = (ImageView) findViewById(R.id.button_map);
-
-        imageViewMap.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startMapActivity();
-            }
-        });
     }
 
     @Override
@@ -192,7 +184,6 @@ public class MainActivity extends FragmentActivity {
         textViewRouteName.setVisibility(visible);
         textViewEventDate.setVisibility(visible);
         textViewEventStatus.setVisibility(visible);
-        imageViewMap.setVisibility(visible);
     }
 
     private void getEventsFromCache() {

@@ -63,7 +63,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
     private final Handler periodicHandler = new Handler();
     private Runnable periodicTask;
     private long updatePeriod = 2000;
-    FriendColorsHelper friendColorsHelper;
+    private FriendColorsHelper friendColorsHelper;
     private GlobalStateAccess globalStateAccess;
     private BroadcastReceiversRegister broadcastReceiversRegister = new BroadcastReceiversRegister(this);
 
@@ -481,7 +481,7 @@ ConfirmFriendDialogListener, ChangeFriendDialogListener, DeleteFriendDialogListe
             else {
                 friendLocation =  friendsMessage.get(friendId);
                 if ( friends.get(friendId) == null ) {
-                    // for one reason the server knows about this friend but we don't
+                    // For some reason, the server knows about this friend but we don't
                     friend = newFriend("?");
                     friends.put(friendId, friend);
                 }

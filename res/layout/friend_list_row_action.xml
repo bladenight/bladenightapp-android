@@ -22,7 +22,6 @@
         android:gravity="left|center_vertical"
         android:paddingLeft="5dip"
         android:text="@string/default_name"
-        android:textColor="@color/bn_white"
         android:textSize="18dip"
         android:textStyle="bold"
         android:typeface="sans" />
@@ -34,7 +33,6 @@
         android:layout_weight="0.2"
         android:gravity="right|center_vertical"
         android:text="@string/default_distance_tol"
-        android:textColor="@color/bn_white"
         android:textSize="13dip"
         android:textStyle="bold"
         android:typeface="sans" />
@@ -46,7 +44,6 @@
         android:layout_weight="0.2"
         android:gravity="right|center_vertical"
         android:text="@string/default_distance_rel"
-        android:textColor="@color/bn_white"
         android:textSize="13dip"
         android:textStyle="bold"
         android:typeface="sans" />
@@ -58,7 +55,6 @@
         android:layout_weight="0.2"
         android:gravity="right|center_vertical"
         android:text="@string/default_time"
-        android:textColor="@color/bn_white"
         android:textSize="13dip"
         android:textStyle="bold"
         android:typeface="sans" />

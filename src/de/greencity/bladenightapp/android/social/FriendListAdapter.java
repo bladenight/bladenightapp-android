@@ -3,6 +3,7 @@ package de.greencity.bladenightapp.android.social;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -61,28 +62,31 @@ public class FriendListAdapter extends BaseAdapter {
     private View inflateActionRow(int friendId, Friend friend){
         View view = inflater.inflate(R.layout.friend_list_row_action, null);
 
-        TextView name = (TextView)view.findViewById(R.id.action_row_friend_name);
+        TextView textViewName = (TextView)view.findViewById(R.id.action_row_friend_name);
         TextView textViewRelativeTime = (TextView)view.findViewById(R.id.action_row_time_rel);
         TextView textViewRelativeDistance = (TextView)view.findViewById(R.id.action_row_distance_rel);
         TextView textViewAbsolutePosition = (TextView)view.findViewById(R.id.action_row_distance_abs);
 
+        int textColor = Friends.getFriendColorOrDefault(activity, friendId, friend);
 
         if(friendId==SocialActivity.ID_HEAD||friendId==SocialActivity.ID_TAIL){
             View row = (View)view.findViewById(R.id.row_friend);
             row.setBackgroundColor(view.getResources().getColor(R.color.dialog_grey));
+            textColor = view.getResources().getColor(R.color.bn_white);
         }
         if(friendId==SocialActivity.ID_ME){
-            int color = Friends.getFriendColorOrDefault(activity, friendId, friend);
-            friend.setColor(color);
-            textViewRelativeTime.setTextColor(color);
-            textViewRelativeDistance.setTextColor(color);
-            textViewAbsolutePosition.setTextColor(color);
+            friend.setColor(textColor);
         }
+
+        textViewRelativeTime.setTextColor(textColor);
+        textViewRelativeDistance.setTextColor(textColor);
+        textViewAbsolutePosition.setTextColor(textColor);
+        textViewName.setTextColor(textColor);
 
         ImageView colorBlockImageView = (ImageView)view.findViewById(R.id.action_color_block);
         setColorForBlock(colorBlockImageView, friendId, friend);
 
-        name.setText(friend.getName());
+        textViewName.setText(friend.getName());
         if ( friend.getRelativeTime() != null)
             textViewRelativeTime.setText(formatTime(friend.getRelativeTime()));
         else
