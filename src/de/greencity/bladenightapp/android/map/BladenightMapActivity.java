@@ -263,7 +263,6 @@ public class BladenightMapActivity extends Activity {
     }
 
 
-
     private void triggerInitialRouteDataFetch() {
         Log.i(TAG, "triggerInitialRouteDataFetch");
         updateRouteFromCache();
@@ -388,7 +387,7 @@ public class BladenightMapActivity extends Activity {
 
         TileCache tileCache = AndroidUtil.createTileCache(this, "mapcache",
                 mapView.getModel().displayModel.getTileSize(), 1f,
-                mapView.getModel().frameBufferModel.getOverdrawFactor());
+                mapView.getModel().frameBufferModel.getOverdrawFactor(), true);
 
         MapDataStore mapDataStore = new MapFile(mapLocalFile);
         TileRendererLayer tileRendererLayer = new TileRendererLayer(tileCache, mapDataStore,
@@ -439,6 +438,7 @@ public class BladenightMapActivity extends Activity {
 
         configurator.configure();
     }
+
     protected void getRealTimeDataFromServer() {
         globalStateAccess.requestRealTimeUpdateData();
     }
