@@ -64,21 +64,6 @@
             android:label="@string/title_about"
             android:screenOrientation="portrait" />
 
-        <receiver
-            android:name="de.greencity.bladenightapp.android.widget.WidgetProvider"
-            android:exported="true"
-            android:icon="@drawable/application_dev"
-            android:label="Blade Night Widget">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-                <action android:name="android.appwidget.action.APPWIDGET_ENABLED" />
-                <action android:name="android.appwidget.action.APPWIDGET_DISABLED" />
-            </intent-filter>
-
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/widget_info" />
-        </receiver>
         <receiver android:name="de.greencity.bladenightapp.android.background.BootBroadcastReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />

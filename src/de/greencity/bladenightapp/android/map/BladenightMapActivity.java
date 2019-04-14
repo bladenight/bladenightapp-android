@@ -9,10 +9,13 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.Window;
+import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -46,6 +49,7 @@ import de.greencity.bladenightapp.android.global.GlobalStateAccess;
 import de.greencity.bladenightapp.android.global.LocalBroadcast;
 import de.greencity.bladenightapp.android.map.userovl.UserPositionsOverlay;
 import de.greencity.bladenightapp.android.network.NetworkClient;
+import de.greencity.bladenightapp.android.progressbar.ProgressBarRenderer;
 import de.greencity.bladenightapp.android.tracker.GpsListener;
 import de.greencity.bladenightapp.android.tracker.GpsTrackerService;
 import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
@@ -73,8 +77,7 @@ public class BladenightMapActivity extends Activity {
     private int routeLength;
     private boolean isLive = false;
     private RouteOverlay routeOverlay;
-    // private BladenightMapView mapView;
-    private ProcessionProgressBar processionProgressBar;
+    private ImageView progressBarImageView;
     private TextView mapHeadline;
     private View mapHeadlineSeparator;
     private final int updatePeriod = 3000;
@@ -87,6 +90,7 @@ public class BladenightMapActivity extends Activity {
     private boolean isRunning = true;
     private boolean shallFitViewWhenPossible = true;
     private File mapLocalFile;
+    private ProgressBarRenderer progressBarRenderer;
 
     private MapView mapView;
 
@@ -105,9 +109,12 @@ public class BladenightMapActivity extends Activity {
         globalStateAccess = new GlobalStateAccess(this);
         networkClient = BladeNightApplication.networkClient;
 
-        processionProgressBar = (ProcessionProgressBar) findViewById(R.id.progress_procession);
+        progressBarImageView = (ImageView) findViewById(R.id.progress_procession);
         mapHeadline = (TextView) findViewById(R.id.map_headline);
         mapHeadlineSeparator = (View) findViewById(R.id.map_headline_separator);
+
+        progressBarRenderer = new ProgressBarRenderer(this);
+        progressBarRenderer.setFontSize(18);
 
         /*
          * Before you make any calls on the mapsforge library, you need to initialize the
@@ -163,7 +170,6 @@ public class BladenightMapActivity extends Activity {
 
         // Friend colors and stuff like that could have been changed in the meantime, so re-create the overlays
         userPositionOverlay.onResume();
-        processionProgressBar.onResume();
 
         broadcastReceiversRegister.registerReceiver(LocalBroadcast.GOT_REALTIME_DATA, new RealTimeDataBroadcastReceiver());
         broadcastReceiversRegister.registerReceiver(LocalBroadcast.GOT_GPS_UPDATE, new LocationBroadcastReceiver());
@@ -185,12 +191,12 @@ public class BladenightMapActivity extends Activity {
         periodicHandler.post(periodicTask);
 
         if (!isLive) {
-            processionProgressBar.setVisibility(View.GONE);
+            progressBarImageView.setVisibility(View.GONE);
             mapHeadline.setVisibility(View.VISIBLE);
             mapHeadlineSeparator.setVisibility(View.VISIBLE);
             updateHeadline(null);
         } else {
-            processionProgressBar.setVisibility(View.VISIBLE);
+            progressBarImageView.setVisibility(View.VISIBLE);
             mapHeadline.setVisibility(View.VISIBLE);
             mapHeadlineSeparator.setVisibility(View.GONE);
         }
@@ -243,9 +249,18 @@ public class BladenightMapActivity extends Activity {
                     bladenightMapActivity.requestRouteFromServer();
                 }
                 bladenightMapActivity.routeOverlay.update(realTimeUpdateData);
-                bladenightMapActivity.processionProgressBar.update(realTimeUpdateData);
                 bladenightMapActivity.userPositionOverlay.update(realTimeUpdateData);
                 bladenightMapActivity.update(realTimeUpdateData);
+
+                DisplayMetrics displayMetrics = new DisplayMetrics();
+                WindowManager windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
+                windowManager.getDefaultDisplay().getMetrics(displayMetrics);
+
+                progressBarRenderer.updateRealTimeUpdateData(realTimeUpdateData);
+                if(progressBarImageView.getWidth() > 0 && progressBarImageView.getHeight() > 0)
+                    progressBarImageView.setImageBitmap(progressBarRenderer.renderToBitmap(progressBarImageView.getWidth(), progressBarImageView.getHeight(), displayMetrics));
+                else
+                    progressBarImageView.setBackgroundColor(getResources().getColor(R.color.new_background));
             } else {
                 bladenightMapActivity.userPositionOverlay.update(realTimeUpdateData);
             }

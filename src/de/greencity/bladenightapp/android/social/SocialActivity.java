@@ -94,7 +94,7 @@ public class SocialActivity extends FragmentActivity implements InviteFriendDial
 
         Log.i(TAG, "onResume");
 
-        isEventActive = globalStateAccess.getEventList().getNextEvent().isActive();
+        isEventActive = isEventActive();
 
         configureActionBar();
 
@@ -116,6 +116,13 @@ public class SocialActivity extends FragmentActivity implements InviteFriendDial
 
         ((LinearLayout) findViewById(R.id.social_live_legend)).setVisibility(visibility);
         ((View) findViewById(R.id.social_live_sep)).setVisibility(visibility);
+    }
+
+    private boolean isEventActive() {
+        if(globalStateAccess.getEventList() != null && globalStateAccess.getEventList().getNextEvent() != null)
+            return globalStateAccess.getEventList().getNextEvent().isActive();
+        else
+            return false;
     }
 
     @Override

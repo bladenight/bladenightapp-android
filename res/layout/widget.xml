@@ -17,7 +17,7 @@
         android:text="Static Text" >
     </TextView>
 
-<!--     <ProgressBar
+<!--     <ProgressBarRenderer
         android:id="@+id/progress_procession"
         style="@style/CustomProgressBarHorizontal"
         android:layout_width="match_parent"

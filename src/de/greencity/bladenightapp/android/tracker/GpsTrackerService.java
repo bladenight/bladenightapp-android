@@ -6,6 +6,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -17,27 +18,64 @@ import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.WindowManager;
+import android.widget.RemoteViews;
 
 import java.io.File;
 import java.io.IOException;
 
 import de.greencity.bladenightapp.android.R;
-import de.greencity.bladenightapp.android.app.BladeNightApplication;
 import de.greencity.bladenightapp.android.global.GlobalStateAccess;
+import de.greencity.bladenightapp.android.global.LocalBroadcast;
 import de.greencity.bladenightapp.android.map.BladenightMapActivity;
 import de.greencity.bladenightapp.android.network.NetworkClient;
 import de.greencity.bladenightapp.android.network.RealTimeDataConsumer;
+import de.greencity.bladenightapp.android.progressbar.ProgressBarRenderer;
+import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
 import de.greencity.bladenightapp.android.utils.Paths;
 import de.greencity.bladenightapp.network.messages.RealTimeUpdateData;
 
 public class GpsTrackerService extends Service {
 
+    private GlobalStateAccess globalStateAccess;
+    private Location lastKnownLocation;
+    private BladenightLocationListener locationListener;
+    private GpsListener gpsListener;
+    private NetworkClient networkClient;
+    private Runnable periodicNetworkSenderRunnable;
+    private RealTimeDataConsumer realTimeDataConsumer;
+    private BroadcastReceiversRegister broadcastReceiversRegister = new BroadcastReceiversRegister(this);
+    private ProgressBarRenderer progressBarRenderer;
+    private NotificationCompat.Builder builder;
+    private Notification notification;
+
+    final Handler handler = new Handler();
+    static private final int SEND_PERIOD = 10000;
+    static private final int NOTIFICATION_ID = 1;
+
+    static private final int notificationIconId = R.drawable.application_prod;
+
+    static final String TAG = "GpsTrackerService";
+
+    class RealTimeDataBroadcastReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            RealTimeUpdateData realTimeUpdateData = globalStateAccess.getRealTimeUpdateData();
+            Log.i(TAG, "Consuming: " + realTimeUpdateData);
+            progressBarRenderer.updateRealTimeUpdateData(realTimeUpdateData);
+            updateNotification();
+        }
+    }
+
+
     @Override
     public void onCreate() {
         Log.d(TAG, "onCreate");
 
-        networkClient = BladeNightApplication.networkClient;
+        globalStateAccess = new GlobalStateAccess(this);
 
         lastKnownLocation = new Location("INTERNAL");
         locationListener = new BladenightLocationListener(lastKnownLocation);
@@ -45,25 +83,12 @@ public class GpsTrackerService extends Service {
 
         gpsListener.requestLocationUpdates(5000);
 
-        traceLogger = new GeoTraceLogger(new File(Paths.getAppDataDirectory(this), "gps-trace.txt"));
+        broadcastReceiversRegister.registerReceiver(LocalBroadcast.GOT_REALTIME_DATA, new RealTimeDataBroadcastReceiver());
 
-        globalStateAccess = new GlobalStateAccess(this);
+        progressBarRenderer = new ProgressBarRenderer(this);
 
-        realTimeDataConsumer = new RealTimeDataConsumer() {
-            @Override
-            public void consume(RealTimeUpdateData realTimeUpdateData) {
-                Log.i(TAG, "Consuming: " + realTimeUpdateData);
-                if (realTimeUpdateData.isUserOnRoute())
-                    traceLogger.setLinearPosition(realTimeUpdateData.getUserPosition());
-                else
-                    traceLogger.setLinearPosition(-1);
-                writeTraceEntry();
-            }
-        };
-
-        networkClient.addRealTimeDataConsumer(realTimeDataConsumer);
-
-        setNotification();
+        createNotification();
+        updateNotification();
 
         periodicNetworkSenderRunnable = new Runnable() {
             @Override
@@ -73,7 +98,6 @@ public class GpsTrackerService extends Service {
                 globalStateAccess.requestRealTimeUpdateData();
                 // sendLocationUpdateToServer();
                 handler.postDelayed(this, SEND_PERIOD);
-                writeTraceEntry();
             }
         };
         handler.post(periodicNetworkSenderRunnable);
@@ -82,10 +106,12 @@ public class GpsTrackerService extends Service {
     @Override
     public void onDestroy() {
         Log.i(TAG, "onDestroy");
+
+        broadcastReceiversRegister.unregisterReceivers();
+
         handler.removeCallbacks(periodicNetworkSenderRunnable);
         gpsListener.cancelLocationUpdates();
         stopForeground(true);
-        networkClient.removeRealTimeDataConsumer(realTimeDataConsumer);
     }
 
     @Override
@@ -107,47 +133,59 @@ public class GpsTrackerService extends Service {
         return super.onUnbind(intent);
     }
 
-    private void setNotification() {
+    private void createNotification() {
         Intent notificationIntent = new Intent(this, BladenightMapActivity.class);
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
         Bitmap icon = getNotificationIcon();
         Log.i(TAG, icon.toString());
 
-        String NOTIFICATION_CHANNEL_ID = "com.example.simpleapp";
-        String channelName = "My Background Service";
+        String NOTIFICATION_CHANNEL_ID = "notification";
 
-        Notification notification;
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            NotificationChannel chan = null;
-            chan = new NotificationChannel(NOTIFICATION_CHANNEL_ID, channelName, NotificationManager.IMPORTANCE_NONE);
+            // NotificationChannel has been introduced in API level 26
+            NotificationChannel chan = new NotificationChannel(NOTIFICATION_CHANNEL_ID, getString(R.string.app_name), NotificationManager.IMPORTANCE_NONE);
             chan.setLightColor(Color.BLUE);
-            chan.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+            chan.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
             NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             manager.createNotificationChannel(chan);
-
-            // Don't forget to keep legacy code up to date below (different builder class)
-            notification = new Notification.Builder(this, NOTIFICATION_CHANNEL_ID)
-                    .setContentTitle(getString(R.string.msg_tracking_running))
-                    .setContentText(getString(R.string.app_name))
-                    .setSmallIcon(R.drawable.ic_notification_tracking)
-                    .setContentIntent(contentIntent)
-                    .build();
-
-        } else {
-            // Don't forget to keep main code up to date above (different builder class)
-            notification = new NotificationCompat.Builder(this)
-                    .setContentTitle(getString(R.string.msg_tracking_running))
-                    .setContentText(getString(R.string.app_name))
-                    .setSmallIcon(R.drawable.ic_notification_tracking)
-                    .setContentIntent(contentIntent)
-                    .build();
         }
 
+        builder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
+                .setStyle(new NotificationCompat.DecoratedCustomViewStyle())
+                .setContentTitle(getString(R.string.msg_tracking_running))
+                .setContentText(getString(R.string.app_name))
+                .setSmallIcon(R.drawable.ic_notification_tracking)
+                .setOnlyAlertOnce(true)
+                .setContentIntent(contentIntent);
+
+        notification = builder.build();
         notification.flags |= Notification.FLAG_FOREGROUND_SERVICE;
 
         startForeground(NOTIFICATION_ID, notification);
+
+    }
+
+    private void updateNotification() {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        WindowManager windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
+        windowManager.getDefaultDisplay().getMetrics(displayMetrics);
+
+        int viewWidth = (int) (0.9 * displayMetrics.heightPixels);
+        int viewHeight = 128;
+
+        progressBarRenderer.setFontSize(30);
+
+        Bitmap bitmap = progressBarRenderer.renderToBitmap(viewWidth, viewHeight, displayMetrics);
+
+        RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.notification_progressbar);
+        remoteViews.setImageViewBitmap(R.id.imageview_progressbar, bitmap);
+
+        notification.bigContentView = remoteViews;
+        notification.contentView = remoteViews;
+
+        NotificationManagerCompat.from(this).notify(NOTIFICATION_ID, notification);
     }
 
     @SuppressLint("InlinedApi")
@@ -164,35 +202,4 @@ public class GpsTrackerService extends Service {
             return Bitmap.createScaledBitmap(rawBitmap, width, height, false);
         }
     }
-
-    private void writeTraceEntry() {
-        traceLogger.setAccuracy(lastKnownLocation.getAccuracy());
-        traceLogger.setLongitude(lastKnownLocation.getLongitude());
-        traceLogger.setLatitude(lastKnownLocation.getLatitude());
-        try {
-            traceLogger.writeWithTimeLimit(MIN_LOG_PERIOD);
-        } catch (IOException e) {
-            Log.e(TAG, "Failed to write trace entry: " + e);
-        }
-    }
-
-
-    private GlobalStateAccess globalStateAccess;
-    private Location lastKnownLocation;
-    private BladenightLocationListener locationListener;
-    private GpsListener gpsListener;
-    private NetworkClient networkClient;
-    private Runnable periodicNetworkSenderRunnable;
-    private RealTimeDataConsumer realTimeDataConsumer;
-    private GeoTraceLogger traceLogger;
-
-    final Handler handler = new Handler();
-    static private final int SEND_PERIOD = 10000;
-    static private final int MIN_LOG_PERIOD = 2000;
-    static private final int NOTIFICATION_ID = 1;
-
-    static private final int notificationIconId = R.drawable.application_prod;
-
-    static final String TAG = "GpsTrackerService";
-    static final String INTENT_PERIODIC = "de.greencity.bladenightapp.android.gps.periodic";
 }
