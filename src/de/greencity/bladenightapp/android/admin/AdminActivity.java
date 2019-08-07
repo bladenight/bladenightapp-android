@@ -24,6 +24,7 @@ import com.markupartist.android.widget.ActionBar;
 import com.markupartist.android.widget.ActionBar.Action;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -64,7 +65,7 @@ public class AdminActivity extends Activity {
     }
 
     private void configureSetMinPosButton() {
-        Button button= (Button) findViewById(R.id.button_set_min_position);
+        Button button = (Button) findViewById(R.id.button_set_min_position);
         button.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -97,29 +98,29 @@ public class AdminActivity extends Activity {
     }
 
     private void configureKillServerButton() {
-        Button button= (Button) findViewById(R.id.button_kill_server);
+        Button button = (Button) findViewById(R.id.button_kill_server);
         button.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        switch (which){
-                        case DialogInterface.BUTTON_POSITIVE:
-                            networkClient.killServer(null,null);
-                            break;
+                        switch (which) {
+                            case DialogInterface.BUTTON_POSITIVE:
+                                networkClient.killServer(null, null);
+                                break;
 
-                        case DialogInterface.BUTTON_NEGATIVE:
-                            //No button clicked
-                            break;
+                            case DialogInterface.BUTTON_NEGATIVE:
+                                //No button clicked
+                                break;
                         }
                     }
                 };
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(AdminActivity.this);
                 builder.setMessage("Are you sure you want to kill the server?")
-                .setPositiveButton("Yes", dialogClickListener)
-                .setNegativeButton("No", dialogClickListener).show();
+                        .setPositiveButton("Yes", dialogClickListener)
+                        .setNegativeButton("No", dialogClickListener).show();
             }
         });
     }
@@ -131,15 +132,17 @@ public class AdminActivity extends Activity {
         spinnerStatusAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         statusSpinner.setAdapter(spinnerStatusAdapter);
 
+        spinnerStatusAdapter.clear();
+        spinnerStatusAdapter.add("CAN");
+        spinnerStatusAdapter.add("CON");
+        spinnerStatusAdapter.add("PEN");
+
         statusSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-                Log.i(TAG,"statusSpinner.onItemSelected");
-                // Silly Android might fire the listener even before we are ready, hence this check
-                if ( isStatusSpinnerInitialized ) {
-                    String status = (String) statusSpinner.getSelectedItem();
-                    setActiveStatusOnServer(status);
-                }
+                Log.i(TAG, "statusSpinner.onItemSelected");
+                String status = (String) statusSpinner.getSelectedItem();
+                setActiveStatusOnServer(status);
             }
 
             @Override
@@ -160,7 +163,7 @@ public class AdminActivity extends Activity {
         routeNameSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-                Log.i(TAG, "onItemSelected arg2=" + arg2 + " arg3="+arg3);
+                Log.i(TAG, "onItemSelected arg2=" + arg2 + " arg3=" + arg3);
                 // Silly Android might fire the listener even before we are ready
                 if (isRouteNameSpinnerInitialized) {
                     String routeName = (String) routeNameSpinner.getSelectedItem();
@@ -182,31 +185,47 @@ public class AdminActivity extends Activity {
 
     static class GetAllRouteNamesFromServerHandler extends Handler {
         private WeakReference<AdminActivity> reference;
+
         GetAllRouteNamesFromServerHandler(AdminActivity activity) {
             this.reference = new WeakReference<AdminActivity>(activity);
         }
+
         @Override
         public void handleMessage(Message msg) {
             final AdminActivity adminActivity = reference.get();
-            if ( adminActivity == null || adminActivity.isFinishing() )
+            if (adminActivity == null || adminActivity.isFinishing())
                 return;
-            RouteNamesMessage routeNamesMessage = (RouteNamesMessage)msg.obj;
+            RouteNamesMessage routeNamesMessage = (RouteNamesMessage) msg.obj;
             adminActivity.updateGuiRouteListFromServerResponse(routeNamesMessage);
+
+            // Now that we have the list of all route names, we can get the active route
+            // and update the current selection in the GUI accordingly
+            adminActivity.getNextEventFromServer();
         }
     }
 
     public void updateGuiRouteListFromServerResponse(RouteNamesMessage routeNamesMessage) {
         Log.i(TAG, "updateGuiRouteListFromServerResponse routeNamesMessage=" + routeNamesMessage);
 
-        List<String> routeNames = Arrays.asList(routeNamesMessage.rna);
-        Collections.sort(routeNames);
+        List<String> routeNamesFromServer = Arrays.asList(routeNamesMessage.rna);
+        Collections.sort(routeNamesFromServer);
 
-        spinnerRouteNameAdapter.clear();
-        for(String name: routeNames) {
-            spinnerRouteNameAdapter.add(name);
+        List<String> routeNamesFromGui = new ArrayList<>();
+        for (int i = 0; i < spinnerRouteNameAdapter.getCount(); i++) {
+            routeNamesFromGui.add(spinnerRouteNameAdapter.getItem(i).toString());
         }
-        spinnerRouteNameAdapter.notifyDataSetChanged();
-        getNextEventFromServer();
+
+        Collections.sort(routeNamesFromServer);
+        Collections.sort(routeNamesFromGui);
+
+        if (routeNamesFromServer.equals(routeNamesFromGui)) {
+            Log.i(TAG, "updateGuiRouteListFromServerResponse: no need to update GUI");
+        } else {
+            spinnerRouteNameAdapter.clear();
+            for (String name : routeNamesFromServer) {
+                spinnerRouteNameAdapter.add(name);
+            }
+        }
     }
 
     protected void getRouteListFromServer() {
@@ -215,21 +234,23 @@ public class AdminActivity extends Activity {
 
     static class GetActiveEventFromServerHandler extends Handler {
         private WeakReference<AdminActivity> reference;
+
         GetActiveEventFromServerHandler(AdminActivity activity) {
             this.reference = new WeakReference<AdminActivity>(activity);
         }
+
         @Override
         public void handleMessage(Message msg) {
             final AdminActivity adminActivity = reference.get();
-            if ( adminActivity == null || adminActivity.isFinishing() )
+            if (adminActivity == null || adminActivity.isFinishing())
                 return;
-            EventMessage eventMessage = (EventMessage)msg.obj;
+            EventMessage eventMessage = (EventMessage) msg.obj;
             Log.i(TAG, "Got active event: " + eventMessage.toString());
-            if ( eventMessage.getRouteName() == null)
+            if (eventMessage.getRouteName() == null)
                 Log.e(TAG, "Server sent invalid route name:" + eventMessage.toString());
             else
                 adminActivity.updateGuiRouteCurrent(eventMessage.getRouteName());
-            if ( eventMessage.getStatus() == null )
+            if (eventMessage.getStatus() == null)
                 Log.e(TAG, "Server sent invalid status:" + eventMessage.toString());
             else
                 adminActivity.updateGuiStatus(eventMessage.getStatus().toString());
@@ -243,8 +264,8 @@ public class AdminActivity extends Activity {
 
 
     public void updateGuiRouteCurrent(String currentRouteName) {
-        for(int i = 0 ; i < spinnerRouteNameAdapter.getCount() ; i ++) {
-            if ( currentRouteName.equals(spinnerRouteNameAdapter.getItem(i)) )
+        for (int i = 0; i < spinnerRouteNameAdapter.getCount(); i++) {
+            if (currentRouteName.equals(spinnerRouteNameAdapter.getItem(i)))
                 setSpinnerSelectionWithoutCallingListener(routeNameSpinner, i);
         }
         isRouteNameSpinnerInitialized = true;
@@ -252,27 +273,24 @@ public class AdminActivity extends Activity {
     }
 
     public void updateGuiStatus(String status) {
-        spinnerStatusAdapter.clear();
-        spinnerStatusAdapter.add("CAN");
-        spinnerStatusAdapter.add("CON");
-        spinnerStatusAdapter.add("PEN");
-        for(int i = 0 ; i < spinnerStatusAdapter.getCount() ; i ++) {
-            if ( status.equals(spinnerStatusAdapter.getItem(i)) )
+        for (int i = 0; i < spinnerStatusAdapter.getCount(); i++) {
+            if (status.equals(spinnerStatusAdapter.getItem(i)))
                 setSpinnerSelectionWithoutCallingListener(statusSpinner, i);
         }
-        isStatusSpinnerInitialized = true;
     }
 
 
     static private class NetworkResultHandler extends Handler {
         private WeakReference<AdminActivity> reference;
+
         NetworkResultHandler(AdminActivity activity) {
             this.reference = new WeakReference<AdminActivity>(activity);
         }
+
         @Override
         public void handleMessage(Message msg) {
             final AdminActivity adminActivity = reference.get();
-            if ( adminActivity == null || adminActivity.isFinishing() )
+            if (adminActivity == null || adminActivity.isFinishing())
                 return;
             Toast.makeText(adminActivity, "OK", Toast.LENGTH_SHORT).show();
             adminActivity.getAllInformationFromServer();
@@ -281,13 +299,15 @@ public class AdminActivity extends Activity {
 
     static private class NetwortErrorHandler extends Handler {
         private WeakReference<AdminActivity> reference;
+
         NetwortErrorHandler(AdminActivity activity) {
             this.reference = new WeakReference<AdminActivity>(activity);
         }
+
         @Override
         public void handleMessage(Message msg) {
             final AdminActivity adminActivity = reference.get();
-            if ( adminActivity == null || adminActivity.isFinishing() )
+            if (adminActivity == null || adminActivity.isFinishing())
                 return;
             Toast.makeText(adminActivity, "Failed" + msg, Toast.LENGTH_SHORT).show();
             adminActivity.getAllInformationFromServer();
@@ -320,9 +340,9 @@ public class AdminActivity extends Activity {
             }
         };
         new ActionBarConfigurator(actionBar)
-        .setAction(ActionItemType.RELOAD, reloadAction)
-        .setTitle(R.string.title_admin)
-        .configure();
+                .setAction(ActionItemType.RELOAD, reloadAction)
+                .setTitle(R.string.title_admin)
+                .configure();
     }
 
 
@@ -354,6 +374,5 @@ public class AdminActivity extends Activity {
     private ArrayAdapter<CharSequence> spinnerStatusAdapter;
     private Spinner routeNameSpinner;
     private Spinner statusSpinner;
-    private boolean isStatusSpinnerInitialized = false;
     private boolean isRouteNameSpinnerInitialized = false;
 }
