@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
+import android.support.multidex.MultiDexApplication;
 import android.util.Log;
 
 import de.greencity.bladenightapp.android.network.NetworkClient;
@@ -14,7 +15,7 @@ import de.greencity.bladenightapp.network.BladenightError;
 import de.greencity.bladenightapp.network.messages.HandshakeClientMessage;
 import fr.ocroquette.wampoc.messages.CallErrorMessage;
 
-public class BladeNightApplication extends Application {
+public class BladeNightApplication extends MultiDexApplication {
     public static NetworkClient networkClient;
     private final static String TAG = "BladeNightApplication";
 

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>   
-    <color name="bn_green">#009834</color>
-    <color name="bn_green2">#78009834</color>
-    <color name="bn_green_dark">#006e26</color>
+    <color name="bn_green">#000000</color>
+    <color name="bn_green2">#80000000</color>
+    <color name="bn_green_dark">#000000</color>
     <color name="bn_orange">#FE6D00</color>
     <color name="bn_orange2">#F58633</color>
-    <color name="bn_white">#FAFCFB</color>
+    <color name="bn_white">#FFEB3B</color>
     <color name="bn_blue">#454DE7</color>
     <color name="bn_green_light">#2BF233</color>
     <color name="bn_orange_light">#FFC295</color>

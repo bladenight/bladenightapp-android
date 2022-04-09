@@ -3,13 +3,13 @@
     <string name="about_android_application_v1">Android Application (v1)</string>
     <string name="about_android_application_v2">Android Application (v2)</string>
     <string name="about_ben">Benjamin Uekermann</string>
-    <string name="about_bladenight_link">https://www.k2bladenight.de/</string>
+    <string name="about_bladenight_link">https://bladenight-muenchen.de/</string>
     <string name="about_more_info">More information</string>
     <string name="about_olivier">Olivier Croquette</string>
     <string name="about_server_application">Server Application</string>
     <string name="about_version">Version:</string>
-    <string name="app_name">K2 Blade Night</string>
-    <string name="app_name_dev">DEV K2 Blade Night</string>
+    <string name="app_name">Blade Night App</string>
+    <string name="app_name_dev">Blade Night App DEV</string>
     <string name="arrow_left">&lt;</string>
     <string name="arrow_no"></string>
     <string name="arrow_right">&gt;</string>
@@ -44,7 +44,7 @@
     <string name="field_color">Color</string>
     <string name="field_name">Nickname of your Friend</string>
     <string name="impressum">Impressum</string>
-    <string name="help_text">This app shows the status and the progression of the K2 Blade Night, your position, and those of your friends.\n\nThe main page shows the next event, and its status.\n\nWhen the event starts, you can see the progression on the map, as well as your position. The app needs the position of as many participants as possible to work, so please enable the tracking by pressing the "Play" button shortly before the start.\n\nYou can add and manage friends by clicking on the friends button. They will see your position on the map only your tracking is active.</string>
+    <string name="help_text">This app shows the status and the progression of the Blade Night, your position, and those of your friends.\n\nThe main page shows the next event, and its status.\n\nWhen the event starts, you can see the progression on the map, as well as your position. The app needs the position of as many participants as possible to work, so please enable the tracking by pressing the "Play" button shortly before the start.\n\nYou can add and manage friends by clicking on the friends button. They will see your position on the map only your tracking is active.</string>
     <string name="menu_settings">Settings</string>
     <string name="msg_administration">Administration</string>
     <string name="msg_about_app">About the app</string>
@@ -54,7 +54,7 @@
     <string name="msg_failed_to_retrieve_position">Current position is unknown</string>
     <string name="msg_current_position_unknown">Current position is unknown</string>
     <string name="msg_failed_to_extract_map">Failed to extract the map</string>
-    <string name="msg_feedback">Your feedback is welcome.\nSend us an email:\napp@k2bladenight.de</string>
+    <string name="msg_feedback">Your feedback is welcome.\nSend us an email:\nservice@skatemunich.de</string>
     <string name="msg_friend_active">activ</string>
     <string name="msg_friend_added">was added</string>
     <string name="msg_friend_removed">Friend has been removed</string>
@@ -105,7 +105,7 @@
     <string name="word_date">Date</string>
     <string name="msg_failed_to_load_map">Failed to extract map</string>
     <string name="title_activity_main">MainActivity</string>
-    <string name="title_main">K2 Blade Night</string>
+    <string name="title_main">Blade Night</string>
     <string name="text_next_event">Next event:</string>
     <string name="text_route_name">Route name</string>
     <string name="event_date">Event date</string>

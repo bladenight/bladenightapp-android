@@ -4,7 +4,10 @@
     package="de.greencity.bladenightapp.android"
     android:installLocation="auto"
     android:versionCode="5"
-    android:versionName="DEV">
+    android:versionName="DEV"
+    xmlns:dist="http://schemas.android.com/apk/distribution">
+
+    <dist:module dist:instant="true" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -19,6 +22,7 @@
         android:name="android.permission.READ_PHONE_STATE"
         tools:node="remove" />
 
+
     <application
         android:name="de.greencity.bladenightapp.android.app.BladeNightApplication"
         android:allowBackup="false"
@@ -26,6 +30,9 @@
         android:label="@string/app_name_dev"
         android:theme="@style/BnaTheme"
         tools:replace="android:label">
+
+        <uses-library android:name="org.apache.http.legacy" android:required="false"/>
+
         <service
             android:name="de.greencity.bladenightapp.android.tracker.GpsTrackerService"
             android:exported="false" />

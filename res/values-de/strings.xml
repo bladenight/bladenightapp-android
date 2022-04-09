@@ -30,14 +30,14 @@
     <string name="field_color">Farbe</string>
     <string name="field_name">Kurzname deines Freundes</string>
     <string name="impressum">Impressum</string>
-    <string name="help_text">Diese App zeigt den Status und den Fortschritt der K2 Blade Night, so wie deine Position und die von deinen Freunden.\n\nAuf der Hauptseite steht der nächste Termin sowie der aktuelle Status.\n\nWenn die Blade Night startet wird die Position des Zuges auf der Karte angezeigt. Die App braucht die Position von viele Teilnehmern um zu funktionieren, bitte dafür die "Tracking" Funktion kurz vor dem Start mit der Abspiel-Taste einschalten.\n\nDie Freunden werden auf einer Seite verwaltet, die mit der entsprechenden Taste geöffnet wird. Die Freunde sehen deine Position nur wenn die Tracking Funktion aktiv ist.</string>
+    <string name="help_text">Diese App zeigt den Status und den Fortschritt der Blade Night, so wie deine Position und die von deinen Freunden.\n\nAuf der Hauptseite steht der nächste Termin sowie der aktuelle Status.\n\nWenn die Blade Night startet wird die Position des Zuges auf der Karte angezeigt. Die App braucht die Position von viele Teilnehmern um zu funktionieren, bitte dafür die "Tracking" Funktion kurz vor dem Start mit der Abspiel-Taste einschalten.\n\nDie Freunden werden auf einer Seite verwaltet, die mit der entsprechenden Taste geöffnet wird. Die Freunde sehen deine Position nur wenn die Tracking Funktion aktiv ist.</string>
     <string name="menu_settings">Optionen</string>
     <string name="msg_administration">Administration</string>
     <string name="msg_about_app">Über die App</string>
     <string name="msg_code_copied">Der Code wurde in die Zwischenablage kopiert, schicke ihn an deinen Freund.</string>
     <string name="msg_code_not_valid">Dieser Code ist nicht gültig</string>
     <string name="msg_failed_to_load_map">Extrahieren der Karte fehlgeschlagen</string>
-    <string name="msg_feedback">Wir freuen uns auf dein Feedback.\nSchreib uns an:\napp@k2bladenight.de</string>
+    <string name="msg_feedback">Wir freuen uns auf dein Feedback.\nSchreib uns an:\nservice@skatemunich.de</string>
     <string name="msg_friend_added">wurde hinzugefügt</string>
     <string name="msg_friend_removed">Freund wurde gelöscht</string>
     <string name="msg_invalid_friend_to_delete">Dieses Element kann nicht gelöscht werden</string>
@@ -83,7 +83,7 @@
     <string name="title_impressum">Impressum</string>
     <string name="title_activity_admin">AdminActivity</string>
     <string name="word_active_trackers">Trackers</string>
-    <string name="title_main">K2 Blade Night</string>
+    <string name="title_main">Blade Night</string>
     <string name="msg_status">Status</string>
     <string name="text_next_event">Nächster Termin:</string>
     <string name="text_route_name">Route Name</string>
