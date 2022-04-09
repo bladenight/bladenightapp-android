@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="de.greencity.bladenightapp.android"
     android:installLocation="auto"
-    android:versionCode="3"
+    android:versionCode="5"
     android:versionName="DEV">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -15,6 +15,9 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission
+        android:name="android.permission.READ_PHONE_STATE"
+        tools:node="remove" />
 
     <application
         android:name="de.greencity.bladenightapp.android.app.BladeNightApplication"

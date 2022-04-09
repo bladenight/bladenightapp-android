@@ -30,9 +30,10 @@ android {
     useLibrary 'org.apache.http.legacy'
 
     defaultConfig {
-        applicationId "de.greencity.bladenightapp.android.dev"
+        applicationId "de.bladenight_muenchen.bladenightapp.android.dev"
         buildConfigField "long", "BUILD_TIMESTAMP", System.currentTimeMillis() + "L"
         minSdkVersion 19
+        targetSdkVersion 30
         multiDexEnabled true
     }
 
