@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="about_android_application_v1">Android Application (v1)</string>
-    <string name="about_android_application_v2">Android Application (v2)</string>
+    <string name="about_android_application_v1">Android Application (2013)</string>
+    <string name="about_android_application_v2">Android Application (2014-2022)</string>
     <string name="about_ben">Benjamin Uekermann</string>
     <string name="about_bladenight_link">https://bladenight-muenchen.de/</string>
     <string name="about_more_info">More information</string>
@@ -59,7 +59,7 @@
     <string name="msg_friend_added">was added</string>
     <string name="msg_friend_removed">Friend has been removed</string>
     <string name="msg_invalid_friend_to_delete">This item cannot be deleted</string>
-    <string name="msg_impressum">Betreiber und Veranstalter:\nGreen City Experience GmbH\nAlbert-Roßhaupter-Str. 32\n81369 München\nGeschäftsführung: Rauno Andreas Fuchs, Peter Keller\nSitz der Gesellschaft: München\nUSt-IdNr. DE231221033\nHRB 148908\nhttps://www.greencity.de/experience/\nbladenight@greencity.de</string>
+    <string name="msg_impressum">Betreiber und Veranstalter:\n\nSportverein SkateMunich! e.V.\nOberföhringer Straße 230\n81925 München\n\nVereinsregister: VR 200139\nRegistergericht: Amtsgericht München\n\nVertreten durch:\nChristian Reith, Rudolf Sedlmayr\n\nE-Mail: service@skatemunich.de\n</string>
     <string name="msg_loading_code">Loading add-friend code</string>
     <string name="msg_locate">Centering view on me</string>
     <string name="msg_new_code">Give this code to</string>
