@@ -10,9 +10,9 @@ public class Permissions {
      * Verify permissions for application and request them from user if required.
      */
     static public void verifyPermissionsForApp(Activity activity) {
+/*
         // Storage Permissions required for MapsForge tile cache.
         int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-
         if (permission != PackageManager.PERMISSION_GRANTED) {
             // We don't have permission so prompt the user
             final int REQUEST_EXTERNAL_STORAGE_ID = 1;
@@ -26,5 +26,7 @@ public class Permissions {
                     REQUEST_EXTERNAL_STORAGE_ID
             );
         }
+
+ */
     }
 }
