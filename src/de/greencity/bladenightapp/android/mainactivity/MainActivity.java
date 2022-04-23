@@ -3,6 +3,7 @@ package de.greencity.bladenightapp.android.mainactivity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
@@ -77,6 +78,23 @@ public class MainActivity extends FragmentActivity {
         textViewRouteName = (TextView) findViewById(R.id.textview_route_name);
         textViewEventDate = (TextView) findViewById(R.id.textview_event_date);
         textViewEventStatus = (TextView) findViewById(R.id.textview_event_status);
+
+        ImageView img = (ImageView)findViewById(R.id.sponsor_image_view);
+        img.setOnClickListener(v -> {
+            Intent intent = new Intent();
+            intent.setAction(Intent.ACTION_VIEW);
+            intent.addCategory(Intent.CATEGORY_BROWSABLE);
+            intent.setData(Uri.parse("https://www.decathlon.de"));
+            startActivity(intent);
+        });
+        img = (ImageView)findViewById(R.id.organisator_image_view);
+        img.setOnClickListener(v -> {
+            Intent intent = new Intent();
+            intent.setAction(Intent.ACTION_VIEW);
+            intent.addCategory(Intent.CATEGORY_BROWSABLE);
+            intent.setData(Uri.parse("https://www.skatemunich.de/"));
+            startActivity(intent);
+        });
     }
 
     @Override
