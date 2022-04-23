@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>   
+<resources>
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
     <color name="bn_green">#000000</color>
     <color name="bn_green2">#80000000</color>
     <color name="bn_green_dark">#000000</color>
@@ -10,7 +12,6 @@
     <color name="bn_green_light">#2BF233</color>
     <color name="bn_orange_light">#FFC295</color>
     <color name="bn_red">#FE100D</color>
-    <color name="black">#000000</color>
     <color name="default_background">#494949</color>
     <color name="dialog_grey">#414141</color>
     <color name="green_grey">#D6F6E2</color>

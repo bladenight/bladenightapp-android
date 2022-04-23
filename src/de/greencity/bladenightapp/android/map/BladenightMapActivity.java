@@ -47,6 +47,7 @@ import de.greencity.bladenightapp.android.cache.EventsMessageCache;
 import de.greencity.bladenightapp.android.cache.RoutesCache;
 import de.greencity.bladenightapp.android.global.GlobalStateAccess;
 import de.greencity.bladenightapp.android.global.LocalBroadcast;
+import de.greencity.bladenightapp.android.map.userovl.DecathlonOverlay;
 import de.greencity.bladenightapp.android.map.userovl.UserPositionsOverlay;
 import de.greencity.bladenightapp.android.network.NetworkClient;
 import de.greencity.bladenightapp.android.progressbar.ProgressBarRenderer;
@@ -84,6 +85,7 @@ public class BladenightMapActivity extends Activity {
     private final Handler periodicHandler = new Handler();
     private Runnable periodicTask;
     private UserPositionsOverlay userPositionOverlay;
+    private DecathlonOverlay decathlonOverlay;
     private GpsListener gpsListener;
     private boolean isRouteInfoAvailable = false;
     public static final String PARAM_EVENT_MESSAGE = "eventMessage";
@@ -134,16 +136,8 @@ public class BladenightMapActivity extends Activity {
     }
 
     private void createOverlays() {
-        /*
-        if (routeOverlay != null)
-            mapView.getLayerManager().getLayers().remove();
-            */
+        decathlonOverlay = new DecathlonOverlay(this, mapView);
         routeOverlay = new RouteOverlay(mapView);
-        /*
-        TODO
-        if (userPositionOverlay != null)
-            mapView.getOverlays().remove(userPositionOverlay);
-            */
         userPositionOverlay = new UserPositionsOverlay(this, mapView);
     }
 
