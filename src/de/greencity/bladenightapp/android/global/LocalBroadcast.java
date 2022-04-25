@@ -9,7 +9,8 @@ public enum LocalBroadcast {
     GOT_EVENT_LIST(C.PACKAGE+"gotevents"),
     GOT_ANNOUNCEMENTS(C.PACKAGE+"gotannouncements"),
     GOT_REALTIME_DATA(C.PACKAGE+"gotrealtimedata"),
-    GOT_GPS_UPDATE(C.PACKAGE+"gotgpsupdate")
+    GOT_GPS_UPDATE(C.PACKAGE+"gotgpsupdate"),
+    ERROR(C.PACKAGE+"error"),
     ;
 
     static private class C {
@@ -28,6 +29,13 @@ public enum LocalBroadcast {
         Intent intent = new Intent(text);
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
         Log.i(TAG, "Sending broadcast: " + text);
+    }
+
+    public void sendWithExtra(Context context, String extraName, String extraValue) {
+        Intent intent = new Intent(text);
+        intent.putExtra(extraName, extraValue);
+        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+        Log.i(TAG, "Sending broadcast with extra: " + text);
     }
 
     private final String text;

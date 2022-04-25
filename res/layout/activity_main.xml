@@ -26,6 +26,22 @@
             tools:layout_editor_absoluteY="50dp">
 
             <TextView
+                android:id="@+id/textview_error"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:gravity="center"
+                android:text=""
+                android:textIsSelectable="false"
+                android:textSize="25sp"
+                android:textColor="#FF0000"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/textview_route_name"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"></TextView>
+
+            <TextView
                 android:id="@+id/textview_next_event_label"
                 android:layout_width="match_parent"
                 android:layout_height="54dp"
@@ -39,7 +55,7 @@
                 app:layout_constraintEnd_toStartOf="@+id/textview_route_name"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"></TextView>
+                app:layout_constraintTop_toTopOf="@+id/textview_error"></TextView>
 
 
             <TextView

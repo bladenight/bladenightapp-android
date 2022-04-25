@@ -3,12 +3,15 @@ package de.greencity.bladenightapp.android.mainactivity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.PopupMenu;
 import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -43,6 +46,8 @@ public class MainActivity extends FragmentActivity {
 
     private static final String LANDING_PAGE_REMOTE_PATH = "landing.html";
 
+    private TextView textViewError;
+    private BroadcastReceiver errorReceiver;
     private TextView textViewNext;
     private TextView textViewRouteName;
     private TextView textViewEventDate;
@@ -74,6 +79,7 @@ public class MainActivity extends FragmentActivity {
         // avoid NPE, will be replaced as soon as we get data from the network or the cache:
         eventList = new EventList();
 
+        textViewError = (TextView) findViewById(R.id.textview_error);
         textViewNext = (TextView) findViewById(R.id.textview_next_event_label);
         textViewRouteName = (TextView) findViewById(R.id.textview_route_name);
         textViewEventDate = (TextView) findViewById(R.id.textview_event_date);
@@ -94,6 +100,15 @@ public class MainActivity extends FragmentActivity {
             intent.addCategory(Intent.CATEGORY_BROWSABLE);
             intent.setData(Uri.parse("https://www.skatemunich.de/"));
             startActivity(intent);
+        });
+
+        broadcastReceiversRegister.registerReceiver(LocalBroadcast.ERROR, new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String message = intent.getStringExtra("message");
+                if(message != null)
+                    textViewError.setText(message);
+            }
         });
     }
 

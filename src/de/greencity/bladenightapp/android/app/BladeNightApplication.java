@@ -1,6 +1,7 @@
 package de.greencity.bladenightapp.android.app;
 
 import android.app.Application;
+import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -8,7 +9,10 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.multidex.MultiDexApplication;
 import android.util.Log;
+import android.widget.Toast;
 
+import de.greencity.bladenightapp.android.R;
+import de.greencity.bladenightapp.android.global.LocalBroadcast;
 import de.greencity.bladenightapp.android.network.NetworkClient;
 import de.greencity.bladenightapp.android.utils.DeviceId;
 import de.greencity.bladenightapp.network.BladenightError;
@@ -41,7 +45,7 @@ public class BladeNightApplication extends MultiDexApplication {
                     phoneManufacturer,
                     phoneModel,
                     androidRelease);
-            BladeNightApplication.networkClient.shakeHands(msg, null, new HandshakeErrorHandler());
+            BladeNightApplication.networkClient.shakeHands(msg, null, new HandshakeErrorHandler(this));
         } catch (Exception e) {
             Log.e(TAG, "shakeHands failed to gather and send information", e);
         }
@@ -61,8 +65,13 @@ public class BladeNightApplication extends MultiDexApplication {
 
 
     static class HandshakeErrorHandler extends Handler {
-        HandshakeErrorHandler() {
+        private final Context context;
+        private LocalBroadcast broadcastReceiversRegister;
+
+        HandshakeErrorHandler(Context context) {
+            this.context = context;
         }
+
         @Override
         public void handleMessage(Message msg) {
             CallErrorMessage errorMessage = (CallErrorMessage)msg.obj;
@@ -72,7 +81,8 @@ public class BladeNightApplication extends MultiDexApplication {
             }
             if ( BladenightError.OUTDATED_CLIENT.getText().equals(errorMessage.getErrorUri())) {
                 Log.e(TAG, "Outdated client: " + errorMessage);
-                // TODO show error to user
+                Toast.makeText(context, R.string.msg_outdated_client , Toast.LENGTH_LONG).show();
+                LocalBroadcast.ERROR.sendWithExtra(context, "message", context.getResources().getString(R.string.msg_outdated_client));
             }
             else {
                 Log.e(TAG, "Unknown error occured in the handshake with the server: " + errorMessage);
