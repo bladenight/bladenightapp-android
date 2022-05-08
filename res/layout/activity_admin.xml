@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".AboutActivity" >
+>
 
     <com.markupartist.android.widget.ActionBar
         android:id="@+id/actionbar"
@@ -23,11 +23,12 @@
                 android:text="Current route"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
-            <Spinner
-                android:id="@+id/spinner_current_route"
+            <TextView
+                android:id="@+id/text_current_route"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                tools:listitem="@android:layout/simple_spinner_dropdown_item" />
+                android:text=""
+                android:textAppearance="?android:attr/textAppearanceMedium" />
         </TableRow>
 
         <TableRow
@@ -40,8 +41,43 @@
                 android:text="Current status"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
+            <TextView
+                android:id="@+id/text_current_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Change route"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
             <Spinner
-                android:id="@+id/spinner_current_status"
+                android:id="@+id/spinner_change_route"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:listitem="@android:layout/simple_spinner_dropdown_item" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Change status"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <Spinner
+                android:id="@+id/spinner_change_status"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 tools:listitem="@android:layout/simple_spinner_dropdown_item" />

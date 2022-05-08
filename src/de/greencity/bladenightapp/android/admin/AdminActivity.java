@@ -18,6 +18,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.markupartist.android.widget.ActionBar;
@@ -127,12 +128,13 @@ public class AdminActivity extends Activity {
 
 
     private void configureStatusSpinner() {
-        statusSpinner = (Spinner) findViewById(R.id.spinner_current_status);
+        statusSpinner = (Spinner) findViewById(R.id.spinner_change_status);
         spinnerStatusAdapter = new ArrayAdapter<CharSequence>(AdminActivity.this, android.R.layout.simple_spinner_item);
         spinnerStatusAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         statusSpinner.setAdapter(spinnerStatusAdapter);
 
         spinnerStatusAdapter.clear();
+        spinnerStatusAdapter.add("");
         spinnerStatusAdapter.add("CAN");
         spinnerStatusAdapter.add("CON");
         spinnerStatusAdapter.add("PEN");
@@ -142,7 +144,9 @@ public class AdminActivity extends Activity {
             public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
                 Log.i(TAG, "statusSpinner.onItemSelected");
                 String status = (String) statusSpinner.getSelectedItem();
-                setActiveStatusOnServer(status);
+                if ( ! status.isEmpty() ) {
+                    setActiveStatusOnServer(status);
+                }
             }
 
             @Override
@@ -155,20 +159,17 @@ public class AdminActivity extends Activity {
     private void configureRouteNameSpinner() {
         Log.i(TAG, "configureRouteNameSpinner ");
 
-        routeNameSpinner = (Spinner) findViewById(R.id.spinner_current_route);
+        routeSpinner = (Spinner) findViewById(R.id.spinner_change_route);
         spinnerRouteNameAdapter = new ArrayAdapter<CharSequence>(AdminActivity.this, android.R.layout.simple_spinner_item);
         spinnerRouteNameAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        routeNameSpinner.setAdapter(spinnerRouteNameAdapter);
+        routeSpinner.setAdapter(spinnerRouteNameAdapter);
 
-        routeNameSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+        routeSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
                 Log.i(TAG, "onItemSelected arg2=" + arg2 + " arg3=" + arg3);
-                // Silly Android might fire the listener even before we are ready
-                if (isRouteNameSpinnerInitialized) {
-                    String routeName = (String) routeNameSpinner.getSelectedItem();
-                    setActiveRouteOnServer(routeName);
-                }
+                String routeName = (String) routeSpinner.getSelectedItem();
+                setActiveRouteOnServer(routeName);
             }
 
             @Override
@@ -222,6 +223,7 @@ public class AdminActivity extends Activity {
             Log.i(TAG, "updateGuiRouteListFromServerResponse: no need to update GUI");
         } else {
             spinnerRouteNameAdapter.clear();
+            spinnerRouteNameAdapter.add("");
             for (String name : routeNamesFromServer) {
                 spinnerRouteNameAdapter.add(name);
             }
@@ -264,19 +266,13 @@ public class AdminActivity extends Activity {
 
 
     public void updateGuiRouteCurrent(String currentRouteName) {
-        for (int i = 0; i < spinnerRouteNameAdapter.getCount(); i++) {
-            if (currentRouteName.equals(spinnerRouteNameAdapter.getItem(i)))
-                setSpinnerSelectionWithoutCallingListener(routeNameSpinner, i);
-        }
-        isRouteNameSpinnerInitialized = true;
-        configureStatusSpinner();
+        TextView routeText = (TextView) findViewById(R.id.text_current_route);
+        routeText.setText(currentRouteName);
     }
 
     public void updateGuiStatus(String status) {
-        for (int i = 0; i < spinnerStatusAdapter.getCount(); i++) {
-            if (status.equals(spinnerStatusAdapter.getItem(i)))
-                setSpinnerSelectionWithoutCallingListener(statusSpinner, i);
-        }
+        TextView statusText = (TextView) findViewById(R.id.text_current_status);
+        statusText.setText(status);
     }
 
 
@@ -351,28 +347,10 @@ public class AdminActivity extends Activity {
         super.onStop();
     }
 
-    private void setSpinnerSelectionWithoutCallingListener(final Spinner spinner, final int selection) {
-        final OnItemSelectedListener l = spinner.getOnItemSelectedListener();
-        spinner.setOnItemSelectedListener(null);
-        spinner.post(new Runnable() {
-            @Override
-            public void run() {
-                spinner.setSelection(selection);
-                spinner.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        spinner.setOnItemSelectedListener(l);
-                    }
-                });
-            }
-        });
-    }
-
     final static String TAG = "AdminActivity";
     private NetworkClient networkClient;
     private ArrayAdapter<CharSequence> spinnerRouteNameAdapter;
     private ArrayAdapter<CharSequence> spinnerStatusAdapter;
-    private Spinner routeNameSpinner;
+    private Spinner routeSpinner;
     private Spinner statusSpinner;
-    private boolean isRouteNameSpinnerInitialized = false;
 }
