@@ -94,6 +94,7 @@ dependencies {
     implementation 'joda-time:joda-time:2.1'
     implementation 'org.apache.commons:commons-lang3:3.1'
     implementation 'commons-io:commons-io:2.11.0'
+    implementation 'io.nlopez.smartlocation:library:3.3.3'
     implementation files('libs/jackson-core-asl-1.9.12.jar')
     implementation files('libs/jackson-mapper-asl-1.9.12.jar')
 
