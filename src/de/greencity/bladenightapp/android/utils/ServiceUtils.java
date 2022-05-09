@@ -4,6 +4,7 @@ import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.util.Log;
 
 public class ServiceUtils {
@@ -22,7 +23,12 @@ public class ServiceUtils {
         Log.i(TAG, "startService " + serviceClass.getCanonicalName());
         if ( ! isServiceRunning(context, serviceClass)) {
             Intent intent = new Intent(context.getApplicationContext(), serviceClass);
-            context.startService(intent);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                context.startForegroundService(intent);
+            }
+            else {
+                context.startService(intent);
+            }
         }
     }
     public static void stopService(Context context, Class<?> serviceClass) {

@@ -3,9 +3,12 @@ package de.greencity.bladenightapp.android.tracker;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -42,7 +45,9 @@ public class GpsListener {
 
             @Override
             public void onPermissionDenied() {
-                Toast.makeText(context, context.getString(R.string.msg_current_position_unknown), Toast.LENGTH_LONG).show();
+                String message = "Permission denied while retrieving location";
+                Log.e(TAG, message);
+                Toast.makeText(context, message, Toast.LENGTH_LONG).show();
             }
         });
     }
