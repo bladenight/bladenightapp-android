@@ -9,12 +9,14 @@ import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ServiceInfo;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Binder;
+import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
@@ -152,7 +154,7 @@ public class GpsTrackerService extends Service {
             manager.createNotificationChannel(chan);
         }
 
-        builder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
+        builder = new NotificationCompat.Builder(getApplicationContext(), NOTIFICATION_CHANNEL_ID)
                 .setStyle(new NotificationCompat.DecoratedCustomViewStyle())
                 .setContentTitle(getString(R.string.msg_tracking_running))
                 .setContentText(getString(R.string.app_name))
@@ -163,8 +165,12 @@ public class GpsTrackerService extends Service {
         notification = builder.build();
         notification.flags |= Notification.FLAG_FOREGROUND_SERVICE;
 
-        startForeground(NOTIFICATION_ID, notification);
-
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            startForeground(NOTIFICATION_ID, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION);
+        }
+        else {
+            startForeground(NOTIFICATION_ID, notification);
+        }
     }
 
     private void updateNotification() {
