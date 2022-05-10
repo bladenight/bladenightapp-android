@@ -41,7 +41,6 @@
             android:exported="false" />
         <service
             android:name="de.greencity.bladenightapp.android.background.BackgroundService"
-            android:foregroundServiceType="location"
             android:exported="false" />
 
         <activity

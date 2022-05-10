@@ -15,8 +15,6 @@ import android.widget.Toast;
 import com.intentfilter.androidpermissions.PermissionManager;
 
 import de.greencity.bladenightapp.android.R;
-import io.nlopez.smartlocation.OnLocationUpdatedListener;
-import io.nlopez.smartlocation.SmartLocation;
 
 import static java.util.Collections.singleton;
 
@@ -27,14 +25,40 @@ public class GpsListener {
     }
 
     public void requestLocationUpdates(final int period) {
-        SmartLocation.with(context).location()
-                .start((location) -> locationListener.onLocationChanged(location));
+        cancelLocationUpdates();
+
+        PermissionManager permissionManager = PermissionManager.getInstance(context);
+        permissionManager.checkPermissions(singleton(Manifest.permission.ACCESS_FINE_LOCATION), new PermissionManager.PermissionRequestListener() {
+            @SuppressLint("MissingPermission") // PermissionManager takes care of it
+            @Override
+            public void onPermissionGranted() {
+                // Toast.makeText(context, "Permissions Granted", Toast.LENGTH_SHORT).show();
+                LocationManager locationManager;
+                locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, period, 1f, locationListener);
+
+                Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                Log.i(TAG, "lastKnownLocation=" + lastKnownLocation);
+                if(lastKnownLocation != null)
+                    locationListener.onLocationChanged(lastKnownLocation);
+            }
+
+            @Override
+            public void onPermissionDenied() {
+                String message = "Permission denied while retrieving location";
+                Log.e(TAG, message);
+                Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     public void cancelLocationUpdates() {
         LocationManager locationManager;
-        SmartLocation.with(context).location()
-                .stop();
+        locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        if (locationListener == null)
+            Log.w(TAG, "locationManager==null in cancelLocationUpdates");
+        else
+            locationManager.removeUpdates(locationListener);
     }
 
     private LocationListener locationListener;
