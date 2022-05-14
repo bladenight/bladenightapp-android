@@ -134,9 +134,7 @@ public class UserPositionsOverlay implements LocationListener {
         Log.i(TAG, "deleteFriend " + friendId);
         FriendMarker friendMarker = friendMarkers.get(friendId);
         if ( friendMarker != null ) {
-            // TODO
-            // friendMarker.remove();
-            // friendMarkers.remove(friendId);
+            friendMarker.hide();
         }
     }
 }
