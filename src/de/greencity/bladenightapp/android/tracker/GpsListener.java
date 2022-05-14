@@ -3,25 +3,57 @@ package de.greencity.bladenightapp.android.tracker;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
+import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.intentfilter.androidpermissions.PermissionManager;
 
-import de.greencity.bladenightapp.android.R;
-
 import static java.util.Collections.singleton;
 
 public class GpsListener {
+    private LocationHandler locationHandler; // Internal
+    private LocationListener locationListener; // External
+    private Context context;
+    private LocationManager locationManager;
+    static private final String TAG = "GpsListener";
+
+    private class LocationHandler implements android.location.LocationListener {
+        public LocationHandler() {
+            Log.e(TAG, "LocationListener");
+        }
+
+        @Override
+        public void onLocationChanged(Location location) {
+            Log.i(TAG, "onLocationChanged: " + location);
+            locationListener.onLocationChanged(location);
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+            Log.i(TAG, "onProviderDisabled: " + provider);
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+            Log.i(TAG, "onProviderEnabled: " + provider);
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+            Log.i(TAG, "onStatusChanged: " + provider + ' ' + status + ' ' + extras);
+        }
+
+    }
+
     public GpsListener(Context context, LocationListener locationListener) {
-        this.locationListener = locationListener;
         this.context = context;
+        this.locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        this.locationHandler = new LocationHandler();
+        this.locationListener = locationListener;
     }
 
     public void requestLocationUpdates(final int period) {
@@ -32,15 +64,16 @@ public class GpsListener {
             @SuppressLint("MissingPermission") // PermissionManager takes care of it
             @Override
             public void onPermissionGranted() {
-                // Toast.makeText(context, "Permissions Granted", Toast.LENGTH_SHORT).show();
-                LocationManager locationManager;
-                locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, period, 1f, locationListener);
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, period, 0f, locationHandler);
+                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, period, 0f, locationHandler);
 
-                Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                Log.i(TAG, "lastKnownLocation=" + lastKnownLocation);
-                if(lastKnownLocation != null)
-                    locationListener.onLocationChanged(lastKnownLocation);
+                Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
+                Log.i(TAG, "lastKnownLocation from network: " + lastKnownLocation);
+
+                if (lastKnownLocation != null) {
+                    locationHandler.onLocationChanged(lastKnownLocation);
+                }
             }
 
             @Override
@@ -52,17 +85,8 @@ public class GpsListener {
         });
     }
 
+    @SuppressLint("MissingPermission")
     public void cancelLocationUpdates() {
-        LocationManager locationManager;
-        locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-        if (locationListener == null)
-            Log.w(TAG, "locationManager==null in cancelLocationUpdates");
-        else
-            locationManager.removeUpdates(locationListener);
+        this.locationManager.removeUpdates(locationHandler);
     }
-
-    private LocationListener locationListener;
-    private Context context;
-    static private final String TAG = "GpsListener";
-
 }

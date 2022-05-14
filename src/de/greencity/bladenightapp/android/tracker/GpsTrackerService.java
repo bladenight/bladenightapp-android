@@ -26,9 +26,6 @@ import android.util.Log;
 import android.view.WindowManager;
 import android.widget.RemoteViews;
 
-import java.io.File;
-import java.io.IOException;
-
 import de.greencity.bladenightapp.android.R;
 import de.greencity.bladenightapp.android.global.GlobalStateAccess;
 import de.greencity.bladenightapp.android.global.LocalBroadcast;
@@ -37,7 +34,6 @@ import de.greencity.bladenightapp.android.network.NetworkClient;
 import de.greencity.bladenightapp.android.network.RealTimeDataConsumer;
 import de.greencity.bladenightapp.android.progressbar.ProgressBarRenderer;
 import de.greencity.bladenightapp.android.utils.BroadcastReceiversRegister;
-import de.greencity.bladenightapp.android.utils.Paths;
 import de.greencity.bladenightapp.network.messages.RealTimeUpdateData;
 
 public class GpsTrackerService extends Service {
