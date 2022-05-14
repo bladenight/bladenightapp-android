@@ -154,6 +154,7 @@ public class GpsTrackerService extends Service {
                 .setStyle(new NotificationCompat.DecoratedCustomViewStyle())
                 .setContentTitle(getString(R.string.msg_tracking_running))
                 .setContentText(getString(R.string.app_name))
+                .setVisibility(Notification.VISIBILITY_PUBLIC)
                 .setSmallIcon(R.drawable.ic_notification_tracking)
                 .setOnlyAlertOnce(true)
                 .setContentIntent(contentIntent);
