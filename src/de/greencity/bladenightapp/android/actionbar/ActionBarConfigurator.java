@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import de.greencity.bladenightapp.android.actionbar.actions.ActionAddFriend;
+import de.greencity.bladenightapp.android.actionbar.actions.ActionFitMapToRoute;
 import de.greencity.bladenightapp.android.actionbar.actions.ActionFriends;
 import de.greencity.bladenightapp.android.actionbar.actions.ActionHome;
 import de.greencity.bladenightapp.android.actionbar.actions.ActionLocateMe;
@@ -34,6 +35,7 @@ public class ActionBarConfigurator {
         OPTIONS,
         ADD_FRIEND,
         LOCATE_ME,
+        FIT_MAP_TO_ROUTE,
         TABLE,
         MORE
     }
@@ -49,6 +51,7 @@ public class ActionBarConfigurator {
         typeToActionAll.put(ActionItemType.RELOAD, new ActionReload());
         typeToActionAll.put(ActionItemType.OPTIONS, new ActionOptions());
         typeToActionAll.put(ActionItemType.LOCATE_ME, new ActionLocateMe());
+        typeToActionAll.put(ActionItemType.FIT_MAP_TO_ROUTE, new ActionFitMapToRoute());
         typeToActionAll.put(ActionItemType.TABLE, new ActionTable());
         typeToActionAll.put(ActionItemType.MORE, new ActionMore());
         show(ActionItemType.HOME);

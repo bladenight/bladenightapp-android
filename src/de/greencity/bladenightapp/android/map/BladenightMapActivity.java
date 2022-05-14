@@ -42,6 +42,7 @@ import java.util.Locale;
 
 import de.greencity.bladenightapp.android.R;
 import de.greencity.bladenightapp.android.actionbar.ActionBarConfigurator;
+import de.greencity.bladenightapp.android.actionbar.actions.ActionFitMapToRoute;
 import de.greencity.bladenightapp.android.actionbar.actions.ActionLocateMe;
 import de.greencity.bladenightapp.android.app.BladeNightApplication;
 import de.greencity.bladenightapp.android.cache.EventsMessageCache;
@@ -450,9 +451,16 @@ public class BladenightMapActivity extends Activity {
         configurator.setAction(ActionBarConfigurator.ActionItemType.LOCATE_ME, new ActionLocateMe() {
             @Override
             public void performAction(View view) {
-                Toast.makeText(view.getContext(), view.getResources().getString(R.string.msg_locate), Toast.LENGTH_SHORT).show();
                 BladenightMapActivity.this.centerViewOnLastKnownLocation();
                 mapMustFollowMe = true;
+            }
+        });
+
+        configurator.setAction(ActionBarConfigurator.ActionItemType.FIT_MAP_TO_ROUTE, new ActionFitMapToRoute() {
+            @Override
+            public void performAction(View view) {
+                BladenightMapActivity.this.fitViewToRoute();
+                mapMustFollowMe = false;
             }
         });
 
