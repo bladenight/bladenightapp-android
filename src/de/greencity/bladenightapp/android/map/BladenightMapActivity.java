@@ -293,7 +293,6 @@ public class BladenightMapActivity extends Activity {
             gpsListener.cancelLocationUpdates();
     }
 
-
     public void registerGpsListener() {
         destroyGpsListener();
         gpsListener = new GpsListener(this, globalStateAccess);

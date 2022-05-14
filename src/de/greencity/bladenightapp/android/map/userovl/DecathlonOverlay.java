@@ -51,7 +51,7 @@ public class DecathlonOverlay {
     }
 
     public void hide() {
-        // TODO
+        throw new RuntimeException("Not implemented");
     }
 
     public void repaint() {

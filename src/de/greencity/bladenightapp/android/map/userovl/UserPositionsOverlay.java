@@ -43,7 +43,7 @@ public class UserPositionsOverlay implements LocationListener {
     }
 
     public void hide() {
-        // TODO
+        throw new RuntimeException("Not implemented");
     }
 
     public void repaint() {
@@ -94,11 +94,12 @@ public class UserPositionsOverlay implements LocationListener {
             FriendMarker friendMarker = getFriendMarker(friendId);
             friendMarker.setRadius(nvp.getAccuracy());
             friendMarker.setLatLong(new LatLong(nvp.getLatitude(), nvp.getLongitude()));
+            friendMarker.show();
 
             depracatedFriendIds.remove(friendId);
         }
         for (Integer depracatedFriendId : depracatedFriendIds) {
-            deleteFriend(depracatedFriendId);
+            hideFriend(depracatedFriendId);
         }
         repaint();
     }
@@ -116,8 +117,8 @@ public class UserPositionsOverlay implements LocationListener {
     }
 
     public void onResume() {
-        // Colors might been have changed in the meantime:
         friends.load();
+        // Colors might been have changed in the meantime:
         updateColors();
         repaint();
     }
@@ -130,7 +131,7 @@ public class UserPositionsOverlay implements LocationListener {
         repaint();
     }
 
-    private void deleteFriend(int friendId) {
+    private void hideFriend(int friendId) {
         Log.i(TAG, "deleteFriend " + friendId);
         FriendMarker friendMarker = friendMarkers.get(friendId);
         if ( friendMarker != null ) {

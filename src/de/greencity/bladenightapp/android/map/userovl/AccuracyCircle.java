@@ -8,6 +8,7 @@ import org.mapsforge.core.model.LatLong;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 import org.mapsforge.map.android.view.MapView;
 import org.mapsforge.map.layer.overlay.Circle;
+import de.greencity.bladenightapp.android.map.userovl.Utils;
 
 class AccuracyCircle {
     private final MapView mapView;
@@ -62,11 +63,11 @@ class AccuracyCircle {
     }
 
     public void show() {
-        mapView.getLayerManager().getLayers().add(circle);
+        Utils.addLayerIfAbsent(mapView.getLayerManager().getLayers(), circle);
     }
 
     public void hide() {
-        mapView.getLayerManager().getLayers().remove(circle);
+        Utils.removeLayerIfPresent(mapView.getLayerManager().getLayers(), circle);
     }
 
     public void setRadius(float radius) {

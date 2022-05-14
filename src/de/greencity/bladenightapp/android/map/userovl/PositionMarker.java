@@ -37,11 +37,11 @@ public class PositionMarker {
     }
 
     public void show() {
-        mapView.getLayerManager().getLayers().add(marker);
+        Utils.addLayerIfAbsent(mapView.getLayerManager().getLayers(), marker);
     }
 
     public void hide() {
-        mapView.getLayerManager().getLayers().remove(marker);
+        Utils.removeLayerIfPresent(mapView.getLayerManager().getLayers(), marker);
     }
 
     public void setLatLong(LatLong latLong) {
