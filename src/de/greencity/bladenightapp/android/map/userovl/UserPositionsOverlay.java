@@ -3,8 +3,6 @@ package de.greencity.bladenightapp.android.map.userovl;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.location.Location;
-import android.location.LocationListener;
-import android.os.Bundle;
 import android.util.Log;
 
 import org.mapsforge.core.model.LatLong;
@@ -19,14 +17,13 @@ import de.greencity.bladenightapp.android.social.SocialActivity;
 import de.greencity.bladenightapp.network.messages.MovingPointMessage;
 import de.greencity.bladenightapp.network.messages.RealTimeUpdateData;
 
-public class UserPositionsOverlay implements LocationListener {
+public class UserPositionsOverlay {
 
     private final MapView mapView;
     private Context context;
     @SuppressLint("UseSparseArrays")
     private HashMap<Integer, FriendMarker> friendMarkers = new HashMap<Integer, FriendMarker>();
     private Friends friends;
-    private Location lastOwnLocation;
 
     private final String TAG = "UserPositionsOverlay";
 
@@ -51,10 +48,7 @@ public class UserPositionsOverlay implements LocationListener {
         mapView.getLayerManager().redrawLayers();
     }
 
-    @Override
-    public void onLocationChanged(Location location) {
-        lastOwnLocation = location;
-
+    public void updateOwnMarker(Location location) {
         // Log.i(TAG, "UserPositionsOverlay.onLocationChanged: " + location);
         LatLong gp = new LatLong(location.getLatitude(), location.getLongitude());
 
@@ -65,25 +59,6 @@ public class UserPositionsOverlay implements LocationListener {
         repaint();
     }
 
-
-    @Override
-    public void onProviderDisabled(String provider) {
-        //      Log.i(TAG, "onProviderDisabled: " + provider);
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-        //      Log.i(TAG, "onProviderEnabled: " + provider);
-    }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-        //      Log.i(TAG, "onStatusChanged: " + provider + " status="+status);
-    }
-
-    public Location getLastOwnLocation() {
-        return lastOwnLocation;
-    }
 
     public synchronized void update(RealTimeUpdateData data) {
         Set<Integer> depracatedFriendIds = new HashSet<Integer>(friendMarkers.keySet());

@@ -34,6 +34,7 @@ import org.mapsforge.map.layer.cache.TileCache;
 import org.mapsforge.map.layer.renderer.TileRendererLayer;
 import org.mapsforge.map.reader.MapFile;
 import org.mapsforge.map.util.MapViewProjection;
+import org.mapsforge.map.view.InputListener;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -93,6 +94,7 @@ public class BladenightMapActivity extends Activity {
     private boolean shallFitViewWhenPossible = true;
     private File mapLocalFile;
     private ProgressBarRenderer progressBarRenderer;
+    private boolean mapMustFollowMe = false;
 
     private MapView mapView;
 
@@ -267,7 +269,9 @@ public class BladenightMapActivity extends Activity {
             Log.i(TAG, "LocationBroadcastReceiver.onReceive " + intent);
             final BladenightMapActivity bladenightMapActivity = BladenightMapActivity.this;
             Location location = globalStateAccess.getLocationFromGps();
-            bladenightMapActivity.userPositionOverlay.onLocationChanged(location);
+            bladenightMapActivity.userPositionOverlay.updateOwnMarker(location);
+            if(mapMustFollowMe)
+                centerViewOnLastKnownLocation();
         }
     }
 
@@ -406,6 +410,18 @@ public class BladenightMapActivity extends Activity {
 
         mapView.setCenter(new LatLong(48.132491, 11.543474));
         mapView.setZoomLevel((byte) 13);
+
+        mapView.addInputListener(new InputListener() {
+            @Override
+            public void onMoveEvent() {
+                mapMustFollowMe = false;
+            }
+
+            @Override
+            public void onZoomEvent() {
+                // Nothing to do
+            }
+        });
     }
 
 
@@ -436,6 +452,7 @@ public class BladenightMapActivity extends Activity {
             public void performAction(View view) {
                 Toast.makeText(view.getContext(), view.getResources().getString(R.string.msg_locate), Toast.LENGTH_SHORT).show();
                 BladenightMapActivity.this.centerViewOnLastKnownLocation();
+                mapMustFollowMe = true;
             }
         });
 
@@ -581,7 +598,7 @@ public class BladenightMapActivity extends Activity {
     }
 
     protected void centerViewOnLastKnownLocation() {
-        Location location = userPositionOverlay.getLastOwnLocation();
+        Location location = globalStateAccess.getLocationFromGps();
         if (location != null) {
             this.mapView.setCenter(new LatLong(location.getLatitude(), location.getLongitude()));
         } else {
